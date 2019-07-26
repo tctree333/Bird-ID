@@ -510,5 +510,5 @@ async def on_command_error(ctx, error):
 
 # Actually run the bot
 keep_alive()
-token = os.getenv("token")
+token = process.env.BOT_TOKEN
 bot.run(token)
