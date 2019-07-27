@@ -68,19 +68,6 @@ with open('scibirdsongs.txt','r') as fileIn:
     sciSongBirds.append(line.strip('\n'))
   print("sciSongBirds done!")
 
-for bird in birdList:
-  index = birdList.index(bird)
-  sciBird = sciBirdList[index]
-  #creating list of arguments
-  print("scibird: "+str(sciBird))
-  arguments = {"keywords":sciBird,"limit":15,"print_urls":True}   
-  #passing the arguments to the function
-  paths = response.download(arguments)
-  print("paths: "+str(paths))
-  #paths = paths[0]
-  #myList = [paths [i] for i in sorted(paths.keys()) ]
-  #myList = myList[0]
-
 # Logging
 @bot.event
 async def on_ready():
