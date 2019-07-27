@@ -1,5 +1,4 @@
 discord
 wikipedia
-discord.ext
 google_images_download
 requests
