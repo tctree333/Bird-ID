@@ -2,3 +2,4 @@ discord
 wikipedia
 google_images_download
 requests
+flask
