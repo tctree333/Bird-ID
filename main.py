@@ -4,7 +4,6 @@ import os
 import wikipedia
 from random import randint
 from discord.ext import commands
-from keep_alive import keep_alive
 from google_images_download import google_images_download
 import requests
 import shutil
@@ -509,6 +508,5 @@ async def on_command_error(ctx, error):
     raise error
 
 # Actually run the bot
-# keep_alive()
 token = os.environ['token']
 bot.run(token)
