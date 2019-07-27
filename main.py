@@ -29,6 +29,9 @@ prevS = "" #make sure it sends a diff song
 dictOfServers = {
   # "ctx.channel.id" : ["bird","answered","songbird","songanswered", "totalCorrect"]
 }
+userCount = {
+  #user:[username, #ofcorrect]
+}
 
 # Converts txt file of birds into list
 birdList = []
@@ -65,6 +68,19 @@ with open('scibirdsongs.txt','r') as fileIn:
     sciSongBirds.append(line.strip('\n'))
   print("sciSongBirds done!")
 
+for bird in birdList:
+  index = birdList.index(bird)
+  sciBird = sciBirdList[index]
+  #creating list of arguments
+  print("scibird: "+str(sciBird))
+  arguments = {"keywords":sciBird,"limit":15,"print_urls":True}   
+  #passing the arguments to the function
+  paths = response.download(arguments)
+  print("paths: "+str(paths))
+  #paths = paths[0]
+  #myList = [paths [i] for i in sorted(paths.keys()) ]
+  #myList = myList[0]
+
 # Logging
 @bot.event
 async def on_ready():
@@ -91,6 +107,7 @@ def error_skip(ctx):
 async def send_bird(ctx, bird, on_error=None, message=None, addOn = ""):
   global prevJ
   global dictOfServers
+
 
   if bird == "":
     print("error - bird is blank")
@@ -219,14 +236,14 @@ def spellcheck(worda,wordb):
       shorterword = list1
     else:
       for i in range(len(list1)):
-        if list1[i] == list2 [i]:
+        if list1[i] == list2[i]:
           pass
         else:
           wrongcount += 1
-        if wrongcount >1:
-          return False
-        else:
-          return True
+      if wrongcount >1:
+        return False
+      else:
+        return True
     if abs(len(longerword)-len(shorterword)) > 1:
       return False
     else:
@@ -253,6 +270,15 @@ async def setup(ctx):
     dictOfServers[ctx.channel.id] = ["", True, "", True, 0]
     await ctx.send("Ok, setup! I'm all ready to use!")
 
+#sets up new user
+async def userSetup(ctx):
+  global userCount
+  if ctx.message.author.id in userCount:
+    return
+  else:
+    userCount[ctx.message.author.id] = [str(ctx.message.author),0]
+    await ctx.send("Welcome " + str(ctx.message.author) + "!")
+
 ######
 # COMMANDS
 ######
@@ -264,6 +290,7 @@ async def bird(ctx, add_on = ""):
   global dictOfServers
 
   await setup(ctx)
+  await userSetup(ctx)
 
   print("bird")
   global answered
@@ -289,6 +316,7 @@ async def bird(ctx, add_on = ""):
 async def song(ctx):
   global dictOfServers
   await setup(ctx)
+  await userSetup(ctx)
 
   global songAnswered
   print("song")
@@ -314,8 +342,11 @@ async def song(ctx):
 async def check(ctx, *, arg):
   print("check")
   global dictOfServers
+  global userCount
   await setup(ctx)
+  await userSetup(ctx)
 
+  totalCorrect = dictOfServers[ctx.channel.id][4]
   currentBird = dictOfServers[ctx.channel.id][0]
   if currentBird == "": # no bird
     await ctx.send("You must ask for a bird first!")
@@ -325,6 +356,7 @@ async def check(ctx, *, arg):
     if spellcheck(arg.lower().replace("-"," "),currentBird.lower().replace("-"," "))== True:
       await ctx.send("Correct! Good job!")
       dictOfServers[ctx.channel.id][4] += 1
+      userCount[ctx.message.author.id][1] += 1
     else:
       await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
     print("currentBird: "+str(currentBird.lower().replace("-"," ")))
@@ -342,6 +374,7 @@ async def checksong(ctx, *, arg):
   print("checksong")
   global dictOfServers
   await setup(ctx)
+  await userSetup(ctx)
 
   currentSongBird = dictOfServers[ctx.channel.id][2]
   placeholder = currentSongBird
@@ -369,6 +402,7 @@ async def skip(ctx):
   print("skip")
   global dictOfServers
   await setup(ctx)
+  await userSetup(ctx)
 
   currentBird = dictOfServers[ctx.channel.id][0]
   dictOfServers[ctx.channel.id][1] = True
@@ -386,6 +420,7 @@ async def skipsong(ctx):
   print("skip")
   global dictOfServers
   await setup(ctx)
+  await userSetup(ctx)
 
   dictOfServers[ctx.channel.id][3] = True
   currentSongBird = dictOfServers[ctx.channel.id][2]
@@ -401,6 +436,7 @@ async def skipsong(ctx):
 async def hint(ctx):
   global dictOfServers
   await setup(ctx)
+  await userSetup(ctx)
 
   currentBird = dictOfServers[ctx.channel.id][0]
   if currentBird != "": #check if there is bird
@@ -414,6 +450,7 @@ async def hint(ctx):
 async def hintsong(ctx):
   global dictOfServers
   await setup(ctx)
+  await userSetup(ctx)
 
   currentSongBird = dictOfServers[ctx.channel.id][2]
   if currentSongBird != "": #check if there is bird
@@ -425,6 +462,8 @@ async def hintsong(ctx):
 @bot.command(help = "- Gives an image and call of a bird", aliases = ['i'])
 @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
 async def info(ctx, *, arg):
+  await userSetup(ctx)
+
   bird = arg
   print("info")
   await ctx.send("Please wait a moment.")
@@ -450,6 +489,7 @@ async def wiki(ctx, *, arg):
 async def score(ctx):
   global dictOfServers
   await setup(ctx)
+  await userSetup(ctx)
 
   totalCorrect = dictOfServers[ctx.channel.id][4]
   await ctx.send("Wow, looks like a total of " + str(totalCorrect) + " birds have been answered correctly in this channel! Good job everyone!")
@@ -460,6 +500,33 @@ async def score(ctx):
 async def meme(ctx):
   x=randint(0,len(memeList))
   await ctx.send(memeList[x])
+
+# sends correct answers by a user
+@bot.command(help = "- how many correct answers given by a user, mention someone to get their score, don't mention anyone to get your score", aliases = ["us"])
+async def userscore(ctx, user=None):
+  global userCount
+  if user:
+    try:
+      usera = int(user[1:len(user)-1].strip("@!"))
+      print(usera)
+    except:
+      await ctx.send("Mention a user!")
+      return
+    print(userCount.keys())
+    if usera in userCount.keys():
+      times = str(userCount[usera][1])
+      user = userCount[usera][0]
+    else:
+      await ctx.send("This user does not exist on our records!")
+      return
+  else:
+    try:
+      user = str(ctx.message.author)
+      times = str(userCount[ctx.message.author.id][1])
+    except:
+      await ctx.send("You haven't used this bot yet! (except for this)")
+      return
+  await ctx.send(user + " has answered correctly " + times + " times.")
 
 # clear downloads
 @bot.command(help="- clears the downloaded images")
@@ -474,8 +541,12 @@ async def clear(ctx):
 # Test command - for testing purposes only
 @bot.command(help="- test command")
 async def test(ctx):
-  print("test")
-  raise OSError
+  for bird in birdList:
+    index = birdList.index(bird)
+    sciBird = sciBirdList[index]
+    print (sciBird, "- " + bird)
+  print(sciBirdList)
+  print(birdList)
 
 ######
 # ERROR CHECKING
@@ -502,11 +573,14 @@ async def on_command_error(ctx, error):
   elif isinstance(error, commands.CommandNotFound):
     await ctx.send("Sorry, the command was not found.")
 
+  #elif isinstance(error, OSError("ENOSPC")):
+  #  print("os")
+
   else:
     print("uncaught")
     await ctx.send("**An uncaught error has occurred.** \n*Please log this message in #feedback.* \n**Error:**  " + str(error))
     raise error
 
 # Actually run the bot
-token = os.environ['token']
+token = os.getenv("token")
 bot.run(token)
