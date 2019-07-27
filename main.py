@@ -509,6 +509,6 @@ async def on_command_error(ctx, error):
     raise error
 
 # Actually run the bot
-keep_alive()
+# keep_alive()
 token = os.environ['token']
 bot.run(token)
