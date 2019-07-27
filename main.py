@@ -545,23 +545,21 @@ async def on_command_error(ctx, error):
   print("Error: "+str(error))
   if isinstance(error, commands.CommandOnCooldown): # send cooldown
     await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.")
-
-  elif isinstance(error, commands.MissingRequiredArgument):
-    await ctx.send("This command requires an argument!")
-
-  elif isinstance(error.original, KeyError):
-    if ctx.channel.id in dictOfServers:
-      await ctx.send("**An unexpected KeyError has occurred.** \n*Please log this message in #feedback* \n**Error:** " + str(error))
-    else:
-      dictOfServers[ctx.channel.id] = ["", True, "", True, 0]
-      await ctx.send("Ok, setup! I'm all ready to use!")
-      await ctx.send("Please run that command again.")
-
+  
   elif isinstance(error, commands.CommandNotFound):
     await ctx.send("Sorry, the command was not found.")
-
-  #elif isinstance(error, OSError("ENOSPC")):
-  #  print("os")
+    
+  elif isinstance(error, commands.MissingRequiredArgument):
+    await ctx.send("This command requires an argument!")
+  
+  elif isinstance(error, commands.CommandInvokeError):
+    if isinstance(error.original, KeyError):
+      if ctx.channel.id in dictOfServers:
+        await ctx.send("**An unexpected KeyError has occurred.** \n*Please log this message in #feedback* \n**Error:** " + str(error))
+      else:
+        dictOfServers[ctx.channel.id] = ["", True, "", True, 0]
+        await ctx.send("Ok, setup! I'm all ready to use!")
+        await ctx.send("Please run that command again.")
 
   else:
     print("uncaught")
