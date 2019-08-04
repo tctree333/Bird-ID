@@ -600,14 +600,14 @@ async def userscore(ctx, user=None):
     else:
       await ctx.send("You haven't used this bot yet! (except for this)")
       return
-  embed = discord.Embed(title="User Score:", type="rich", colour=discord.Color.blurple())
-  embed.add_field(name="", value=user + " has answered correctly " + times + " times.")
+  embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+  embed.add_field(name="User Score:", value=user + " has answered correctly " + times + " times.")
   await ctx.send(embed=embed)
 
 @bot.command(brief = "- Top scores", help = "- Top scores, can be between 1 and 5, default is 3", aliases = ["lb"])
 async def leaderboard(ctx, placings = 3):
   print("leaderboard")
-  leaderboard = []
+  leaderboard_list = []
   if database.zcard("users") == 0:
     await ctx.send("There are no users in the database.")
     return
@@ -617,12 +617,14 @@ async def leaderboard(ctx, placings = 3):
   if placings > database.zcard("users"):
     placings = database.zcard("users")
 
-  leaderboard = database.zrevrangebyscore("users", "+inf", "-inf", 0, placings, True)
-  embed = discord.Embed(title="Leaderboard:", type="rich", colour=discord.Color.blurple())
+  leaderboard_list = database.zrevrangebyscore("users", "+inf", "-inf", 0, placings, True)
+  embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+  leaderboard = ""
 
   for x in range(len(leaderboard)):
     print(str(x+1) +". <@"+str(leaderboard[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard[x][1])))
-    embed.add_field(name="", value=str(x+1) +". <@"+str(leaderboard[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard[x][1])))
+    leaderboard += str(x+1) +". <@"+str(leaderboard[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard[x][1]))+"\n"
+  embed.add_field(name="Leaderboard", value=leaderboard)
 
   if database.zscore("users", str(ctx.message.author.id)) != None:
     placement = int(database.zrevrank("users", str(ctx.message.author.id))) + 1
@@ -646,8 +648,8 @@ async def leaderboard(ctx, placings = 3):
 # Test command - for testing purposes only
 @bot.command(help="- test command")
 async def test(ctx):
-  embed = discord.Embed(title="Leaderboard:", type="rich", colour=discord.Color.blurple())
-  embed.add_field(name="", value="<@289965680554672149>")
+  embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+  embed.add_field(name="Test", value="<@289965680554672149>")
   await ctx.send(embed=embed)
 
 ######
