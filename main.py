@@ -588,7 +588,7 @@ async def userscore(ctx, user=None):
       await ctx.send("Mention a user!")
       return
     if database.zscore("users", str(usera)) != None:
-      times = str(database.zscore("users", str(usera)))
+      times = str(int(database.zscore("users", str(usera))))
       user = "<@"+str(usera)+">"
     else:
       await ctx.send("This user does not exist on our records!")
@@ -633,6 +633,8 @@ async def leaderboard(ctx, placings = 3):
   else:
     embed.add_field(name="You:", value="You haven't answered any correctly.")
   
+  print(embed)
+  print(embed.fields)
   await ctx.send(embed=embed)
 
 # clear downloads
