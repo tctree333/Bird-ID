@@ -292,7 +292,7 @@ async def bird(ctx, add_on = ""):
     return
 
   print("bird")
-  print(str(database.lindex(str(ctx.channel.id), 0)))
+  print(str(database.lindex(str(ctx.channel.id), 0)).strip("b").strip("'"))
   print(int(database.lindex(str(ctx.channel.id), 1)))
 
   global prevB
@@ -300,7 +300,6 @@ async def bird(ctx, add_on = ""):
   # check to see if previous bird was answered
   if answered == True: # if yes, give a new bird
     database.lset(str(ctx.channel.id), 1, "0")
-    print(int(database.lindex(str(ctx.channel.id), 1)))
     currentBird = birdList[randint(0,len(birdList)-1)]
     while currentBird == prevB:
       currentBird = birdList[randint(0,len(birdList)-1)]
@@ -309,7 +308,7 @@ async def bird(ctx, add_on = ""):
     print("currentBird: "+str(currentBird))
     await send_bird(ctx, currentBird, error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer. Use `o>hint` for a hint.**", addOn = add_on)
   else: #if no, give the same bird
-    await send_bird(ctx, str(database.lindex(str(ctx.channel.id), 0)), error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**", addOn = add_on)
+    await send_bird(ctx, str(database.lindex(str(ctx.channel.id), 0)).strip("b").strip("'"), error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**", addOn = add_on)
     database.lset(str(ctx.channel.id), 1, "0")
 
 # goatsucker command - no args
@@ -331,7 +330,7 @@ async def goatsucker(ctx):
     print("currentBird: "+str(currentBird))
     await send_bird(ctx, currentBird, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same goatsucker, or `o>skipgoat` to get a new bird. Use `o>checkgoat guess` to check your answer. Use `o>hint` for a hint.**")
   else: #if no, give the same bird
-    await send_bird(ctx, str(database.lindex(str(ctx.channel.id), 5)), message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**")
+    await send_bird(ctx, str(database.lindex(str(ctx.channel.id), 5)).strip("b").strip("'"), message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**")
     database.lset(str(ctx.channel.id), 6, "0")
 
 #picks a random bird call to send
@@ -355,7 +354,7 @@ async def song(ctx):
     await send_birdsong(ctx, currentSongBird, message="*Here you go!* \n**Use `o>song` again to get a new sound of the same bird, or `o>skipsong` to get a new bird. Use `o>checksong guess` to check your answer. Use `o>hintsong` for a hint.**")
     database.lset(str(ctx.channel.id), 3, "0")
   else:
-    await send_birdsong(ctx, str(database.lindex(str(ctx.channel.id), 2)), message="*Here you go!* \n**Use `o>song` again to get a new sound of the same bird, or `o>skipsong` to get a new bird. Use `o>checksong guess` to check your answer. Use `o>hintsong` for a hint.**")
+    await send_birdsong(ctx, str(database.lindex(str(ctx.channel.id), 2)).strip("b").strip("'"), message="*Here you go!* \n**Use `o>song` again to get a new sound of the same bird, or `o>skipsong` to get a new bird. Use `o>checksong guess` to check your answer. Use `o>hintsong` for a hint.**")
     database.lset(str(ctx.channel.id), 3, "0")
 
 # Check command - argument is the guess
@@ -369,7 +368,7 @@ async def check(ctx, *, arg):
   await setup(ctx)
   await userSetup(ctx)
 
-  currentBird = str(database.lindex(str(ctx.channel.id), 0))
+  currentBird = str(database.lindex(str(ctx.channel.id), 0)).strip("b").strip("'")
   if currentBird == "": # no bird
     await ctx.send("You must ask for a bird first!")
   else: #if there is a bird, it checks answer
@@ -409,7 +408,7 @@ async def checkgoat(ctx, *, arg):
   await setup(ctx)
   await userSetup(ctx)
 
-  currentBird = str(database.lindex(str(ctx.channel.id), 5))
+  currentBird = str(database.lindex(str(ctx.channel.id), 5)).strip("b").strip("'")
   if currentBird == "": # no bird
     await ctx.send("You must ask for a bird first!")
   else: #if there is a bird, it checks answer
@@ -446,7 +445,7 @@ async def checksong(ctx, *, arg):
   await setup(ctx)
   await userSetup(ctx)
 
-  currentSongBird = str(database.lindex(str(ctx.channel.id), 2))
+  currentSongBird = str(database.lindex(str(ctx.channel.id), 2)).strip("b").strip("'")
   placeholder = currentSongBird
   if currentSongBird == "": # no bird
     await ctx.send("You must ask for a bird call first!")
@@ -471,7 +470,7 @@ async def skipgoat(ctx):
   await setup(ctx)
   await userSetup(ctx)
 
-  currentBird = str(database.lindex(str(ctx.channel.id), 5))
+  currentBird = str(database.lindex(str(ctx.channel.id), 5)).strip("b").strip("'")
   database.lset(str(ctx.channel.id), 5, "")
   database.lset(str(ctx.channel.id), 6, "1")
   if currentBird != "": #check if there is bird
@@ -488,7 +487,7 @@ async def skip(ctx):
   await setup(ctx)
   await userSetup(ctx)
 
-  currentBird = str(database.lindex(str(ctx.channel.id), 0))
+  currentBird = str(database.lindex(str(ctx.channel.id), 0)).strip("b").strip("'")
   database.lset(str(ctx.channel.id), 0, "")
   database.lset(str(ctx.channel.id), 1, "1")
   if currentBird != "": #check if there is bird
@@ -506,7 +505,7 @@ async def skipsong(ctx):
   await userSetup(ctx)
 
   database.lset(str(ctx.channel.id), 3, "1")
-  currentSongBird = str(database.lindex(str(ctx.channel.id), 2))
+  currentSongBird = str(database.lindex(str(ctx.channel.id), 2)).strip("b").strip("'")
   if currentSongBird != "": #check if there is bird
     birdPage = wikipedia.page(currentSongBird+"(bird)")
     await ctx.send("Ok, skipping " + birdPage.url) #sends wiki page
@@ -520,7 +519,7 @@ async def hint(ctx):
   await setup(ctx)
   await userSetup(ctx)
 
-  currentBird = str(database.lindex(str(ctx.channel.id), 0))
+  currentBird = str(database.lindex(str(ctx.channel.id), 0)).strip("b").strip("'")
   if currentBird != "": #check if there is bird
     await ctx.send("The first letter is " + currentBird[0])
   else:
@@ -533,7 +532,7 @@ async def hintsong(ctx):
   await setup(ctx)
   await userSetup(ctx)
 
-  currentSongBird = str(database.lindex(str(ctx.channel.id), 2))
+  currentSongBird = str(database.lindex(str(ctx.channel.id), 2)).strip("b").strip("'")
   if currentSongBird != "": #check if there is bird
     await ctx.send("The first letter is " + currentSongBird[0])
   else:
