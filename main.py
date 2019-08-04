@@ -628,6 +628,8 @@ async def userscore(ctx, user=None):
 async def leaderboard(ctx, placings = 3):
   global userCount
   leaderboard = []
+  if len(userCount) == 0:
+    await ctx.send("There are no users in the database.")
   if placings > 5 or placings < 1:
     await ctx.send("Not a valid number. Pick one between 1 and 5!")
   for key, value in userCount.items():
