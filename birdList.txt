@@ -40,8 +40,8 @@ California Condor
 Osprey
 Bald Eagle
 Northern Harrier
-Cooper’s Hawk
-Swainson’s Hawk
+Cooper's Hawk
+Swainson's Hawk
 Red-tailed Hawk
 Golden Eagle
 Crested Caracara
@@ -62,9 +62,9 @@ Northern Jacana
 Upland Sandpiper
 Ruddy Turnstone
 Dunlin
-Wilson’s Snipe
+Wilson's Snipe
 American Woodcock
-Wilson’s Phalarope
+Wilson's Phalarope
 Laughing Gull
 California Gull
 Herring Gull
@@ -91,7 +91,7 @@ Barred Owl
 Great Gray Owl
 Long-eared Owl
 Common Pauraque
-Chuck-will’s-widow
+Chuck-will's-widow
 Whip-poor-will
 Chimney Swift
 Blue-throated Hummingbird
@@ -115,9 +115,9 @@ Scissor-tailed Flycatcher
 Loggerhead Shrike
 Warbling Vireo
 Red-eyed Vireo
-Steller’s Jay
+Steller's Jay
 Blue Jay
-Clark’s Nutcracker
+Clark's Nutcracker
 Black-billed Magpie
 American Crow
 Common Raven
@@ -163,7 +163,7 @@ Spotted Towhee
 Black-chinned Sparrow
 Lark Sparrow
 Lark Bunting
-Harris’s Sparrow
+Harris's Sparrow
 White-crowned Sparrow
 Dark-eyed Junco
 Lapland Longspur
