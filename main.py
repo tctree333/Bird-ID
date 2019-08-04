@@ -8,6 +8,7 @@ from google_images_download import google_images_download
 import requests
 import shutil
 import eyed3
+import redis
 
 # Initialize library
 response = google_images_download.googleimagesdownload() 
@@ -30,9 +31,12 @@ totalCorrect = 0
 prevJ = 20 #make sure it sends a diff image
 prevB = "" #make sure it sends a diff bird
 prevS = "" #make sure it sends a diff song
-dictOfServers = {
+
+database = redis.from_url(os.getenv("REDIS_URL"))
+
+#dictOfServers = {
   # "ctx.channel.id" : ["bird","answered","songbird","songanswered", "totalCorrect", "goatsucker", "goatsucker answered"]
-}
+#}
 userCount = {
   #user:[username, #ofcorrect]
 }
@@ -87,8 +91,8 @@ async def on_ready():
 
 # Function to run on error
 def error_skip(ctx):
-  dictOfServers[ctx.channel.id][1] = True
-  dictOfServers[ctx.channel.id][0] = ""
+  database.lset(str(ctx.channel.id), 1, "True")
+  database.lset(str(ctx.channel.id), 0, "")
 
 # Function to send a bird picture:
 # ctx - context for message (discord thing)
@@ -97,14 +101,12 @@ def error_skip(ctx):
 # addOn - string to append to search for female/juvenile birds (str)
 async def send_bird(ctx, bird, on_error=None, message=None, addOn = ""):
   global prevJ
-  global dictOfServers
-
 
   if bird == "":
     print("error - bird is blank")
     await ctx.send("There was an error fetching birds. Please try again.")
-    dictOfServers[ctx.channel.id][0] = ""
-    dictOfServers[ctx.channel.id][1] = False
+    database.lset(str(ctx.channel.id), 0, "")
+    database.lset(str(ctx.channel.id), 1, False)
     if on_error:
       on_error(ctx)
     return
@@ -257,13 +259,13 @@ def spellcheck(worda,wordb):
   else:
     return True
 
-# Command to set up a set of dict values
+# Command to set up database
 async def setup(ctx):
-  global dictOfServers
-  if ctx.channel.id in dictOfServers:
+  if database.exists(str(ctx.channel.id)):
     return
   else:
-    dictOfServers[ctx.channel.id] = ["", True, "", True, 0, "", True]
+    database.delete(str(ctx.channel.id))
+    database.lpush(str(ctx.channel.id), "True", "", "0", "True", "", "True", "")
     await ctx.send("Ok, setup! I'm all ready to use!")
 
 #sets up new user
@@ -283,7 +285,6 @@ async def userSetup(ctx):
 @bot.command(help = '- Sends a random bird image for you to ID', aliases = ["b"], usage="[female|juvenile]") # help text
 @commands.cooldown(1, 10.0, type=commands.BucketType.channel) # 10 second cooldown
 async def bird(ctx, add_on = ""):
-  global dictOfServers
 
   await setup(ctx)
   await userSetup(ctx)
@@ -297,55 +298,53 @@ async def bird(ctx, add_on = ""):
   print("bird")
   global answered
   global prevB
-  answered = dictOfServers[ctx.channel.id][1]
+  answered = bool(database.lindex(str(ctx.channel.id), 1))
   # check to see if previous bird was answered
   if answered == True: # if yes, give a new bird
-    dictOfServers[ctx.channel.id][1] = False
+    database.lset(str(ctx.channel.id), 1, "False")
     currentBird = birdList[randint(0,len(birdList)-1)]
     while currentBird == prevB:
       currentBird = birdList[randint(0,len(birdList)-1)]
     prevB = currentBird
-    dictOfServers[ctx.channel.id][0] = currentBird
+    database.lset(str(ctx.channel.id), 0, str(currentBird))
     print("currentBird: "+str(currentBird))
     await send_bird(ctx, currentBird, error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer. Use `o>hint` for a hint.**", addOn = add_on)
   else: #if no, give the same bird
-    await send_bird(ctx, dictOfServers[ctx.channel.id][0], error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**", addOn = add_on)
-    dictOfServers[ctx.channel.id][1] = False
+    await send_bird(ctx, str(database.lindex(str(ctx.channel.id), 0)), error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**", addOn = add_on)
+    database.lset(str(ctx.channel.id), 1, "False")
 
 # goatsucker command - no args
 @bot.command(help = '- Sends a random goatsucker to ID', aliases = ["gs"]) # help text
 @commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 5 second cooldown
 async def goatsucker(ctx):
-  global dictOfServers
 
   await setup(ctx)
   await userSetup(ctx)
   
   print("goatsucker")
   goatsuckers = ["Common Pauraque","Chuck-will's-widow","Whip-poor-will"]
-  answered = dictOfServers[ctx.channel.id][6]
+  answered = bool(database.lindex(str(ctx.channel.id), 6))
   # check to see if previous bird was answered
   if answered == True: # if yes, give a new bird
-    dictOfServers[ctx.channel.id][6] = False
+    database.lset(str(ctx.channel.id), 6, "False")
     currentBird = goatsuckers[randint(0,2)]
-    dictOfServers[ctx.channel.id][5] = currentBird
+    database.lset(str(ctx.channel.id), 5, str(currentBird))
     print("currentBird: "+str(currentBird))
     await send_bird(ctx, currentBird, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same goatsucker, or `o>skipgoat` to get a new bird. Use `o>checkgoat guess` to check your answer. Use `o>hint` for a hint.**")
   else: #if no, give the same bird
-    await send_bird(ctx, dictOfServers[ctx.channel.id][5], message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**")
-    dictOfServers[ctx.channel.id][6] = False
+    await send_bird(ctx, str(database.lindex(str(ctx.channel.id), 5)), message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**")
+    database.lset(str(ctx.channel.id), 6, "False")
 
 #picks a random bird call to send
 @bot.command(help = "- Sends a bird call to ID")
 @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
 async def song(ctx):
-  global dictOfServers
   await setup(ctx)
   await userSetup(ctx)
 
   global songAnswered
   print("song")
-  songAnswered = dictOfServers[ctx.channel.id][3]
+  songAnswered = bool(database.lindex(str(ctx.channel.id), 3))
   # check to see if previous bird was answered
   if songAnswered == True: # if yes, give a new bird
     global currentSongBird
@@ -353,40 +352,38 @@ async def song(ctx):
     currentSongBird = songBirds[v]
     while currentSongBird == prevS:
       currentSongBird = songBirds[randint(0,len(songBirds)-1)]
-    dictOfServers[ctx.channel.id][2] = currentSongBird
+    database.lset(str(ctx.channel.id), 2, str(currentSongBird))
     print("currentSongBird: "+str(currentSongBird))
     await send_birdsong(ctx, currentSongBird, message="*Here you go!* \n**Use `o>song` again to get a new sound of the same bird, or `o>skipsong` to get a new bird. Use `o>checksong guess` to check your answer. Use `o>hintsong` for a hint.**")
-    dictOfServers[ctx.channel.id][3] = False
+    database.lset(str(ctx.channel.id), 3, "False")
   else:
-    await send_birdsong(ctx, dictOfServers[ctx.channel.id][2], message="*Here you go!* \n**Use `o>song` again to get a new sound of the same bird, or `o>skipsong` to get a new bird. Use `o>checksong guess` to check your answer. Use `o>hintsong` for a hint.**")
-    dictOfServers[ctx.channel.id][3] = False
+    await send_birdsong(ctx, str(database.lindex(str(ctx.channel.id), 2)), message="*Here you go!* \n**Use `o>song` again to get a new sound of the same bird, or `o>skipsong` to get a new bird. Use `o>checksong guess` to check your answer. Use `o>hintsong` for a hint.**")
+    database.lset(str(ctx.channel.id), 3, "False")
 
 # Check command - argument is the guess
 @bot.command(help='- Checks your answer.', usage="guess", aliases=["guess","c"])
 @commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 3 second cooldown
 async def check(ctx, *, arg):
   print("check")
-  global dictOfServers
   global userCount
   global achievement
 
   await setup(ctx)
   await userSetup(ctx)
 
-  totalCorrect = dictOfServers[ctx.channel.id][4]
-  currentBird = dictOfServers[ctx.channel.id][0]
+  currentBird = str(database.lindex(str(ctx.channel.id), 0))
   if currentBird == "": # no bird
     await ctx.send("You must ask for a bird first!")
   else: #if there is a bird, it checks answer
     index = birdList.index(currentBird)
     sciBird = sciBirdList[index]
-    dictOfServers[ctx.channel.id][1] = True
-    dictOfServers[ctx.channel.id][0] = ""
+    database.lset(str(ctx.channel.id), 0, "")
+    database.lset(str(ctx.channel.id), 1, "True")
     if spellcheck(arg.lower().replace("-"," "),currentBird.lower().replace("-"," "))== True:
       await ctx.send("Correct! Good job!")
       page = wikipedia.page(sciBird)
       await ctx.send(page.url)
-      dictOfServers[ctx.channel.id][4] += 1
+      database.lset(str(ctx.channel.id), 4, str(int(database.lindex(str(ctx.channel.id), 4))+1))
       userCount[ctx.message.author.id][1] += 1
       if userCount[ctx.message.author.id][1]in achievement:
         number = str(userCount[ctx.message.author.id][1])
@@ -408,27 +405,25 @@ async def check(ctx, *, arg):
 @commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 3 second cooldown
 async def checkgoat(ctx, *, arg):
   print("checkgoat")
-  global dictOfServers
   global userCount
   global achievement
 
   await setup(ctx)
   await userSetup(ctx)
 
-  totalCorrect = dictOfServers[ctx.channel.id][4]
-  currentBird = dictOfServers[ctx.channel.id][5]
+  currentBird = str(database.lindex(str(ctx.channel.id), 5))
   if currentBird == "": # no bird
     await ctx.send("You must ask for a bird first!")
   else: #if there is a bird, it checks answer
     index = birdList.index(currentBird)
     sciBird = sciBirdList[index]
-    dictOfServers[ctx.channel.id][6] = True
-    dictOfServers[ctx.channel.id][5] = ""
+    database.lset(str(ctx.channel.id), 6, "True")
+    database.lset(str(ctx.channel.id), 5, "")
     if spellcheck(arg.lower().replace("-"," "),currentBird.lower().replace("-"," "))== True:
       await ctx.send("Correct! Good job!")
       page = wikipedia.page(sciBird)
       await ctx.send(page.url)
-      dictOfServers[ctx.channel.id][4] += 1
+      database.lset(str(ctx.channel.id), 4, str(int(database.lindex(str(ctx.channel.id), 4))+1))
       userCount[ctx.message.author.id][1] += 1
       if userCount[ctx.message.author.id][1]in achievement:
         number = str(userCount[ctx.message.author.id][1])
@@ -450,25 +445,22 @@ async def checkgoat(ctx, *, arg):
 @commands.cooldown(1,10.0, type=commands.BucketType.channel)
 async def checksong(ctx, *, arg):
   print("checksong")
-  global dictOfServers
   await setup(ctx)
   await userSetup(ctx)
 
-  currentSongBird = dictOfServers[ctx.channel.id][2]
+  currentSongBird = str(database.lindex(str(ctx.channel.id), 2))
   placeholder = currentSongBird
   if currentSongBird == "": # no bird
     await ctx.send("You must ask for a bird call first!")
   else: #if there is a bird, it checks answer
-    dictOfServers[ctx.channel.id][2] = ""
-    dictOfServers[ctx.channel.id][3] = True
+    database.lset(str(ctx.channel.id), 2, "")
+    database.lset(str(ctx.channel.id), 3, "True")
     if spellcheck(arg.lower().replace("-"," "),currentSongBird.lower().replace("-"," "))== True:
       await ctx.send("Correct! Good job!")
     else:
       await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
     print("currentSongBird: "+str(currentSongBird.lower().replace("-"," ").strip('(bird)')))
     print("args: "+str(arg.lower().replace("-"," ")))
-    dictOfServers[ctx.channel.id][2] = ""
-    dictOfServers[ctx.channel.id][3] = True
     #send wikipedia page
     page = wikipedia.page(placeholder+"(bird)")
     await ctx.send(page.url)
@@ -478,13 +470,12 @@ async def checksong(ctx, *, arg):
 @commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 3 second cooldown
 async def skipgoat(ctx):
   print("skipgoat")
-  global dictOfServers
   await setup(ctx)
   await userSetup(ctx)
 
-  currentBird = dictOfServers[ctx.channel.id][5]
-  dictOfServers[ctx.channel.id][6] = True
-  dictOfServers[ctx.channel.id][5] = ""
+  currentBird = str(database.lindex(str(ctx.channel.id), 5))
+  database.lset(str(ctx.channel.id), 5, "")
+  database.lset(str(ctx.channel.id), 6, "True")
   if currentBird != "": #check if there is bird
     birdPage = wikipedia.page(currentBird+"(bird)")
     await ctx.send("Ok, skipping " + birdPage.url) #sends wiki page
@@ -496,13 +487,12 @@ async def skipgoat(ctx):
 @commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 3 second cooldown
 async def skip(ctx):
   print("skip")
-  global dictOfServers
   await setup(ctx)
   await userSetup(ctx)
 
-  currentBird = dictOfServers[ctx.channel.id][0]
-  dictOfServers[ctx.channel.id][1] = True
-  dictOfServers[ctx.channel.id][0] = ""
+  currentBird = str(database.lindex(str(ctx.channel.id), 0))
+  database.lset(str(ctx.channel.id), 0, "")
+  database.lset(str(ctx.channel.id), 1, "True")
   if currentBird != "": #check if there is bird
     birdPage = wikipedia.page(currentBird+"(bird)")
     await ctx.send("Ok, skipping " + birdPage.url) #sends wiki page
@@ -514,12 +504,11 @@ async def skip(ctx):
 @commands.cooldown(1, 10.0, type=commands.BucketType.channel) # 3 second cooldown
 async def skipsong(ctx):
   print("skip")
-  global dictOfServers
   await setup(ctx)
   await userSetup(ctx)
 
-  dictOfServers[ctx.channel.id][3] = True
-  currentSongBird = dictOfServers[ctx.channel.id][2]
+  database.lset(str(ctx.channel.id), 3, "True")
+  currentSongBird = str(database.lindex(str(ctx.channel.id), 2))
   if currentSongBird != "": #check if there is bird
     birdPage = wikipedia.page(currentSongBird+"(bird)")
     await ctx.send("Ok, skipping " + birdPage.url) #sends wiki page
@@ -530,11 +519,10 @@ async def skipsong(ctx):
 @bot.command(help="- Gives first letter of current bird", aliases = ["h"])
 @commands.cooldown(1, 3.0, type=commands.BucketType.channel) # 3 second cooldown
 async def hint(ctx):
-  global dictOfServers
   await setup(ctx)
   await userSetup(ctx)
 
-  currentBird = dictOfServers[ctx.channel.id][0]
+  currentBird = str(database.lindex(str(ctx.channel.id), 0))
   if currentBird != "": #check if there is bird
     await ctx.send("The first letter is " + currentBird[0])
   else:
@@ -544,11 +532,10 @@ async def hint(ctx):
 @bot.command(help="- Gives first letter of current bird call", aliases = ["songhint","hs","sh"])
 @commands.cooldown(1, 3.0, type=commands.BucketType.channel) # 3 second cooldown
 async def hintsong(ctx):
-  global dictOfServers
   await setup(ctx)
   await userSetup(ctx)
 
-  currentSongBird = dictOfServers[ctx.channel.id][2]
+  currentSongBird = str(database.lindex(str(ctx.channel.id), 2))
   if currentSongBird != "": #check if there is bird
     await ctx.send("The first letter is " + currentSongBird[0])
   else:
@@ -583,11 +570,10 @@ async def wiki(ctx, *, arg):
 @bot.command(help = "- total correct answers")
 @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
 async def score(ctx):
-  global dictOfServers
   await setup(ctx)
   await userSetup(ctx)
 
-  totalCorrect = dictOfServers[ctx.channel.id][4]
+  totalCorrect = int(database.lindex(str(ctx.channel.id), 4))
   await ctx.send("Wow, looks like a total of " + str(totalCorrect) + " birds have been answered correctly in this channel! Good job everyone!")
 
 # meme command - sends a random bird video/gif
@@ -707,11 +693,12 @@ async def on_command_error(ctx, error):
     pass
 
   elif isinstance(error, commands.CommandInvokeError):
-    if isinstance(error.original, KeyError):
-      if ctx.channel.id in dictOfServers:
-        await ctx.send("**An unexpected KeyError has occurred.** \n*Please log this message in #feedback* \n**Error:** " + str(error))
+    if isinstance(error.original, redis.exceptions.ResponseError()):
+      if database.exists(str(ctx.channel.id)):
+        await ctx.send("**An unexpected ResponseError has occurred.** \n*Please log this message in #feedback* \n**Error:** " + str(error))
       else:
-        dictOfServers[ctx.channel.id] = ["", True, "", True, 0]
+        database.delete(str(ctx.channel.id))
+        database.lpush(str(ctx.channel.id), "True", "", "0", "True", "", "True", "")
         await ctx.send("Ok, setup! I'm all ready to use!")
         await ctx.send("Please run that command again.")
     else:

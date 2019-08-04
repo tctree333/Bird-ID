@@ -4,3 +4,4 @@ google_images_download
 requests
 flask
 eyeD3
+redis
