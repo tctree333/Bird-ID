@@ -630,8 +630,10 @@ async def leaderboard(ctx, placings = 3):
   leaderboard = []
   if len(userCount) == 0:
     await ctx.send("There are no users in the database.")
+    return
   if placings > 5 or placings < 1:
     await ctx.send("Not a valid number. Pick one between 1 and 5!")
+    return
   for key, value in userCount.items():
     leaderboard.append([value[1],value[0]])
     leaderboard.sort(reverse = True)
