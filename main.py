@@ -601,7 +601,7 @@ async def userscore(ctx, user=None):
       await ctx.send("You haven't used this bot yet! (except for this)")
       return
   embed = discord.Embed(title="User Score:", type="rich", colour=discord.Color.blurple())
-  embed.add_field(value=user + " has answered correctly " + times + " times.")
+  embed.add_field(name="", value=user + " has answered correctly " + times + " times.")
   await ctx.send(embed=embed)
 
 @bot.command(brief = "- Top scores", help = "- Top scores, can be between 1 and 5, default is 3", aliases = ["lb"])
@@ -622,14 +622,14 @@ async def leaderboard(ctx, placings = 3):
 
   for x in range(len(leaderboard)):
     print(str(x+1) +". <@"+str(leaderboard[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard[x][1])))
-    embed.add_field(value=str(x+1) +". <@"+str(leaderboard[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard[x][1])))
+    embed.add_field(name="", value=str(x+1) +". <@"+str(leaderboard[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard[x][1])))
 
   if database.zscore("users", str(ctx.message.author.id)) != None:
     placement = int(database.zrevrank("users", str(ctx.message.author.id))) + 1
     print(placement)
-    embed.add_field(title="You:", value="You are #"+str(placement)+" on the leaderboard.")
+    embed.add_field(name="You:", value="You are #"+str(placement)+" on the leaderboard.")
   else:
-    embed.add_field(title="You:", value="You haven't answered any correctly.")
+    embed.add_field(name="You:", value="You haven't answered any correctly.")
   
   ctx.send(embed=embed)
 
@@ -648,7 +648,7 @@ async def leaderboard(ctx, placings = 3):
 async def test(ctx):
   embed = discord.Embed(title="Leaderboard:", type="rich", colour=discord.Color.blurple())
   embed.add_field(value="<@289965680554672149>")
-  await ctx.send(embed=embed)
+  await ctx.send(name="", embed=embed)
 
 ######
 # ERROR CHECKING
