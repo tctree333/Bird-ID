@@ -677,12 +677,18 @@ async def test(ctx):
 # ERROR CHECKING
 ######
 
+## Custom Error Definitions
+class LeaderBoardError(Exception):
+  pass
+
 ## Command-specific error checking
+
 @leaderboard.error
 async def leader_error(ctx, error):
   print("leaderboard error")
   if isinstance(error, commands.BadArgument):
     await ctx.send('Not an integer!', delete_after=5.0)
+    raise LeaderBoardError
 
 ## Global error checking
 @bot.event
@@ -697,6 +703,9 @@ async def on_command_error(ctx, error):
   elif isinstance(error, commands.MissingRequiredArgument):
     await ctx.send("This command requires an argument!")
   
+  elif isinstance(error, LeaderBoardError):
+    pass
+
   elif isinstance(error, commands.CommandInvokeError):
     if isinstance(error.original, KeyError):
       if ctx.channel.id in dictOfServers:
