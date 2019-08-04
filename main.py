@@ -31,11 +31,11 @@ prevS = "" #make sure it sends a diff song
 
 database = redis.from_url(os.getenv("REDIS_URL"))
 
-#dictOfServers = {
+#server format = {
   # "ctx.channel.id" : ["bird","answered","songbird","songanswered", "totalCorrect", "goatsucker", "goatsucker answered"]
 #}
-#userCount = {
-  #user:[username, #ofcorrect]
+#user format = {
+  #user:[userid, #ofcorrect]
 #}
 
 # Converts txt file of birds into list
@@ -393,7 +393,6 @@ async def check(ctx, *, arg):
       await ctx.send(page.url)
     print("currentBird: "+str(currentBird.lower().replace("-"," ")))
     print("args: "+str(arg.lower().replace("-"," ")))
-    #send wikipedia page
 
 # Check command - argument is the guess
 @bot.command(help='- Checks your goatsucker.', usage="guess", aliases=["cg"])
@@ -422,7 +421,7 @@ async def checkgoat(ctx, *, arg):
       if int(database.zscore("users", str(ctx.message.author.id))) in achievement:
         number = database.zscore("users", str(ctx.message.author.id))
         await ctx.send("Wow! You have answered "+number+" birds correctly!")
-        filename = '/home/runner/downloads/achievements/'+ number +".PNG"
+        filename = 'achievements/'+ number +".PNG"
         with open(filename,'rb') as img:
           await ctx.send(file=discord.File(img, filename="award.png"))
 
@@ -432,32 +431,44 @@ async def checkgoat(ctx, *, arg):
       await ctx.send(page.url)
     print("currentBird: "+str(currentBird.lower().replace("-"," ")))
     print("args: "+str(arg.lower().replace("-"," ")))
-    #send wikipedia page
 
-#checks the song
+# Check command - argument is the guess
 @bot.command(help = '- Checks the song', aliases=["songcheck","cs","sc"])
-@commands.cooldown(1,10.0, type=commands.BucketType.channel)
+@commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 3 second cooldown
 async def checksong(ctx, *, arg):
   print("checksong")
+  global achievement
+
   await setup(ctx)
   await userSetup(ctx)
 
   currentSongBird = str(database.lindex(str(ctx.channel.id), 2)).strip("b").strip("'")
-  placeholder = currentSongBird
   if currentSongBird == "": # no bird
     await ctx.send("You must ask for a bird call first!")
   else: #if there is a bird, it checks answer
+    index = songBirds.index(currentBird)
+    sciBird = sciSongBirds[index]
     database.lset(str(ctx.channel.id), 2, "")
     database.lset(str(ctx.channel.id), 3, "1")
     if spellcheck(arg.lower().replace("-"," "),currentSongBird.lower().replace("-"," "))== True:
       await ctx.send("Correct! Good job!")
+      page = wikipedia.page(sciBird)
+      await ctx.send(page.url)
+      database.lset(str(ctx.channel.id), 4, str(int(database.lindex(str(ctx.channel.id), 4))+1))
+      database.zincrby("users", 1, str(ctx.message.author.id))
+      if int(database.zscore("users", str(ctx.message.author.id))) in achievement:
+        number = database.zscore("users", str(ctx.message.author.id))
+        await ctx.send("Wow! You have answered "+number+" birds correctly!")
+        filename = 'achievements/'+ number +".PNG"
+        with open(filename,'rb') as img:
+          await ctx.send(file=discord.File(img, filename="award.png"))
+
     else:
       await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
-    print("currentSongBird: "+str(currentSongBird.lower().replace("-"," ").strip('(bird)')))
+      page = wikipedia.page(sciBird)
+      await ctx.send(page.url)
+    print("currentBird: "+str(currentSongBird.lower().replace("-"," ")))
     print("args: "+str(arg.lower().replace("-"," ")))
-    #send wikipedia page
-    page = wikipedia.page(placeholder+"(bird)")
-    await ctx.send(page.url)
 
 # Skip command - no args
 @bot.command(help="- Skip the current goatsucker to get a new one", aliases = ["sg"])
@@ -622,13 +633,11 @@ async def leaderboard(ctx, placings = 3):
   leaderboard = ""
 
   for x in range(len(leaderboard_list)):
-    print(str(x+1) +". <@"+str(leaderboard_list[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard_list[x][1])))
     leaderboard += str(x+1) +". <@"+str(leaderboard_list[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard_list[x][1]))+"\n"
   embed.add_field(name="Leaderboard", value=leaderboard)
 
   if database.zscore("users", str(ctx.message.author.id)) != None:
     placement = int(database.zrevrank("users", str(ctx.message.author.id))) + 1
-    print(placement)
     embed.add_field(name="You:", value="You are #"+str(placement)+" on the leaderboard.")
   else:
     embed.add_field(name="You:", value="You haven't answered any correctly.")
