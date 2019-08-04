@@ -648,7 +648,7 @@ async def leaderboard(ctx, placings = 3):
 async def test(ctx):
   embed = discord.Embed(title="Leaderboard:", type="rich", colour=discord.Color.blurple())
   embed.add_field(name="Leaderboard", value="<@289965680554672149>")
-  ctx.send(embed=embed)
+  await ctx.send(embed=embed)
 
 ######
 # ERROR CHECKING
