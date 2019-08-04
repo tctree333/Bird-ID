@@ -113,11 +113,15 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn = ""):
   # trigger "typing" discord message
   await ctx.trigger_typing()
 
-  sciBird = bird
+  if bird in birdList:
+    index = birdList.index(bird)
+    sciBird = sciBirdList[index]
+  else:
+    sciBird = bird
 
   #creating list of arguments
   print("scibird: "+str(sciBird))
-  arguments = {"keywords":sciBird + str(addOn),"limit":5,"print_urls":True}   
+  arguments = {"keywords":sciBird + str(addOn),"limit":15,"print_urls":True}   
   #passing the arguments to the function
   paths = response.download(arguments)
   print("paths: "+str(paths))
