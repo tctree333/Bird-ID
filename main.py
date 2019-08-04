@@ -621,9 +621,9 @@ async def leaderboard(ctx, placings = 3):
   embed = discord.Embed(type="rich", colour=discord.Color.blurple())
   leaderboard = ""
 
-  for x in range(len(leaderboard)):
-    print(str(x+1) +". <@"+str(leaderboard[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard[x][1])))
-    leaderboard += str(x+1) +". <@"+str(leaderboard[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard[x][1]))+"\n"
+  for x in range(len(leaderboard_list)):
+    print(str(x+1) +". <@"+str(leaderboard_list[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard_list[x][1])))
+    leaderboard += str(x+1) +". <@"+str(leaderboard_list[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard_list[x][1]))+"\n"
   embed.add_field(name="Leaderboard", value=leaderboard)
 
   if database.zscore("users", str(ctx.message.author.id)) != None:
@@ -632,9 +632,7 @@ async def leaderboard(ctx, placings = 3):
     embed.add_field(name="You:", value="You are #"+str(placement)+" on the leaderboard.")
   else:
     embed.add_field(name="You:", value="You haven't answered any correctly.")
-  
-  print(embed)
-  print(embed.fields)
+
   await ctx.send(embed=embed)
 
 # clear downloads
