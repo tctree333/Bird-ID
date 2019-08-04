@@ -106,7 +106,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn = ""):
     print("error - bird is blank")
     await ctx.send("There was an error fetching birds. Please try again.")
     database.lset(str(ctx.channel.id), 0, "")
-    database.lset(str(ctx.channel.id), 1, False)
+    database.lset(str(ctx.channel.id), 1, "False")
     if on_error:
       on_error(ctx)
     return
@@ -264,7 +264,6 @@ async def setup(ctx):
   if database.exists(str(ctx.channel.id)):
     return
   else:
-    database.delete(str(ctx.channel.id))
     database.lpush(str(ctx.channel.id), "True", "", "0", "True", "", "True", "")
     await ctx.send("Ok, setup! I'm all ready to use!")
 
@@ -296,6 +295,8 @@ async def bird(ctx, add_on = ""):
     return
 
   print("bird")
+  print(str(database.lindex(str(ctx.channel.id), 0)))
+  print(bool(database.lindex(str(ctx.channel.id), 1)))
   global answered
   global prevB
   answered = bool(database.lindex(str(ctx.channel.id), 1))
