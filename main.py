@@ -691,7 +691,7 @@ async def on_command_error(ctx, error):
     pass
 
   elif isinstance(error, commands.CommandInvokeError):
-    if isinstance(error.original, redis.exceptions.ResponseError()):
+    if isinstance(error.original, redis.exceptions.ResponseError):
       if database.exists(str(ctx.channel.id)):
         await ctx.send("**An unexpected ResponseError has occurred.** \n*Please log this message in #feedback* \n**Error:** " + str(error))
       else:
