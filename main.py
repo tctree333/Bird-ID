@@ -683,10 +683,14 @@ async def on_command_error(ctx, error):
         dictOfServers[ctx.channel.id] = ["", True, "", True, 0]
         await ctx.send("Ok, setup! I'm all ready to use!")
         await ctx.send("Please run that command again.")
+    else:
+      print("uncaught command error")
+      await ctx.send("**An uncaught error has occurred.** \n*Please log this message in #feedback.* \n**Error:**  " + str(error))
+      raise error
 
   else:
-    print("uncaught")
-    await ctx.send("**An uncaught error has occurred.** \n*Please log this message in #feedback.* \n**Error:**  " + str(error))
+    print("uncaught non-command")
+    await ctx.send("**An uncaught non-command error has occurred.** \n*Please log this message in #feedback.* \n**Error:**  " + str(error))
     raise error
 
 ## Command-specific error checking
