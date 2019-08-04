@@ -677,12 +677,19 @@ async def test(ctx):
 # ERROR CHECKING
 ######
 
+## Command-specific error checking
+@leaderboard.error
+async def leader_error(ctx, error):
+  print("leaderboard error")
+  if isinstance(error, commands.BadArgument):
+    await ctx.send('Not an integer!', delete_after=5.0)
+
 ## Global error checking
 @bot.event
 async def on_command_error(ctx, error):
   print("Error: "+str(error))
   if isinstance(error, commands.CommandOnCooldown): # send cooldown
-    await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.", delete_after=3.0)
+    await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.", delete_after=5.0)
   
   elif isinstance(error, commands.CommandNotFound):
     await ctx.send("Sorry, the command was not found.")
@@ -707,12 +714,6 @@ async def on_command_error(ctx, error):
     print("uncaught non-command")
     await ctx.send("**An uncaught non-command error has occurred.** \n*Please log this message in #feedback.* \n**Error:**  " + str(error))
     raise error
-
-## Command-specific error checking
-@leaderboard.error
-async def leader_error(ctx, error):
-  if isinstance(error, commands.BadArgument):
-    await ctx.send('Not an integer!', delete_after=3.0)
 
 
 # Actually run the bot
