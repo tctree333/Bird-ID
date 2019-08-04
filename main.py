@@ -634,6 +634,8 @@ async def leaderboard(ctx, placings = 3):
   if placings > 5 or placings < 1:
     await ctx.send("Not a valid number. Pick one between 1 and 5!")
     return
+  if placings > len(userCount):
+    placings = len(userCount)
   for key, value in userCount.items():
     leaderboard.append([value[1],value[0]])
     leaderboard.sort(reverse = True)
@@ -641,6 +643,15 @@ async def leaderboard(ctx, placings = 3):
     
   for i in range(placings):
     await ctx.send( str(i+1) +". "+str(leaderboard[i][1])+" - "+str(leaderboard[i][0]))
+
+  try:
+    user = str(ctx.message.author)
+    placement = leaderboard.index([userCount[ctx.message.author.id][1], str(ctx.message.author)]) + 1
+    print(placement)
+    await ctx.send("You are #"+str(placement)+" on the leaderboard.")
+  except:
+    await ctx.send("You haven't answered any correctly.")
+    return
 
 # clear downloads
 #@bot.command(help="- clears the downloaded images")
