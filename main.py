@@ -588,7 +588,7 @@ async def userscore(ctx, user=None):
       await ctx.send("Mention a user!")
       return
     if database.zscore("users", str(usera)) != None:
-      times = database.zscore("users", str(usera))
+      times = str(database.zscore("users", str(usera)))
       user = "<@"+str(usera)+">"
     else:
       await ctx.send("This user does not exist on our records!")
@@ -596,7 +596,7 @@ async def userscore(ctx, user=None):
   else:
     if database.zscore("users", str(ctx.message.author.id)) != None:
       user = "<@"+str(ctx.message.author.id)+">"
-      times = database.zscore("users", str(ctx.message.author.id))
+      times = str(database.zscore("users", str(ctx.message.author.id)))
     else:
       await ctx.send("You haven't used this bot yet! (except for this)")
       return
@@ -647,8 +647,8 @@ async def leaderboard(ctx, placings = 3):
 @bot.command(help="- test command")
 async def test(ctx):
   embed = discord.Embed(title="Leaderboard:", type="rich", colour=discord.Color.blurple())
-  embed.add_field(value="<@289965680554672149>")
-  await ctx.send(name="", embed=embed)
+  embed.add_field(name="", value="<@289965680554672149>")
+  await ctx.send(embed=embed)
 
 ######
 # ERROR CHECKING
