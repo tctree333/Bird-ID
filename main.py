@@ -303,6 +303,7 @@ async def bird(ctx, add_on = ""):
   # check to see if previous bird was answered
   if answered == True: # if yes, give a new bird
     database.lset(str(ctx.channel.id), 1, "False")
+    print(bool(database.lindex(str(ctx.channel.id), 1)))
     currentBird = birdList[randint(0,len(birdList)-1)]
     while currentBird == prevB:
       currentBird = birdList[randint(0,len(birdList)-1)]
