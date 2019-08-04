@@ -7,6 +7,7 @@ from discord.ext import commands
 from google_images_download import google_images_download
 import requests
 import shutil
+import eyed3
 
 # Initialize library
 response = google_images_download.googleimagesdownload() 
@@ -16,6 +17,9 @@ bot = commands.Bot(command_prefix=['b!','b.','b#'], case_insensitive = True, des
 
 # Valid file types
 valid_extensions = ["jpg", "png", "jpeg"]
+
+#achievement values
+achievement = [10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 690]
 
 # Setup Variables
 currentBird = ""
@@ -27,7 +31,7 @@ prevJ = 20 #make sure it sends a diff image
 prevB = "" #make sure it sends a diff bird
 prevS = "" #make sure it sends a diff song
 dictOfServers = {
-  # "ctx.channel.id" : ["bird","answered","songbird","songanswered", "totalCorrect"]
+  # "ctx.channel.id" : ["bird","answered","songbird","songanswered", "totalCorrect", "goatsucker", "goatsucker answered"]
 }
 userCount = {
   #user:[username, #ofcorrect]
@@ -109,14 +113,11 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn = ""):
   # trigger "typing" discord message
   await ctx.trigger_typing()
 
-  if bird in birdList:
-    index = birdList.index(bird)
-    sciBird = sciBirdList[index]
-  else:
-    sciBird = bird
+  sciBird = bird
+
   #creating list of arguments
   print("scibird: "+str(sciBird))
-  arguments = {"keywords":sciBird + str(addOn),"limit":15,"print_urls":True}   
+  arguments = {"keywords":sciBird + str(addOn),"limit":5,"print_urls":True}   
   #passing the arguments to the function
   paths = response.download(arguments)
   print("paths: "+str(paths))
@@ -152,7 +153,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn = ""):
 
   # clear downloads
   try:
-    shutil.rmtree(r'/home/runner/downloads')
+    shutil.rmtree(r'downloads/')
     print("Cleared downloads.")
   except FileNotFoundError:
     print("Already cleared.")
@@ -194,6 +195,10 @@ async def send_birdsong(ctx, bird, message = None):
 
         # send sounds
         with open("birdsong.mp3",'rb') as song:
+          audioFile = eyed3.load("birdsong.mp3")
+          audioFile.tag.title = u"Birb noises"
+          audioFile.tag.comment = u"Birb noises"
+          audioFile.tag.save()
           if message:
             await ctx.send(message)
             await ctx.send(file=discord.File(song, filename="bird.mp3")) # change filename to avoid spoilers
@@ -254,7 +259,7 @@ async def setup(ctx):
   if ctx.channel.id in dictOfServers:
     return
   else:
-    dictOfServers[ctx.channel.id] = ["", True, "", True, 0]
+    dictOfServers[ctx.channel.id] = ["", True, "", True, 0, "", True]
     await ctx.send("Ok, setup! I'm all ready to use!")
 
 #sets up new user
@@ -272,12 +277,18 @@ async def userSetup(ctx):
 
 # Bird command - no args
 @bot.command(help = '- Sends a random bird image for you to ID', aliases = ["b"], usage="[female|juvenile]") # help text
-@commands.cooldown(1, 10.0, type=commands.BucketType.channel) # 5 second cooldown
+@commands.cooldown(1, 10.0, type=commands.BucketType.channel) # 10 second cooldown
 async def bird(ctx, add_on = ""):
   global dictOfServers
 
   await setup(ctx)
   await userSetup(ctx)
+
+  if (add_on == "female" or add_on == "juvenile")or add_on == "":
+    pass
+  else:
+    await ctx.send("This command only takes female, juvenile, or nothing!")
+    return
 
   print("bird")
   global answered
@@ -296,6 +307,29 @@ async def bird(ctx, add_on = ""):
   else: #if no, give the same bird
     await send_bird(ctx, dictOfServers[ctx.channel.id][0], error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**", addOn = add_on)
     dictOfServers[ctx.channel.id][1] = False
+
+# goatsucker command - no args
+@bot.command(help = '- Sends a random goatsucker to ID', aliases = ["gs"]) # help text
+@commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 5 second cooldown
+async def goatsucker(ctx):
+  global dictOfServers
+
+  await setup(ctx)
+  await userSetup(ctx)
+  
+  print("goatsucker")
+  goatsuckers = ["Common Pauraque","Chuck-will's-widow","Whip-poor-will"]
+  answered = dictOfServers[ctx.channel.id][6]
+  # check to see if previous bird was answered
+  if answered == True: # if yes, give a new bird
+    dictOfServers[ctx.channel.id][6] = False
+    currentBird = goatsuckers[randint(0,2)]
+    dictOfServers[ctx.channel.id][5] = currentBird
+    print("currentBird: "+str(currentBird))
+    await send_bird(ctx, currentBird, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same goatsucker, or `o>skipgoat` to get a new bird. Use `o>checkgoat guess` to check your answer. Use `o>hint` for a hint.**")
+  else: #if no, give the same bird
+    await send_bird(ctx, dictOfServers[ctx.channel.id][5], message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**")
+    dictOfServers[ctx.channel.id][6] = False
 
 #picks a random bird call to send
 @bot.command(help = "- Sends a bird call to ID")
@@ -330,6 +364,8 @@ async def check(ctx, *, arg):
   print("check")
   global dictOfServers
   global userCount
+  global achievement
+
   await setup(ctx)
   await userSetup(ctx)
 
@@ -340,19 +376,70 @@ async def check(ctx, *, arg):
   else: #if there is a bird, it checks answer
     index = birdList.index(currentBird)
     sciBird = sciBirdList[index]
-    if spellcheck(arg.lower().replace("-"," "),currentBird.lower().replace("-"," "))== True:
-      await ctx.send("Correct! Good job!")
-      dictOfServers[ctx.channel.id][4] += 1
-      userCount[ctx.message.author.id][1] += 1
-    else:
-      await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
-    print("currentBird: "+str(currentBird.lower().replace("-"," ")))
-    print("args: "+str(arg.lower().replace("-"," ")))
     dictOfServers[ctx.channel.id][1] = True
     dictOfServers[ctx.channel.id][0] = ""
+    if spellcheck(arg.lower().replace("-"," "),currentBird.lower().replace("-"," "))== True:
+      await ctx.send("Correct! Good job!")
+      page = wikipedia.page(sciBird)
+      await ctx.send(page.url)
+      dictOfServers[ctx.channel.id][4] += 1
+      userCount[ctx.message.author.id][1] += 1
+      if userCount[ctx.message.author.id][1]in achievement:
+        number = str(userCount[ctx.message.author.id][1])
+        await ctx.send("Wow! You have answered "+number+" birds correctly!")
+        filename = 'achievements/'+ number +".PNG"
+        with open(filename,'rb') as img:
+          await ctx.send(file=discord.File(img, filename="award.png"))
+
+    else:
+      await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
+      page = wikipedia.page(sciBird)
+      await ctx.send(page.url)
+    print("currentBird: "+str(currentBird.lower().replace("-"," ")))
+    print("args: "+str(arg.lower().replace("-"," ")))
     #send wikipedia page
-    page = wikipedia.page(sciBird)
-    await ctx.send(page.url)
+
+# Check command - argument is the guess
+@bot.command(help='- Checks your goatsucker.', usage="guess", aliases=["cg"])
+@commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 3 second cooldown
+async def checkgoat(ctx, *, arg):
+  print("checkgoat")
+  global dictOfServers
+  global userCount
+  global achievement
+
+  await setup(ctx)
+  await userSetup(ctx)
+
+  totalCorrect = dictOfServers[ctx.channel.id][4]
+  currentBird = dictOfServers[ctx.channel.id][5]
+  if currentBird == "": # no bird
+    await ctx.send("You must ask for a bird first!")
+  else: #if there is a bird, it checks answer
+    index = birdList.index(currentBird)
+    sciBird = sciBirdList[index]
+    dictOfServers[ctx.channel.id][6] = True
+    dictOfServers[ctx.channel.id][5] = ""
+    if spellcheck(arg.lower().replace("-"," "),currentBird.lower().replace("-"," "))== True:
+      await ctx.send("Correct! Good job!")
+      page = wikipedia.page(sciBird)
+      await ctx.send(page.url)
+      dictOfServers[ctx.channel.id][4] += 1
+      userCount[ctx.message.author.id][1] += 1
+      if userCount[ctx.message.author.id][1]in achievement:
+        number = str(userCount[ctx.message.author.id][1])
+        await ctx.send("Wow! You have answered "+number+" birds correctly!")
+        filename = '/home/runner/downloads/achievements/'+ number +".PNG"
+        with open(filename,'rb') as img:
+          await ctx.send(file=discord.File(img, filename="award.png"))
+
+    else:
+      await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
+      page = wikipedia.page(sciBird)
+      await ctx.send(page.url)
+    print("currentBird: "+str(currentBird.lower().replace("-"," ")))
+    print("args: "+str(arg.lower().replace("-"," ")))
+    #send wikipedia page
 
 #checks the song
 @bot.command(help = '- Checks the song', aliases=["songcheck","cs","sc"])
@@ -381,6 +468,24 @@ async def checksong(ctx, *, arg):
     #send wikipedia page
     page = wikipedia.page(placeholder+"(bird)")
     await ctx.send(page.url)
+
+# Skip command - no args
+@bot.command(help="- Skip the current goatsucker to get a new one", aliases = ["sg"])
+@commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 3 second cooldown
+async def skipgoat(ctx):
+  print("skipgoat")
+  global dictOfServers
+  await setup(ctx)
+  await userSetup(ctx)
+
+  currentBird = dictOfServers[ctx.channel.id][5]
+  dictOfServers[ctx.channel.id][6] = True
+  dictOfServers[ctx.channel.id][5] = ""
+  if currentBird != "": #check if there is bird
+    birdPage = wikipedia.page(currentBird+"(bird)")
+    await ctx.send("Ok, skipping " + birdPage.url) #sends wiki page
+  else:
+    await ctx.send("You need to ask for a bird first!")
 
 # Skip command - no args
 @bot.command(help="- Skip the current bird to get a new one", aliases = ["s"])
@@ -515,15 +620,33 @@ async def userscore(ctx, user=None):
       return
   await ctx.send(user + " has answered correctly " + times + " times.")
 
+@bot.command(help = "- Top scores, can be between 1 and 5, default is 3", aliases = ["lb"])
+async def leaderboard(ctx, placings = 3):
+  global userCount
+  leaderboard = []
+  try: 
+    y = (placings+1)
+  except:
+    await ctx.send("Not an integer.")
+  if placings > 5 or placings < 1:
+    await ctx.send("Not a valid number. Pick one between 1 and 5!")
+  for key, value in userCount.items():
+    leaderboard.append([value[1],value[0]])
+    leaderboard.sort(reverse = True)
+    print(leaderboard)
+    
+  for i in range(placings):
+    await ctx.send( str(i+1) +". "+str(leaderboard[i][1])+" - "+str(leaderboard[i][0]))
+
 # clear downloads
-@bot.command(help="- clears the downloaded images")
-async def clear(ctx):
-  print("clear")
-  try:
-    shutil.rmtree(r'/home/runner/downloads')
-    await ctx.send("Cleared downloads.")
-  except FileNotFoundError:
-    await ctx.send("Already cleared.")
+#@bot.command(help="- clears the downloaded images")
+#async def clear(ctx):
+ # print("clear")
+ # try:
+  #  shutil.rmtree(r'/home/runner/downloads')
+  #  await ctx.send("Cleared downloads.")
+ # except FileNotFoundError:
+  #  await ctx.send("Already cleared."
 
 # Test command - for testing purposes only
 @bot.command(help="- test command")
@@ -544,7 +667,7 @@ async def test(ctx):
 async def on_command_error(ctx, error):
   print("Error: "+str(error))
   if isinstance(error, commands.CommandOnCooldown): # send cooldown
-    await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.")
+    await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.", delete_after=3.0)
   
   elif isinstance(error, commands.CommandNotFound):
     await ctx.send("Sorry, the command was not found.")
