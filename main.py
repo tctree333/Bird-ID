@@ -633,7 +633,7 @@ async def leaderboard(ctx, placings = 3):
   else:
     embed.add_field(name="You:", value="You haven't answered any correctly.")
   
-  ctx.send(embed=embed)
+  await ctx.send(embed=embed)
 
 # clear downloads
 #@bot.command(help="- clears the downloaded images")
