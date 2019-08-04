@@ -628,10 +628,6 @@ async def userscore(ctx, user=None):
 async def leaderboard(ctx, placings = 3):
   global userCount
   leaderboard = []
-  try: 
-    y = (placings+1)
-  except:
-    await ctx.send("Not an integer.")
   if placings > 5 or placings < 1:
     await ctx.send("Not a valid number. Pick one between 1 and 5!")
   for key, value in userCount.items():
@@ -692,6 +688,13 @@ async def on_command_error(ctx, error):
     print("uncaught")
     await ctx.send("**An uncaught error has occurred.** \n*Please log this message in #feedback.* \n**Error:**  " + str(error))
     raise error
+
+## Command-specific error checking
+@leaderboard.error
+async def leader_error(ctx, error):
+  if isinstance(error, commands.BadArgument):
+    await ctx.send('Not an integer!', delete_after=3.0)
+
 
 # Actually run the bot
 token = os.getenv("token")
