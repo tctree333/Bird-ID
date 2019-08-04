@@ -30,6 +30,7 @@ prevB = "" #make sure it sends a diff bird
 prevS = "" #make sure it sends a diff song
 
 channel_db = redis.from_url(os.getenv("REDIS_URL"), db=0)
+user_db = redis.from_url(os.getenv("REDIS_URL"), db=1)
 
 #dictOfServers = {
   # "ctx.channel.id" : ["bird","answered","songbird","songanswered", "totalCorrect", "goatsucker", "goatsucker answered"]
@@ -266,11 +267,10 @@ async def setup(ctx):
 
 #sets up new user
 async def userSetup(ctx):
-  global userCount
-  if ctx.message.author.id in userCount:
+  if user_db.exists(str(ctx.message.author.id)):
     return
   else:
-    userCount[ctx.message.author.id] = [str(ctx.message.author),0]
+    user_db.lpush(str(ctx.message.author.id), "0", str(ctx.message.author))
     await ctx.send("Welcome " + str(ctx.message.author) + "!")
 
 ######
@@ -362,7 +362,6 @@ async def song(ctx):
 @commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 3 second cooldown
 async def check(ctx, *, arg):
   print("check")
-  global userCount
   global achievement
 
   await setup(ctx)
@@ -381,9 +380,9 @@ async def check(ctx, *, arg):
       page = wikipedia.page(sciBird)
       await ctx.send(page.url)
       channel_db.lset(str(ctx.channel.id), 4, str(int(channel_db.lindex(str(ctx.channel.id), 4))+1))
-      userCount[ctx.message.author.id][1] += 1
-      if userCount[ctx.message.author.id][1]in achievement:
-        number = str(userCount[ctx.message.author.id][1])
+      user_db.lset(str(ctx.message.author.id), 1, str(int(user_db.lindex(str(ctx.message.author.id), 1))+1))
+      if int(user_db.lindex(str(ctx.message.author.id), 1)) in achievement:
+        number = user_db.lindex(str(ctx.message.author.id), 1)
         await ctx.send("Wow! You have answered "+number+" birds correctly!")
         filename = 'achievements/'+ number +".PNG"
         with open(filename,'rb') as img:
@@ -402,7 +401,6 @@ async def check(ctx, *, arg):
 @commands.cooldown(1, 5.0, type=commands.BucketType.channel) # 3 second cooldown
 async def checkgoat(ctx, *, arg):
   print("checkgoat")
-  global userCount
   global achievement
 
   await setup(ctx)
@@ -421,9 +419,9 @@ async def checkgoat(ctx, *, arg):
       page = wikipedia.page(sciBird)
       await ctx.send(page.url)
       channel_db.lset(str(ctx.channel.id), 4, str(int(channel_db.lindex(str(ctx.channel.id), 4))+1))
-      userCount[ctx.message.author.id][1] += 1
-      if userCount[ctx.message.author.id][1]in achievement:
-        number = str(userCount[ctx.message.author.id][1])
+      user_db.lset(str(ctx.message.author.id), 1, str(int(user_db.lindex(str(ctx.message.author.id), 1))+1))
+      if int(user_db.lindex(str(ctx.message.author.id), 1)) in achievement:
+        number = user_db.lindex(str(ctx.message.author.id), 1)
         await ctx.send("Wow! You have answered "+number+" birds correctly!")
         filename = '/home/runner/downloads/achievements/'+ number +".PNG"
         with open(filename,'rb') as img:
@@ -583,7 +581,6 @@ async def meme(ctx):
 # sends correct answers by a user
 @bot.command(brief="- how many correct answers given by a user", help = "- how many correct answers given by a user, mention someone to get their score, don't mention anyone to get your score", aliases = ["us"])
 async def userscore(ctx, user=None):
-  global userCount
   if user:
     try:
       usera = int(user[1:len(user)-1].strip("@!"))
@@ -591,17 +588,17 @@ async def userscore(ctx, user=None):
     except:
       await ctx.send("Mention a user!")
       return
-    print(userCount.keys())
-    if usera in userCount.keys():
-      times = str(userCount[usera][1])
-      user = userCount[usera][0]
+    if user_db.exists(str(usera)):
+      times = user_db.lindex(str(usera), 1)
+      user = user_db.lindex(str(usera), 0)
     else:
       await ctx.send("This user does not exist on our records!")
       return
   else:
     try:
       user = str(ctx.message.author)
-      times = str(userCount[ctx.message.author.id][1])
+      user_db.lset(str(ctx.message.author.id), 1, str(int(user_db.lindex(str(ctx.message.author.id), 1))+1))
+      times = user_db.lindex(str(ctx.message.author.id), 1)
     except:
       await ctx.send("You haven't used this bot yet! (except for this)")
       return
@@ -609,16 +606,16 @@ async def userscore(ctx, user=None):
 
 @bot.command(brief = "- Top scores", help = "- Top scores, can be between 1 and 5, default is 3", aliases = ["lb"])
 async def leaderboard(ctx, placings = 3):
-  global userCount
   leaderboard = []
-  if len(userCount) == 0:
+  if user_db.dbsize() == 0:
     await ctx.send("There are no users in the database.")
     return
   if placings > 5 or placings < 1:
     await ctx.send("Not a valid number. Pick one between 1 and 5!")
     return
-  if placings > len(userCount):
-    placings = len(userCount)
+  if placings > user_db.dbsize():
+    placings = user_db.dbsize()
+
   for key, value in userCount.items():
     leaderboard.append([value[1],value[0]])
     leaderboard.sort(reverse = True)
@@ -649,12 +646,9 @@ async def leaderboard(ctx, placings = 3):
 # Test command - for testing purposes only
 @bot.command(help="- test command")
 async def test(ctx):
-  for bird in birdList:
-    index = birdList.index(bird)
-    sciBird = sciBirdList[index]
-    print (sciBird, "- " + bird)
-  print(sciBirdList)
-  print(birdList)
+  embed = discord.Embed(title="Leaderboard:", type="rich", colour=discord.Color.blurple())
+  embed.add_field("Leaderboard", "<@289965680554672149>")
+  ctx.send(embed=embed)
 
 ######
 # ERROR CHECKING
