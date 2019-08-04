@@ -594,7 +594,7 @@ async def meme(ctx):
   await ctx.send(memeList[x])
 
 # sends correct answers by a user
-@bot.command(help = "- how many correct answers given by a user, mention someone to get their score, don't mention anyone to get your score", aliases = ["us"])
+@bot.command(brief="- how many correct answers given by a user", help = "- how many correct answers given by a user, mention someone to get their score, don't mention anyone to get your score", aliases = ["us"])
 async def userscore(ctx, user=None):
   global userCount
   if user:
@@ -620,7 +620,7 @@ async def userscore(ctx, user=None):
       return
   await ctx.send(user + " has answered correctly " + times + " times.")
 
-@bot.command(help = "- Top scores, can be between 1 and 5, default is 3", aliases = ["lb"])
+@bot.command(brief = "- Top scores", help = "- Top scores, can be between 1 and 5, default is 3", aliases = ["lb"])
 async def leaderboard(ctx, placings = 3):
   global userCount
   leaderboard = []
