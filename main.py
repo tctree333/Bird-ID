@@ -687,7 +687,7 @@ class LeaderBoardError(Exception):
 async def leader_error(ctx, error):
   print("leaderboard error")
   if isinstance(error, commands.BadArgument):
-    await ctx.send('Not an integer!', delete_after=5.0)
+    await ctx.send('Not an integer!')
     raise LeaderBoardError
 
 ## Global error checking
