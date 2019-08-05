@@ -446,7 +446,7 @@ async def checksong(ctx, *, arg):
   if currentSongBird == "": # no bird
     await ctx.send("You must ask for a bird call first!")
   else: #if there is a bird, it checks answer
-    index = songBirds.index(currentBird)
+    index = songBirds.index(currentSongBird)
     sciBird = sciSongBirds[index]
     database.lset(str(ctx.channel.id), 2, "")
     database.lset(str(ctx.channel.id), 3, "1")
@@ -623,7 +623,7 @@ async def leaderboard(ctx, placings = 5):
     await ctx.send("There are no users in the database.")
     return
   if placings > 10 or placings < 1:
-    await ctx.send("Not a valid number. Pick one between 1 and 5!")
+    await ctx.send("Not a valid number. Pick one between 1 and 10!")
     return
   if placings > database.zcard("users"):
     placings = database.zcard("users")
