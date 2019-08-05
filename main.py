@@ -634,11 +634,11 @@ async def leaderboard(ctx, placings = 5):
 
   for x in range(len(leaderboard_list)):
     leaderboard += str(x+1) +". <@"+str(leaderboard_list[x][0]).strip("b").strip("'") + "> - "+str(int(leaderboard_list[x][1]))+"\n"
-  embed.add_field(name="Leaderboard", value=leaderboard)
+  embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
   if database.zscore("users", str(ctx.message.author.id)) != None:
     placement = int(database.zrevrank("users", str(ctx.message.author.id))) + 1
-    embed.add_field(name="You:", value="You are #"+str(placement)+" on the leaderboard.")
+    embed.add_field(name="You:", value="You are #"+str(placement)+" on the leaderboard.", inline=False)
   else:
     embed.add_field(name="You:", value="You haven't answered any correctly.")
 
@@ -658,7 +658,7 @@ async def leaderboard(ctx, placings = 5):
 @bot.command(help="- test command")
 async def test(ctx):
   embed = discord.Embed(type="rich", colour=discord.Color.blurple())
-  embed.add_field(name="Test", value="<@289965680554672149>")
+  embed.add_field(name="Test", value="whee")
   await ctx.send(embed=embed)
 
 ######
