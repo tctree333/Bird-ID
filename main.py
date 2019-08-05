@@ -381,7 +381,7 @@ async def check(ctx, *, arg):
       database.lset(str(ctx.channel.id), 4, str(int(database.lindex(str(ctx.channel.id), 4))+1))
       database.zincrby("users", 1, str(ctx.message.author.id))
       if int(database.zscore("users", str(ctx.message.author.id))) in achievement:
-        number = database.zscore("users", str(ctx.message.author.id))
+        number = str(database.zscore("users", str(ctx.message.author.id)))
         await ctx.send("Wow! You have answered "+number+" birds correctly!")
         filename = 'achievements/'+ number +".PNG"
         with open(filename,'rb') as img:
@@ -419,7 +419,7 @@ async def checkgoat(ctx, *, arg):
       database.lset(str(ctx.channel.id), 4, str(int(database.lindex(str(ctx.channel.id), 4))+1))
       database.zincrby("users", 1, str(ctx.message.author.id))
       if int(database.zscore("users", str(ctx.message.author.id))) in achievement:
-        number = database.zscore("users", str(ctx.message.author.id))
+        number = str(database.zscore("users", str(ctx.message.author.id)))
         await ctx.send("Wow! You have answered "+number+" birds correctly!")
         filename = 'achievements/'+ number +".PNG"
         with open(filename,'rb') as img:
@@ -457,7 +457,7 @@ async def checksong(ctx, *, arg):
       database.lset(str(ctx.channel.id), 4, str(int(database.lindex(str(ctx.channel.id), 4))+1))
       database.zincrby("users", 1, str(ctx.message.author.id))
       if int(database.zscore("users", str(ctx.message.author.id))) in achievement:
-        number = database.zscore("users", str(ctx.message.author.id))
+        number = str(database.zscore("users", str(ctx.message.author.id)))
         await ctx.send("Wow! You have answered "+number+" birds correctly!")
         filename = 'achievements/'+ number +".PNG"
         with open(filename,'rb') as img:
@@ -599,7 +599,7 @@ async def userscore(ctx, user=None):
       await ctx.send("Mention a user!")
       return
     if database.zscore("users", str(usera)) != None:
-      times = str(int(database.zscore("users", str(usera))))
+      times = str(database.zscore("users", str(usera)))
       user = "<@"+str(usera)+">"
     else:
       await ctx.send("This user does not exist on our records!")
