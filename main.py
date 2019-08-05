@@ -612,6 +612,7 @@ async def userscore(ctx, user=None):
       await ctx.send("You haven't used this bot yet! (except for this)")
       return
   embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+  embed.set_author(name="Bird ID - An Ornithology Bot")
   embed.add_field(name="User Score:", value=user + " has answered correctly " + times + " times.")
   await ctx.send(embed=embed)
 
@@ -630,6 +631,7 @@ async def leaderboard(ctx, placings = 5):
 
   leaderboard_list = database.zrevrangebyscore("users", "+inf", "-inf", 0, placings, True)
   embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+  embed.set_author(name="Bird ID - An Ornithology Bot")
   leaderboard = ""
 
   for x in range(len(leaderboard_list)):
@@ -658,6 +660,7 @@ async def leaderboard(ctx, placings = 5):
 @bot.command(help="- test command")
 async def test(ctx):
   embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+  embed.set_author(name="Bird ID - An Ornithology Bot")
   embed.add_field(name="Test", value="whee")
   await ctx.send(embed=embed)
 
