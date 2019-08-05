@@ -616,13 +616,13 @@ async def userscore(ctx, user=None):
   await ctx.send(embed=embed)
 
 @bot.command(brief = "- Top scores", help = "- Top scores, can be between 1 and 5, default is 3", aliases = ["lb"])
-async def leaderboard(ctx, placings = 3):
+async def leaderboard(ctx, placings = 5):
   print("leaderboard")
   leaderboard_list = []
   if database.zcard("users") == 0:
     await ctx.send("There are no users in the database.")
     return
-  if placings > 5 or placings < 1:
+  if placings > 10 or placings < 1:
     await ctx.send("Not a valid number. Pick one between 1 and 5!")
     return
   if placings > database.zcard("users"):
