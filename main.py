@@ -115,27 +115,39 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn = ""):
     sciBird = sciBirdList[index]
   else:
     sciBird = bird
+  
+  try:
+    print("trying")
+    images = os.listdir("downloads/"+sciBird+addOn+"/")
+    print("downloads/"+sciBird+addOn+"/")
+    for path in images:
+      images[images.index(path)] = "downloads/"+sciBird+addOn+"/"+path
+    print("images: "+str(images))
+  except FileNotFoundError:
+    print("fail")
+    # if not found, fetch images 
+    print("scibird: "+str(sciBird))
+    arguments = {"keywords":sciBird + str(addOn),"limit":15,"print_urls":True}
+    #passing the arguments to the function
+    paths = response.download(arguments)
+    print("paths: "+str(paths))
+    paths = paths[0]
+    images = [paths [i] for i in sorted(paths.keys()) ]
+    images = images[0]
+    print("images: "+str(images))
 
-  #creating list of arguments
-  print("scibird: "+str(sciBird))
-  arguments = {"keywords":sciBird + str(addOn),"limit":15,"print_urls":True}   
-  #passing the arguments to the function
-  paths = response.download(arguments)
-  print("paths: "+str(paths))
-  paths = paths[0]
-  images = [paths [i] for i in sorted(paths.keys()) ]
-  images = images[0]
-  print("images: "+str(images))
-
-  prevJ = str(database.lindex(str(ctx.channel.id), 7))[2:-1]
+  prevJ = int(str(database.lindex(str(ctx.channel.id), 7))[2:-1])
   j = randint(0, int((len(images)-len(images)%2)/2)) # Randomize start
   while j == prevJ:
+    print("prevJ: "+str(prevJ))
+    print("j: "+str(j))
+    print("same photo, skipping")
     j = randint(0, int((len(images)-len(images)%2)/2)) # Randomize start
   database.lset(str(ctx.channel.id), 7, str(j))
     
   for x in range(j,len(images)): # check file type and size
     image_link = images[x]
-    extension = image_link.split('.')[len(image_link.split('.'))-1]
+    extension = image_link.split('.')[-1]
     print("extension: "+str(extension))
     statInfo = os.stat(image_link)
     if extension.lower() in valid_extensions and statInfo.st_size < 8000000: # 8mb discord limit
@@ -291,8 +303,8 @@ async def bird(ctx, add_on = ""):
     return
 
   print("bird")
-  print(str(database.lindex(str(ctx.channel.id), 0))[2:-1])
-  print(int(database.lindex(str(ctx.channel.id), 1)))
+  print("bird: "+str(database.lindex(str(ctx.channel.id), 0))[2:-1])
+  print("answered: "+str(int(database.lindex(str(ctx.channel.id), 1))))
 
   answered = int(database.lindex(str(ctx.channel.id), 1))
   # check to see if previous bird was answered
@@ -646,6 +658,16 @@ async def leaderboard(ctx, placings = 5):
     embed.add_field(name="You:", value="You haven't answered any correctly.")
 
   await ctx.send(embed=embed)
+
+ # clear downloads
+@bot.command(help="- clears the downloaded images")
+async def clear(ctx):
+  print("clear")
+  try:
+    shutil.rmtree(r'downloads/')
+    await ctx.send("Cleared downloads.")
+  except FileNotFoundError:
+    await ctx.send("Already cleared.")
 
 # Test command - for testing purposes only
 @bot.command(help="- test command")
