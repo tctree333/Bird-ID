@@ -273,7 +273,8 @@ async def setup(ctx):
     return
   else:
     #['prevS', 'prevB', 'prevJ', 'goatsucker answered', 'goatsucker', 'totalCorrect', 'songanswered', 'songbird', 'answered', 'bird']
-    database.lpush(str(ctx.channel.id), "", "" ,"" ,"1", "", "0", "1", "", "1", "") # true = 1, false = 0, index 0 is last arg
+    database.lpush(str(ctx.channel.id), "", "" ,"20" ,"1", "", "0", "1", "", "1", "") 
+    # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
     await ctx.send("Ok, setup! I'm all ready to use!")
 
 #sets up new user
