@@ -6,7 +6,7 @@ from random import randint
 from discord.ext import commands
 from google_images_download import google_images_download
 import requests
-#import shutil
+import shutil
 import eyed3
 import redis
 
@@ -14,9 +14,9 @@ import redis
 response = google_images_download.googleimagesdownload()
 
 # Initialize bot
-bot = commands.Bot(command_prefix=['b!', 'b.', 'b#'], 
-                  case_insensitive=True, 
-                  description="BirdID - Your Very Own Ornithologist")
+bot = commands.Bot(command_prefix=['b!', 'b.', 'b#'],
+                   case_insensitive=True,
+                   description="BirdID - Your Very Own Ornithologist")
 
 # Valid file types
 valid_extensions = ["jpg", "png", "jpeg"]
@@ -31,14 +31,14 @@ currentSongBird = ""
 # define database
 database = redis.from_url(os.getenv("REDIS_URL"))
 
-# prevJ = "" # make sure it sends a diff image
-# prevB = "" # make sure it sends a diff bird
-# prevS = "" # make sure it sends a diff song
+# prevJ - makes sure it sends a diff image
+# prevB - makes sure it sends a diff bird
+# prevS - makes sure it sends a diff song
 
 # server format = {
-# "ctx.channel.id" : ["bird", "answered", "songbird", "songanswered", 
-#                     "totalCorrect", "goatsucker", "goatsucker answered", 
-#                     "prevJ", "prevB", "prevS"] 
+# "ctx.channel.id" : ["bird", "answered", "songbird", "songanswered",
+#                     "totalCorrect", "goatsucker", "goatsucker answered",
+#                     "prevJ", "prevB", "prevS"]
 # }
 
 # user format = {
@@ -99,7 +99,7 @@ async def setup(ctx):
     if database.exists(str(ctx.channel.id)):
         return
     else:
-        # ['prevS', 'prevB', 'prevJ', 'goatsucker answered', 'goatsucker', 
+        # ['prevS', 'prevB', 'prevJ', 'goatsucker answered', 'goatsucker',
         #  'totalCorrect', 'songanswered', 'songbird', 'answered', 'bird']
         database.lpush(str(ctx.channel.id), "", "", "20",
                        "1", "", "0", "1", "", "1", "")
@@ -107,7 +107,7 @@ async def setup(ctx):
         await ctx.send("Ok, setup! I'm all ready to use!")
 
 # sets up new user
-async def userSetup(ctx):
+async def user_setup(ctx):
     if database.zscore("users", str(ctx.message.author.id)) is not None:
         return
     else:
@@ -280,9 +280,7 @@ def spellcheck(worda, wordb):
             shorterword = list1
         else:
             for i in range(len(list1)):
-                if list1[i] == list2[i]:
-                    pass
-                else:
+                if list1[i] != list2[i]:
                     wrongcount += 1
             if wrongcount > 1:
                 return False
@@ -316,11 +314,9 @@ async def bird(ctx, add_on=""):
     print("bird")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
-    if add_on == "female" or add_on == "juvenile" or add_on == "":
-        pass
-    else:
+    if not (add_on == "female" or add_on == "juvenile" or add_on == ""):
         await ctx.send("This command only takes female, juvenile, or nothing!")
         return
 
@@ -350,7 +346,7 @@ async def goatsucker(ctx):
     print("goatsucker")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
     answered = int(database.lindex(str(ctx.channel.id), 6))
@@ -372,7 +368,7 @@ async def song(ctx):
     print("song")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     songAnswered = int(database.lindex(str(ctx.channel.id), 3))
     # check to see if previous bird was answered
@@ -399,7 +395,7 @@ async def check(ctx, *, arg):
     global achievement
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     currentBird = str(database.lindex(str(ctx.channel.id), 0))[2:-1]
     if currentBird == "":  # no bird
@@ -439,7 +435,7 @@ async def checkgoat(ctx, *, arg):
     global achievement
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     currentBird = str(database.lindex(str(ctx.channel.id), 5))[2:-1]
     if currentBird == "":  # no bird
@@ -479,7 +475,7 @@ async def checksong(ctx, *, arg):
     global achievement
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     currentSongBird = str(database.lindex(str(ctx.channel.id), 2))[2:-1]
     if currentSongBird == "":  # no bird
@@ -518,7 +514,7 @@ async def skip(ctx):
     print("skip")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     currentBird = str(database.lindex(str(ctx.channel.id), 0))[2:-1]
     database.lset(str(ctx.channel.id), 0, "")
@@ -530,13 +526,13 @@ async def skip(ctx):
         await ctx.send("You need to ask for a bird first!")
 
 # Skip command - no args
-@bot.command(help="- Skip the current goatsucker to get a new one", aliases=["goatskip", "sg", "gs"])
+@bot.command(help="- Skip the current goatsucker to get a new one", aliases=["goatskip", "sg"])
 @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
 async def skipgoat(ctx):
     print("skipgoat")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     currentBird = str(database.lindex(str(ctx.channel.id), 5))[2:-1]
     database.lset(str(ctx.channel.id), 5, "")
@@ -554,7 +550,7 @@ async def skipsong(ctx):
     print("skipsong")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     database.lset(str(ctx.channel.id), 3, "1")
     currentSongBird = str(database.lindex(str(ctx.channel.id), 2))[2:-1]
@@ -571,7 +567,7 @@ async def hint(ctx):
     print("hint")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     currentBird = str(database.lindex(str(ctx.channel.id), 0))[2:-1]
     if currentBird != "":  # check if there is bird
@@ -586,7 +582,7 @@ async def hintgoat(ctx):
     print("hintgoat")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     currentBird = str(database.lindex(str(ctx.channel.id), 5))[2:-1]
     if currentBird != "":  # check if there is bird
@@ -601,7 +597,7 @@ async def hintsong(ctx):
     print("hintsong")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     currentSongBird = str(database.lindex(str(ctx.channel.id), 2))[2:-1]
     if currentSongBird != "":  # check if there is bird
@@ -616,7 +612,7 @@ async def info(ctx, *, arg):
     print("info")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     bird = arg
     print("info")
@@ -631,7 +627,7 @@ async def wiki(ctx, *, arg):
     print("wiki")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     try:
         page = wikipedia.page(arg)
@@ -648,7 +644,7 @@ async def score(ctx):
     print("score")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     totalCorrect = int(database.lindex(str(ctx.channel.id), 4))
     await ctx.send("Wow, looks like a total of " + str(totalCorrect) + " birds have been answered correctly in this channel! Good job everyone!")
@@ -660,7 +656,7 @@ async def meme(ctx):
     print("meme")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     x = randint(0, len(memeList))
     await ctx.send(memeList[x])
@@ -672,7 +668,7 @@ async def userscore(ctx, user=None):
     print("user score")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     if user is not None:
         try:
@@ -708,7 +704,7 @@ async def leaderboard(ctx, placings=5):
     print("leaderboard")
 
     await setup(ctx)
-    await userSetup(ctx)
+    await user_setup(ctx)
 
     leaderboard_list = []
     if database.zcard("users") == 0:
@@ -794,7 +790,7 @@ async def on_command_error(ctx, error):
         await ctx.send("This command requires an argument!")
 
     elif isinstance(error, LeaderBoardError):
-        pass
+        return
 
     elif isinstance(error, commands.CommandInvokeError):
         if isinstance(error.original, redis.exceptions.ResponseError):
