@@ -14,7 +14,9 @@ import redis
 response = google_images_download.googleimagesdownload()
 
 # Initialize bot
-bot = commands.Bot(command_prefix=['b!', 'b.', 'b#'], case_insensitive=True, description="BirdID - Your Very Own Ornithologist")
+bot = commands.Bot(command_prefix=['b!', 'b.', 'b#'], 
+                  case_insensitive=True, 
+                  description="BirdID - Your Very Own Ornithologist")
 
 # Valid file types
 valid_extensions = ["jpg", "png", "jpeg"]
@@ -32,9 +34,13 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # prevJ = "" # make sure it sends a diff image
 # prevB = "" # make sure it sends a diff bird
 # prevS = "" # make sure it sends a diff song
+
 # server format = {
-# "ctx.channel.id" : ["bird", "answered", "songbird", "songanswered", "totalCorrect", "goatsucker", "goatsucker answered", "prevJ", "prevB", "prevS"]
+# "ctx.channel.id" : ["bird", "answered", "songbird", "songanswered", 
+#                     "totalCorrect", "goatsucker", "goatsucker answered", 
+#                     "prevJ", "prevB", "prevS"] 
 # }
+
 # user format = {
 # user:[userid, #ofcorrect]
 # }
@@ -93,7 +99,8 @@ async def setup(ctx):
     if database.exists(str(ctx.channel.id)):
         return
     else:
-        #['prevS', 'prevB', 'prevJ', 'goatsucker answered', 'goatsucker', 'totalCorrect', 'songanswered', 'songbird', 'answered', 'bird']
+        # ['prevS', 'prevB', 'prevJ', 'goatsucker answered', 'goatsucker', 
+        #  'totalCorrect', 'songanswered', 'songbird', 'answered', 'bird']
         database.lpush(str(ctx.channel.id), "", "", "20",
                        "1", "", "0", "1", "", "1", "")
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
@@ -101,7 +108,7 @@ async def setup(ctx):
 
 # sets up new user
 async def userSetup(ctx):
-    if database.zscore("users", str(ctx.message.author.id)) != None:
+    if database.zscore("users", str(ctx.message.author.id)) is not None:
         return
     else:
         database.zadd("users", {str(ctx.message.author.id): 0})
@@ -119,12 +126,12 @@ def error_skip(ctx):
 # message - text message to send before bird picture (str)
 # addOn - string to append to search for female/juvenile birds (str)
 async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
-    if bird == "":
+    if bird is "":
         print("error - bird is blank")
         await ctx.send("There was an error fetching birds. Please try again.")
         database.lset(str(ctx.channel.id), 0, "")
         database.lset(str(ctx.channel.id), 1, "0")
-        if on_error:
+        if on_error is not None:
             on_error(ctx)
         return
 
@@ -186,7 +193,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
         await ctx.send("Oops! File too large :(\nPlease try again.")
     else:
         with open(filename, 'rb') as img:
-            if message:
+            if message is not None:
                 await ctx.send(message)
             # change filename to avoid spoilers
             await ctx.send(file=discord.File(img, filename="bird."+extension))
@@ -242,7 +249,7 @@ async def send_birdsong(ctx, bird, message=None):
                 audioFile.tag.remove("birdsong.mp3")
 
                 # send song
-                if message:
+                if message is not None:
                     await ctx.send(message)
                     # change filename to avoid spoilers
                     await ctx.send(file=discord.File(song, filename="bird.mp3"))
@@ -303,15 +310,15 @@ def spellcheck(worda, wordb):
 ######
 
 # Bird command - no args
-@bot.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile]") # help text
-@commands.cooldown(1, 10.0, type=commands.BucketType.channel) # 10 second cooldown
+@bot.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile]")  # help text
+@commands.cooldown(1, 10.0, type=commands.BucketType.channel)  # 10 second cooldown
 async def bird(ctx, add_on=""):
     print("bird")
 
     await setup(ctx)
     await userSetup(ctx)
 
-    if (add_on == "female" or add_on == "juvenile")or add_on == "":
+    if add_on == "female" or add_on == "juvenile" or add_on == "":
         pass
     else:
         await ctx.send("This command only takes female, juvenile, or nothing!")
@@ -322,7 +329,7 @@ async def bird(ctx, add_on=""):
 
     answered = int(database.lindex(str(ctx.channel.id), 1))
     # check to see if previous bird was answered
-    if answered == True:  # if yes, give a new bird
+    if answered is True:  # if yes, give a new bird
         database.lset(str(ctx.channel.id), 1, "0")
         currentBird = birdList[randint(0, len(birdList)-1)]
         prevB = str(database.lindex(str(ctx.channel.id), 8))[2:-1]
@@ -348,7 +355,7 @@ async def goatsucker(ctx):
     goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
     answered = int(database.lindex(str(ctx.channel.id), 6))
     # check to see if previous bird was answered
-    if answered == True:  # if yes, give a new bird
+    if answered is True:  # if yes, give a new bird
         database.lset(str(ctx.channel.id), 6, "0")
         currentBird = goatsuckers[randint(0, 2)]
         database.lset(str(ctx.channel.id), 5, str(currentBird))
@@ -369,7 +376,7 @@ async def song(ctx):
 
     songAnswered = int(database.lindex(str(ctx.channel.id), 3))
     # check to see if previous bird was answered
-    if songAnswered == True:  # if yes, give a new bird
+    if songAnswered is True:  # if yes, give a new bird
         v = randint(0, len(songBirds)-1)
         currentSongBird = songBirds[v]
         prevS = str(database.lindex(str(ctx.channel.id), 9))[2:-1]
@@ -402,7 +409,7 @@ async def check(ctx, *, arg):
         sciBird = sciBirdList[index]
         database.lset(str(ctx.channel.id), 0, "")
         database.lset(str(ctx.channel.id), 1, "1")
-        if spellcheck(arg.lower().replace("-", " "), currentBird.lower().replace("-", " ")) == True:
+        if spellcheck(arg.lower().replace("-", " "), currentBird.lower().replace("-", " ")) is True:
             await ctx.send("Correct! Good job!")
             page = wikipedia.page(sciBird)
             await ctx.send(page.url)
@@ -442,7 +449,7 @@ async def checkgoat(ctx, *, arg):
         sciBird = sciBirdList[index]
         database.lset(str(ctx.channel.id), 6, "1")
         database.lset(str(ctx.channel.id), 5, "")
-        if spellcheck(arg.lower().replace("-", " "), currentBird.lower().replace("-", " ")) == True:
+        if spellcheck(arg.lower().replace("-", " "), currentBird.lower().replace("-", " ")) is True:
             await ctx.send("Correct! Good job!")
             page = wikipedia.page(sciBird)
             await ctx.send(page.url)
@@ -482,7 +489,7 @@ async def checksong(ctx, *, arg):
         sciBird = sciSongBirds[index]
         database.lset(str(ctx.channel.id), 2, "")
         database.lset(str(ctx.channel.id), 3, "1")
-        if spellcheck(arg.lower().replace("-", " "), currentSongBird.lower().replace("-", " ")) == True:
+        if spellcheck(arg.lower().replace("-", " "), currentSongBird.lower().replace("-", " ")) is True:
             await ctx.send("Correct! Good job!")
             page = wikipedia.page(sciBird)
             await ctx.send(page.url)
@@ -667,21 +674,21 @@ async def userscore(ctx, user=None):
     await setup(ctx)
     await userSetup(ctx)
 
-    if user:
+    if user is not None:
         try:
             usera = int(user[1:len(user)-1].strip("@!"))
             print(usera)
-        except:
+        except ValueError:
             await ctx.send("Mention a user!")
             return
-        if database.zscore("users", str(usera)) != None:
+        if database.zscore("users", str(usera)) is not None:
             times = str(int(database.zscore("users", str(usera))))
             user = "<@"+str(usera)+">"
         else:
             await ctx.send("This user does not exist on our records!")
             return
     else:
-        if database.zscore("users", str(ctx.message.author.id)) != None:
+        if database.zscore("users", str(ctx.message.author.id)) is not None:
             user = "<@"+str(ctx.message.author.id)+">"
             times = str(
                 int(database.zscore("users", str(ctx.message.author.id))))
@@ -724,7 +731,7 @@ async def leaderboard(ctx, placings=5):
             2:-1] + "> - "+str(int(leaderboard_list[x][1]))+"\n"
     embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
-    if database.zscore("users", str(ctx.message.author.id)) != None:
+    if database.zscore("users", str(ctx.message.author.id)) is not None:
         placement = int(database.zrevrank(
             "users", str(ctx.message.author.id))) + 1
         embed.add_field(name="You:", value="You are #" +
