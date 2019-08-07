@@ -3,7 +3,7 @@ import discord
 import os
 import wikipedia
 from random import randint
-from discord.ext import commands
+from discord.ext import tasks, commands
 from google_images_download import google_images_download
 import requests
 import shutil
@@ -89,6 +89,16 @@ async def on_ready():
     print("_" * 50)
     # Change discord activity
     await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
+
+# task to clear downloads
+@tasks.loop(hours=72.0)
+async def clear_cache(ctx):
+  print("clear cache")
+  try:
+    shutil.rmtree(r'downloads/')
+    print("Cleared downloads cache.")
+  except FileNotFoundError:
+    print("Already cleared.")
 
 ######
 # FUNCTIONS
@@ -197,14 +207,6 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
                 await ctx.send(message)
             # change filename to avoid spoilers
             await ctx.send(file=discord.File(img, filename="bird."+extension))
-
-    # clear downloads
-#  try:
-#    shutil.rmtree(r'downloads/')
-#    print("Cleared downloads.")
-#  except FileNotFoundError:
-#    print("Already cleared.")
-
 
 # sends a birdsong
 async def send_birdsong(ctx, bird, message=None):
@@ -738,16 +740,6 @@ async def leaderboard(ctx, placings=5):
 
     await ctx.send(embed=embed)
 
-   # clear downloads
-# @bot.command(help="- clears the downloaded images")
-# async def clear(ctx):
-#  print("clear")
-#  try:
-#    shutil.rmtree(r'downloads/')
-#    await ctx.send("Cleared downloads.")
-#  except FileNotFoundError:
-#    await ctx.send("Already cleared.")
-
 # Test command - for testing purposes only
 @bot.command(help="- test command")
 async def test(ctx):
@@ -809,6 +801,9 @@ async def on_command_error(ctx, error):
         await ctx.send("**An uncaught non-command error has occurred.** \n*Please log this message in #feedback.* \n**Error:**  " + str(error))
         raise error
 
+
+# Start the task
+clear_cache.start()
 
 # Actually run the bot
 token = os.getenv("token")
