@@ -722,7 +722,7 @@ async def leaderboard(ctx, placings = 5):
 @bot.command(help="- test command")
 async def test(ctx):
   print("test")
-  
+
   embed = discord.Embed(type="rich", colour=discord.Color.blurple())
   embed.set_author(name="Bird ID - An Ornithology Bot")
   embed.add_field(name="Test", value="whee")
