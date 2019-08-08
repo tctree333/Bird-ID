@@ -254,7 +254,8 @@ async def send_birdsong(ctx, bird, message=None):
                 if message is not None:
                     await ctx.send(message)
                     # change filename to avoid spoilers
-                    await ctx.send(file=discord.File(song, filename="bird.mp3"))
+                    with open("birdsong.mp3", "rb") as song:
+                      await ctx.send(file=discord.File(song, filename="bird.mp3"))
             else:
                 await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
                 print("error:" + str(songFile.status_code))
