@@ -92,7 +92,7 @@ async def on_ready():
 
 # task to clear downloads
 @tasks.loop(hours=72.0)
-async def clear_cache(ctx):
+async def clear_cache():
   print("clear cache")
   try:
     shutil.rmtree(r'downloads/')
