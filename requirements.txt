@@ -1,7 +1,7 @@
 discord.py
 wikipedia
 google_images_download
-requests
+httpx
 flask
 eyeD3
 redis
