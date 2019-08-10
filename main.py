@@ -243,7 +243,8 @@ async def send_birdsong(ctx, bird, message=None):
                 print("error:" + str(response.status_code))
 
         if len(recordings) != 0:
-            url = str("http:"+recordings[randint(0, len(recordings)-1)]["file"])
+            url = str("https:"+recordings[randint(0, len(recordings)-1)]["file"])
+            print("url: "+url)
             fileName = "songs/"+url.split("/")[3]+".mp3"
             songFile = await client.get(url)
             if songFile.status_code == 200:
