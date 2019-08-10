@@ -138,6 +138,7 @@ def error_skip(ctx):
 # message - text message to send before bird picture (str)
 # addOn - string to append to search for female/juvenile birds (str)
 async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
+    loop = asyncio.get_running_loop()
     if bird is "":
         print("error - bird is blank")
         await ctx.send("There was an error fetching birds. Please try again.")
