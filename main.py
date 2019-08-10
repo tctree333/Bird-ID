@@ -5,7 +5,7 @@ import wikipedia
 from random import randint
 from discord.ext import tasks, commands
 from google_images_download import google_images_download
-import requests
+import httpx
 import shutil
 import eyed3
 import redis
@@ -219,8 +219,9 @@ async def send_birdsong(ctx, bird, message=None):
     else:
         sciBird = bird
     # fetch sounds
+    client = httpx.AsyncClient()
     query = sciBird.replace(" ", "%20")
-    response = requests.get(
+    response = await client.get(
         "https://www.xeno-canto.org/api/2/recordings?query="+query+"%20q:A&page=1")
 
     if response.status_code == 200:
@@ -229,7 +230,7 @@ async def send_birdsong(ctx, bird, message=None):
         if len(recordings) == 0:  # bird not found
             # try with common name instead
             query = bird.replace(" ", "%20")
-            response = requests.get(
+            response = await client.get(
                 "https://www.xeno-canto.org/api/2/recordings?query="+query+"%20q:A&page=1")
             if response.status_code == 200:
                 recordings = response.json()["recordings"]
@@ -238,23 +239,24 @@ async def send_birdsong(ctx, bird, message=None):
                 print("error:" + str(response.status_code))
 
         if len(recordings) != 0:
-            url = str(
-                "http:"+recordings[randint(0, len(recordings)-1)]["file"])
-
-            songFile = requests.get(url)
+            url = str("http:"+recordings[randint(0, len(recordings)-1)]["file"])
+            fileName = "songs/"+url.split("/")[3]+".mp3"
+            songFile = await client.get(url)
             if songFile.status_code == 200:
-                with open("birdsong.mp3", 'wb') as fd:
+                if not os.path.exists("songs/"):
+                    os.mkdir("songs/")
+                with open(fileName, 'wb') as fd:
                     fd.write(songFile.content)
 
                 # remove spoilers in tag metadata
-                audioFile = eyed3.load("birdsong.mp3")
-                audioFile.tag.remove("birdsong.mp3")
+                audioFile = eyed3.load(fileName)
+                audioFile.tag.remove(fileName)
 
                 # send song
                 if message is not None:
                     await ctx.send(message)
                 # change filename to avoid spoilers
-                with open("birdsong.mp3", "rb") as song:
+                with open(fileName, "rb") as song:
                     await ctx.send(file=discord.File(song, filename="bird.mp3"))
             else:
                 await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
@@ -265,7 +267,12 @@ async def send_birdsong(ctx, bird, message=None):
     else:
         await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
         print("error:" + str(response.status_code))
-
+    
+    try:
+        shutil.rmtree(r'songs/')
+        print("Cleared songs.")
+    except FileNotFoundError:
+        print("Already cleared.")
 
 # spellcheck - allows one letter off/extra
 def spellcheck(worda, wordb):
