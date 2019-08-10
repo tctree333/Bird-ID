@@ -9,6 +9,8 @@ import httpx
 import shutil
 import eyed3
 import redis
+import concurrent.futures
+import asyncio
 
 # Initialize library
 response = google_images_download.googleimagesdownload()
@@ -170,7 +172,8 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
         arguments = {"keywords": sciBird +
                      str(addOn), "limit": 15, "print_urls": True}
         # passing the arguments to the function
-        paths = response.download(arguments)
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            paths = await loop.run_in_executor(pool, response.download, arguments)
         print("paths: "+str(paths))
         paths = paths[0]
         images = [paths[i] for i in sorted(paths.keys())]
