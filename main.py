@@ -95,12 +95,19 @@ async def on_ready():
 # task to clear downloads
 @tasks.loop(hours=72.0)
 async def clear_cache():
-  print("clear cache")
-  try:
-    shutil.rmtree(r'downloads/')
-    print("Cleared downloads cache.")
-  except FileNotFoundError:
-    print("Already cleared.")
+    print("clear cache")
+    try:
+        shutil.rmtree(r'downloads/')
+        print("Cleared downloads cache.")
+    except FileNotFoundError:
+        print("Already cleared.")
+
+    try:
+        shutil.rmtree(r'songs/')
+        print("Cleared songs.")
+    except FileNotFoundError:
+        print("Already cleared.")
+
 
 ######
 # FUNCTIONS
@@ -118,6 +125,7 @@ async def setup(ctx):
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
         await ctx.send("Ok, setup! I'm all ready to use!")
 
+
 # sets up new user
 async def user_setup(ctx):
     if database.zscore("users", str(ctx.message.author.id)) is not None:
@@ -126,10 +134,12 @@ async def user_setup(ctx):
         database.zadd("users", {str(ctx.message.author.id): 0})
         await ctx.send("Welcome <@" + str(ctx.message.author.id) + ">!")
 
+
 # Function to run on error
 def error_skip(ctx):
     database.lset(str(ctx.channel.id), 1, "1")
     database.lset(str(ctx.channel.id), 0, "")
+
 
 # Function to send a bird picture:
 # ctx - context for message (discord thing)
@@ -151,7 +161,24 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     await ctx.send("**Fetching.** This may take a while.", delete_after=10.0)
     # trigger "typing" discord message
     await ctx.trigger_typing()
+    
+    with concurrent.futures.ThreadPoolExecutor() as pool:
+        response = await loop.run_in_executor(pool, download, ctx, bird, addOn)
 
+    filename = str(response[0])
+    extension = str(response[1])
+    statInfo = os.stat(filename)
+    if statInfo.st_size > 8000000:  # another filesize check
+        await ctx.send("Oops! File too large :(\nPlease try again.")
+    else:
+        with open(filename, 'rb') as img:
+            if message is not None:
+                await ctx.send(message)
+            # change filename to avoid spoilers
+            await ctx.send(file=discord.File(img, filename="bird."+extension))
+
+
+def download(ctx, bird, addOn=None):
     # fetch scientific names of birds
     if bird in birdList:
         index = birdList.index(bird)
@@ -173,8 +200,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
         arguments = {"keywords": sciBird +
                      str(addOn), "limit": 15, "print_urls": True}
         # passing the arguments to the function
-        with concurrent.futures.ThreadPoolExecutor() as pool:
-            paths = await loop.run_in_executor(pool, response.download, arguments)
+        paths = response.download(arguments)
         print("paths: "+str(paths))
         paths = paths[0]
         images = [paths[i] for i in sorted(paths.keys())]
@@ -200,17 +226,8 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
             print("found one!")
             break
         print("size: "+str(statInfo.st_size))
+    return [image_link, extension]
 
-    filename = str(image_link)
-    statInfo = os.stat(filename)
-    if statInfo.st_size > 8000000:  # another filesize check
-        await ctx.send("Oops! File too large :(\nPlease try again.")
-    else:
-        with open(filename, 'rb') as img:
-            if message is not None:
-                await ctx.send(message)
-            # change filename to avoid spoilers
-            await ctx.send(file=discord.File(img, filename="bird."+extension))
 
 # sends a birdsong
 async def send_birdsong(ctx, bird, message=None):
@@ -272,12 +289,7 @@ async def send_birdsong(ctx, bird, message=None):
     else:
         await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
         print("error:" + str(response.status_code))
-    
-    try:
-        shutil.rmtree(r'songs/')
-        print("Cleared songs.")
-    except FileNotFoundError:
-        print("Already cleared.")
+
 
 # spellcheck - allows one letter off/extra
 def spellcheck(worda, wordb):
@@ -317,6 +329,7 @@ def spellcheck(worda, wordb):
                 return False
     else:
         return True
+
 
 ######
 # COMMANDS
