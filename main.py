@@ -5,7 +5,7 @@ import wikipedia
 from random import randint
 from discord.ext import tasks, commands
 from google_images_download import google_images_download
-import httpx
+import aiohttp
 import shutil
 import eyed3
 import redis
@@ -18,7 +18,8 @@ response = google_images_download.googleimagesdownload()
 # Initialize bot
 bot = commands.Bot(command_prefix=['b!', 'b.', 'b#'],
                    case_insensitive=True,
-                   description="BirdID - Your Very Own Ornithologist")
+                   description="BirdID - Your Very Own Ornithologist",
+                   dm_help=True)
 
 # Valid file types
 valid_extensions = ["jpg", "png", "jpeg"]
@@ -149,7 +150,7 @@ def error_skip(ctx):
 # addOn - string to append to search for female/juvenile birds (str)
 async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     loop = asyncio.get_running_loop()
-    if bird is "":
+    if bird == "":
         print("error - bird is blank")
         await ctx.send("There was an error fetching birds. Please try again.")
         database.lset(str(ctx.channel.id), 0, "")
@@ -161,7 +162,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     await ctx.send("**Fetching.** This may take a while.", delete_after=10.0)
     # trigger "typing" discord message
     await ctx.trigger_typing()
-    
+
     with concurrent.futures.ThreadPoolExecutor() as pool:
         response = await loop.run_in_executor(pool, download, ctx, bird, addOn)
 
@@ -178,6 +179,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
             await ctx.send(file=discord.File(img, filename="bird."+extension))
 
 
+# function that gets bird images to run in pool (blocking prevention)
 def download(ctx, bird, addOn=None):
     # fetch scientific names of birds
     if bird in birdList:
@@ -240,55 +242,62 @@ async def send_birdsong(ctx, bird, message=None):
     else:
         sciBird = bird
     # fetch sounds
-    client = httpx.AsyncClient()
-    query = sciBird.replace(" ", "%20")
-    response = await client.get(
-        "https://www.xeno-canto.org/api/2/recordings?query="+query+"%20q:A&page=1")
+    async with aiohttp.ClientSession() as session:
+        query = sciBird.replace(" ", "%20")
+        async with session.get("https://www.xeno-canto.org/api/2/recordings?query="+query+"%20q:A&page=1") as response:
+            if response.status == 200:
+                json = await response.json()
+                recordings = json["recordings"]
+                print("recordings: "+str(recordings))
+                if len(recordings) == 0:  # bird not found
+                    # try with common name instead
+                    query = bird.replace(" ", "%20")
+                    async with session.get("https://www.xeno-canto.org/api/2/recordings?query="+query+"%20q:A&page=1") as response:
+                        if response.status == 200:
+                            json = await response.json()
+                            recordings = json["recordings"]
+                        else:
+                            await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
+                            print("error:" + str(response.status))
 
-    if response.status_code == 200:
-        recordings = response.json()["recordings"]
-        print("recordings: "+str(recordings))
-        if len(recordings) == 0:  # bird not found
-            # try with common name instead
-            query = bird.replace(" ", "%20")
-            response = await client.get(
-                "https://www.xeno-canto.org/api/2/recordings?query="+query+"%20q:A&page=1")
-            if response.status_code == 200:
-                recordings = response.json()["recordings"]
+                if len(recordings) != 0:
+                    url = str(
+                        "https:"+recordings[randint(0, len(recordings)-1)]["file"])
+                    print("url: "+url)
+                    fileName = "songs/"+url.split("/")[3]+".mp3"
+                    async with session.get(url) as songFile:
+                        if songFile.status == 200:
+                            if not os.path.exists("songs/"):
+                                os.mkdir("songs/")
+                            with open(fileName, 'wb') as fd:
+                                while True:
+                                    chunk = await songFile.content.read(128)
+                                    if not chunk:
+                                        break
+                                    fd.write(chunk)
+
+                            # remove spoilers in tag metadata
+                            audioFile = eyed3.load(fileName)
+                            audioFile.tag.remove(fileName)
+
+                            # send song
+                            if os.stat(fileName).st_size > 8000000:
+                                await ctx.send("File too large, please try again.")
+                                return
+                            if message is not None:
+                                await ctx.send(message)
+                            # change filename to avoid spoilers
+                            with open(fileName, "rb") as song:
+                                await ctx.send(file=discord.File(song, filename="bird.mp3"))
+                        else:
+                            await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
+                            print("error:" + str(songFile.status))
+                else:
+                    await ctx.send("Unable to get song - bird was not found.")
+
             else:
                 await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
-                print("error:" + str(response.status_code))
-
-        if len(recordings) != 0:
-            url = str("https:"+recordings[randint(0, len(recordings)-1)]["file"])
-            print("url: "+url)
-            fileName = "songs/"+url.split("/")[3]+".mp3"
-            songFile = await client.get(url)
-            if songFile.status_code == 200:
-                if not os.path.exists("songs/"):
-                    os.mkdir("songs/")
-                with open(fileName, 'wb') as fd:
-                    fd.write(songFile.content)
-
-                # remove spoilers in tag metadata
-                audioFile = eyed3.load(fileName)
-                audioFile.tag.remove(fileName)
-
-                # send song
-                if message is not None:
-                    await ctx.send(message)
-                # change filename to avoid spoilers
-                with open(fileName, "rb") as song:
-                    await ctx.send(file=discord.File(song, filename="bird.mp3"))
-            else:
-                await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
-                print("error:" + str(songFile.status_code))
-        else:
-            await ctx.send("Unable to get song - bird was not found.")
-
-    else:
-        await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
-        print("error:" + str(response.status_code))
+                print("error:" + str(response.status))
 
 
 # spellcheck - allows one letter off/extra
