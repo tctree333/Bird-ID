@@ -1,12 +1,12 @@
 from functions import *
 
 
+# achievement values
+achievement = [10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 690]
+
 class Check(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    # achievement values
-    achievement = [10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 690]
 
     # Check command - argument is the guess
     @commands.command(help='- Checks your answer.', usage="guess", aliases=["guess", "c"])
@@ -16,6 +16,8 @@ class Check(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
+
+        global achievement
 
         currentBird = str(database.lindex(str(ctx.channel.id), 0))[2:-1]
         if currentBird == "":  # no bird
@@ -56,6 +58,8 @@ class Check(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
+        global achievement
+
         currentBird = str(database.lindex(str(ctx.channel.id), 5))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
@@ -94,6 +98,8 @@ class Check(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
+
+        global achievement
 
         currentSongBird = str(database.lindex(str(ctx.channel.id), 2))[2:-1]
         if currentSongBird == "":  # no bird
