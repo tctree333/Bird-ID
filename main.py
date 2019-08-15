@@ -7,7 +7,7 @@ from functions import *
 
 
 # Initialize bot
-bot = commands.Bot(command_prefix=['!'],
+bot = commands.Bot(command_prefix=['b!', 'b.', 'b#'],
                    case_insensitive=True,
                    description="BirdID - Your Very Own Ornithologist")
 
