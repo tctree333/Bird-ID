@@ -101,6 +101,11 @@ class Score(commands.Cog):
         print("leaderboard error")
         if isinstance(error, commands.BadArgument):
             await ctx.send('Not an integer!')
+        else:
+            await ctx.send("""**An uncaught leaderboard error has occurred.**
+                                *Please log this message in #feedback.* 
+                                **Error:** """ + str(error))
+            raise error
 
 
 def setup(bot):

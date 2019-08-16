@@ -21,6 +21,22 @@ async def on_ready():
     # Change discord activity
     await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
+# Here we load our extensions(cogs) that are located in the cogs directory
+initial_extensions = ['cogs.get_birds',
+                      'cogs.check',
+                      'cogs.skip',
+                      'cogs.hint',
+                      'cogs.score',
+                      'cogs.other']
+
+if __name__ == '__main__':
+    for extension in initial_extensions:
+        try:
+            bot.load_extension(extension)
+        except (discord.ClientException, ModuleNotFoundError):
+            print(f'Failed to load extension {extension}.')
+            traceback.print_exc()
+
 # task to clear downloads
 @tasks.loop(hours=72.0)
 async def clear_cache():
@@ -38,31 +54,18 @@ async def clear_cache():
         print("Already cleared songs.")
 
 
-# Here we load our extensions(cogs) that are located in the cogs directory
-initial_extensions = ['cogs.get_birds',
-                      'cogs.check',
-                      'cogs.skip',
-                      'cogs.hint',
-                      'cogs.score',
-                      'cogs.other']
-
-if __name__ == '__main__':
-    for extension in initial_extensions:
-        try:
-            bot.load_extension(extension)
-        except (discord.ClientException, ModuleNotFoundError):
-            print(f'Failed to load extension {extension}.')
-            traceback.print_exc()
-
 ######
-# ERROR CHECKING
+# GLOBAL ERROR CHECKING
 ######
 
-
-# Global error checking
 @bot.event
 async def on_command_error(ctx, error):
     print("Error: "+str(error))
+
+    # don't handle errors with local handlers
+    if hasattr(ctx.command, 'on_error'):
+            return
+
     if isinstance(error, commands.CommandOnCooldown):  # send cooldown
         await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.", delete_after=5.0)
 
@@ -73,12 +76,8 @@ async def on_command_error(ctx, error):
         await ctx.send("This command requires an argument!")
 
     elif isinstance(error, commands.BadArgument):
-        if ctx.command.name == "leaderboard":
-            print("gotcha")
-            return
-        else:
-            print("bad argument")
-            await ctx.send("The argument passed was invalid!")
+        print("bad argument")
+        await ctx.send("The argument passed was invalid!")
 
     elif isinstance(error, commands.CommandInvokeError):
         if isinstance(error.original, redis.exceptions.ResponseError):

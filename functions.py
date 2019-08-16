@@ -58,7 +58,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
             on_error(ctx)
         return
 
-    await ctx.send("**Fetching.** This may take a while.", delete_after=10.0)
+    delete = await ctx.send("**Fetching.** This may take a while.", delete_after=10.0)
     # trigger "typing" discord message
     await ctx.trigger_typing()
 
@@ -72,6 +72,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
         await ctx.send("Oops! File too large :(\nPlease try again.")
     else:
         with open(filename, 'rb') as img:
+            await delete.delete()
             if message is not None:
                 await ctx.send(message)
             # change filename to avoid spoilers
@@ -132,7 +133,7 @@ def download(ctx, bird, addOn=None):
 
 # sends a birdsong
 async def send_birdsong(ctx, bird, message=None):
-    await ctx.send("**Fetching.** This may take a while.", delete_after=10.0)
+    delete = await ctx.send("**Fetching.** This may take a while.", delete_after=10.0)
     # trigger "typing" discord message
     await ctx.trigger_typing()
     if bird in songBirds:
@@ -183,6 +184,7 @@ async def send_birdsong(ctx, bird, message=None):
                             if os.stat(fileName).st_size > 8000000:
                                 await ctx.send("File too large, please try again.")
                                 return
+                            await delete.delete()
                             if message is not None:
                                 await ctx.send(message)
                             # change filename to avoid spoilers
