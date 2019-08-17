@@ -35,13 +35,13 @@ class Score(commands.Cog):
                 return
             if database.zscore("users", str(usera)) is not None:
                 times = str(int(database.zscore("users", str(usera))))
-                user = "<@"+str(usera)+">"
+                user = f"<@{str(usera)}>"
             else:
                 await ctx.send("This user does not exist on our records!")
                 return
         else:
             if database.zscore("users", str(ctx.message.author.id)) is not None:
-                user = "<@"+str(ctx.message.author.id)+">"
+                user = f"<@{str(ctx.message.author.id)}>"
                 times = str(
                     int(database.zscore("users", str(ctx.message.author.id))))
             else:
@@ -79,8 +79,7 @@ class Score(commands.Cog):
         leaderboard = ""
 
         for x in range(len(leaderboard_list)):
-            leaderboard += str(x+1) + ". <@"+str(leaderboard_list[x][0])[
-                2:-1] + "> - "+str(int(leaderboard_list[x][1]))+"\n"
+            leaderboard += f"{str(x+1)}. <@{str(leaderboard_list[x][0])[2:-1]}> - {str(int(leaderboard_list[x][1]))}\n"
         embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
         if database.zscore("users", str(ctx.message.author.id)) is not None:

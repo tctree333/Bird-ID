@@ -4,6 +4,7 @@ from functions import *
 # achievement values
 achievement = [10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 690]
 
+
 class Check(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -37,7 +38,7 @@ class Check(commands.Cog):
                 if int(database.zscore("users", str(ctx.message.author.id))) in achievement:
                     number = str(
                         int(database.zscore("users", str(ctx.message.author.id))))
-                    await ctx.send("Wow! You have answered "+number+" birds correctly!")
+                    await ctx.send(f"Wow! You have answered {number} birds correctly!")
                     filename = 'achievements/' + number + ".PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
@@ -78,7 +79,7 @@ class Check(commands.Cog):
                 if int(database.zscore("users", str(ctx.message.author.id))) in achievement:
                     number = str(
                         int(database.zscore("users", str(ctx.message.author.id))))
-                    await ctx.send("Wow! You have answered "+number+" birds correctly!")
+                    await ctx.send(f"Wow! You have answered {number} birds correctly!")
                     filename = 'achievements/' + number + ".PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
@@ -119,7 +120,7 @@ class Check(commands.Cog):
                 if int(database.zscore("users", str(ctx.message.author.id))) in achievement:
                     number = str(
                         int(database.zscore("users", str(ctx.message.author.id))))
-                    await ctx.send("Wow! You have answered "+number+" birds correctly!")
+                    await ctx.send(f"Wow! You have answered {number} birds correctly!")
                     filename = 'achievements/' + number + ".PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))

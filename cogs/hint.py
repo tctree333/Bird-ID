@@ -16,7 +16,7 @@ class Hint(commands.Cog):
 
         currentBird = str(database.lindex(str(ctx.channel.id), 0))[2:-1]
         if currentBird != "":  # check if there is bird
-            await ctx.send("The first letter is " + currentBird[0])
+            await ctx.send(f"The first letter is {currentBird[0]}")
         else:
             await ctx.send("You need to ask for a bird first!")
 
@@ -31,7 +31,7 @@ class Hint(commands.Cog):
 
         currentBird = str(database.lindex(str(ctx.channel.id), 5))[2:-1]
         if currentBird != "":  # check if there is bird
-            await ctx.send("The first letter is " + currentBird[0])
+            await ctx.send(f"The first letter is {currentBird[0]}")
         else:
             await ctx.send("You need to ask for a bird first!")
 
@@ -46,7 +46,7 @@ class Hint(commands.Cog):
 
         currentSongBird = str(database.lindex(str(ctx.channel.id), 2))[2:-1]
         if currentSongBird != "":  # check if there is bird
-            await ctx.send("The first letter is " + currentSongBird[0])
+            await ctx.send(f"The first letter is {currentSongBird[0]}")
         else:
             await ctx.send("You need to ask for a bird first!")
 

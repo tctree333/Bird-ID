@@ -25,7 +25,12 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # }
 
 
+class GenericError(commands.CommandError):
+    def __init__(self, message=None):
+        return super().__init__(message=message)
+
 # Lists of birds, memes, and other info
+
 
 birdList = []
 sciBirdList = []

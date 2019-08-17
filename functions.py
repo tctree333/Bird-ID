@@ -51,25 +51,31 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     loop = asyncio.get_running_loop()
     if bird == "":
         print("error - bird is blank")
-        await ctx.send("There was an error fetching birds. Please try again.")
+        await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
         database.lset(str(ctx.channel.id), 0, "")
         database.lset(str(ctx.channel.id), 1, "0")
         if on_error is not None:
             on_error(ctx)
         return
 
-    delete = await ctx.send("**Fetching.** This may take a while.", delete_after=10.0)
+    delete = await ctx.send("**Fetching.** This may take a while.", delete_after=30.0)
     # trigger "typing" discord message
     await ctx.trigger_typing()
 
     with concurrent.futures.ThreadPoolExecutor() as pool:
-        response = await loop.run_in_executor(pool, download, ctx, bird, addOn)
+        try:
+            response = await loop.run_in_executor(pool, download, ctx, bird, addOn)
+        except GenericError:
+            await delete.delete()
+            await ctx.send("**An error has occurred while fetching images.**\n*Please try again.*")
+            return
 
     filename = str(response[0])
     extension = str(response[1])
     statInfo = os.stat(filename)
     if statInfo.st_size > 8000000:  # another filesize check
-        await ctx.send("Oops! File too large :(\nPlease try again.")
+        await delete.delete()
+        await ctx.send("**Oops! File too large :(**\n*Please try again.*")
     else:
         with open(filename, 'rb') as img:
             await delete.delete()
@@ -90,10 +96,10 @@ def download(ctx, bird, addOn=None):
 
     try:
         print("trying")
-        images = os.listdir("downloads/"+sciBird+addOn+"/")
-        print("downloads/"+sciBird+addOn+"/")
+        images = os.listdir(f"downloads/{sciBird}{addOn}/")
+        print(f"downloads/{sciBird}{addOn}/")
         for path in images:
-            images[images.index(path)] = "downloads/"+sciBird+addOn+"/"+path
+            images[images.index(path)] = f"downloads/{sciBird}{addOn}/{path}"
         print("images: "+str(images))
     except FileNotFoundError:
         print("fail")
@@ -111,29 +117,34 @@ def download(ctx, bird, addOn=None):
 
     prevJ = int(str(database.lindex(str(ctx.channel.id), 7))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
-    j = randint(0, int(round(len(images)*(4/5))))
-    while j == prevJ:
+    if len(images) != 0:
+        j = (prevJ+1) % len(images)
         print("prevJ: "+str(prevJ))
         print("j: "+str(j))
-        print("same photo, skipping")
-        j = randint(0, int(round(len(images)*(4/5))))
-    database.lset(str(ctx.channel.id), 7, str(j))
 
-    for x in range(j, len(images)):  # check file type and size
-        image_link = images[x]
-        extension = image_link.split('.')[-1]
-        print("extension: "+str(extension))
-        statInfo = os.stat(image_link)
-        if extension.lower() in valid_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
-            print("found one!")
-            break
-        print("size: "+str(statInfo.st_size))
+        for x in range(j, len(images)):  # check file type and size
+            image_link = images[x]
+            extension = image_link.split('.')[-1]
+            print("extension: "+str(extension))
+            statInfo = os.stat(image_link)
+            print("size: "+str(statInfo.st_size))
+            if extension.lower() in valid_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
+                print("found one!")
+                break
+            elif x == len(images)-1:
+                j = (j+1) % (len(images)-1)
+                raise GenericError("No Valid Images Found")
+
+        database.lset(str(ctx.channel.id), 7, str(j))
+    else:
+        raise GenericError("No Images Found")
+
     return [image_link, extension]
 
 
 # sends a birdsong
 async def send_birdsong(ctx, bird, message=None):
-    delete = await ctx.send("**Fetching.** This may take a while.", delete_after=10.0)
+    delete = await ctx.send("**Fetching.** This may take a while.", delete_after=30.0)
     # trigger "typing" discord message
     await ctx.trigger_typing()
     if bird in songBirds:
@@ -144,7 +155,7 @@ async def send_birdsong(ctx, bird, message=None):
     # fetch sounds
     async with aiohttp.ClientSession() as session:
         query = sciBird.replace(" ", "%20")
-        async with session.get("https://www.xeno-canto.org/api/2/recordings?query="+query+"%20q:A&page=1") as response:
+        async with session.get(f"https://www.xeno-canto.org/api/2/recordings?query={query}%20q:A&page=1") as response:
             if response.status == 200:
                 json = await response.json()
                 recordings = json["recordings"]
@@ -152,19 +163,20 @@ async def send_birdsong(ctx, bird, message=None):
                 if len(recordings) == 0:  # bird not found
                     # try with common name instead
                     query = bird.replace(" ", "%20")
-                    async with session.get("https://www.xeno-canto.org/api/2/recordings?query="+query+"%20q:A&page=1") as response:
+                    async with session.get(f"https://www.xeno-canto.org/api/2/recordings?query={query}%20q:A&page=1") as response:
                         if response.status == 200:
                             json = await response.json()
                             recordings = json["recordings"]
                         else:
+                            await delete.delete()
                             await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
                             print("error:" + str(response.status))
 
                 if len(recordings) != 0:
                     url = str(
-                        "https:"+recordings[randint(0, len(recordings)-1)]["file"])
+                        f"https:{recordings[randint(0, len(recordings)-1)]['file']}")
                     print("url: "+url)
-                    fileName = "songs/"+url.split("/")[3]+".mp3"
+                    fileName = f"songs/{url.split('/')[3]}.mp3"
                     async with session.get(url) as songFile:
                         if songFile.status == 200:
                             if not os.path.exists("songs/"):
@@ -182,7 +194,8 @@ async def send_birdsong(ctx, bird, message=None):
 
                             # send song
                             if os.stat(fileName).st_size > 8000000:
-                                await ctx.send("File too large, please try again.")
+                                await delete.delete()
+                                await ctx.send("**Oops! File too large :(**\n*Please try again.*")
                                 return
                             await delete.delete()
                             if message is not None:
@@ -191,12 +204,15 @@ async def send_birdsong(ctx, bird, message=None):
                             with open(fileName, "rb") as song:
                                 await ctx.send(file=discord.File(song, filename="bird.mp3"))
                         else:
+                            await delete.delete()
                             await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
                             print("error:" + str(songFile.status))
                 else:
+                    await delete.delete()
                     await ctx.send("Unable to get song - bird was not found.")
 
             else:
+                await delete.delete()
                 await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
                 print("error:" + str(response.status))
 
