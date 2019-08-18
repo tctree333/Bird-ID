@@ -1,3 +1,4 @@
+import typing
 from functions import *
 
 
@@ -15,24 +16,27 @@ class Score(commands.Cog):
         await user_setup(ctx)
 
         totalCorrect = int(database.lindex(str(ctx.channel.id), 4))
-        await ctx.send("Wow, looks like a total of " + str(totalCorrect) + " birds have been answered correctly in this channel! Good job everyone!")
+        await ctx.send(f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! Good job everyone!")
 
     # sends correct answers by a user
-    @commands.command(brief="- how many correct answers given by a user", help="- how many correct answers given by a user, mention someone to get their score, don't mention anyone to get your score", aliases=["us"])
+    @commands.command(brief="- how many correct answers given by a user", 
+                    help="""- How many correct answers given by a user.
+                            Mention someone to get their score.
+                            Don't mention anyone to get your score.""", 
+                    aliases=["us"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def userscore(self, ctx, user=None):
+    async def userscore(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
         print("user score")
 
         await channel_setup(ctx)
         await user_setup(ctx)
 
         if user is not None:
-            try:
-                usera = int(user[1:len(user)-1].strip("@!"))
-                print(usera)
-            except ValueError:
-                await ctx.send("Mention a user!")
+            if type(user) is str:
+                await ctx.send("Not a user!")
                 return
+            usera = user.id
+            print(usera)
             if database.zscore("users", str(usera)) is not None:
                 times = str(int(database.zscore("users", str(usera))))
                 user = f"<@{str(usera)}>"
@@ -47,10 +51,11 @@ class Score(commands.Cog):
             else:
                 await ctx.send("You haven't used this bot yet! (except for this)")
                 return
+
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         embed.add_field(name="User Score:",
-                        value=user + " has answered correctly " + times + " times.")
+                        value=f"{user} has answered correctly {times} times.")
         await ctx.send(embed=embed)
 
     # leaderboard - returns top 1-10 users
@@ -85,8 +90,8 @@ class Score(commands.Cog):
         if database.zscore("users", str(ctx.message.author.id)) is not None:
             placement = int(database.zrevrank(
                 "users", str(ctx.message.author.id))) + 1
-            embed.add_field(name="You:", value="You are #" +
-                            str(placement) + " on the leaderboard.",
+            embed.add_field(name="You:", 
+                            value=f"You are #{str(placement)} on the leaderboard.",
                             inline=False)
         else:
             embed.add_field(name="You:",
