@@ -237,23 +237,21 @@ def spellcheck(worda, wordb):
             for i in range(len(list1)):
                 if list1[i] != list2[i]:
                     wrongcount += 1
-            if wrongcount > 1:
+        if len(list1) != len(list2):
+            if abs(len(longerword)-len(shorterword)) > 1:
                 return False
             else:
-                return True
-        if abs(len(longerword)-len(shorterword)) > 1:
+                for i in range(len(shorterword)):
+                    try:
+                        if longerword[i] != shorterword[i]:
+                            wrongcount += 1
+                            del longerword[i]
+                    except IndexError:
+                        wrongcount = 100
+
+        if wrongcount > 1:
             return False
         else:
-            for i in range(len(shorterword)):
-                try:
-                    if longerword[i] != shorterword[i]:
-                        wrongcount += 1
-                        del longerword[i]
-                except:
-                    return False
-            if wrongcount < 2:
-                return True
-            else:
-                return False
+            return True
     else:
         return True
