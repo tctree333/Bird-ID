@@ -32,11 +32,11 @@ class GenericError(commands.CommandError):
 # Lists of birds, memes, and other info
 
 
-birdList = []
-sciBirdList = []
-memeList = []
-songBirds = []
-sciSongBirds = []
+birdList = ["birdList"]
+sciBirdList = ["sciBirdList"]
+memeList = ["memeList"]
+songBirds = ["songBirds"]
+sciSongBirds = ["sciSongBirds"]
 
 
 def _main():
@@ -45,41 +45,16 @@ def _main():
     global memeList
     global songBirds
     global sciSongBirds
+    files = [birdList, sciBirdList, memeList, songBirds, sciSongBirds]
 
-    # Converts txt file of birds into list
-    birdList = []
-    with open('data/birdList.txt', 'r') as fileIn:
-        for line in fileIn:
-            birdList.append(line.strip('\n'))
-    print("birdList done!")
-
-    # Converts txt file of scientific birds into list
-    sciBirdList = []
-    with open('data/scibirds.txt', 'r') as fileIn:
-        for line in fileIn:
-            sciBirdList.append(line.strip('\n'))
-    print("sciBirdList done!")
-
-    # Converts meme txt into list
-    memeList = []
-    with open('data/memes.txt', 'r') as fileIn:
-        for line in fileIn:
-            memeList.append(line.strip('\n'))
-        print("memeList done!")
-
-    # Converts txt file of songbirds into list
-    songBirds = []
-    with open('data/birdsongs.txt', 'r') as fileIn:
-        for line in fileIn:
-            songBirds.append(line.strip('\n'))
-        print("songBirds done!")
-
-    # Converts txt file of scientific songbirds into list
-    sciSongBirds = []
-    with open('data/scibirdsongs.txt', 'r') as fileIn:
-        for line in fileIn:
-            sciSongBirds.append(line.strip('\n'))
-        print("sciSongBirds done!")
+    # Converts txt file of data into lists
+    for list in files:
+        print(f"Working on {list[0]}")
+        with open(f'data/{list[0]}.txt', 'r') as fileIn:
+            for line in fileIn:
+                list.append(line.strip('\n'))
+        list.remove(str(list[0]))
+        print("Done!")
 
 
 _main()
