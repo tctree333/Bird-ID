@@ -37,8 +37,9 @@ async def user_setup(ctx):
 
 # Function to run on error
 def error_skip(ctx):
-    database.lset(str(ctx.channel.id), 1, "1")
+    print("ok")
     database.lset(str(ctx.channel.id), 0, "")
+    database.lset(str(ctx.channel.id), 1, "1")
 
 
 # Function to send a bird picture:
@@ -52,8 +53,6 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     if bird == "":
         print("error - bird is blank")
         await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
-        database.lset(str(ctx.channel.id), 0, "")
-        database.lset(str(ctx.channel.id), 1, "0")
         if on_error is not None:
             on_error(ctx)
         return
@@ -100,10 +99,12 @@ def download(ctx, bird, addOn=None):
         print("trying")
         images = os.listdir(f"downloads/{sciBird}{addOn}/")
         print(f"downloads/{sciBird}{addOn}/")
+        if len(images) == 0:
+            raise GenericError("No Images")
         for path in images:
             images[images.index(path)] = f"downloads/{sciBird}{addOn}/{path}"
         print("images: "+str(images))
-    except FileNotFoundError:
+    except (FileNotFoundError, GenericError):
         print("fail")
         # if not found, fetch images
         print("scibird: "+str(sciBird))
@@ -134,7 +135,7 @@ def download(ctx, bird, addOn=None):
                 print("found one!")
                 break
             elif x == len(images)-1:
-                j = (j+1) % (len(images)-1)
+                j = (j+1) % (len(images))
                 raise GenericError("No Valid Images Found")
 
         database.lset(str(ctx.channel.id), 7, str(j))

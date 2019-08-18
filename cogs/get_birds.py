@@ -34,9 +34,9 @@ class Birds(commands.Cog):
             database.lset(str(ctx.channel.id), 8, str(currentBird))
             database.lset(str(ctx.channel.id), 0, str(currentBird))
             print("currentBird: "+str(currentBird))
-            await send_bird(ctx, currentBird, error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer. Use `o>hint` for a hint.**", addOn=add_on)
+            await send_bird(ctx, currentBird, on_error=error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer. Use `o>hint` for a hint.**", addOn=add_on)
         else:  # if no, give the same bird
-            await send_bird(ctx, str(database.lindex(str(ctx.channel.id), 0))[2:-1], error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**", addOn=add_on)
+            await send_bird(ctx, str(database.lindex(str(ctx.channel.id), 0))[2:-1], on_error=error_skip, message="*Here you go!* \n**Use `o>bird` again to get a new picture of the same bird, or `o>skip` to get a new bird. Use `o>check guess` to check your answer.**", addOn=add_on)
             database.lset(str(ctx.channel.id), 1, "0")
 
     # goatsucker command - no args
