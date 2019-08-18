@@ -68,6 +68,8 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
         except GenericError:
             await delete.delete()
             await ctx.send("**An error has occurred while fetching images.**\n*Please try again.*")
+            if on_error is not None:
+                on_error(ctx)
             return
 
     filename = str(response[0])

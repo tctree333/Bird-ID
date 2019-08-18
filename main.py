@@ -1,7 +1,6 @@
 # Import modules
 from discord.ext import tasks
 import shutil
-import sys
 import traceback
 from functions import *
 
