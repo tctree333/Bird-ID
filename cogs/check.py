@@ -2,7 +2,7 @@ from functions import *
 
 
 # achievement values
-achievement = [10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 690]
+achievement = [10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690]
 
 
 class Check(commands.Cog):
