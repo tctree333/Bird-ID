@@ -115,9 +115,10 @@ class Other(commands.Cog):
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         embed.add_field(name="Test",
-                        value="https://en.wikipedia.org/wiki/Bald_eagle",
+                        value="Errors whee",
                         inline=False)
         await ctx.send(embed=embed)
+        raise GenericError("Test Error")
 
 
 def setup(bot):
