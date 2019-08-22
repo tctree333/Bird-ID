@@ -38,7 +38,7 @@ class Other(commands.Cog):
             await ctx.send("Sorry, that page was not found.")
 
     # meme command - sends a random bird video/gif
-    @commands.command(help="- sends a funny bird video!")
+    @commands.command(help="- Sends a funny bird video!")
     @commands.cooldown(1, 300.0, type=commands.BucketType.channel)
     async def meme(self, ctx):
         print("meme")
@@ -50,7 +50,7 @@ class Other(commands.Cog):
         await ctx.send(memeList[x])
 
     # bot info command - gives info on bot
-    @commands.command(help="- gives info on bot, support server invite", aliases=["bot_info", "support"])
+    @commands.command(help="- Gives info on bot, support server invite", aliases=["bot_info", "support"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def botinfo(self, ctx):
         print("bot info")
@@ -73,7 +73,7 @@ class Other(commands.Cog):
         await ctx.send("https://discord.gg/fXxYyDJ")
 
     # invite command - sends invite link
-    @commands.command(help="- get the invite link for this bot")
+    @commands.command(help="- Get the invite link for this bot")
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def invite(self, ctx):
         print("invite")

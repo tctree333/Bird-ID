@@ -7,7 +7,7 @@ class Score(commands.Cog):
         self.bot = bot
 
     # returns total number of correct answers so far
-    @commands.command(help="- total correct answers")
+    @commands.command(help="- Total correct answers in a channel")
     @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
     async def score(self, ctx):
         print("score")
@@ -19,7 +19,7 @@ class Score(commands.Cog):
         await ctx.send(f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! Good job everyone!")
 
     # sends correct answers by a user
-    @commands.command(brief="- how many correct answers given by a user", 
+    @commands.command(brief="- How many correct answers given by a user", 
                     help="""- How many correct answers given by a user.
                             Mention someone to get their score.
                             Don't mention anyone to get your score.""", 
