@@ -88,7 +88,11 @@ async def on_command_error(ctx, error):
 
     elif isinstance(error, commands.BadArgument):
         print("bad argument")
-        await ctx.send("The argument passed was invalid!")
+        await ctx.send("The argument passed was invalid. Please try again.")
+    
+    elif isinstance(error, commands.ArgumentParsingError):
+        print("quote error")
+        await ctx.send("An invalid character was detected. Please try again.")
 
     # don't handle errors with local handlers
     elif hasattr(ctx.command, 'on_error'):
