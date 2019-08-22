@@ -61,10 +61,6 @@ async def clear_cache():
 async def on_command_error(ctx, error):
     print("Error: "+str(error))
 
-    # don't handle errors with local handlers
-    if hasattr(ctx.command, 'on_error'):
-            return
-
     if isinstance(error, commands.CommandOnCooldown):  # send cooldown
         await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.", delete_after=5.0)
 
@@ -77,6 +73,10 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.BadArgument):
         print("bad argument")
         await ctx.send("The argument passed was invalid!")
+
+    # don't handle errors with local handlers
+    elif hasattr(ctx.command, 'on_error'):
+            return
 
     elif isinstance(error, commands.CommandInvokeError):
         if isinstance(error.original, redis.exceptions.ResponseError):

@@ -57,7 +57,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
             on_error(ctx)
         return
 
-    delete = await ctx.send("**Fetching.** This may take a while.", delete_after=30.0)
+    delete = await ctx.send("**Fetching.** This may take a while.")
     # trigger "typing" discord message
     await ctx.trigger_typing()
 
@@ -147,7 +147,7 @@ def download(ctx, bird, addOn=None):
 
 # sends a birdsong
 async def send_birdsong(ctx, bird, message=None):
-    delete = await ctx.send("**Fetching.** This may take a while.", delete_after=30.0)
+    delete = await ctx.send("**Fetching.** This may take a while.")
     # trigger "typing" discord message
     await ctx.trigger_typing()
     if bird in songBirds:
