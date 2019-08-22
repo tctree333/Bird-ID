@@ -81,19 +81,28 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.CommandInvokeError):
         if isinstance(error.original, redis.exceptions.ResponseError):
             if database.exists(str(ctx.channel.id)):
-                await ctx.send("**An unexpected ResponseError has occurred.** \n*Please log this message in #feedback* \n**Error:** " + str(error))
+                await ctx.send("""**An unexpected ResponseError has occurred.**
+                                *Please log this message in #support in the support server below, or try again.*
+                                **Error:** """ + str(error))
+                await ctx.send("https://discord.gg/fXxYyDJ")
             else:
                 await channel_setup(ctx)
                 await ctx.send("Please run that command again.")
 
         else:
             print("uncaught command error")
-            await ctx.send("**An uncaught command error has occurred.** \n*Please log this message in #feedback.* \n**Error:**  " + str(error))
+            await ctx.send("""**An uncaught command error has occurred.**
+                             *Please log this message in #support in the support server below, or try again.*
+                             **Error:**  """ + str(error))
+            await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
 
     else:
         print("uncaught non-command")
-        await ctx.send("**An uncaught non-command error has occurred.** \n*Please log this message in #feedback.* \n**Error:**  " + str(error))
+        await ctx.send("""**An uncaught non-command error has occurred.**
+                         *Please log this message in #support in the support server below, or try again.*
+                         **Error:**  """ + str(error))
+        await ctx.send("https://discord.gg/fXxYyDJ")
         raise error
 
 
