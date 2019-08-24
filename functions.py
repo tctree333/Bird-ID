@@ -107,9 +107,9 @@ def download(ctx, bird, addOn=None):
     # fetch scientific names of birds
     if bird in birdList:
         index = birdList.index(bird)
-        sciBird = sciBirdList[index]
+        sciBird = f"{sciBirdList[index]} (bird)"
     else:
-        sciBird = bird
+        sciBird = f"{bird} (bird)"
 
     try:
         print("trying")
@@ -168,9 +168,10 @@ async def send_birdsong(ctx, bird, message=None):
     await ctx.trigger_typing()
     if bird in songBirds:
         index = songBirds.index(bird)
-        sciBird = sciSongBirds[index]
+        sciBird = f"{sciSongBirds[index]} (bird)"
     else:
-        sciBird = bird
+        sciBird = f"{bird} (bird)"
+        
     # fetch sounds
     async with aiohttp.ClientSession() as session:
         query = sciBird.replace(" ", "%20")

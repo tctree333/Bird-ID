@@ -49,7 +49,7 @@ class Other(commands.Cog):
             page = wikipedia.page(arg)
             await ctx.send(page.url)
         except wikipedia.exceptions.DisambiguationError:
-            await ctx.send("Sorry, that page was not found.")
+            await ctx.send("Sorry, that page was not found. Try being more specific.")
         except wikipedia.exceptions.PageError:
             await ctx.send("Sorry, that page was not found.")
 

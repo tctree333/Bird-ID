@@ -46,7 +46,7 @@ class Check(commands.Cog):
             database.lset(str(ctx.channel.id), 1, "1")
             if spellcheck(arg.lower().replace("-", " "), currentBird.lower().replace("-", " ")) is True:
                 await ctx.send("Correct! Good job!")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{sciBird} (bird)")
                 await ctx.send(page.url)
                 database.lset(str(ctx.channel.id), 4, str(
                     int(database.lindex(str(ctx.channel.id), 4))+1))
@@ -61,7 +61,7 @@ class Check(commands.Cog):
 
             else:
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{sciBird} (bird)")
                 await ctx.send(page.url)
             print("currentBird: "+str(currentBird.lower().replace("-", " ")))
             print("args: "+str(arg.lower().replace("-", " ")))
@@ -87,7 +87,7 @@ class Check(commands.Cog):
             database.lset(str(ctx.channel.id), 5, "")
             if spellcheck(arg.lower().replace("-", " "), currentBird.lower().replace("-", " ")) is True:
                 await ctx.send("Correct! Good job!")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{sciBird} (bird)")
                 await ctx.send(page.url)
                 database.lset(str(ctx.channel.id), 4, str(
                     int(database.lindex(str(ctx.channel.id), 4))+1))
@@ -102,7 +102,7 @@ class Check(commands.Cog):
 
             else:
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{sciBird} (bird)")
                 await ctx.send(page.url)
             print("currentBird: "+str(currentBird.lower().replace("-", " ")))
             print("args: "+str(arg.lower().replace("-", " ")))
@@ -128,7 +128,7 @@ class Check(commands.Cog):
             database.lset(str(ctx.channel.id), 3, "1")
             if spellcheck(arg.lower().replace("-", " "), currentSongBird.lower().replace("-", " ")) is True:
                 await ctx.send("Correct! Good job!")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{sciBird} (bird)")
                 await ctx.send(page.url)
                 database.lset(str(ctx.channel.id), 4, str(
                     int(database.lindex(str(ctx.channel.id), 4))+1))
@@ -143,7 +143,7 @@ class Check(commands.Cog):
 
             else:
                 await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{sciBird} (bird)")
                 await ctx.send(page.url)
             print("currentBird: "+str(currentSongBird.lower().replace("-", " ")))
             print("args: "+str(arg.lower().replace("-", " ")))

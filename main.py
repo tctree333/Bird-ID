@@ -109,6 +109,12 @@ async def on_command_error(ctx, error):
                 await channel_setup(ctx)
                 await ctx.send("Please run that command again.")
 
+        elif isinstance(error.original, wikipedia.exceptions.DisambiguationError):
+            await ctx.send("Wikipedia page not found. (Disambiguation Error)")
+        
+        elif isinstance(error.original, wikipedia.exceptions.PageError):
+            await ctx.send("Wikipedia page not found.")
+
         else:
             print("uncaught command error")
             await ctx.send("""**An uncaught command error has occurred.**
