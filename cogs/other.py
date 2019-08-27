@@ -66,7 +66,7 @@ class Other(commands.Cog):
         await ctx.send(memeList[x])
 
     # bot info command - gives info on bot
-    @commands.command(help="- Gives info on bot, support server invite", aliases=["bot_info", "support"])
+    @commands.command(help="- Gives info on bot, support server invite, stats", aliases=["bot_info", "support", "stats"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def botinfo(self, ctx):
         print("bot info")
@@ -83,7 +83,7 @@ class Other(commands.Cog):
                         value="If you are experiencing any issues, have feature requests, or want to get updates on bot status, join our support server below.",
                         inline=False)
         embed.add_field(name="Stats",
-                        value=f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. The WebSocket latency is {str(round(self.bot.latency, 2))}.",
+                        value=f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. The WebSocket latency is {str(round((self.bot.latency*1000)))} ms.",
                         inline=False)
         await ctx.send(embed=embed)
         await ctx.send("https://discord.gg/fXxYyDJ")
