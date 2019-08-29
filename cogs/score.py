@@ -103,7 +103,10 @@ class Score(commands.Cog):
             user = ctx.guild.get_member(int(leaderboard_list[x][0]))
             if user is None:
                 user = self.bot.get_user(int(leaderboard_list[x][0]))
-                user = user.name
+                if user is None:
+                    user = "**Deleted**"
+                else:
+                    user = f"**{user.name}#{user.discriminator}**"
             else:
                 user = f"<@{str(leaderboard_list[x][0])[2:-1]}>"
             leaderboard += f"{str(x+1)}. {user} - {str(int(leaderboard_list[x][1]))}\n"
