@@ -100,7 +100,13 @@ class Score(commands.Cog):
         leaderboard = ""
 
         for x in range(len(leaderboard_list)):
-            leaderboard += f"{str(x+1)}. <@{str(leaderboard_list[x][0])[2:-1]}> - {str(int(leaderboard_list[x][1]))}\n"
+            user = ctx.guild.get_member(int(leaderboard_list[x][0]))
+            if user is None:
+                user = self.bot.get_user(int(leaderboard_list[x][0]))
+                user = user.name
+            else:
+                user = f"<@{str(leaderboard_list[x][0])[2:-1]}>"
+            leaderboard += f"{str(x+1)}. {user} - {str(int(leaderboard_list[x][1]))}\n"
         embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
         if database.zscore("users", str(ctx.message.author.id)) is not None:
