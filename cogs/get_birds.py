@@ -53,7 +53,6 @@ class Birds(commands.Cog):
             await send_bird(ctx, currentBird, on_error=error_skip, message="*Here you go!* \n**Use `b!bird` again to get a new picture of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**", addOn=add_on)
         else:  # if no, give the same bird
             await send_bird(ctx, str(database.lindex(str(ctx.channel.id), 0))[2:-1], on_error=error_skip, message="*Here you go!* \n**Use `b!bird` again to get a new picture of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer.**", addOn=add_on)
-            database.lset(str(ctx.channel.id), 1, "0")
 
     # goatsucker command - no args
     @commands.command(help='- Sends a random goatsucker to ID', aliases=["gs"])
