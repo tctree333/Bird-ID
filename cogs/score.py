@@ -123,8 +123,8 @@ class Score(commands.Cog):
             await ctx.send('Not an integer!')
         else:
             await ctx.send("""**An uncaught leaderboard error has occurred.**
-                                *Please log this message in #support in the support server below, or try again.* 
-                                **Error:** """ + str(error))
+*Please log this message in #support in the support server below, or try again.* 
+**Error:** """ + str(error))
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
 
