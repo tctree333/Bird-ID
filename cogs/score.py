@@ -75,7 +75,7 @@ class Score(commands.Cog):
         await ctx.send(embed=embed)
 
     # leaderboard - returns top 1-10 users
-    @commands.command(brief="- Top scores", help="- Top scores, can be between 1 and 10, default is 5", aliases=["lb"])
+    @commands.command(brief="- Top scores", help="- Top scores, argument can be between 1 and 10, default is 5", aliases=["lb"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def leaderboard(self, ctx, placings=5):
         print("leaderboard")
@@ -125,7 +125,7 @@ class Score(commands.Cog):
         await ctx.send(embed=embed)
 
     # missed - returns top 1-10 missed birds
-    @commands.command(brief="- Top incorrect birds", help="- Top scores, can be between 1 and 10, default is 5", aliases=["m"])
+    @commands.command(brief="- Top globally incorrect birds", help="- Top globally incorrect birds, argument can be between 1 and 10, default is 5", aliases=["m"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def missed(self, ctx, placings=5):
         print("missed")
