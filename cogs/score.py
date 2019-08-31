@@ -124,14 +124,61 @@ class Score(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    # missed - returns top 1-10 missed birds
+    @commands.command(brief="- Top incorrect birds", help="- Top scores, can be between 1 and 10, default is 5", aliases=["m"])
+    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    async def missed(self, ctx, placings=5):
+        print("missed")
+
+        await channel_setup(ctx)
+        await user_setup(ctx)
+
+        leaderboard_list = []
+        if database.zcard("incorrect") == 0:
+            await ctx.send("There are no birds in the database.")
+            return
+        if placings > 10 or placings < 1:
+            await ctx.send("Not a valid number. Pick one between 1 and 10!")
+            return
+        if placings > database.zcard("incorrect"):
+            placings = database.zcard("incorrect")
+
+        leaderboard_list = database.zrevrangebyscore(
+            "incorrect", "+inf", "-inf", 0, placings, True)
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        leaderboard = ""
+
+        for x in range(len(leaderboard_list)):
+            leaderboard += f"{str(x+1)}. {str(leaderboard_list[x][0])[2:-1]} - {str(int(leaderboard_list[x][1]))}\n"
+        embed.add_field(name="Top Missed Birds", value=leaderboard, inline=False)
+
+        await ctx.send(embed=embed)
+
     # Command-specific error checking
     @leaderboard.error
     async def leader_error(self, ctx, error):
         print("leaderboard error")
         if isinstance(error, commands.BadArgument):
             await ctx.send('Not an integer!')
+        elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
+            await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.", delete_after=5.0)
         else:
             await ctx.send("""**An uncaught leaderboard error has occurred.**
+*Please log this message in #support in the support server below, or try again.* 
+**Error:** """ + str(error))
+            await ctx.send("https://discord.gg/fXxYyDJ")
+            raise error
+
+    @missed.error
+    async def missed_error(self, ctx, error):
+        print("missed error")
+        if isinstance(error, commands.BadArgument):
+            await ctx.send('Not an integer!')
+        elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
+            await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.", delete_after=5.0)
+        else:
+            await ctx.send("""**An uncaught missed birds error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 
 **Error:** """ + str(error))
             await ctx.send("https://discord.gg/fXxYyDJ")

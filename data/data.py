@@ -31,15 +31,18 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # prevS - makes sure it sends a diff song
 
 # server format = {
-# "ctx.channel.id" : ["bird", "answered", "songbird", "songanswered",
-#                     "totalCorrect", "goatsucker", "goatsucker answered",
-#                     "prevJ", "prevB", "prevS"]
+# ctx.channel.id : [bird, answered, songbird, songanswered,
+#                     totalCorrect, goatsucker, goatsuckeranswered,
+#                     prevJ, prevB, "prevS"]
 # }
 
 # user format = {
-# user:[userid, #ofcorrect]
+# "user":[userid, #ofcorrect]
 # }
 
+# incorrect birds format = {
+# "incorrect":[bird name, #incorrect]
+# }
 
 class GenericError(commands.CommandError):
     def __init__(self, message=None):

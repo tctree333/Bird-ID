@@ -40,14 +40,15 @@ class Check(commands.Cog):
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
+            await bird_setup(currentBird)
             index = birdList.index(currentBird)
             sciBird = sciBirdList[index]
             database.lset(str(ctx.channel.id), 0, "")
             database.lset(str(ctx.channel.id), 1, "1")
             if spellcheck(arg.lower().replace("-", " "),
-             currentBird.lower().replace("-", " ")) is True or spellcheck(arg.lower().replace("-", " "),
-             sciBird.lower().replace("-", " ")) is True:
-             
+                currentBird.lower().replace("-", " ")) is True or spellcheck(arg.lower().replace("-", " "),
+                    sciBird.lower().replace("-", " ")) is True:
+
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(sciBird)
                 await ctx.send(page.url)
@@ -63,6 +64,7 @@ class Check(commands.Cog):
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
             else:
+                database.zincrby("incorrect", 1, str(currentBird))
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(sciBird)
                 await ctx.send(page.url)
@@ -84,13 +86,14 @@ class Check(commands.Cog):
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
+            await bird_setup(currentBird)
             index = birdList.index(currentBird)
             sciBird = sciBirdList[index]
             database.lset(str(ctx.channel.id), 6, "1")
             database.lset(str(ctx.channel.id), 5, "")
             if spellcheck(arg.lower().replace("-", " "),
-             currentBird.lower().replace("-", " ")) is True or spellcheck(arg.lower().replace("-", " "),
-             sciBird.lower().replace("-", " ")) is True:
+                currentBird.lower().replace("-", " ")) is True or spellcheck(arg.lower().replace("-", " "),
+                    sciBird.lower().replace("-", " ")) is True:
 
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(sciBird)
@@ -107,6 +110,7 @@ class Check(commands.Cog):
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
             else:
+                database.zincrby("incorrect", 1, str(currentBird))
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(sciBird)
                 await ctx.send(page.url)
@@ -128,13 +132,14 @@ class Check(commands.Cog):
         if currentSongBird == "":  # no bird
             await ctx.send("You must ask for a bird call first!")
         else:  # if there is a bird, it checks answer
+            await bird_setup(currentSongBird)
             index = songBirds.index(currentSongBird)
             sciBird = sciSongBirds[index]
             database.lset(str(ctx.channel.id), 2, "")
             database.lset(str(ctx.channel.id), 3, "1")
             if spellcheck(arg.lower().replace("-", " "),
-             currentSongBird.lower().replace("-", " ")) is True or spellcheck(arg.lower().replace("-", " "),
-             sciBird.lower().replace("-", " ")) is True:
+                currentSongBird.lower().replace("-", " ")) is True or spellcheck(arg.lower().replace("-", " "),
+                    sciBird.lower().replace("-", " ")) is True:
 
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(sciBird)
@@ -151,6 +156,7 @@ class Check(commands.Cog):
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
             else:
+                database.zincrby("incorrect", 1, str(currentBird))
                 await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
                 page = wikipedia.page(sciBird)
                 await ctx.send(page.url)

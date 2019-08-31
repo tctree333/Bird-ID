@@ -30,6 +30,7 @@ response = google_images_download.googleimagesdownload()
 valid_extensions = ["jpg", "png", "jpeg"]
 
 
+# sets up new channel
 async def channel_setup(ctx):
     if database.exists(str(ctx.channel.id)):
         return
@@ -49,6 +50,14 @@ async def user_setup(ctx):
     else:
         database.zadd("users", {str(ctx.message.author.id): 0})
         await ctx.send("Welcome <@" + str(ctx.message.author.id) + ">!")
+
+
+# sets up new birds
+async def bird_setup(bird):
+    if database.zscore("incorrect", str(bird).lower()) is not None:
+        return
+    else:
+        database.zadd("incorrect", {str(bird).lower(): 0})
 
 
 # Function to run on error
