@@ -248,6 +248,8 @@ async def send_birdsong(ctx, bird, message=None):
 
 # spellcheck - allows one letter off/extra
 def spellcheck(worda, wordb):
+    worda = worda.lower().replace("-", " ").replace("'","")
+    wordb = wordb.lower().replace("-", " ").replace("'","")
     wrongcount = 0
     longerword = []
     shorterword = []
