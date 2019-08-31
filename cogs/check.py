@@ -44,7 +44,10 @@ class Check(commands.Cog):
             sciBird = sciBirdList[index]
             database.lset(str(ctx.channel.id), 0, "")
             database.lset(str(ctx.channel.id), 1, "1")
-            if spellcheck(arg.lower().replace("-", " "), currentBird.lower().replace("-", " ")) is True:
+            if spellcheck(arg.lower().replace("-", " "),
+             currentBird.lower().replace("-", " ")) is True or spellcheck(arg.lower().replace("-", " "),
+             sciBird.lower().replace("-", " ")) is True:
+             
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(sciBird)
                 await ctx.send(page.url)
@@ -85,7 +88,10 @@ class Check(commands.Cog):
             sciBird = sciBirdList[index]
             database.lset(str(ctx.channel.id), 6, "1")
             database.lset(str(ctx.channel.id), 5, "")
-            if spellcheck(arg.lower().replace("-", " "), currentBird.lower().replace("-", " ")) is True:
+            if spellcheck(arg.lower().replace("-", " "),
+             currentBird.lower().replace("-", " ")) is True or spellcheck(arg.lower().replace("-", " "),
+             sciBird.lower().replace("-", " ")) is True:
+
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(sciBird)
                 await ctx.send(page.url)
@@ -126,7 +132,10 @@ class Check(commands.Cog):
             sciBird = sciSongBirds[index]
             database.lset(str(ctx.channel.id), 2, "")
             database.lset(str(ctx.channel.id), 3, "1")
-            if spellcheck(arg.lower().replace("-", " "), currentSongBird.lower().replace("-", " ")) is True:
+            if spellcheck(arg.lower().replace("-", " "),
+             currentSongBird.lower().replace("-", " ")) is True or spellcheck(arg.lower().replace("-", " "),
+             sciBird.lower().replace("-", " ")) is True:
+
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(sciBird)
                 await ctx.send(page.url)
