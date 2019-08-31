@@ -54,10 +54,10 @@ async def user_setup(ctx):
 
 # sets up new birds
 async def bird_setup(bird):
-    if database.zscore("incorrect", str(bird).lower()) is not None:
+    if database.zscore("incorrect", str(bird)) is not None:
         return
     else:
-        database.zadd("incorrect", {str(bird).lower(): 0})
+        database.zadd("incorrect", {str(bird): 0})
 
 
 # Function to run on error
