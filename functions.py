@@ -198,7 +198,7 @@ async def send_birdsong(ctx, bird, message=None):
                             recordings = json["recordings"]
                         else:
                             await delete.delete()
-                            await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
+                            await ctx.send("**A GET error occurred when fetching the song.**\n*Please try again.*")
                             print("error:" + str(response.status))
 
                 if len(recordings) != 0:
@@ -234,7 +234,7 @@ async def send_birdsong(ctx, bird, message=None):
                                 await ctx.send(file=discord.File(song, filename="bird.mp3"))
                         else:
                             await delete.delete()
-                            await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
+                            await ctx.send("**A GET error occurred when fetching the song.**\n*Please try again.*")
                             print("error:" + str(songFile.status))
                 else:
                     await delete.delete()
@@ -242,7 +242,7 @@ async def send_birdsong(ctx, bird, message=None):
 
             else:
                 await delete.delete()
-                await ctx.send("**A GET error occurred when fetching the song. Please try again.**")
+                await ctx.send("**A GET error occurred when fetching the song.**\n*Please try again.*")
                 print("error:" + str(response.status))
 
 

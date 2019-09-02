@@ -18,6 +18,7 @@
 from discord.ext import tasks
 import shutil
 import traceback
+import errno
 from functions import *
 
 
@@ -113,7 +114,16 @@ async def on_command_error(ctx, error):
             await ctx.send("Wikipedia page not found. (Disambiguation Error)")
         
         elif isinstance(error.original, wikipedia.exceptions.PageError):
-            await ctx.send("Wikipedia page not found.")
+            await ctx.send("Wikipedia page not found. (Page Error)")
+
+        elif isinstance(error.original, aiohttp.ClientOSError):
+            if error.errno != errno.ECONNRESET:
+                await ctx.send("""**An unexpected ClientOSError has occurred.**
+*Please log this message in #support in the support server below, or try again.*
+**Error:** """ + str(error))
+                await ctx.send("https://discord.gg/fXxYyDJ")
+            else:
+                await ctx.send("**An error has occured with discord. :(**\n*Please try again.*")
 
         else:
             print("uncaught command error")
