@@ -4,17 +4,12 @@ Canada Goose
 Trumpeter Swan
 Wood Duck
 Mallard
-Cinnamon Teal
 Northern Shoveler
 Green-winged Teal
 Canvasback
-Common Eider
-Surf Scoter
-Long-tailed Duck
 Hooded Merganser
 Ring-necked Pheasant
 Ruffed Grouse
-Greater Prairie-Chicken
 Wild Turkey
 Northern Bobwhite
 Red-throated Loon
@@ -22,102 +17,84 @@ Common Loon
 Pied-billed Grebe
 Red-necked Grebe
 Laysan Albatross
-Black-footed Albatross
 Northern Fulmar
-Pink-footed Shearwater
 American White Pelican
-Double-crested Cormorant
-Anhinga
-Magnificent Frigatebird
 American Bittern
 Great Blue Heron
 Snowy Egret
 Green Heron
 Black-crowned Night-Heron
 Roseate Spoonbill
-Turkey Vulture
-California Condor
+Double-crested Cormorant
+Anhinga
+Magnificent Frigatebird
+Wood Stork
+Crested Caracara
+American Kestrel
+Peregrine Falcon
 Osprey
 Bald Eagle
 Northern Harrier
 Cooper's Hawk
-Swainson's Hawk
 Red-tailed Hawk
 Golden Eagle
-Crested Caracara
-American Kestrel
-Peregrine Falcon
+Turkey Vulture
+California Condor
 Clapper Rail
 Sora
 Purple Gallinule
 American Coot
 Whooping Crane
 American Golden-Plover
-Snowy Plover
 Killdeer
 American Oystercatcher
 Black-necked Stilt
 American Avocet
-Northern Jacana
-Upland Sandpiper
+Spotted Sandpiper
 Ruddy Turnstone
 Dunlin
 Wilson's Snipe
 American Woodcock
-Wilson's Phalarope
 Laughing Gull
-California Gull
+Ring-billed Gull
 Herring Gull
-Great Black-backed Gull
 Least Tern
 Caspian Tern
 Black Tern
 Black Skimmer
-Pomarine Jaeger
 Common Murre
-Black Guillemot
-Marbled Murrelet
 Tufted Puffin
-White-winged Dove
 Mourning Dove
-Inca Dove
 Common Ground-Dove
+Rock pigeon
 Black-billed Cuckoo
-Greater Roadrunner
+Greater Roadrunner 
 Barn Owl
 Great Horned Owl
 Snowy Owl
 Barred Owl
-Great Gray Owl
-Long-eared Owl
-Common Pauraque
+Screech Owl
 Chuck-will's-widow
-Whip-poor-will
+Common nighthawk
 Chimney Swift
-Blue-throated Hummingbird
 Ruby-throated Hummingbird
-Elegant Trogon
 Belted Kingfisher
 Red-headed Woodpecker
-Acorn Woodpecker
-Golden-fronted Woodpecker
 Yellow-bellied Sapsucker
 Downy Woodpecker
 Northern Flicker
 Pileated Woodpecker
 Olive-sided Flycatcher
-Black Phoebe
 Eastern Phoebe
 Vermilion Flycatcher
 Great Crested Flycatcher
-Western Kingbird
+Eastern Kingbird
 Scissor-tailed Flycatcher
 Loggerhead Shrike
 Warbling Vireo
 Red-eyed Vireo
 Steller's Jay
 Blue Jay
-Clark's Nutcracker
 Black-billed Magpie
 American Crow
 Common Raven
@@ -125,14 +102,13 @@ Horned Lark
 Purple Martin
 Cliff Swallow
 Barn Swallow
-Carolina Chickadee
-Mountain Chickadee
+Black-capped Chickadee
 Tufted Titmouse
 Red-breasted Nuthatch
 White-breasted Nuthatch
 Brown Creeper
 Cactus Wren
-Canyon Wren
+Marsh Wren
 Carolina Wren
 American Dipper
 Golden-crowned Kinglet
@@ -144,9 +120,7 @@ American Robin
 Gray Catbird
 Northern Mockingbird
 Brown Thrasher
-Curve-billed Thrasher
 Cedar Waxwing
-Phainopepla
 Yellow Warbler
 Magnolia Warbler
 Yellow-rumped Warbler
@@ -154,24 +128,21 @@ Black-throated Green Warbler
 Black-and-white Warbler
 American Redstart
 Ovenbird
-Louisiana Waterthrush
 Kentucky Warbler
 Common Yellowthroat
-Yellow-breasted Chat
-Scarlet Tanager
 Spotted Towhee
 Black-chinned Sparrow
 Lark Sparrow
-Lark Bunting
 Harris's Sparrow
 White-crowned Sparrow
+Chipping sparrow
 Dark-eyed Junco
 Lapland Longspur
 Snow Bunting
 Northern Cardinal
-Rose-breasted Grosbeak
 Indigo Bunting
 Painted Bunting
+Scarlet Tanager
 Bobolink
 Red-winged Blackbird
 Western Meadowlark
@@ -182,3 +153,7 @@ Baltimore Oriole
 Red Crossbill
 American Goldfinch
 Evening Grosbeak
+House Finch
+Pine Siskin
+House Sparrow
+European Starling

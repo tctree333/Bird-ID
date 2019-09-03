@@ -1,48 +1,36 @@
 Trumpeter Swan
 Mallard
 Ruffed Grouse
-Greater Prairie-Chicken
 Northern Bobwhite
-Red-throated Loon
+Common Loon
 American Bittern
 Bald Eagle
 Red-tailed Hawk
 Sora
 Whooping Crane
 Killdeer
-Upland Sandpiper
-White-winged Dove
+Laughing Gull
 Mourning Dove
-Black-billed cuckoo
-Greater Roadrunner
+Black-billed Cuckoo
 Great Horned Owl
 Barred Owl
-Common Paraque
-Chuck-will's-widow
-Whip-poor-will
+Chuck Will's Widow
+Ruby-throated Hummingbird
 Belted Kingfisher
-Olive-sided flycatcher
-Great crested flycatcher
-Western Kingbird
-Warbling Vireo
-Red-eyed vireo
+Northern Flicker
+Great Crested Flycatcher
 Blue Jay
 American Crow
-Common raven
-Carolina Chickadee
-Tufted titmouse
-Red-breasted nuthatch
-canyon wren
-wood thrush
-american robin
-northern mockingbird
-brown thrasher
-kentucky warbler
-yellow-breasted chat
-spotted towhee
-harris's sparrow
-northern cardinal
-indigo bunting
-red-winged blackbird
-western meadowlark
-baltimore oriole
+Black-capped Chickadee
+Tufted Titmouse
+Red-breasted Nuthatch
+Carolina wWen
+Wood Thrush
+American Robin
+Northern Mockingbird
+Common Yellowthroat
+Spotted Towhee
+Northern Cardinal
+Red-winged Blackbird
+Western Meadowlark
+Baltimore Oriole
