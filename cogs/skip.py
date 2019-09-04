@@ -35,7 +35,7 @@ class Skip(commands.Cog):
         database.lset(str(ctx.channel.id), 1, "1")
         if currentBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentBird} (bird)")
-            await ctx.send(f"Ok, skipping {birdPage.url}")  # sends wiki page
+            await ctx.send(f"Ok, skipping {currentBird.lower()}\n{birdPage.url}")  # sends wiki page
         else:
             await ctx.send("You need to ask for a bird first!")
 
@@ -53,7 +53,7 @@ class Skip(commands.Cog):
         database.lset(str(ctx.channel.id), 6, "1")
         if currentBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentBird} (bird)")
-            await ctx.send(f"Ok, skipping {birdPage.url}")  # sends wiki page
+            await ctx.send(f"Ok, skipping {currentBird.lower()}\n{birdPage.url}")  # sends wiki page
         else:
             await ctx.send("You need to ask for a bird first!")
 
@@ -70,7 +70,7 @@ class Skip(commands.Cog):
         currentSongBird = str(database.lindex(str(ctx.channel.id), 2))[2:-1]
         if currentSongBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentSongBird} (bird)")
-            await ctx.send(f"Ok, skipping {birdPage.url}")  # sends wiki page
+            await ctx.send(f"Ok, skipping {currentSongBird.lower()}\n{birdPage.url}")  # sends wiki page
         else:
             await ctx.send("You need to ask for a bird first!")
 

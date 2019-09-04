@@ -67,6 +67,18 @@ def error_skip(ctx):
     database.lset(str(ctx.channel.id), 1, "1")
 
 
+def error_skip_song(ctx):
+    print("ok")
+    database.lset(str(ctx.channel.id), 2, "")
+    database.lset(str(ctx.channel.id), 3, "1")
+
+
+def error_skip_goat(ctx):
+    print("ok")
+    database.lset(str(ctx.channel.id), 5, "")
+    database.lset(str(ctx.channel.id), 6, "1")
+
+
 # Function to send a bird picture:
 # ctx - context for message (discord thing)
 # bird - bird picture to send (str)
@@ -171,7 +183,14 @@ def download(ctx, bird, addOn=None):
 
 
 # sends a birdsong
-async def send_birdsong(ctx, bird, message=None):
+async def send_birdsong(ctx, bird, on_error=None, message=None):
+    if bird == "":
+        print("error - bird is blank")
+        await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
+        if on_error is not None:
+            on_error(ctx)
+        return
+
     delete = await ctx.send("**Fetching.** This may take a while.")
     # trigger "typing" discord message
     await ctx.trigger_typing()

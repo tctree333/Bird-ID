@@ -112,9 +112,12 @@ async def on_command_error(ctx, error):
 
         elif isinstance(error.original, wikipedia.exceptions.DisambiguationError):
             await ctx.send("Wikipedia page not found. (Disambiguation Error)")
-        
+
         elif isinstance(error.original, wikipedia.exceptions.PageError):
             await ctx.send("Wikipedia page not found. (Page Error)")
+
+        elif isinstance(error.original, wikipedia.exceptions.WikipediaException):
+            await ctx.send("Wikipedia page unavaliable. Try again later.")
 
         elif isinstance(error.original, aiohttp.ClientOSError):
             if error.errno != errno.ECONNRESET:
