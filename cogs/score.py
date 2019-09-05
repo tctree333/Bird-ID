@@ -15,7 +15,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import typing
-from functions import *
+
+import discord
+from discord.ext import commands
+
+from data.data import database
+from functions import channel_setup, user_setup
 
 
 class Score(commands.Cog):
@@ -32,23 +37,29 @@ class Score(commands.Cog):
         await user_setup(ctx)
 
         totalCorrect = int(database.lindex(str(ctx.channel.id), 4))
-        await ctx.send(f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! Good job everyone!")
+        await ctx.send(
+            f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! Good job everyone!"
+        )
 
     # sends correct answers by a user
-    @commands.command(brief="- How many correct answers given by a user", 
-                    help="""- How many correct answers given by a user.
+    @commands.command(brief="- How many correct answers given by a user",
+                      help="""- How many correct answers given by a user.
                             Mention someone to get their score.
-                            Don't mention anyone to get your score.""", 
-                    aliases=["us"])
+                            Don't mention anyone to get your score.""",
+                      aliases=["us"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def userscore(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
+    async def userscore(
+            self,
+            ctx,
+            *,
+            user: typing.Optional[typing.Union[discord.Member, str]] = None):
         print("user score")
 
         await channel_setup(ctx)
         await user_setup(ctx)
 
         if user is not None:
-            if type(user) is str:
+            if isinstance(user, str):
                 await ctx.send("Not a user!")
                 return
             usera = user.id
@@ -60,12 +71,14 @@ class Score(commands.Cog):
                 await ctx.send("This user does not exist on our records!")
                 return
         else:
-            if database.zscore("users", str(ctx.message.author.id)) is not None:
+            if database.zscore("users", str(
+                    ctx.message.author.id)) is not None:
                 user = f"<@{str(ctx.message.author.id)}>"
                 times = str(
                     int(database.zscore("users", str(ctx.message.author.id))))
             else:
-                await ctx.send("You haven't used this bot yet! (except for this)")
+                await ctx.send(
+                    "You haven't used this bot yet! (except for this)")
                 return
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
@@ -75,7 +88,10 @@ class Score(commands.Cog):
         await ctx.send(embed=embed)
 
     # leaderboard - returns top 1-10 users
-    @commands.command(brief="- Top scores", help="- Top scores, argument can be between 1 and 10, default is 5", aliases=["lb"])
+    @commands.command(
+        brief="- Top scores",
+        help="- Top scores, argument can be between 1 and 10, default is 5",
+        aliases=["lb"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def leaderboard(self, ctx, placings=5):
         print("leaderboard")
@@ -93,8 +109,8 @@ class Score(commands.Cog):
         if placings > database.zcard("users"):
             placings = database.zcard("users")
 
-        leaderboard_list = database.zrevrangebyscore(
-            "users", "+inf", "-inf", 0, placings, True)
+        leaderboard_list = database.zrevrangebyscore("users", "+inf", "-inf",
+                                                     0, placings, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
@@ -113,11 +129,12 @@ class Score(commands.Cog):
         embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
         if database.zscore("users", str(ctx.message.author.id)) is not None:
-            placement = int(database.zrevrank(
-                "users", str(ctx.message.author.id))) + 1
-            embed.add_field(name="You:", 
-                            value=f"You are #{str(placement)} on the leaderboard.",
-                            inline=False)
+            placement = int(
+                database.zrevrank("users", str(ctx.message.author.id))) + 1
+            embed.add_field(
+                name="You:",
+                value=f"You are #{str(placement)} on the leaderboard.",
+                inline=False)
         else:
             embed.add_field(name="You:",
                             value="You haven't answered any correctly.")
@@ -125,7 +142,11 @@ class Score(commands.Cog):
         await ctx.send(embed=embed)
 
     # missed - returns top 1-10 missed birds
-    @commands.command(brief="- Top globally incorrect birds", help="- Top globally incorrect birds, argument can be between 1 and 10, default is 5", aliases=["m"])
+    @commands.command(
+        brief="- Top globally incorrect birds",
+        help=
+        "- Top globally incorrect birds, argument can be between 1 and 10, default is 5",
+        aliases=["m"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def missed(self, ctx, placings=5):
         print("missed")
@@ -143,15 +164,17 @@ class Score(commands.Cog):
         if placings > database.zcard("incorrect"):
             placings = database.zcard("incorrect")
 
-        leaderboard_list = database.zrevrangebyscore(
-            "incorrect", "+inf", "-inf", 0, placings, True)
+        leaderboard_list = database.zrevrangebyscore("incorrect", "+inf",
+                                                     "-inf", 0, placings, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
         for x in range(len(leaderboard_list)):
             leaderboard += f"{str(x+1)}. {str(leaderboard_list[x][0])[2:-1]} - {str(int(leaderboard_list[x][1]))}\n"
-        embed.add_field(name="Top Missed Birds", value=leaderboard, inline=False)
+        embed.add_field(name="Top Missed Birds",
+                        value=leaderboard,
+                        inline=False)
 
         await ctx.send(embed=embed)
 
@@ -162,7 +185,9 @@ class Score(commands.Cog):
         if isinstance(error, commands.BadArgument):
             await ctx.send('Not an integer!')
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.", delete_after=5.0)
+            await ctx.send("**Cooldown.** Try again after " +
+                           str(round(error.retry_after)) + " s.",
+                           delete_after=5.0)
         else:
             await ctx.send("""**An uncaught leaderboard error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 
@@ -176,7 +201,9 @@ class Score(commands.Cog):
         if isinstance(error, commands.BadArgument):
             await ctx.send('Not an integer!')
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.", delete_after=5.0)
+            await ctx.send("**Cooldown.** Try again after " +
+                           str(round(error.retry_after)) + " s.",
+                           delete_after=5.0)
         else:
             await ctx.send("""**An uncaught missed birds error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 

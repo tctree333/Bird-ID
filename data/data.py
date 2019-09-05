@@ -14,12 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Import modules for other files
-import discord
-from discord.ext import commands
-import wikipedia
-import redis
 import os
+
+import redis
+# Import modules for other files
+from discord.ext import commands
 
 # define database for one connection
 database = redis.from_url(os.getenv("REDIS_URL"))
@@ -44,12 +43,13 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # "incorrect":[bird name, #incorrect]
 # }
 
+
 class GenericError(commands.CommandError):
     def __init__(self, message=None):
         super().__init__(message=message)
 
-# Lists of birds, memes, and other info
 
+# Lists of birds, memes, and other info
 
 birdList = ["birdList"]
 sciBirdList = ["sciBirdList"]
@@ -67,12 +67,12 @@ def _main():
     files = [birdList, sciBirdList, memeList, songBirds, sciSongBirds]
 
     # Converts txt file of data into lists
-    for list in files:
-        print(f"Working on {list[0]}")
-        with open(f'data/{list[0]}.txt', 'r') as fileIn:
+    for lst in files:
+        print(f"Working on {lst[0]}")
+        with open(f'data/{lst[0]}.txt', 'r') as fileIn:
             for line in fileIn:
-                list.append(line.strip('\n'))
-        list.remove(str(list[0]))
+                lst.append(line.strip('\n'))
+        lst.remove(str(lst[0]))
         print("Done!")
 
 

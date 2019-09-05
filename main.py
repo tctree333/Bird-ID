@@ -14,18 +14,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Import modules
-from discord.ext import tasks
+import errno
+import os
 import shutil
 import traceback
-import errno
-from functions import *
 
+import aiohttp
+import discord
+import redis
+import wikipedia
+from discord.ext import commands, tasks
+
+from data.data import database
+from functions import channel_setup
+
+#from functions import (bird_setup, channel_setup, download, error_skip,
+#                      error_skip_goat, error_skip_song, send_bird,
+#                       send_birdsong, spellcheck, user_setup)
 
 # Initialize bot
 bot = commands.Bot(command_prefix=['b!', 'b.', 'b#'],
                    case_insensitive=True,
                    description="BirdID - Your Very Own Ornithologist")
+
 
 # Logging
 @bot.event
@@ -37,13 +48,12 @@ async def on_ready():
     # Change discord activity
     await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
+
 # Here we load our extensions(cogs) that are located in the cogs directory
-initial_extensions = ['cogs.get_birds',
-                      'cogs.check',
-                      'cogs.skip',
-                      'cogs.hint',
-                      'cogs.score',
-                      'cogs.other']
+initial_extensions = [
+    'cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint', 'cogs.score',
+    'cogs.other'
+]
 
 if __name__ == '__main__':
     for extension in initial_extensions:
@@ -52,6 +62,7 @@ if __name__ == '__main__':
         except (discord.ClientException, ModuleNotFoundError):
             print(f'Failed to load extension {extension}.')
             traceback.print_exc()
+
 
 # task to clear downloads
 @tasks.loop(hours=72.0)
@@ -74,16 +85,19 @@ async def clear_cache():
 # GLOBAL ERROR CHECKING
 ######
 
+
 @bot.event
 async def on_command_error(ctx, error):
-    print("Error: "+str(error))
+    print("Error: " + str(error))
 
     # don't handle errors with local handlers
     if hasattr(ctx.command, 'on_error'):
-            return
+        return
 
     if isinstance(error, commands.CommandOnCooldown):  # send cooldown
-        await ctx.send("**Cooldown.** Try again after "+str(round(error.retry_after))+" s.", delete_after=5.0)
+        await ctx.send("**Cooldown.** Try again after " +
+                       str(round(error.retry_after)) + " s.",
+                       delete_after=5.0)
 
     elif isinstance(error, commands.CommandNotFound):
         await ctx.send("Sorry, the command was not found.")
@@ -94,7 +108,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.BadArgument):
         print("bad argument")
         await ctx.send("The argument passed was invalid. Please try again.")
-    
+
     elif isinstance(error, commands.ArgumentParsingError):
         print("quote error")
         await ctx.send("An invalid character was detected. Please try again.")
@@ -110,13 +124,15 @@ async def on_command_error(ctx, error):
                 await channel_setup(ctx)
                 await ctx.send("Please run that command again.")
 
-        elif isinstance(error.original, wikipedia.exceptions.DisambiguationError):
+        elif isinstance(error.original,
+                        wikipedia.exceptions.DisambiguationError):
             await ctx.send("Wikipedia page not found. (Disambiguation Error)")
 
         elif isinstance(error.original, wikipedia.exceptions.PageError):
             await ctx.send("Wikipedia page not found. (Page Error)")
 
-        elif isinstance(error.original, wikipedia.exceptions.WikipediaException):
+        elif isinstance(error.original,
+                        wikipedia.exceptions.WikipediaException):
             await ctx.send("Wikipedia page unavaliable. Try again later.")
 
         elif isinstance(error.original, aiohttp.ClientOSError):
@@ -126,7 +142,9 @@ async def on_command_error(ctx, error):
 **Error:** """ + str(error))
                 await ctx.send("https://discord.gg/fXxYyDJ")
             else:
-                await ctx.send("**An error has occured with discord. :(**\n*Please try again.*")
+                await ctx.send(
+                    "**An error has occured with discord. :(**\n*Please try again.*"
+                )
 
         else:
             print("uncaught command error")
@@ -150,4 +168,5 @@ clear_cache.start()
 
 # Actually run the bot
 token = os.getenv("token")
+print(token)
 bot.run(token)
