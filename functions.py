@@ -101,9 +101,9 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     with concurrent.futures.ThreadPoolExecutor() as pool:
         try:
             response = await loop.run_in_executor(pool, download, ctx, bird, addOn)
-        except GenericError:
+        except GenericError as e:
             await delete.delete()
-            await ctx.send("**An error has occurred while fetching images.**\n*Please try again.*")
+            await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {str(e)}")
             if on_error is not None:
                 on_error(ctx)
             return
