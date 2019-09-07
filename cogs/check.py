@@ -47,7 +47,7 @@ class Check(commands.Cog):
             database.lset(str(ctx.channel.id), 1, "1")
             if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
                 await ctx.send("Correct! Good job!")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
                 database.lset(str(ctx.channel.id), 4, str(
                     int(database.lindex(str(ctx.channel.id), 4))+1))
@@ -63,7 +63,7 @@ class Check(commands.Cog):
             else:
                 database.zincrby("incorrect", 1, str(currentBird))
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
             print("currentBird: "+str(currentBird.lower().replace("-", " ")))
             print("args: "+str(arg.lower().replace("-", " ")))
@@ -90,7 +90,7 @@ class Check(commands.Cog):
             database.lset(str(ctx.channel.id), 5, "")
             if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
                 await ctx.send("Correct! Good job!")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
                 database.lset(str(ctx.channel.id), 4, str(
                     int(database.lindex(str(ctx.channel.id), 4))+1))
@@ -106,7 +106,7 @@ class Check(commands.Cog):
             else:
                 database.zincrby("incorrect", 1, str(currentBird))
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
             print("currentBird: "+str(currentBird.lower().replace("-", " ")))
             print("args: "+str(arg.lower().replace("-", " ")))
@@ -134,7 +134,7 @@ class Check(commands.Cog):
             if spellcheck(arg, currentSongBird) is True or spellcheck(arg, sciBird) is True:
 
                 await ctx.send("Correct! Good job!")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
                 database.lset(str(ctx.channel.id), 4, str(
                     int(database.lindex(str(ctx.channel.id), 4))+1))
@@ -150,7 +150,7 @@ class Check(commands.Cog):
             else:
                 database.zincrby("incorrect", 1, str(currentSongBird))
                 await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
             print("currentBird: "+str(currentSongBird.lower().replace("-", " ")))
             print("args: "+str(arg.lower().replace("-", " ")))
