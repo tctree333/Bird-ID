@@ -84,8 +84,8 @@ class Check(commands.Cog):
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
             await bird_setup(currentBird)
-            index = birdList.index(currentBird)
-            sciBird = sciBirdList[index]
+            index = goatsuckers.index(currentBird)
+            sciBird = sciGoat[index]
             database.lset(str(ctx.channel.id), 6, "1")
             database.lset(str(ctx.channel.id), 5, "")
             if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:

@@ -63,8 +63,6 @@ class Birds(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        goatsuckers = ["Common Pauraque",
-                       "Chuck-will's-widow", "Whip-poor-will"]
         answered = int(database.lindex(str(ctx.channel.id), 6))
         # check to see if previous bird was answered
         if answered == True:  # if yes, give a new bird

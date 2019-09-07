@@ -57,6 +57,8 @@ memeList = ["memeList"]
 songBirds = ["songBirds"]
 sciSongBirds = ["sciSongBirds"]
 
+goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
+sciGoat = ["Nyctidromus albicollis", "Antrostomus carolinensis", "Antrostomus vociferus"]
 
 def _main():
     global birdList
