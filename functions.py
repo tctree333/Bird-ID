@@ -274,7 +274,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
 
     # fetch sounds
     async with aiohttp.ClientSession() as session:
-        query = sciBird.replace(" ", "%20")
+        query = urllib.parse.quote(sciBird)
         async with session.get(
                 f"https://www.xeno-canto.org/api/2/recordings?query={query}%20q:A&page=1"
         ) as response:
@@ -284,7 +284,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
                 print("recordings: " + str(recordings))
                 if not recordings:  # bird not found
                     # try with common name instead
-                    query = bird.replace(" ", "%20")
+                    query = urllib.parse.quote(bird)
                     async with session.get(
                             f"https://www.xeno-canto.org/api/2/recordings?query={query}%20q:A&page=1"
                     ) as response:
