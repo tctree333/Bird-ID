@@ -103,11 +103,9 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
 
     try:
         response = await get_images(ctx, bird,addOn)
-    except GenericError:
+    except GenericError as e:
         await delete.delete()
-        await ctx.send(
-            "**An error has occurred while fetching images.**\n*Please try again.*"
-        )
+        await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {str(e)}")
         if on_error is not None:
             on_error(ctx)
         return
