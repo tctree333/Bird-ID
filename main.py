@@ -1,5 +1,5 @@
 # main.py | main program
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,10 +46,7 @@ async def on_ready():
 
 
 # Here we load our extensions(cogs) that are located in the cogs directory
-initial_extensions = [
-    'cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint', 'cogs.score',
-    'cogs.other'
-]
+initial_extensions = ['cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.other']
 
 if __name__ == '__main__':
     for extension in initial_extensions:
@@ -65,16 +62,16 @@ if __name__ == '__main__':
 async def clear_cache():
     print("clear cache")
     try:
-        shutil.rmtree(r'downloads/')
-        print("Cleared downloads cache.")
+        shutil.rmtree(r'cache/images/')
+        print("Cleared image cache.")
     except FileNotFoundError:
-        print("Already cleared downloads.")
+        print("Already cleared image cache.")
 
     try:
-        shutil.rmtree(r'songs/')
-        print("Cleared songs.")
+        shutil.rmtree(r'cache/songs/')
+        print("Cleared songs cache.")
     except FileNotFoundError:
-        print("Already cleared songs.")
+        print("Already cleared songs cache.")
 
 
 ######

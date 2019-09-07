@@ -1,5 +1,5 @@
 # score.py | commands to show score related things
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, stats_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ class Score(commands.Cog):
 
         totalCorrect = int(database.lindex(str(ctx.channel.id), 4))
         await ctx.send(
-            f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! Good job everyone!"
+            f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel!" +
+			"Good job everyone!"
         )
 
     # sends correct answers by a user
@@ -115,17 +116,17 @@ class Score(commands.Cog):
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
-        for x in range(len(leaderboard_list)):
-            user = ctx.guild.get_member(int(leaderboard_list[x][0]))
+        for i,stats in enumerate(leaderboard_list):
+            user = ctx.guild.get_member(int(stats[0]))
             if user is None:
-                user = self.bot.get_user(int(leaderboard_list[x][0]))
+                user = self.bot.get_user(int(stats[0]))
                 if user is None:
                     user = "**Deleted**"
                 else:
                     user = f"**{user.name}#{user.discriminator}**"
             else:
-                user = f"<@{str(leaderboard_list[x][0])[2:-1]}>"
-            leaderboard += f"{str(x+1)}. {user} - {str(int(leaderboard_list[x][1]))}\n"
+                user = f"<@{str(leaderboard_list[i][0])[2:-1]}>"
+            leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
         embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
         if database.zscore("users", str(ctx.message.author.id)) is not None:
@@ -170,8 +171,8 @@ class Score(commands.Cog):
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
-        for x in range(len(leaderboard_list)):
-            leaderboard += f"{str(x+1)}. {str(leaderboard_list[x][0])[2:-1]} - {str(int(leaderboard_list[x][1]))}\n"
+        for i,stats in enumerate(leaderboard_list):
+            leaderboard += f"{str(i+1)}. {str(stats[0])[2:-1]} - {str(int(stats[1]))}\n"
         embed.add_field(name="Top Missed Birds",
                         value=leaderboard,
                         inline=False)

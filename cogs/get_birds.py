@@ -1,5 +1,5 @@
 # get_birds.py | commands for getting bird images or songs
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,17 @@ from data.data import birdList, database, songBirds
 from functions import (channel_setup, error_skip, error_skip_goat,
                        error_skip_song, send_bird, send_birdsong, user_setup)
 
+BASE_MESSAGE = (
+"*Here you go!* \n" +
+"**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +
+"or `b!{skip_cmd}` to get a new bird. " +
+"Use `b!{check_cmd} guess` to check your answer. " +
+"Use `b!{hint_cmd}` for a hint.**"
+)
 
+BIRD_MESSAGE = BASE_MESSAGE.format(media="image",new_cmd="bird",skip_cmd="skip",check_cmd="check",hint_cmd="hint")
+GS_MESSAGE = BASE_MESSAGE.format(media="image",new_cmd="gs",skip_cmd="skipgoat",check_cmd="checkgoat",hint_cmd="hintgoat")
+SONG_MESSAGE = BASE_MESSAGE.format(media="song",new_cmd="song",skip_cmd="skipsong",check_cmd="checksong",hint_cmd="hintsong")
 class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -33,7 +43,7 @@ class Birds(commands.Cog):
                       aliases=["b"],
                       usage="[female|juvenile]")
     # 10 second cooldown
-    @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
+    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def bird(self, ctx, add_on=""):
         print("bird")
 
@@ -41,8 +51,7 @@ class Birds(commands.Cog):
         await user_setup(ctx)
 
         if not (add_on == "female" or add_on == "juvenile" or add_on == ""):
-            await ctx.send(
-                "This command only takes female, juvenile, or nothing!")
+            await ctx.send("This command only takes female, juvenile, or nothing!")
             return
 
         print("bird: " + str(database.lindex(str(ctx.channel.id), 0))[2:-1])
@@ -64,7 +73,7 @@ class Birds(commands.Cog):
                 currentBird,
                 on_error=error_skip,
                 message=
-                "*Here you go!* \n**Use `b!bird` again to get a new picture of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**",
+                BIRD_MESSAGE,
                 addOn=add_on)
         else:  # if no, give the same bird
             await send_bird(
@@ -72,7 +81,7 @@ class Birds(commands.Cog):
                 str(database.lindex(str(ctx.channel.id), 0))[2:-1],
                 on_error=error_skip,
                 message=
-                "*Here you go!* \n**Use `b!bird` again to get a new picture of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer.**",
+                BIRD_MESSAGE,
                 addOn=add_on)
 
     # goatsucker command - no args
@@ -99,7 +108,7 @@ class Birds(commands.Cog):
                 currentBird,
                 on_error=error_skip_goat,
                 message=
-                "*Here you go!* \n**Use `b!bird` again to get a new picture of the same goatsucker, or `b!skipgoat` to get a new bird. Use `b!checkgoat guess` to check your answer. Use `b!hint` for a hint.**"
+                GS_MESSAGE
             )
         else:  # if no, give the same bird
             await send_bird(
@@ -107,13 +116,13 @@ class Birds(commands.Cog):
                 str(database.lindex(str(ctx.channel.id), 5))[2:-1],
                 on_error=error_skip_goat,
                 message=
-                "*Here you go!* \n**Use `b!bird` again to get a new picture of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer.**"
+                GS_MESSAGE
             )
             database.lset(str(ctx.channel.id), 6, "0")
 
     # picks a random bird call to send
     @commands.command(help="- Sends a bird call to ID", aliases=["s"])
-    @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
+    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def song(self, ctx):
         print("song")
 
@@ -122,7 +131,7 @@ class Birds(commands.Cog):
 
         songAnswered = int(database.lindex(str(ctx.channel.id), 3))
         # check to see if previous bird was answered
-        if songAnswered == True:  # if yes, give a new bird
+        if songAnswered:  # if yes, give a new bird
             v = randint(0, len(songBirds) - 1)
             currentSongBird = songBirds[v]
             prevS = str(database.lindex(str(ctx.channel.id), 9))[2:-1]
@@ -136,7 +145,7 @@ class Birds(commands.Cog):
                 currentSongBird,
                 on_error=error_skip_song,
                 message=
-                "*Here you go!* \n**Use `b!song` again to get a new sound of the same bird, or `b!skipsong` to get a new bird. Use `b!checksong guess` to check your answer. Use `b!hintsong` for a hint.**"
+                SONG_MESSAGE
             )
             database.lset(str(ctx.channel.id), 3, "0")
         else:
@@ -145,7 +154,7 @@ class Birds(commands.Cog):
                 str(database.lindex(str(ctx.channel.id), 2))[2:-1],
                 on_error=error_skip_song,
                 message=
-                "*Here you go!* \n**Use `b!song` again to get a new sound of the same bird, or `b!skipsong` to get a new bird. Use `b!checksong guess` to check your answer. Use `b!hintsong` for a hint.**"
+                SONG_MESSAGE
             )
             database.lset(str(ctx.channel.id), 3, "0")
 

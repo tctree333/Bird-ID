@@ -1,5 +1,5 @@
 # functions.py | function definitions
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,7 +28,8 @@ import eyed3
 from data.data import GenericError, database, birdList, sciBirdList, songBirds, sciSongBirds
 
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
-CATALOG_URL = "https://search.macaulaylibrary.org/catalog.json?searchField=species&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5"
+CATALOG_URL = ("https://search.macaulaylibrary.org/catalog.json?searchField=species" +
+"&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5")
 COUNT = 20  #set this to include a margin of error in case some urls throw error code 476 due to still being processed
 # Valid file types
 valid_extensions = {"jpg", "png", "jpeg"}
@@ -125,7 +126,6 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
             await ctx.send(file=discord.File(img, filename="bird." + extension)
                            )
 
-
 async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     """
     bird can be either common name or scientific name
@@ -150,12 +150,14 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
         )
     ) as taxon_code_response:
         if taxon_code_response.status!=200:
-            raise GenericError(f"An http error code of {taxon_code_response.status} occured while fetching a {'image'if media_type=='p' else 'song'} for {bird}")
+            raise GenericError(f"An http error code of {taxon_code_response.status} occured"+
+                f" while fetching a {'image'if media_type=='p' else 'song'} for {bird}")
         taxon_code_data = await taxon_code_response.json()
         taxon_code = taxon_code_data[0]["code"]
     async with session.get(CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type)) as catalog_response:
         if catalog_response.status!=200:
-            raise GenericError(f"An http error code of {catalog_response.status} occured while fetching a {'image'if media_type=='p' else 'song'} for {bird}")
+            raise GenericError(f"An http error code of {catalog_response.status} occured "+
+                f"while fetching a {'image'if media_type=='p' else 'song'} for {bird}")
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
         urls = [data["mediaUrl"] for data in content]
@@ -180,8 +182,7 @@ async def _download_helper(path,url,session):
                     break
                 out_file.write(block)
     return filename      
-async def _download_images(bird, addOn):
-    directory = f"downloads/images/{bird}{addOn}"
+async def _download_images(bird, addOn, directory):
     if addOn == "female":
         sex = "f"
     else:
@@ -195,7 +196,7 @@ async def _download_images(bird, addOn):
         urls = await _get_urls(session,bird, "p", sex, age)
         if not os.path.exists(directory):
             os.makedirs(directory)
-        paths = [f"{directory}/{i}" for i in range(len(urls))]
+        paths = [f"{directory}{i}" for i in range(len(urls))]
         return await asyncio.gather(*(_download_helper(path,url,session) for path,url in zip(paths,urls)))
 
 
@@ -207,11 +208,11 @@ async def get_images(ctx, bird, addOn=None):
         sciBird = sciBirdList[index]
     else:
         sciBird = bird
-    directory=f"downloads/{sciBird}{addOn}/"
+    directory=f"cache/images/{sciBird}{addOn}/"
     try:
         print("trying")
         images_dir = os.listdir(directory)
-        print(f"downloads/{sciBird}{addOn}/")
+        print(directory)
         if not images_dir:
             raise GenericError("No Images")
         images = [f"{directory}{path}" for path in images_dir]
@@ -220,7 +221,7 @@ async def get_images(ctx, bird, addOn=None):
         print("fail")
         # if not found, fetch images
         print("scibird: " + str(sciBird))
-        images = await _download_images(sciBird, addOn)
+        images = await _download_images(sciBird, addOn, directory)
         print("images: " + str(images))
 
     prevJ = int(str(database.lindex(str(ctx.channel.id), 7))[2:-1])
@@ -301,11 +302,12 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
                         f"https:{recordings[randint(0, len(recordings)-1)]['file']}"
                     )
                     print("url: " + url)
-                    fileName = f"songs/{url.split('/')[3]}.mp3"
+                    directory="cache/songs/"
+                    fileName = f"{directory}{url.split('/')[3]}.mp3"
                     async with session.get(url) as songFile:
                         if songFile.status == 200:
-                            if not os.path.exists("songs/"):
-                                os.mkdir("songs/")
+                            if not os.path.exists(directory):
+                                os.makedirs(directory)
                             with open(fileName, 'wb') as fd:
                                 while True:
                                     chunk = await songFile.content.read(128)

@@ -1,5 +1,5 @@
 # check.py | commands to check answers
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -167,7 +167,7 @@ class Check(commands.Cog):
                                             str(ctx.message.author.id))))
                     await ctx.send(
                         f"Wow! You have answered {number} birds correctly!")
-                    filename = 'achievements/' + number + ".PNG"
+                    filename = f"achievements/{number}.PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(
                             file=discord.File(img, filename="award.png"))

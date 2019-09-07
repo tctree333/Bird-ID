@@ -1,5 +1,5 @@
 # data.py | import data from lists
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -69,10 +69,8 @@ def _main():
     # Converts txt file of data into lists
     for lst in files:
         print(f"Working on {lst[0]}")
-        with open(f'data/{lst[0]}.txt', 'r') as fileIn:
-            for line in fileIn:
-                lst.append(line.strip('\n'))
-        lst.remove(str(lst[0]))
+        with open(f'data/{lst[0]}.txt', 'r') as f:
+            lst=[line.strip()for line in f]
         print("Done!")
 
 

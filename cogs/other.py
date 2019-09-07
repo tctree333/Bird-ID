@@ -1,5 +1,5 @@
 # other.py | misc. commands
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,13 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from random import randint
+
 import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import database, memeList, GenericError
+from data.data import GenericError, memeList
 from functions import channel_setup, send_bird, send_birdsong, user_setup
-from random import randint
 
 
 class Other(commands.Cog):
@@ -88,17 +89,20 @@ class Other(commands.Cog):
         embed.add_field(
             name="Bot Info",
             value=
-            "This bot was created by EraserBird and person_v1.32 for helping people practice bird identification for Science Olympiad.",
+            "This bot was created by EraserBird and person_v1.32 "+
+			"for helping people practice bird identification for Science Olympiad.",
             inline=False)
         embed.add_field(
             name="Support",
             value=
-            "If you are experiencing any issues, have feature requests, or want to get updates on bot status, join our support server below.",
+            "If you are experiencing any issues, have feature requests, "+
+			"or want to get updates on bot status, join our support server below.",
             inline=False)
         embed.add_field(
             name="Stats",
             value=
-            f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. The WebSocket latency is {str(round((self.bot.latency*1000)))} ms.",
+            f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers."+
+			f"The WebSocket latency is {str(round((self.bot.latency*1000)))} ms.",
             inline=False)
         await ctx.send(embed=embed)
         await ctx.send("https://discord.gg/fXxYyDJ")
