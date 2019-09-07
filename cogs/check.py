@@ -39,9 +39,6 @@ class Check(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
-
-        global achievement
-
         currentBird = str(database.lindex(str(ctx.channel.id), 0))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
@@ -93,8 +90,6 @@ class Check(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        global achievement
-
         currentBird = str(database.lindex(str(ctx.channel.id), 5))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
@@ -144,8 +139,6 @@ class Check(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
-
-        global achievement
 
         currentSongBird = str(database.lindex(str(ctx.channel.id), 2))[2:-1]
         if currentSongBird == "":  # no bird

@@ -28,10 +28,6 @@ from discord.ext import commands, tasks
 from data.data import database
 from functions import channel_setup
 
-#from functions import (bird_setup, channel_setup, download, error_skip,
-#                      error_skip_goat, error_skip_song, send_bird,
-#                       send_birdsong, spellcheck, user_setup)
-
 # Initialize bot
 bot = commands.Bot(command_prefix=['b!', 'b.', 'b#'],
                    case_insensitive=True,
