@@ -196,9 +196,9 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
     await ctx.trigger_typing()
     if bird in songBirds:
         index = songBirds.index(bird)
-        sciBird = f"{sciSongBirds[index]} (bird)"
+        sciBird = sciSongBirds[index]
     else:
-        sciBird = f"{bird} (bird)"
+        sciBird = bird
         
     # fetch sounds
     async with aiohttp.ClientSession() as session:
