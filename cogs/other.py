@@ -15,12 +15,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from random import randint
+from difflib import get_close_matches
 
 import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import GenericError, memeList
+from data.data import GenericError, memeList,sciBirdList,birdList
 from functions import channel_setup, send_bird, send_birdsong, user_setup
 
 
@@ -38,8 +39,9 @@ class Other(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        bird = arg
+        bird = get_close_matches(arg,birdList+sciBirdList,n=1)[0]
         print("info")
+		
         await ctx.send("Please wait a moment.")
         await send_bird(ctx, str(bird), message="Here's the image!")
         await send_birdsong(ctx, str(bird), "Here's the call!")

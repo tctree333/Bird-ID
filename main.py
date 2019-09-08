@@ -50,8 +50,8 @@ if __name__ == '__main__':
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
         loop=asyncio.get_event_loop()
-        executor=ProcessPoolExecutor(1)
-        await loop.run_in_executor(executor,start_precache)
+        with ProcessPoolExecutor(1) as executor:
+            await loop.run_in_executor(executor,start_precache)
 
     # Here we load our extensions(cogs) that are located in the cogs directory
     initial_extensions = ['cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.other']
