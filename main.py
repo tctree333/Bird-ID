@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import asyncio
 import errno
 import os
 import shutil
+import sys
 import traceback
 
 import aiohttp
@@ -25,14 +27,13 @@ import redis
 import wikipedia
 from discord.ext import commands, tasks
 
-from data.data import database
-from functions import channel_setup
+from data.data import database,sciBirdList
+from functions import channel_setup,download_images
 
 # Initialize bot
 bot = commands.Bot(command_prefix=['b!', 'b.', 'b#'],
                    case_insensitive=True,
                    description="BirdID - Your Very Own Ornithologist")
-
 
 # Logging
 @bot.event
@@ -43,6 +44,12 @@ async def on_ready():
     print("_" * 50)
     # Change discord activity
     await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
+    timeout = aiohttp.ClientTimeout(total=10*60)
+    conn = aiohttp.TCPConnector(limit=100) 
+    async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
+        await asyncio.gather(*(download_images(bird,session=session) for bird in sciBirdList))
+    print("Images Cached!")
+
 
 
 # Here we load our extensions(cogs) that are located in the cogs directory
@@ -55,7 +62,9 @@ if __name__ == '__main__':
         except (discord.ClientException, ModuleNotFoundError):
             print(f'Failed to load extension {extension}.')
             traceback.print_exc()
-
+    if sys.platform == 'win32':
+        loop = asyncio.ProactorEventLoop()
+        asyncio.set_event_loop(loop)
 
 # task to clear downloads
 @tasks.loop(hours=72.0)

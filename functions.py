@@ -103,7 +103,10 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     await ctx.trigger_typing()
 
     try:
-        response = await get_images(ctx, bird,addOn)
+        from time import time
+        t=time()
+        response = await get_image(ctx, bird,addOn)
+        print(time()-t)
     except GenericError as e:
         await delete.delete()
         await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {str(e)}")
@@ -142,47 +145,55 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     elif bird == "Strix acio":
         bird = "Screech Owl"
     print(f"getting image urls for {bird}")
-    async with session.get(
-        TAXON_CODE_URL.format(
+    taxon_code_url=TAXON_CODE_URL.format(
             urllib.parse.quote(
                 bird.replace("-"," ").replace("'s","")
             )
         )
-    ) as taxon_code_response:
+    async with session.get(taxon_code_url) as taxon_code_response:
         if taxon_code_response.status!=200:
             raise GenericError(f"An http error code of {taxon_code_response.status} occured"+
-                f" while fetching a {'image'if media_type=='p' else 'song'} for {bird}")
+                f" while fetching {taxon_code_url} for a {'image'if media_type=='p' else 'song'} for {bird}")
         taxon_code_data = await taxon_code_response.json()
-        taxon_code = taxon_code_data[0]["code"]
-    async with session.get(CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type)) as catalog_response:
+        try:
+            taxon_code = taxon_code_data[0]["code"]
+        except IndexError:
+            raise GenericError(f"No taxon code found for {bird}")
+    catalog_url=CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type) 
+    async with session.get(catalog_url) as catalog_response:
         if catalog_response.status!=200:
             raise GenericError(f"An http error code of {catalog_response.status} occured "+
-                f"while fetching a {'image'if media_type=='p' else 'song'} for {bird}")
+                f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}")
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
         urls = [data["mediaUrl"] for data in content]
         return urls
 
 async def _download_helper(path,url,session):
-    response = await session.get(url)
-    #from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
-    content_type=response.headers['content-type'].partition(';')[0].strip()
-    if content_type.partition("/")[0]=="image":
-        ext = "."+(set(ext[1:] for ext in guess_all_extensions(content_type)) & valid_extensions).pop()
-    else:
-        ext = guess_extension(content_type)
-    filename=f"{path}{ext}"
-    #from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5    
-    with contextlib.closing(response) as fp:
-        with open(filename, 'wb') as out_file:                    
-            block_size = 1024 * 8
-            while True:
-                block = await fp.content. read(block_size)  # pylint: disable=no-member
-                if not block:
-                    break
-                out_file.write(block)
-    return filename      
-async def _download_images(bird, addOn, directory):
+    try:
+        async with session.get(url) as response:
+            #from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
+            content_type=response.headers['content-type'].partition(';')[0].strip()
+            if content_type.partition("/")[0]=="image":
+                ext = "."+(set(ext[1:] for ext in guess_all_extensions(content_type)) & valid_extensions).pop()
+            else:
+                ext = guess_extension(content_type)
+            filename=f"{path}{ext}"
+            #from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5    
+            with open(filename, 'wb') as out_file:                    
+                block_size = 1024 * 8
+                while True:
+                    block = await response.content.read(block_size)  # pylint: disable=no-member
+                    if not block:
+                        break
+                    out_file.write(block)
+            return filename
+    except aiohttp.ClientError:
+        print(f"Client Error with url {url} and path {path}")
+        raise
+async def download_images(bird, addOn="", directory=None,session=None):
+    if directory is None:
+        directory=f"cache/images/{bird}{addOn}/"
     if addOn == "female":
         sex = "f"
     else:
@@ -191,23 +202,17 @@ async def _download_images(bird, addOn, directory):
         age = "j"
     else:
         age = ""
-    
-    async with aiohttp.ClientSession() as session:
+    async with contextlib.AsyncExitStack() as stack:
+        if session is None:
+            session=await stack.enter_async_context(aiohttp.ClientSession())
         urls = await _get_urls(session,bird, "p", sex, age)
         if not os.path.exists(directory):
             os.makedirs(directory)
         paths = [f"{directory}{i}" for i in range(len(urls))]
-        return await asyncio.gather(*(_download_helper(path,url,session) for path,url in zip(paths,urls)))
-
-
-# function that gets bird images to run in pool (blocking prevention)
-async def get_images(ctx, bird, addOn=None):
-    # fetch scientific names of birds
-    if bird in birdList:
-        index = birdList.index(bird)
-        sciBird = sciBirdList[index]
-    else:
-        sciBird = bird
+        filenames =  await asyncio.gather(*(_download_helper(path,url,session) for path,url in zip(paths,urls)))
+        print(f"downloaded images for {bird}")
+        return filenames
+async def get_images(sciBird,addOn):
     directory=f"cache/images/{sciBird}{addOn}/"
     try:
         print("trying")
@@ -215,15 +220,21 @@ async def get_images(ctx, bird, addOn=None):
         print(directory)
         if not images_dir:
             raise GenericError("No Images")
-        images = [f"{directory}{path}" for path in images_dir]
-        print("images: " + str(images))
+        return [f"{directory}{path}" for path in images_dir]
     except (FileNotFoundError, GenericError):
-        print("fail")
+        print("fetching images")
         # if not found, fetch images
         print("scibird: " + str(sciBird))
-        images = await _download_images(sciBird, addOn, directory)
-        print("images: " + str(images))
-
+        return await download_images(sciBird, addOn, directory)
+# function that gets bird images to run in pool (blocking prevention)
+async def get_image(ctx, bird, addOn=None):
+    # fetch scientific names of birds
+    if bird in birdList:
+        sciBird = sciBirdList[birdList.index(bird)]
+    else:
+        sciBird = bird
+    images = await get_images(sciBird,addOn)
+    print("images: " + str(images))
     prevJ = int(str(database.lindex(str(ctx.channel.id), 7))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if images:
@@ -270,7 +281,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
         sciBird = f"{sciSongBirds[index]} (bird)"
     else:
         sciBird = f"{bird} (bird)"
-
+    print(f"fetching song for {sciBird}")
     # fetch sounds
     async with aiohttp.ClientSession() as session:
         query = urllib.parse.quote(sciBird)

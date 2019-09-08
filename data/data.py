@@ -51,27 +51,18 @@ class GenericError(commands.CommandError):
 
 # Lists of birds, memes, and other info
 
-birdList = ["birdList"]
-sciBirdList = ["sciBirdList"]
-memeList = ["memeList"]
-songBirds = ["songBirds"]
-sciSongBirds = ["sciSongBirds"]
 
 
 def _main():
-    global birdList
-    global sciBirdList
-    global memeList
-    global songBirds
-    global sciSongBirds
-    files = [birdList, sciBirdList, memeList, songBirds, sciSongBirds]
-
+    filenames = ("birdList", "sciBirdList", "memeList", "songBirds", "sciSongBirds")
     # Converts txt file of data into lists
-    for lst in files:
-        print(f"Working on {lst[0]}")
-        with open(f'data/{lst[0]}.txt', 'r') as f:
-            lst=[line.strip()for line in f]
+    lists=[]
+    for filename in filenames:
+        print(f"Working on {filename}")
+        with open(f'data/{filename}.txt', 'r') as f:
+            lists.append([line.strip() for line in f])
         print("Done!")
+    return lists	
 
 
-_main()
+birdList,sciBirdList,memeList,songBirds,sciSongBirds=_main() #pylint disable: unbalanced-tuple-unpacking
