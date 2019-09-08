@@ -103,10 +103,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     await ctx.trigger_typing()
 
     try:
-        from time import time
-        t=time()
         response = await get_image(ctx, bird,addOn)
-        print(time()-t)
     except GenericError as e:
         await delete.delete()
         await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {str(e)}")
@@ -261,8 +258,12 @@ async def get_image(ctx, bird, addOn=None):
         raise GenericError("No Images Found")
 
     return [image_link, extension]
-
-
+async def precache_images():
+    timeout = aiohttp.ClientTimeout(total=10*60)
+    conn = aiohttp.TCPConnector(limit=100)
+    async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
+        await asyncio.gather(*(download_images(bird,session=session) for bird in sciBirdList))
+    print("Images Cached")
 # sends a birdsong
 async def send_birdsong(ctx, bird, on_error=None, message=None):
     if bird == "":
@@ -278,9 +279,9 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
     await ctx.trigger_typing()
     if bird in songBirds:
         index = songBirds.index(bird)
-        sciBird = f"{sciSongBirds[index]} (bird)"
+        sciBird = sciSongBirds[index]
     else:
-        sciBird = f"{bird} (bird)"
+        sciBird = bird
     print(f"fetching song for {sciBird}")
     # fetch sounds
     async with aiohttp.ClientSession() as session:
@@ -291,7 +292,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
             if response.status == 200:
                 data = await response.json()
                 recordings = data["recordings"]
-                print("recordings: " + str(recordings))
+                print(f"found {len(recordings)} recordings for {sciBird}")
                 if not recordings:  # bird not found
                     # try with common name instead
                     query = urllib.parse.quote(bird)
