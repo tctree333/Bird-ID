@@ -18,9 +18,10 @@ from random import randint
 
 from discord.ext import commands
 
-from data.data import birdList, database, songBirds
+from data.data import birdList, database, songBirds,goatsuckers
 from functions import (channel_setup, error_skip, error_skip_goat,
-                       error_skip_song, send_bird, send_birdsong, user_setup)
+                       error_skip_song, send_bird, 
+					   send_birdsong, user_setup)
 
 BASE_MESSAGE = (
 "*Here you go!* \n" +
@@ -93,9 +94,6 @@ class Birds(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        goatsuckers = [
-            "Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"
-        ]
         answered = int(database.lindex(str(ctx.channel.id), 6))
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird

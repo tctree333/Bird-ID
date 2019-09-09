@@ -18,7 +18,7 @@ import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import birdList, database, sciBirdList, sciSongBirds, songBirds
+from data.data import birdList, database, sciBirdList, sciSongBirds, songBirds, goatsuckers, sciGoat
 from functions import bird_setup, channel_setup, spellcheck, user_setup
 
 # achievement values
@@ -51,7 +51,7 @@ class Check(commands.Cog):
             if spellcheck(arg, currentBird) is True or spellcheck(
                     arg, sciBird) is True:
                 await ctx.send("Correct! Good job!")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
                 database.lset(
                     str(ctx.channel.id), 4,
@@ -72,9 +72,8 @@ class Check(commands.Cog):
 
             else:
                 database.zincrby("incorrect", 1, str(currentBird))
-                await ctx.send("Sorry, the bird was actually " +
-                               currentBird.lower() + ".")
-                page = wikipedia.page(sciBird)
+                await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
+                page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
             print("currentBird: " + str(currentBird.lower().replace("-", " ")))
             print("args: " + str(arg.lower().replace("-", " ")))
@@ -95,14 +94,14 @@ class Check(commands.Cog):
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
             await bird_setup(currentBird)
-            index = birdList.index(currentBird)
-            sciBird = sciBirdList[index]
+            index = goatsuckers.index(currentBird)
+            sciBird = sciGoat[index]
             database.lset(str(ctx.channel.id), 6, "1")
             database.lset(str(ctx.channel.id), 5, "")
             if spellcheck(arg, currentBird) is True or spellcheck(
                     arg, sciBird) is True:
                 await ctx.send("Correct! Good job!")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
                 database.lset(
                     str(ctx.channel.id), 4,
@@ -123,9 +122,8 @@ class Check(commands.Cog):
 
             else:
                 database.zincrby("incorrect", 1, str(currentBird))
-                await ctx.send("Sorry, the bird was actually " +
-                               currentBird.lower() + ".")
-                page = wikipedia.page(sciBird)
+                await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
+                page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
             print("currentBird: " + str(currentBird.lower().replace("-", " ")))
             print("args: " + str(arg.lower().replace("-", " ")))
@@ -153,7 +151,7 @@ class Check(commands.Cog):
                     arg, sciBird) is True:
 
                 await ctx.send("Correct! Good job!")
-                page = wikipedia.page(sciBird)
+                page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
                 database.lset(
                     str(ctx.channel.id), 4,
@@ -174,9 +172,8 @@ class Check(commands.Cog):
 
             else:
                 database.zincrby("incorrect", 1, str(currentSongBird))
-                await ctx.send("Sorry, the bird was actually " +
-                               currentSongBird.lower() + ".")
-                page = wikipedia.page(sciBird)
+                await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
+                page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
             print("currentBird: " +
                   str(currentSongBird.lower().replace("-", " ")))

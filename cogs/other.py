@@ -40,8 +40,7 @@ class Other(commands.Cog):
         await user_setup(ctx)
 
         bird = get_close_matches(arg,birdList+sciBirdList,n=1)[0]
-        print("info")
-		
+        
         await ctx.send("Please wait a moment.")
         await send_bird(ctx, str(bird), message="Here's the image!")
         await send_birdsong(ctx, str(bird), "Here's the call!")

@@ -52,6 +52,8 @@ class GenericError(commands.CommandError):
 # Lists of birds, memes, and other info
 
 
+goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
+sciGoat = ["Nyctidromus albicollis", "Antrostomus carolinensis", "Antrostomus vociferus"]
 
 def _main():
     filenames = ("birdList", "sciBirdList", "memeList", "songBirds", "sciSongBirds")

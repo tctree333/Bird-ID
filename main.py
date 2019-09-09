@@ -20,7 +20,7 @@ import os
 import shutil
 import sys
 import traceback
-from concurrent.futures import ProcessPoolExecutor
+import concurrent.futures
 
 import aiohttp
 import discord
@@ -49,10 +49,7 @@ if __name__ == '__main__':
         print("_" * 50)
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
-        loop=asyncio.get_event_loop()
-        with ProcessPoolExecutor(1) as executor:
-            await loop.run_in_executor(executor,start_precache)
-
+        refresh_cache.start()
     # Here we load our extensions(cogs) that are located in the cogs directory
     initial_extensions = ['cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.other']
     for extension in initial_extensions:
@@ -62,25 +59,7 @@ if __name__ == '__main__':
             print(f'Failed to load extension {extension}.')
             traceback.print_exc()
     if sys.platform == 'win32':
-        loop = asyncio.ProactorEventLoop()
-        asyncio.set_event_loop(loop)
-
-    # task to clear downloads
-    @tasks.loop(hours=72.0)
-    async def clear_cache():
-        print("clear cache")
-        try:
-            shutil.rmtree(r'cache/images/')
-            print("Cleared image cache.")
-        except FileNotFoundError:
-            print("Already cleared image cache.")
-
-        try:
-            shutil.rmtree(r'cache/songs/')
-            print("Cleared songs cache.")
-        except FileNotFoundError:
-            print("Already cleared songs cache.")
-
+        asyncio.set_event_loop(asyncio.ProactorEventLoop())
 
     ######
     # GLOBAL ERROR CHECKING
@@ -162,11 +141,24 @@ if __name__ == '__main__':
     **Error:**  """ + str(error))
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
+    @tasks.loop(hours=72.0)
+    async def refresh_cache():
+        print("clear cache")
+        try:
+            shutil.rmtree(r'cache/images/',ignore_errors=True)
+            print("Cleared image cache.")
+        except FileNotFoundError:
+            print("Already cleared image cache.")
 
-
-    # Start the task
-    clear_cache.start()
-
+        try:
+            shutil.rmtree(r'cache/songs/',ignore_errors=True)
+            print("Cleared songs cache.")
+        except FileNotFoundError:
+            print("Already cleared songs cache.")    
+        event_loop=asyncio.get_event_loop()
+        with concurrent.futures.ThreadPoolExecutor(1) as executor:
+            await event_loop.run_in_executor(executor,start_precache)
+    #refresh_cache.start()
     # Actually run the bot
     token = os.getenv("token")
     print(token)
