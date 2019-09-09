@@ -60,12 +60,15 @@ if __name__ == '__main__':
             traceback.print_exc()
     if sys.platform == 'win32':
         asyncio.set_event_loop(asyncio.ProactorEventLoop())
-
+    # Global check for dms - remove cooldowns
+    @bot.check
+    async def dm_cooldown(ctx):
+        if ctx.command.is_on_cooldown(ctx) and ctx.guild is None:
+            ctx.command.reset_cooldown(ctx)
+        return True
     ######
     # GLOBAL ERROR CHECKING
     ######
-
-
     @bot.event
     async def on_command_error(ctx, error):
         print("Error: " + str(error))

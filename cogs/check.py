@@ -30,10 +30,8 @@ class Check(commands.Cog):
         self.bot = bot
 
     # Check command - argument is the guess
-    @commands.command(help='- Checks your answer.',
-                      usage="guess",
-                      aliases=["guess", "c"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.command(help='- Checks your answer.', usage="guess", aliases=["guess", "c"])
+    @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def check(self, ctx, *, arg):
         print("check")
 
@@ -79,10 +77,8 @@ class Check(commands.Cog):
             print("args: " + str(arg.lower().replace("-", " ")))
 
     # Check command - argument is the guess
-    @commands.command(help='- Checks your goatsucker.',
-                      usage="guess",
-                      aliases=["cg"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.command(help='- Checks your goatsucker.', usage="guess", aliases=["cg"])
+    @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def checkgoat(self, ctx, *, arg):
         print("checkgoat")
 
@@ -129,9 +125,8 @@ class Check(commands.Cog):
             print("args: " + str(arg.lower().replace("-", " ")))
 
     # Check command - argument is the guess
-    @commands.command(help='- Checks the song',
-                      aliases=["songcheck", "cs", "sc"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.command(help='- Checks the song', aliases=["songcheck", "cs", "sc"])
+    @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def checksong(self, ctx, *, arg):
         print("checksong")
 
