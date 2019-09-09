@@ -161,7 +161,6 @@ if __name__ == '__main__':
         event_loop=asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor,start_precache)
-    #refresh_cache.start()
     # Actually run the bot
     token = os.getenv("token")
     print(token)

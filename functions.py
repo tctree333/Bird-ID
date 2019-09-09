@@ -103,10 +103,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     await ctx.trigger_typing()
 
     try:
-        from time import time
-        t=time()
         response = await get_image(ctx, bird,addOn)
-        print(time()-t)
     except GenericError as e:
         await delete.delete()
         await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {str(e)}")
