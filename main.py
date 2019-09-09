@@ -70,6 +70,14 @@ async def clear_cache():
         print("Already cleared songs.")
 
 
+# Global check for dms - remove cooldowns
+@bot.check
+async def dm_cooldown(ctx):
+        if ctx.command.is_on_cooldown(ctx) and ctx.guild is None:
+            ctx.command.reset_cooldown(ctx)
+        return True
+
+
 ######
 # GLOBAL ERROR CHECKING
 ######
