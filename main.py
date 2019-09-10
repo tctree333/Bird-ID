@@ -19,7 +19,6 @@ import errno
 import os
 import shutil
 import sys
-import traceback
 import concurrent.futures
 
 import aiohttp
@@ -28,25 +27,24 @@ import redis
 import wikipedia
 from discord.ext import commands, tasks
 
-from data.data import database
+from data.data import database, logger
 from functions import channel_setup, precache_images
 
 def start_precache():
     asyncio.run(precache_images())
         
-if __name__ == '__main__':    
+if __name__ == '__main__':
     # Initialize bot
     bot = commands.Bot(command_prefix=['b!', 'b.', 'b#'],
                     case_insensitive=True,
                     description="BirdID - Your Very Own Ornithologist")
 
-    # Logging
     @bot.event
     async def on_ready():
-        print("Logged in as:")
-        print(bot.user.name)
-        print(bot.user.id)
-        print("_" * 50)
+        print("Ready!")
+        logger.info("Logged in as:")
+        logger.info(bot.user.name)
+        logger.info(bot.user.id)
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
         refresh_cache.start()
@@ -56,8 +54,7 @@ if __name__ == '__main__':
         try:
             bot.load_extension(extension)
         except (discord.ClientException, ModuleNotFoundError):
-            print(f'Failed to load extension {extension}.')
-            traceback.print_exc()
+            logger.exception(f'Failed to load extension {extension}.')
     if sys.platform == 'win32':
         asyncio.set_event_loop(asyncio.ProactorEventLoop())
     # Global check for dms - remove cooldowns
@@ -71,7 +68,7 @@ if __name__ == '__main__':
     ######
     @bot.event
     async def on_command_error(ctx, error):
-        print("Error: " + str(error))
+        logger.error("Error: " + str(error))
 
         # don't handle errors with local handlers
         if hasattr(ctx.command, 'on_error'):
@@ -89,11 +86,11 @@ if __name__ == '__main__':
             await ctx.send("This command requires an argument!")
 
         elif isinstance(error, commands.BadArgument):
-            print("bad argument")
+            logger.error("bad argument")
             await ctx.send("The argument passed was invalid. Please try again.")
 
         elif isinstance(error, commands.ArgumentParsingError):
-            print("quote error")
+            logger.error("quote error")
             await ctx.send("An invalid character was detected. Please try again.")
 
         elif isinstance(error, commands.CommandInvokeError):
@@ -130,7 +127,7 @@ if __name__ == '__main__':
                     )
 
             else:
-                print("uncaught command error")
+                logger.error("uncaught command error")
                 await ctx.send("""**An uncaught command error has occurred.**
     *Please log this message in #support in the support server below, or try again.*
     **Error:**  """ + str(error))
@@ -138,7 +135,7 @@ if __name__ == '__main__':
                 raise error
 
         else:
-            print("uncaught non-command")
+            logger.error("uncaught non-command")
             await ctx.send("""**An uncaught non-command error has occurred.**
     *Please log this message in #support in the support server below, or try again.*
     **Error:**  """ + str(error))
@@ -146,22 +143,22 @@ if __name__ == '__main__':
             raise error
     @tasks.loop(hours=72.0)
     async def refresh_cache():
-        print("clear cache")
+        logger.info("clear cache")
         try:
             shutil.rmtree(r'cache/images/',ignore_errors=True)
-            print("Cleared image cache.")
+            logger.info("Cleared image cache.")
         except FileNotFoundError:
-            print("Already cleared image cache.")
+            logger.info("Already cleared image cache.")
 
         try:
             shutil.rmtree(r'cache/songs/',ignore_errors=True)
-            print("Cleared songs cache.")
+            logger.info("Cleared songs cache.")
         except FileNotFoundError:
-            print("Already cleared songs cache.")    
+            logger.info("Already cleared songs cache.")    
         event_loop=asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor,start_precache)
     # Actually run the bot
     token = os.getenv("token")
-    print(token)
+    logger.info(token)
     bot.run(token)

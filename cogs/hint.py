@@ -16,7 +16,7 @@
 
 from functions import channel_setup, user_setup
 from discord.ext import commands
-from data.data import database
+from data.data import database, logger
 
 
 class Hint(commands.Cog):
@@ -28,7 +28,7 @@ class Hint(commands.Cog):
                       aliases=["h"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hint(self, ctx):
-        print("hint")
+        logger.info("hint")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -44,7 +44,7 @@ class Hint(commands.Cog):
                       aliases=["goathint", "hg", "gh"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hintgoat(self, ctx):
-        print("hintgoat")
+        logger.info("hintgoat")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -60,7 +60,7 @@ class Hint(commands.Cog):
                       aliases=["songhint", "hs", "sh"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hintsong(self, ctx):
-        print("hintsong")
+        logger.info("hintsong")
 
         await channel_setup(ctx)
         await user_setup(ctx)

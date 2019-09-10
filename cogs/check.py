@@ -14,11 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import birdList, database, sciBirdList, sciSongBirds, songBirds, goatsuckers, sciGoat
+from data.data import birdList, database, sciBirdList, sciSongBirds, songBirds, goatsuckers, sciGoat, logger
 from functions import bird_setup, channel_setup, spellcheck, user_setup
 
 # achievement values
@@ -33,7 +34,7 @@ class Check(commands.Cog):
     @commands.command(help='- Checks your answer.', usage="guess", aliases=["guess", "c"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def check(self, ctx, *, arg):
-        print("check")
+        logger.info("check")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -73,14 +74,14 @@ class Check(commands.Cog):
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
-            print("currentBird: " + str(currentBird.lower().replace("-", " ")))
-            print("args: " + str(arg.lower().replace("-", " ")))
+            logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
+            logger.info("args: " + str(arg.lower().replace("-", " ")))
 
     # Check command - argument is the guess
     @commands.command(help='- Checks your goatsucker.', usage="guess", aliases=["cg"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def checkgoat(self, ctx, *, arg):
-        print("checkgoat")
+        logger.info("checkgoat")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -121,14 +122,14 @@ class Check(commands.Cog):
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
-            print("currentBird: " + str(currentBird.lower().replace("-", " ")))
-            print("args: " + str(arg.lower().replace("-", " ")))
+            logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
+            logger.info("args: " + str(arg.lower().replace("-", " ")))
 
     # Check command - argument is the guess
     @commands.command(help='- Checks the song', aliases=["songcheck", "cs", "sc"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def checksong(self, ctx, *, arg):
-        print("checksong")
+        logger.info("checksong")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -170,9 +171,9 @@ class Check(commands.Cog):
                 await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
                 page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
-            print("currentBird: " +
+            logger.info("currentBird: " +
                   str(currentSongBird.lower().replace("-", " ")))
-            print("args: " + str(arg.lower().replace("-", " ")))
+            logger.info("args: " + str(arg.lower().replace("-", " ")))
 
 
 def setup(bot):

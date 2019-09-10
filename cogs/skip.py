@@ -17,7 +17,7 @@
 import wikipedia
 from discord.ext import commands
 
-from data.data import database
+from data.data import database, logger
 from functions import channel_setup, user_setup
 
 
@@ -30,7 +30,7 @@ class Skip(commands.Cog):
                       aliases=["sk"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def skip(self, ctx):
-        print("skip")
+        logger.info("skip")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -51,7 +51,7 @@ class Skip(commands.Cog):
                       aliases=["goatskip", "sg"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def skipgoat(self, ctx):
-        print("skipgoat")
+        logger.info("skipgoat")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -72,7 +72,7 @@ class Skip(commands.Cog):
                       aliases=["songskip", "ss"])
     @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
     async def skipsong(self, ctx):
-        print("skipsong")
+        logger.info("skipsong")
 
         await channel_setup(ctx)
         await user_setup(ctx)

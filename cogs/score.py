@@ -1,5 +1,5 @@
 # score.py | commands to show score related things
-# Copyright (C) 2019  EraserBird, stats_v1.32, hmmm
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ import typing
 import discord
 from discord.ext import commands
 
-from data.data import database
+from data.data import database, logger
 from functions import channel_setup, user_setup
 
 
@@ -31,7 +31,7 @@ class Score(commands.Cog):
     @commands.command(help="- Total correct answers in a channel")
     @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
     async def score(self, ctx):
-        print("score")
+        logger.info("score")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -54,7 +54,7 @@ class Score(commands.Cog):
             ctx,
             *,
             user: typing.Optional[typing.Union[discord.Member, str]] = None):
-        print("user score")
+        logger.info("user score")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -64,7 +64,7 @@ class Score(commands.Cog):
                 await ctx.send("Not a user!")
                 return
             usera = user.id
-            print(usera)
+            logger.info(usera)
             if database.zscore("users", str(usera)) is not None:
                 times = str(int(database.zscore("users", str(usera))))
                 user = f"<@{str(usera)}>"
@@ -95,7 +95,7 @@ class Score(commands.Cog):
         aliases=["lb"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def leaderboard(self, ctx, placings=5):
-        print("leaderboard")
+        logger.info("leaderboard")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -125,7 +125,7 @@ class Score(commands.Cog):
                 else:
                     user = f"**{user.name}#{user.discriminator}**"
             else:
-                user = f"<@{str(leaderboard_list[i][0])[2:-1]}>"
+                user = f"<@{str(stats[0])[2:-1]}>"
             leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
         embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
@@ -150,7 +150,7 @@ class Score(commands.Cog):
         aliases=["m"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def missed(self, ctx, placings=5):
-        print("missed")
+        logger.info("missed")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -182,7 +182,7 @@ class Score(commands.Cog):
     # Command-specific error checking
     @leaderboard.error
     async def leader_error(self, ctx, error):
-        print("leaderboard error")
+        logger.info("leaderboard error")
         if isinstance(error, commands.BadArgument):
             await ctx.send('Not an integer!')
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
@@ -198,7 +198,7 @@ class Score(commands.Cog):
 
     @missed.error
     async def missed_error(self, ctx, error):
-        print("missed error")
+        logger.info("missed error")
         if isinstance(error, commands.BadArgument):
             await ctx.send('Not an integer!')
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown

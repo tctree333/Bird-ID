@@ -25,7 +25,7 @@ import aiohttp
 import discord
 import eyed3
 
-from data.data import GenericError, database, birdList, sciBirdList, songBirds, sciSongBirds
+from data.data import GenericError, database, birdList, sciBirdList, songBirds, sciSongBirds, logger
 
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 CATALOG_URL = ("https://search.macaulaylibrary.org/catalog.json?searchField=species" +
@@ -67,19 +67,19 @@ async def bird_setup(bird):
 
 # Function to run on error
 def error_skip(ctx):
-    print("ok")
+    logger.info("ok")
     database.lset(str(ctx.channel.id), 0, "")
     database.lset(str(ctx.channel.id), 1, "1")
 
 
 def error_skip_song(ctx):
-    print("ok")
+    logger.info("ok")
     database.lset(str(ctx.channel.id), 2, "")
     database.lset(str(ctx.channel.id), 3, "1")
 
 
 def error_skip_goat(ctx):
-    print("ok")
+    logger.info("ok")
     database.lset(str(ctx.channel.id), 5, "")
     database.lset(str(ctx.channel.id), 6, "1")
 
@@ -91,7 +91,7 @@ def error_skip_goat(ctx):
 # addOn - string to append to search for female/juvenile birds (str)
 async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     if bird == "":
-        print("error - bird is blank")
+        logger.error("error - bird is blank")
         await ctx.send(
             "**There was an error fetching birds.**\n*Please try again.*")
         if on_error is not None:
@@ -141,7 +141,7 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
         bird = "Porphyrio martinica"
     elif bird == "Strix acio":
         bird = "Screech Owl"
-    print(f"getting image urls for {bird}")
+    logger.info(f"getting image urls for {bird}")
     taxon_code_url=TAXON_CODE_URL.format(
             urllib.parse.quote(
                 bird.replace("-"," ").replace("'s","")
@@ -186,7 +186,7 @@ async def _download_helper(path,url,session):
                     out_file.write(block)
             return filename
     except aiohttp.ClientError:
-        print(f"Client Error with url {url} and path {path}")
+        logger.error(f"Client Error with url {url} and path {path}")
         raise
 async def download_images(bird, addOn="", directory=None,session=None):
     if directory is None:
@@ -207,21 +207,21 @@ async def download_images(bird, addOn="", directory=None,session=None):
             os.makedirs(directory)
         paths = [f"{directory}{i}" for i in range(len(urls))]
         filenames =  await asyncio.gather(*(_download_helper(path,url,session) for path,url in zip(paths,urls)))
-        print(f"downloaded images for {bird}")
+        logger.info(f"downloaded images for {bird}")
         return filenames
 async def get_images(sciBird,addOn):
     directory=f"cache/images/{sciBird}{addOn}/"
     try:
-        print("trying")
+        logger.info("trying")
         images_dir = os.listdir(directory)
-        print(directory)
+        logger.info(directory)
         if not images_dir:
             raise GenericError("No Images")
         return [f"{directory}{path}" for path in images_dir]
     except (FileNotFoundError, GenericError):
-        print("fetching images")
+        logger.info("fetching images")
         # if not found, fetch images
-        print("scibird: " + str(sciBird))
+        logger.info("scibird: " + str(sciBird))
         return await download_images(sciBird, addOn, directory)
 # function that gets bird images to run in pool (blocking prevention)
 async def get_image(ctx, bird, addOn=None):
@@ -231,23 +231,23 @@ async def get_image(ctx, bird, addOn=None):
     else:
         sciBird = bird
     images = await get_images(sciBird,addOn)
-    print("images: " + str(images))
+    logger.info("images: " + str(images))
     prevJ = int(str(database.lindex(str(ctx.channel.id), 7))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if images:
         j = (prevJ + 1) % len(images)
-        print("prevJ: " + str(prevJ))
-        print("j: " + str(j))
+        logger.debug("prevJ: " + str(prevJ))
+        logger.debug("j: " + str(j))
 
         for x in range(j, len(images)):  # check file type and size
             image_link = images[x]
             extension = image_link.split('.')[-1]
-            print("extension: " + str(extension))
+            logger.debug("extension: " + str(extension))
             statInfo = os.stat(image_link)
-            print("size: " + str(statInfo.st_size))
+            logger.debug("size: " + str(statInfo.st_size))
             if extension.lower(
             ) in valid_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
-                print("found one!")
+                logger.info("found one!")
                 break
             elif x == len(images) - 1:
                 j = (j + 1) % (len(images))
@@ -263,11 +263,11 @@ async def precache_images():
     conn = aiohttp.TCPConnector(limit=100)
     async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
         await asyncio.gather(*(download_images(bird,session=session) for bird in sciBirdList))
-    print("Images Cached")
+    logger.info("Images Cached")
 # sends a birdsong
 async def send_birdsong(ctx, bird, on_error=None, message=None):
     if bird == "":
-        print("error - bird is blank")
+        logger.error("error - bird is blank")
         await ctx.send(
             "**There was an error fetching birds.**\n*Please try again.*")
         if on_error is not None:
@@ -282,7 +282,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
         sciBird = sciSongBirds[index]
     else:
         sciBird = bird
-    print(f"fetching song for {sciBird}")
+    logger.info(f"fetching song for {sciBird}")
     # fetch sounds
     async with aiohttp.ClientSession() as session:
         query = urllib.parse.quote(sciBird)
@@ -292,7 +292,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
             if response.status == 200:
                 data = await response.json()
                 recordings = data["recordings"]
-                print(f"found {len(recordings)} recordings for {sciBird}")
+                logger.info(f"found {len(recordings)} recordings for {sciBird}")
                 if not recordings:  # bird not found
                     # try with common name instead
                     query = urllib.parse.quote(bird)
@@ -307,13 +307,13 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
                             await ctx.send(
                                 "**A GET error occurred when fetching the song.**\n*Please try again.*"
                             )
-                            print("error:" + str(response.status))
+                            logger.error("error:" + str(response.status))
 
                 if recordings:
                     url = str(
                         f"https:{recordings[randint(0, len(recordings)-1)]['file']}"
                     )
-                    print("url: " + url)
+                    logger.info("url: " + url)
                     directory="cache/songs/"
                     fileName = f"{directory}{url.split('/')[3]}.mp3"
                     async with session.get(url) as songFile:
@@ -350,7 +350,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
                             await ctx.send(
                                 "**A GET error occurred when fetching the song.**\n*Please try again.*"
                             )
-                            print("error:" + str(songFile.status))
+                            logger.error("error:" + str(songFile.status))
                 else:
                     await delete.delete()
                     await ctx.send("Unable to get song - bird was not found.")
@@ -360,7 +360,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
                 await ctx.send(
                     "**A GET error occurred when fetching the song.**\n*Please try again.*"
                 )
-                print("error:" + str(response.status))
+                logger.error("error:" + str(response.status))
 
 
 # spellcheck - allows one letter off/extra

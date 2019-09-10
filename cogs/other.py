@@ -21,7 +21,7 @@ import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import GenericError, memeList,sciBirdList,birdList
+from data.data import GenericError, memeList, sciBirdList, birdList, logger
 from functions import channel_setup, send_bird, send_birdsong, user_setup
 
 
@@ -34,7 +34,7 @@ class Other(commands.Cog):
                       aliases=['i'])
     @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
     async def info(self, ctx, *, arg):
-        print("info")
+        logger.info("info")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -49,7 +49,7 @@ class Other(commands.Cog):
     @commands.command(help="- Fetch the wikipedia page for any given argument")
     @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
     async def wiki(self, ctx, *, arg):
-        print("wiki")
+        logger.info("wiki")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -67,7 +67,7 @@ class Other(commands.Cog):
     @commands.command(help="- Sends a funny bird video!")
     @commands.cooldown(1, 300.0, type=commands.BucketType.channel)
     async def meme(self, ctx):
-        print("meme")
+        logger.info("meme")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -80,7 +80,7 @@ class Other(commands.Cog):
                       aliases=["bot_info", "support", "stats"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def botinfo(self, ctx):
-        print("bot info")
+        logger.info("bot info")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -112,7 +112,7 @@ class Other(commands.Cog):
     @commands.command(help="- Get the invite link for this bot")
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def invite(self, ctx):
-        print("invite")
+        logger.info("invite")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -133,7 +133,7 @@ For more information on the differences between the two bots, visit our support 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
     async def test(self, ctx):
-        print("test")
+        logger.info("test")
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         embed.add_field(name="Test", value="Errors whee", inline=False)

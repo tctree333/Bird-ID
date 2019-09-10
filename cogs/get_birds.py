@@ -18,10 +18,9 @@ from random import randint
 
 from discord.ext import commands
 
-from data.data import birdList, database, songBirds,goatsuckers
+from data.data import birdList, database, goatsuckers, songBirds, logger
 from functions import (channel_setup, error_skip, error_skip_goat,
-                       error_skip_song, send_bird, 
-					   send_birdsong, user_setup)
+                       error_skip_song, send_bird, send_birdsong, user_setup)
 
 BASE_MESSAGE = (
 "*Here you go!* \n" +
@@ -44,7 +43,7 @@ class Birds(commands.Cog):
     # 5 second cooldown
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def bird(self, ctx, add_on=""):
-        print("bird")
+        logger.info("bird")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -53,8 +52,8 @@ class Birds(commands.Cog):
             await ctx.send("This command only takes female, juvenile, or nothing!")
             return
 
-        print("bird: " + str(database.lindex(str(ctx.channel.id), 0))[2:-1])
-        print("answered: " + str(int(database.lindex(str(ctx.channel.id), 1))))
+        logger.info("bird: " + str(database.lindex(str(ctx.channel.id), 0))[2:-1])
+        logger.info("answered: " + str(int(database.lindex(str(ctx.channel.id), 1))))
 
         answered = int(database.lindex(str(ctx.channel.id), 1))
         # check to see if previous bird was answered
@@ -66,7 +65,7 @@ class Birds(commands.Cog):
                 currentBird = birdList[randint(0, len(birdList) - 1)]
             database.lset(str(ctx.channel.id), 8, str(currentBird))
             database.lset(str(ctx.channel.id), 0, str(currentBird))
-            print("currentBird: " + str(currentBird))
+            logger.info("currentBird: " + str(currentBird))
             await send_bird(
                 ctx,
                 currentBird,
@@ -87,7 +86,7 @@ class Birds(commands.Cog):
     @commands.command(help='- Sends a random goatsucker to ID', aliases=["gs"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def goatsucker(self, ctx):
-        print("goatsucker")
+        logger.info("goatsucker")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -98,7 +97,7 @@ class Birds(commands.Cog):
             database.lset(str(ctx.channel.id), 6, "0")
             currentBird = goatsuckers[randint(0, 2)]
             database.lset(str(ctx.channel.id), 5, str(currentBird))
-            print("currentBird: " + str(currentBird))
+            logger.info("currentBird: " + str(currentBird))
             await send_bird(
                 ctx,
                 currentBird,
@@ -120,7 +119,7 @@ class Birds(commands.Cog):
     @commands.command(help="- Sends a bird call to ID", aliases=["s"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def song(self, ctx):
-        print("song")
+        logger.info("song")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -135,7 +134,7 @@ class Birds(commands.Cog):
                 currentSongBird = songBirds[randint(0, len(songBirds) - 1)]
             database.lset(str(ctx.channel.id), 9, str(currentSongBird))
             database.lset(str(ctx.channel.id), 2, str(currentSongBird))
-            print("currentSongBird: " + str(currentSongBird))
+            logger.info("currentSongBird: " + str(currentSongBird))
             await send_birdsong(
                 ctx,
                 currentSongBird,

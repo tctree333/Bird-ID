@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import logging
+import logging.handlers
 import os
+import sys
 
 import redis
 # Import modules for other files
@@ -43,7 +46,28 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # "incorrect":[bird name, #incorrect]
 # }
 
+#setup logging
+logger = logging.getLogger("bird-id")
+logger.setLevel(logging.DEBUG)
+os.makedirs("logs",exist_ok=True)
+file_handler=logging.handlers.TimedRotatingFileHandler("logs/log.txt",backupCount=4,when="midnight")
+file_handler.setLevel(logging.DEBUG)
+stream_handler=logging.StreamHandler()
+stream_handler.setLevel(logging.WARNING)
+file_handler.setFormatter(logging.Formatter("{asctime} - {filename:10} -  {levelname:8} - {message}",style="{"))
+stream_handler.setFormatter(logging.Formatter("{filename:10} -  {levelname:8} - {message}",style="{"))
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+#log uncaught exceptions
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
 
+    logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+sys.excepthook = handle_exception
+    
 class GenericError(commands.CommandError):
     def __init__(self, message=None):
         super().__init__(message=message)
@@ -60,10 +84,10 @@ def _main():
     # Converts txt file of data into lists
     lists=[]
     for filename in filenames:
-        print(f"Working on {filename}")
+        logger.info(f"Working on {filename}")
         with open(f'data/{filename}.txt', 'r') as f:
             lists.append([line.strip() for line in f])
-        print("Done!")
+        logger.info("Done!")
     return lists	
 
 
