@@ -1,5 +1,5 @@
 # data.py | import data from lists
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,12 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Import modules for other files
-import discord
-from discord.ext import commands
-import wikipedia
-import redis
+import logging
+import logging.handlers
 import os
+import sys
+
+import redis
+# Import modules for other files
+from discord.ext import commands
 
 # define database for one connection
 database = redis.from_url(os.getenv("REDIS_URL"))
@@ -44,38 +46,49 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # "incorrect":[bird name, #incorrect]
 # }
 
+#setup logging
+logger = logging.getLogger("bird-id")
+logger.setLevel(logging.DEBUG)
+os.makedirs("logs",exist_ok=True)
+file_handler=logging.handlers.TimedRotatingFileHandler("logs/log.txt",backupCount=4,when="midnight")
+file_handler.setLevel(logging.DEBUG)
+stream_handler=logging.StreamHandler()
+stream_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(logging.Formatter("{asctime} - {filename:10} -  {levelname:8} - {message}",style="{"))
+stream_handler.setFormatter(logging.Formatter("{filename:10} -  {levelname:8} - {message}",style="{"))
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+#log uncaught exceptions
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+    logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+sys.excepthook = handle_exception
+    
 class GenericError(commands.CommandError):
     def __init__(self, message=None):
         super().__init__(message=message)
 
+
 # Lists of birds, memes, and other info
 
-
-birdList = ["birdList"]
-sciBirdList = ["sciBirdList"]
-memeList = ["memeList"]
-songBirds = ["songBirds"]
-sciSongBirds = ["sciSongBirds"]
 
 goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
 sciGoat = ["Nyctidromus albicollis", "Antrostomus carolinensis", "Antrostomus vociferus"]
 
 def _main():
-    global birdList
-    global sciBirdList
-    global memeList
-    global songBirds
-    global sciSongBirds
-    files = [birdList, sciBirdList, memeList, songBirds, sciSongBirds]
-
+    filenames = ("birdList", "sciBirdList", "memeList", "songBirds", "sciSongBirds")
     # Converts txt file of data into lists
-    for list in files:
-        print(f"Working on {list[0]}")
-        with open(f'data/{list[0]}.txt', 'r') as fileIn:
-            for line in fileIn:
-                list.append(line.strip('\n'))
-        list.remove(str(list[0]))
-        print("Done!")
+    lists=[]
+    for filename in filenames:
+        logger.info(f"Working on {filename}")
+        with open(f'data/{filename}.txt', 'r') as f:
+            lists.append([line.strip() for line in f])
+        logger.info("Done!")
+    return lists	
 
 
-_main()
+birdList,sciBirdList,memeList,songBirds,sciSongBirds=_main() #pylint disable: unbalanced-tuple-unpacking

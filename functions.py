@@ -1,5 +1,5 @@
 # functions.py | function definitions
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,20 +14,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from random import randint
-from google_images_download import google_images_download
-import aiohttp
-import eyed3
-import concurrent.futures
 import asyncio
-from data.data import *
+import contextlib
+from mimetypes import guess_all_extensions,guess_extension
+import os
+import urllib.parse
+from random import randint
 
+import aiohttp
+import discord
+import eyed3
 
-# Initialize library
-response = google_images_download.googleimagesdownload()
+from data.data import GenericError, database, birdList, sciBirdList, songBirds, sciSongBirds, logger
 
+TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
+CATALOG_URL = ("https://search.macaulaylibrary.org/catalog.json?searchField=species" +
+"&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5")
+COUNT = 20  #set this to include a margin of error in case some urls throw error code 476 due to still being processed
 # Valid file types
-valid_extensions = ["jpg", "png", "jpeg"]
+valid_extensions = {"jpg", "png", "jpeg"}
 
 
 # sets up new channel
@@ -37,8 +42,8 @@ async def channel_setup(ctx):
     else:
         # ['prevS', 'prevB', 'prevJ', 'goatsucker answered', 'goatsucker',
         #  'totalCorrect', 'songanswered', 'songbird', 'answered', 'bird']
-        database.lpush(str(ctx.channel.id), "", "", "20",
-                       "1", "", "0", "1", "", "1", "")
+        database.lpush(str(ctx.channel.id), "", "", "20", "1", "", "0", "1",
+                       "", "1", "")
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
         await ctx.send("Ok, setup! I'm all ready to use!")
 
@@ -62,19 +67,19 @@ async def bird_setup(bird):
 
 # Function to run on error
 def error_skip(ctx):
-    print("ok")
+    logger.info("ok")
     database.lset(str(ctx.channel.id), 0, "")
     database.lset(str(ctx.channel.id), 1, "1")
 
 
 def error_skip_song(ctx):
-    print("ok")
+    logger.info("ok")
     database.lset(str(ctx.channel.id), 2, "")
     database.lset(str(ctx.channel.id), 3, "1")
 
 
 def error_skip_goat(ctx):
-    print("ok")
+    logger.info("ok")
     database.lset(str(ctx.channel.id), 5, "")
     database.lset(str(ctx.channel.id), 6, "1")
 
@@ -86,10 +91,10 @@ def error_skip_goat(ctx):
 # message - text message to send before bird picture (str)
 # addOn - string to append to search for female/juvenile birds (str)
 async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
-    loop = asyncio.get_running_loop()
     if bird == "":
-        print("error - bird is blank")
-        await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
+        logger.error("error - bird is blank")
+        await ctx.send(
+            "**There was an error fetching birds.**\n*Please try again.*")
         if on_error is not None:
             on_error(ctx)
         return
@@ -98,15 +103,14 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     # trigger "typing" discord message
     await ctx.trigger_typing()
 
-    with concurrent.futures.ThreadPoolExecutor() as pool:
-        try:
-            response = await loop.run_in_executor(pool, download, ctx, bird, addOn)
-        except GenericError as e:
-            await delete.delete()
-            await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {str(e)}")
-            if on_error is not None:
-                on_error(ctx)
-            return
+    try:
+        response = await get_image(ctx, bird,addOn)
+    except GenericError as e:
+        await delete.delete()
+        await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {str(e)}")
+        if on_error is not None:
+            on_error(ctx)
+        return
 
     filename = str(response[0])
     extension = str(response[1])
@@ -116,63 +120,144 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
         await ctx.send("**Oops! File too large :(**\n*Please try again.*")
     else:
         with open(filename, 'rb') as img:
-            await delete.delete()
             if message is not None:
                 await ctx.send(message)
             # change filename to avoid spoilers
-            await ctx.send(file=discord.File(img, filename="bird."+extension))
+            await ctx.send(file=discord.File(img, filename="bird." + extension)
+                           )
+            await delete.delete()
+
+
+async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
+    """
+    bird can be either common name or scientific name
+    media_type is either p(for pictures), a(for audio) or v(for video)
+    sex is m,f or blank
+    age is a(for adult), j(for juvenile), i(for immature(may be very few pics)) or blank
+    sound_type is s(for song),c(for call) or blank
+    return is list of urls. some urls may return an error code of 476(because it is still being processed);
+        if so, ignore that url.
+    """
+    #fix labeling issues in the library and on the list
+    if bird == "Porphyrio martinicus":
+        bird = "Porphyrio martinica"
+    elif bird == "Strix acio":
+        bird = "Screech Owl"
+    logger.info(f"getting image urls for {bird}")
+    taxon_code_url=TAXON_CODE_URL.format(
+            urllib.parse.quote(
+                bird.replace("-"," ").replace("'s","")
+            )
+        )
+    async with session.get(taxon_code_url) as taxon_code_response:
+        if taxon_code_response.status!=200:
+            raise GenericError(f"An http error code of {taxon_code_response.status} occured"+
+                f" while fetching {taxon_code_url} for a {'image'if media_type=='p' else 'song'} for {bird}")
+        taxon_code_data = await taxon_code_response.json()
+        try:
+            taxon_code = taxon_code_data[0]["code"]
+        except IndexError:
+            raise GenericError(f"No taxon code found for {bird}")
+    catalog_url=CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type) 
+    async with session.get(catalog_url) as catalog_response:
+        if catalog_response.status!=200:
+            raise GenericError(f"An http error code of {catalog_response.status} occured "+
+                f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}")
+        catalog_data = await catalog_response.json()
+        content = catalog_data["results"]["content"]
+        urls = [data["mediaUrl"] for data in content]
+        return urls
+
+
+async def _download_helper(path,url,session):
+    try:
+        async with session.get(url) as response:
+            #from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
+            content_type=response.headers['content-type'].partition(';')[0].strip()
+            if content_type.partition("/")[0]=="image":
+                ext = "."+(set(ext[1:] for ext in guess_all_extensions(content_type)) & valid_extensions).pop()
+            else:
+                ext = guess_extension(content_type)
+            filename=f"{path}{ext}"
+            #from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5    
+            with open(filename, 'wb') as out_file:                    
+                block_size = 1024 * 8
+                while True:
+                    block = await response.content.read(block_size)  # pylint: disable=no-member
+                    if not block:
+                        break
+                    out_file.write(block)
+            return filename
+    except aiohttp.ClientError:
+        logger.error(f"Client Error with url {url} and path {path}")
+        raise
+
+
+async def download_images(bird, addOn="", directory=None,session=None):
+    if directory is None:
+        directory=f"cache/images/{bird}{addOn}/"
+    if addOn == "female":
+        sex = "f"
+    else:
+        sex = ""
+    if addOn == "juvenile":
+        age = "j"
+    else:
+        age = ""
+    async with contextlib.AsyncExitStack() as stack:
+        if session is None:
+            session=await stack.enter_async_context(aiohttp.ClientSession())
+        urls = await _get_urls(session,bird, "p", sex, age)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        paths = [f"{directory}{i}" for i in range(len(urls))]
+        filenames =  await asyncio.gather(*(_download_helper(path,url,session) for path,url in zip(paths,urls)))
+        logger.info(f"downloaded images for {bird}")
+        return filenames
+async def get_images(sciBird,addOn):
+    directory=f"cache/images/{sciBird}{addOn}/"
+    try:
+        logger.info("trying")
+        images_dir = os.listdir(directory)
+        logger.info(directory)
+        if not images_dir:
+            raise GenericError("No Images")
+        return [f"{directory}{path}" for path in images_dir]
+    except (FileNotFoundError, GenericError):
+        logger.info("fetching images")
+        # if not found, fetch images
+        logger.info("scibird: " + str(sciBird))
+        return await download_images(sciBird, addOn, directory)
 
 
 # function that gets bird images to run in pool (blocking prevention)
-def download(ctx, bird, addOn=None):
+async def get_image(ctx, bird, addOn=None):
     # fetch scientific names of birds
     if bird in birdList:
-        index = birdList.index(bird)
-        sciBird = f"{sciBirdList[index]} (bird)"
+        sciBird = sciBirdList[birdList.index(bird)]
     else:
-        sciBird = f"{bird} (bird)"
-
-    try:
-        print("trying")
-        images = os.listdir(f"downloads/{sciBird}{addOn}/")
-        print(f"downloads/{sciBird}{addOn}/")
-        if len(images) == 0:
-            raise GenericError("No Images")
-        for path in images:
-            images[images.index(path)] = f"downloads/{sciBird}{addOn}/{path}"
-        print("images: "+str(images))
-    except (FileNotFoundError, GenericError):
-        print("fail")
-        # if not found, fetch images
-        print("scibird: "+str(sciBird))
-        arguments = {"keywords": sciBird +
-                     str(addOn), "limit": 15, "print_urls": True}
-        # passing the arguments to the function
-        paths = response.download(arguments)
-        print("paths: "+str(paths))
-        paths = paths[0]
-        images = [paths[i] for i in sorted(paths.keys())]
-        images = images[0]
-        print("images: "+str(images))
-
+        sciBird = bird
+    images = await get_images(sciBird,addOn)
+    logger.info("images: " + str(images))
     prevJ = int(str(database.lindex(str(ctx.channel.id), 7))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
-    if len(images) != 0:
-        j = (prevJ+1) % len(images)
-        print("prevJ: "+str(prevJ))
-        print("j: "+str(j))
+    if images:
+        j = (prevJ + 1) % len(images)
+        logger.debug("prevJ: " + str(prevJ))
+        logger.debug("j: " + str(j))
 
         for x in range(j, len(images)):  # check file type and size
             image_link = images[x]
             extension = image_link.split('.')[-1]
-            print("extension: "+str(extension))
+            logger.debug("extension: " + str(extension))
             statInfo = os.stat(image_link)
-            print("size: "+str(statInfo.st_size))
-            if extension.lower() in valid_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
-                print("found one!")
+            logger.debug("size: " + str(statInfo.st_size))
+            if extension.lower(
+            ) in valid_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
+                logger.info("found one!")
                 break
-            elif x == len(images)-1:
-                j = (j+1) % (len(images))
+            elif x == len(images) - 1:
+                j = (j + 1) % (len(images))
                 raise GenericError("No Valid Images Found")
 
         database.lset(str(ctx.channel.id), 7, str(j))
@@ -182,11 +267,20 @@ def download(ctx, bird, addOn=None):
     return [image_link, extension]
 
 
+async def precache_images():
+    timeout = aiohttp.ClientTimeout(total=10*60)
+    conn = aiohttp.TCPConnector(limit=100)
+    async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
+        await asyncio.gather(*(download_images(bird,session=session) for bird in sciBirdList))
+    logger.info("Images Cached")
+
+
 # sends a birdsong
 async def send_birdsong(ctx, bird, on_error=None, message=None):
     if bird == "":
-        print("error - bird is blank")
-        await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
+        logger.error("error - bird is blank")
+        await ctx.send(
+            "**There was an error fetching birds.**\n*Please try again.*")
         if on_error is not None:
             on_error(ctx)
         return
@@ -199,36 +293,44 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
         sciBird = sciSongBirds[index]
     else:
         sciBird = bird
-        
+    logger.info(f"fetching song for {sciBird}")
     # fetch sounds
     async with aiohttp.ClientSession() as session:
-        query = sciBird.replace(" ", "%20")
-        async with session.get(f"https://www.xeno-canto.org/api/2/recordings?query={query}%20q:A&page=1") as response:
+        query = urllib.parse.quote(sciBird)
+        async with session.get(
+                f"https://www.xeno-canto.org/api/2/recordings?query={query}%20q:A&page=1"
+        ) as response:
             if response.status == 200:
-                json = await response.json()
-                recordings = json["recordings"]
-                print("recordings: "+str(recordings))
-                if len(recordings) == 0:  # bird not found
+                data = await response.json()
+                recordings = data["recordings"]
+                logger.info(f"found {len(recordings)} recordings for {sciBird}")
+                if not recordings:  # bird not found
                     # try with common name instead
-                    query = bird.replace(" ", "%20")
-                    async with session.get(f"https://www.xeno-canto.org/api/2/recordings?query={query}%20q:A&page=1") as response:
+                    query = urllib.parse.quote(bird)
+                    async with session.get(
+                            f"https://www.xeno-canto.org/api/2/recordings?query={query}%20q:A&page=1"
+                    ) as response:
                         if response.status == 200:
-                            json = await response.json()
-                            recordings = json["recordings"]
+                            data = await response.json()
+                            recordings = data["recordings"]
                         else:
                             await delete.delete()
-                            await ctx.send("**A GET error occurred when fetching the song.**\n*Please try again.*")
-                            print("error:" + str(response.status))
+                            await ctx.send(
+                                "**A GET error occurred when fetching the song.**\n*Please try again.*"
+                            )
+                            logger.error("error:" + str(response.status))
 
-                if len(recordings) != 0:
+                if recordings:
                     url = str(
-                        f"https:{recordings[randint(0, len(recordings)-1)]['file']}")
-                    print("url: "+url)
-                    fileName = f"songs/{url.split('/')[3]}.mp3"
+                        f"https:{recordings[randint(0, len(recordings)-1)]['file']}"
+                    )
+                    logger.info("url: " + url)
+                    directory="cache/songs/"
+                    fileName = f"{directory}{url.split('/')[3]}.mp3"
                     async with session.get(url) as songFile:
                         if songFile.status == 200:
-                            if not os.path.exists("songs/"):
-                                os.mkdir("songs/")
+                            if not os.path.exists(directory):
+                                os.makedirs(directory)
                             with open(fileName, 'wb') as fd:
                                 while True:
                                     chunk = await songFile.content.read(128)
@@ -243,50 +345,47 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
                             # send song
                             if os.stat(fileName).st_size > 8000000:
                                 await delete.delete()
-                                await ctx.send("**Oops! File too large :(**\n*Please try again.*")
+                                await ctx.send(
+                                    "**Oops! File too large :(**\n*Please try again.*"
+                                )
                                 return
-                            await delete.delete()
                             if message is not None:
                                 await ctx.send(message)
                             # change filename to avoid spoilers
                             with open(fileName, "rb") as song:
-                                await ctx.send(file=discord.File(song, filename="bird.mp3"))
+                                await ctx.send(file=discord.File(
+                                    song, filename="bird.mp3"))
+                                await delete.delete()
                         else:
                             await delete.delete()
-                            await ctx.send("**A GET error occurred when fetching the song.**\n*Please try again.*")
-                            print("error:" + str(songFile.status))
+                            await ctx.send(
+                                "**A GET error occurred when fetching the song.**\n*Please try again.*"
+                            )
+                            logger.error("error:" + str(songFile.status))
                 else:
                     await delete.delete()
                     await ctx.send("Unable to get song - bird was not found.")
 
             else:
                 await delete.delete()
-                await ctx.send("**A GET error occurred when fetching the song.**\n*Please try again.*")
-                print("error:" + str(response.status))
+                await ctx.send(
+                    "**A GET error occurred when fetching the song.**\n*Please try again.*"
+                )
+                logger.error("error:" + str(response.status))
 
 
 # spellcheck - allows one letter off/extra
 def spellcheck(worda, wordb):
-    worda = worda.lower().replace("-", " ").replace("'","")
-    wordb = wordb.lower().replace("-", " ").replace("'","")
+    worda = worda.lower().replace("-", " ").replace("'", "")
+    wordb = wordb.lower().replace("-", " ").replace("'", "")
     wrongcount = 0
-    longerword = []
-    shorterword = []
-    list1 = [char for char in worda]
-    list2 = [char for char in wordb]
     if worda != wordb:
-        if len(list1) > len(list2):
-            longerword = list1
-            shorterword = list2
-        elif len(list1) < len(list2):
-            longerword = list2
-            shorterword = list1
-        else:
-            for i in range(len(list1)):
-                if list1[i] != list2[i]:
-                    wrongcount += 1
-        if len(list1) != len(list2):
-            if abs(len(longerword)-len(shorterword)) > 1:
+        if len(worda) != len(wordb):
+            list1=list(worda)
+            list2=list(wordb)
+            longerword = max(list1, list2, key=len)
+            shorterword = min(list1, list2, key=len)
+            if abs(len(longerword) - len(shorterword)) > 1:
                 return False
             else:
                 for i in range(len(shorterword)):
@@ -296,10 +395,8 @@ def spellcheck(worda, wordb):
                             del longerword[i]
                     except IndexError:
                         wrongcount = 100
-
-        if wrongcount > 1:
-            return False
         else:
-            return True
+            wrongcount = sum(x != y for x, y in zip(worda, wordb))
+        return wrongcount <= 1
     else:
         return True

@@ -1,6 +1,5 @@
 discord.py==1.2.3
 wikipedia==1.4.0
-google_images_download==2.8.0
 aiohttp==3.5.4
 eyeD3==0.8.10
 redis==3.3.5

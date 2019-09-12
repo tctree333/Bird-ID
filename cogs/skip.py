@@ -1,5 +1,5 @@
 # skip.py | commands for skipping birds
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,7 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from functions import *
+import wikipedia
+from discord.ext import commands
+
+from data.data import database, logger
+from functions import channel_setup, user_setup
 
 
 class Skip(commands.Cog):
@@ -22,10 +26,11 @@ class Skip(commands.Cog):
         self.bot = bot
 
     # Skip command - no args
-    @commands.command(help="- Skip the current bird to get a new one", aliases=["sk"])
+    @commands.command(help="- Skip the current bird to get a new one",
+                      aliases=["sk"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def skip(self, ctx):
-        print("skip")
+        logger.info("skip")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -35,15 +40,18 @@ class Skip(commands.Cog):
         database.lset(str(ctx.channel.id), 1, "1")
         if currentBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentBird} (bird)")
-            await ctx.send(f"Ok, skipping {currentBird.lower()}\n{birdPage.url}")  # sends wiki page
+            await ctx.send(
+                f"Ok, skipping {currentBird.lower()}\n{birdPage.url}"
+            )  # sends wiki page
         else:
             await ctx.send("You need to ask for a bird first!")
 
     # Skip command - no args
-    @commands.command(help="- Skip the current goatsucker to get a new one", aliases=["goatskip", "sg"])
+    @commands.command(help="- Skip the current goatsucker to get a new one",
+                      aliases=["goatskip", "sg"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def skipgoat(self, ctx):
-        print("skipgoat")
+        logger.info("skipgoat")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -53,15 +61,18 @@ class Skip(commands.Cog):
         database.lset(str(ctx.channel.id), 6, "1")
         if currentBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentBird} (bird)")
-            await ctx.send(f"Ok, skipping {currentBird.lower()}\n{birdPage.url}")  # sends wiki page
+            await ctx.send(
+                f"Ok, skipping {currentBird.lower()}\n{birdPage.url}"
+            )  # sends wiki page
         else:
             await ctx.send("You need to ask for a bird first!")
 
     # Skip song command - no args
-    @commands.command(help="- Skip the current bird call to get a new one", aliases=["songskip", "ss"])
+    @commands.command(help="- Skip the current bird call to get a new one",
+                      aliases=["songskip", "ss"])
     @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
     async def skipsong(self, ctx):
-        print("skipsong")
+        logger.info("skipsong")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -70,7 +81,9 @@ class Skip(commands.Cog):
         currentSongBird = str(database.lindex(str(ctx.channel.id), 2))[2:-1]
         if currentSongBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentSongBird} (bird)")
-            await ctx.send(f"Ok, skipping {currentSongBird.lower()}\n{birdPage.url}")  # sends wiki page
+            await ctx.send(
+                f"Ok, skipping {currentSongBird.lower()}\n{birdPage.url}"
+            )  # sends wiki page
         else:
             await ctx.send("You need to ask for a bird first!")
 

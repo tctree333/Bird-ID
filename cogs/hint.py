@@ -1,5 +1,5 @@
 # hint.py | commands for giving hints
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,7 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from functions import *
+from functions import channel_setup, user_setup
+from discord.ext import commands
+from data.data import database, logger
 
 
 class Hint(commands.Cog):
@@ -22,10 +24,11 @@ class Hint(commands.Cog):
         self.bot = bot
 
     # give hint
-    @commands.command(help="- Gives first letter of current bird", aliases=["h"])
+    @commands.command(help="- Gives first letter of current bird",
+                      aliases=["h"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hint(self, ctx):
-        print("hint")
+        logger.info("hint")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -37,10 +40,11 @@ class Hint(commands.Cog):
             await ctx.send("You need to ask for a bird first!")
 
     # give hint for goat
-    @commands.command(help="- Gives first letter of current goatsucker", aliases=["goathint", "hg", "gh"])
+    @commands.command(help="- Gives first letter of current goatsucker",
+                      aliases=["goathint", "hg", "gh"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hintgoat(self, ctx):
-        print("hintgoat")
+        logger.info("hintgoat")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -52,10 +56,11 @@ class Hint(commands.Cog):
             await ctx.send("You need to ask for a bird first!")
 
     # give hint for song
-    @commands.command(help="- Gives first letter of current bird call", aliases=["songhint", "hs", "sh"])
+    @commands.command(help="- Gives first letter of current bird call",
+                      aliases=["songhint", "hs", "sh"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hintsong(self, ctx):
-        print("hintsong")
+        logger.info("hintsong")
 
         await channel_setup(ctx)
         await user_setup(ctx)
