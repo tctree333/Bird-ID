@@ -117,7 +117,11 @@ class Score(commands.Cog):
         leaderboard = ""
 
         for i,stats in enumerate(leaderboard_list):
-            user = ctx.guild.get_member(int(stats[0]))
+            if ctx.guild is not None:
+                user = ctx.guild.get_member(int(stats[0]))
+            else:
+                user = None
+
             if user is None:
                 user = self.bot.get_user(int(stats[0]))
                 if user is None:
@@ -126,7 +130,9 @@ class Score(commands.Cog):
                     user = f"**{user.name}#{user.discriminator}**"
             else:
                 user = f"<@{str(stats[0])[2:-1]}>"
+
             leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
+            
         embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
         if database.zscore("users", str(ctx.message.author.id)) is not None:
