@@ -129,10 +129,10 @@ class Score(commands.Cog):
                 else:
                     user = f"**{user.name}#{user.discriminator}**"
             else:
-                user = f"<@{str(stats[0])[2:-1]}>"
+                user = str(user.mention)
 
             leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
-            
+
         embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
         if database.zscore("users", str(ctx.message.author.id)) is not None:
