@@ -214,6 +214,8 @@ async def download_images(bird, addOn="", directory=None,session=None):
         filenames =  await asyncio.gather(*(_download_helper(path,url,session) for path,url in zip(paths,urls)))
         logger.info(f"downloaded images for {bird}")
         return filenames
+
+
 async def get_images(sciBird,addOn):
     directory=f"cache/images/{sciBird}{addOn}/"
     try:

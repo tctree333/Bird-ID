@@ -57,12 +57,14 @@ if __name__ == '__main__':
             logger.exception(f'Failed to load extension {extension}.')
     if sys.platform == 'win32':
         asyncio.set_event_loop(asyncio.ProactorEventLoop())
+
     # Global check for dms - remove cooldowns
     @bot.check
     async def dm_cooldown(ctx):
         if ctx.command.is_on_cooldown(ctx) and ctx.guild is None:
             ctx.command.reset_cooldown(ctx)
         return True
+
     ######
     # GLOBAL ERROR CHECKING
     ######
@@ -158,7 +160,7 @@ if __name__ == '__main__':
         event_loop=asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor,start_precache)
+
     # Actually run the bot
     token = os.getenv("token")
-    logger.info(token)
     bot.run(token)
