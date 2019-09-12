@@ -29,7 +29,7 @@ class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Gives call+image of 1 bird
+    # Info - Gives call+image of 1 bird
     @commands.command(help="- Gives an image and call of a bird",
                       aliases=['i'])
     @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
@@ -41,9 +41,10 @@ class Other(commands.Cog):
 
         bird = get_close_matches(arg,birdList+sciBirdList,n=1)[0]
         
-        await ctx.send("Please wait a moment.")
+        delete = await ctx.send("Please wait a moment.")
         await send_bird(ctx, str(bird), message="Here's the image!")
-        await send_birdsong(ctx, str(bird), "Here's the call!")
+        await send_birdsong(ctx, str(bird), message="Here's the call!")
+        await delete.delete()
 
     # Wiki command - argument is the wiki page
     @commands.command(help="- Fetch the wikipedia page for any given argument")

@@ -38,7 +38,7 @@ class Score(commands.Cog):
 
         totalCorrect = int(database.lindex(str(ctx.channel.id), 4))
         await ctx.send(
-            f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel!" +
+            f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! " +
 			"Good job everyone!"
         )
 

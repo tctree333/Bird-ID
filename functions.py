@@ -83,6 +83,7 @@ def error_skip_goat(ctx):
     database.lset(str(ctx.channel.id), 5, "")
     database.lset(str(ctx.channel.id), 6, "1")
 
+
 # Function to send a bird picture:
 # ctx - context for message (discord thing)
 # bird - bird picture to send (str)
@@ -119,12 +120,13 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
         await ctx.send("**Oops! File too large :(**\n*Please try again.*")
     else:
         with open(filename, 'rb') as img:
-            await delete.delete()
             if message is not None:
                 await ctx.send(message)
             # change filename to avoid spoilers
             await ctx.send(file=discord.File(img, filename="bird." + extension)
                            )
+            await delete.delete()
+
 
 async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     """
@@ -166,6 +168,7 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
         urls = [data["mediaUrl"] for data in content]
         return urls
 
+
 async def _download_helper(path,url,session):
     try:
         async with session.get(url) as response:
@@ -188,6 +191,8 @@ async def _download_helper(path,url,session):
     except aiohttp.ClientError:
         logger.error(f"Client Error with url {url} and path {path}")
         raise
+
+
 async def download_images(bird, addOn="", directory=None,session=None):
     if directory is None:
         directory=f"cache/images/{bird}{addOn}/"
@@ -223,6 +228,8 @@ async def get_images(sciBird,addOn):
         # if not found, fetch images
         logger.info("scibird: " + str(sciBird))
         return await download_images(sciBird, addOn, directory)
+
+
 # function that gets bird images to run in pool (blocking prevention)
 async def get_image(ctx, bird, addOn=None):
     # fetch scientific names of birds
@@ -258,12 +265,16 @@ async def get_image(ctx, bird, addOn=None):
         raise GenericError("No Images Found")
 
     return [image_link, extension]
+
+
 async def precache_images():
     timeout = aiohttp.ClientTimeout(total=10*60)
     conn = aiohttp.TCPConnector(limit=100)
     async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
         await asyncio.gather(*(download_images(bird,session=session) for bird in sciBirdList))
     logger.info("Images Cached")
+
+
 # sends a birdsong
 async def send_birdsong(ctx, bird, on_error=None, message=None):
     if bird == "":
@@ -338,13 +349,13 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
                                     "**Oops! File too large :(**\n*Please try again.*"
                                 )
                                 return
-                            await delete.delete()
                             if message is not None:
                                 await ctx.send(message)
                             # change filename to avoid spoilers
                             with open(fileName, "rb") as song:
                                 await ctx.send(file=discord.File(
                                     song, filename="bird.mp3"))
+                                await delete.delete()
                         else:
                             await delete.delete()
                             await ctx.send(
