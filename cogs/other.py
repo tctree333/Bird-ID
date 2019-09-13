@@ -39,7 +39,11 @@ class Other(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        bird = get_close_matches(arg,birdList+sciBirdList,n=1)[0]
+        matches = get_close_matches(arg,birdList+sciBirdList,n=1)
+        if matches:
+            bird = matches[0]
+        else:
+            bird = arg
         
         delete = await ctx.send("Please wait a moment.")
         await send_bird(ctx, str(bird), message="Here's the image!")
