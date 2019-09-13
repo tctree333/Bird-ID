@@ -58,12 +58,33 @@ if __name__ == '__main__':
     if sys.platform == 'win32':
         asyncio.set_event_loop(asyncio.ProactorEventLoop())
 
+    ######
+    # Global Command Checks
+    ######
+
     # Global check for dms - remove cooldowns
     @bot.check
     async def dm_cooldown(ctx):
         if ctx.command.is_on_cooldown(ctx) and ctx.guild is None:
             ctx.command.reset_cooldown(ctx)
         return True
+
+    # Global check for correct permissions
+    @bot.check
+    def bot_has_permissions(ctx):
+        # code copied from @commands.bot_has_permissions(send_messages=True, embed_links=True, attach_files=True)
+        perms = {"send_messages":True, "embed_links":True, "attach_files":True}
+        guild = ctx.guild
+        me = guild.me if guild is not None else ctx.bot.user
+        permissions = ctx.channel.permissions_for(me)
+
+        missing = [perm for perm, value in perms.items() if getattr(permissions, perm, None) != value]
+
+        if not missing:
+            return True
+
+        raise commands.BotMissingPermissions(missing)
+
 
     ######
     # GLOBAL ERROR CHECKING
@@ -95,12 +116,18 @@ if __name__ == '__main__':
             logger.error("quote error")
             await ctx.send("An invalid character was detected. Please try again.")
 
+        elif isinstance(error, commands.BotMissingPermissions):
+            logger.error("missing permissions error")
+            await ctx.send(f"""**The bot does not have enough permissions to fully function.**
+**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
+*Please try again once the correct permissions are set.*""")
+
         elif isinstance(error, commands.CommandInvokeError):
             if isinstance(error.original, redis.exceptions.ResponseError):
                 if database.exists(str(ctx.channel.id)):
                     await ctx.send("""**An unexpected ResponseError has occurred.**
-    *Please log this message in #support in the support server below, or try again.*
-    **Error:** """ + str(error))
+*Please log this message in #support in the support server below, or try again.*
+**Error:** """ + str(error))
                     await ctx.send("https://discord.gg/fXxYyDJ")
                 else:
                     await channel_setup(ctx)
@@ -120,8 +147,8 @@ if __name__ == '__main__':
             elif isinstance(error.original, aiohttp.ClientOSError):
                 if error.errno != errno.ECONNRESET:
                     await ctx.send("""**An unexpected ClientOSError has occurred.**
-    *Please log this message in #support in the support server below, or try again.*
-    **Error:** """ + str(error))
+*Please log this message in #support in the support server below, or try again.*
+**Error:** """ + str(error))
                     await ctx.send("https://discord.gg/fXxYyDJ")
                 else:
                     await ctx.send(
@@ -131,16 +158,16 @@ if __name__ == '__main__':
             else:
                 logger.error("uncaught command error")
                 await ctx.send("""**An uncaught command error has occurred.**
-    *Please log this message in #support in the support server below, or try again.*
-    **Error:**  """ + str(error))
+*Please log this message in #support in the support server below, or try again.*
+**Error:**  """ + str(error))
                 await ctx.send("https://discord.gg/fXxYyDJ")
                 raise error
 
         else:
             logger.error("uncaught non-command")
             await ctx.send("""**An uncaught non-command error has occurred.**
-    *Please log this message in #support in the support server below, or try again.*
-    **Error:**  """ + str(error))
+*Please log this message in #support in the support server below, or try again.*
+**Error:**  """ + str(error))
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
     @tasks.loop(hours=72.0)
