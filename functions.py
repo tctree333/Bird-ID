@@ -273,8 +273,11 @@ async def precache_images():
     timeout = aiohttp.ClientTimeout(total=10*60)
     conn = aiohttp.TCPConnector(limit=100)
     async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
+        logger.info("Starting cache")
         await asyncio.gather(*(download_images(bird, session=session) for bird in sciBirdList))
+        logger.info("Starting females")
         await asyncio.gather(*(download_images(bird, addOn="female", session=session) for bird in sciBirdList))
+        logger.info("Starting juveniles")
         await asyncio.gather(*(download_images(bird, addOn="juvenile", session=session) for bird in sciBirdList))
     logger.info("Images Cached")
 
