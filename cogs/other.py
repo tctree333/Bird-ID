@@ -42,13 +42,14 @@ class Other(commands.Cog):
         matches = get_close_matches(arg,birdList+sciBirdList,n=1)
         if matches:
             bird = matches[0]
-        else:
-            bird = arg
+
+            delete = await ctx.send("Please wait a moment.")
+            await send_bird(ctx, str(bird), message="Here's the image!")
+            await send_birdsong(ctx, str(bird), message="Here's the call!")
+            await delete.delete()
         
-        delete = await ctx.send("Please wait a moment.")
-        await send_bird(ctx, str(bird), message="Here's the image!")
-        await send_birdsong(ctx, str(bird), message="Here's the call!")
-        await delete.delete()
+        else:
+            await ctx.send("Bird not found. Are you sure it's on the list?")
 
     # Wiki command - argument is the wiki page
     @commands.command(help="- Fetch the wikipedia page for any given argument")
