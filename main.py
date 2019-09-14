@@ -50,7 +50,10 @@ if __name__ == '__main__':
         logger.info(bot.user.id)
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
+        
         refresh_cache.start()
+        update_backup.start()
+
     # Here we load our extensions(cogs) that are located in the cogs directory
     initial_extensions = ['cogs.get_birds', 'cogs.check',
                           'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.other']
