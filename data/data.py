@@ -19,7 +19,6 @@ import logging.handlers
 import os
 import sys
 import redis
-# Import modules for other files
 from discord.ext import commands
 
 # define database for one connection
@@ -28,13 +27,14 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # Database Format Definitions
 
 # prevJ - makes sure it sends a diff image
-# prevB - makes sure it sends a diff bird
-# prevS - makes sure it sends a diff song
+# prevB - makes sure it sends a diff bird (img)
+# prevS - makes sure it sends a diff bird (sounds)
+# prevK - makes sure it sends a diff sound
 
 # server format = {
 # ctx.channel.id : [bird, answered, songbird, songanswered,
-#                     totalCorrect, goatsucker, goatsuckeranswered,
-#                     prevJ, prevB, "prevS"]
+#                     totalCorrect (NOT USED), goatsucker, goatsuckeranswered,
+#                     prevJ, prevB, prevS, prevK]
 # }
 
 # user format = {

@@ -36,7 +36,7 @@ class Score(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        totalCorrect = int(database.lindex(str(ctx.channel.id), 4))
+        totalCorrect = int(database.zscore("score", str(ctx.channel.id)))
         await ctx.send(
             f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! " +
             "Good job everyone!"

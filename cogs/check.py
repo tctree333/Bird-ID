@@ -52,9 +52,7 @@ class Check(commands.Cog):
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
-                database.lset(
-                    str(ctx.channel.id), 4,
-                    str(int(database.lindex(str(ctx.channel.id), 4)) + 1))
+                database.zincrby("score", 1, str(ctx.channel.id))
                 database.zincrby("users", 1, str(ctx.message.author.id))
                 if int(database.zscore("users", str(
                         ctx.message.author.id))) in achievement:
@@ -101,9 +99,7 @@ class Check(commands.Cog):
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
-                database.lset(
-                    str(ctx.channel.id), 4,
-                    str(int(database.lindex(str(ctx.channel.id), 4)) + 1))
+                database.zincrby("score", 1, str(ctx.channel.id))
                 database.zincrby("users", 1, str(ctx.message.author.id))
                 if int(database.zscore("users", str(
                         ctx.message.author.id))) in achievement:
@@ -151,9 +147,7 @@ class Check(commands.Cog):
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
-                database.lset(
-                    str(ctx.channel.id), 4,
-                    str(int(database.lindex(str(ctx.channel.id), 4)) + 1))
+                database.zincrby("score", 1, str(ctx.channel.id))
                 database.zincrby("users", 1, str(ctx.message.author.id))
                 if int(database.zscore("users", str(
                         ctx.message.author.id))) in achievement:
