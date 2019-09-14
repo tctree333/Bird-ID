@@ -128,6 +128,82 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
             await delete.delete()
 
 
+# function that gets bird images to run in pool (blocking prevention)
+async def get_image(ctx, bird, addOn=None):
+    # fetch scientific names of birds
+    if bird in birdList:
+        sciBird = sciBirdList[birdList.index(bird)]
+    else:
+        sciBird = bird
+    images = await get_images(sciBird,addOn)
+    logger.info("images: " + str(images))
+    prevJ = int(str(database.lindex(str(ctx.channel.id), 7))[2:-1])
+    # Randomize start (choose beginning 4/5ths in case it fails checks)
+    if images:
+        j = (prevJ + 1) % len(images)
+        logger.debug("prevJ: " + str(prevJ))
+        logger.debug("j: " + str(j))
+
+        for x in range(j, len(images)):  # check file type and size
+            image_link = images[x]
+            extension = image_link.split('.')[-1]
+            logger.debug("extension: " + str(extension))
+            statInfo = os.stat(image_link)
+            logger.debug("size: " + str(statInfo.st_size))
+            if extension.lower(
+            ) in valid_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
+                logger.info("found one!")
+                break
+            elif x == len(images) - 1:
+                j = (j + 1) % (len(images))
+                raise GenericError("No Valid Images Found")
+
+        database.lset(str(ctx.channel.id), 7, str(j))
+    else:
+        raise GenericError("No Images Found")
+
+    return [image_link, extension]
+
+
+async def get_images(sciBird, addOn):
+    directory=f"cache/images/{sciBird}{addOn}/"
+    try:
+        logger.info("trying")
+        images_dir = os.listdir(directory)
+        logger.info(directory)
+        if not images_dir:
+            raise GenericError("No Images")
+        return [f"{directory}{path}" for path in images_dir]
+    except (FileNotFoundError, GenericError):
+        logger.info("fetching images")
+        # if not found, fetch images
+        logger.info("scibird: " + str(sciBird))
+        return await download_images(sciBird, addOn, directory)
+
+
+async def download_images(bird, addOn="", directory=None, session=None):
+    if directory is None:
+        directory=f"cache/images/{bird}{addOn}/"
+    if addOn == "female":
+        sex = "f"
+    else:
+        sex = ""
+    if addOn == "juvenile":
+        age = "j"
+    else:
+        age = ""
+    async with contextlib.AsyncExitStack() as stack:
+        if session is None:
+            session=await stack.enter_async_context(aiohttp.ClientSession())
+        urls = await _get_urls(session, bird, "p", sex, age)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        paths = [f"{directory}{i}" for i in range(len(urls))]
+        filenames =  await asyncio.gather(*(_download_helper(path, url, session) for path,url in zip(paths, urls)))
+        logger.info(f"downloaded images for {bird}")
+        return filenames
+
+
 async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     """
     bird can be either common name or scientific name
@@ -169,7 +245,7 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
         return urls
 
 
-async def _download_helper(path,url,session):
+async def _download_helper(path, url, session):
     try:
         async with session.get(url) as response:
             #from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
@@ -191,82 +267,6 @@ async def _download_helper(path,url,session):
     except aiohttp.ClientError:
         logger.error(f"Client Error with url {url} and path {path}")
         raise
-
-
-async def download_images(bird, addOn="", directory=None,session=None):
-    if directory is None:
-        directory=f"cache/images/{bird}{addOn}/"
-    if addOn == "female":
-        sex = "f"
-    else:
-        sex = ""
-    if addOn == "juvenile":
-        age = "j"
-    else:
-        age = ""
-    async with contextlib.AsyncExitStack() as stack:
-        if session is None:
-            session=await stack.enter_async_context(aiohttp.ClientSession())
-        urls = await _get_urls(session,bird, "p", sex, age)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        paths = [f"{directory}{i}" for i in range(len(urls))]
-        filenames =  await asyncio.gather(*(_download_helper(path,url,session) for path,url in zip(paths,urls)))
-        logger.info(f"downloaded images for {bird}")
-        return filenames
-
-
-async def get_images(sciBird,addOn):
-    directory=f"cache/images/{sciBird}{addOn}/"
-    try:
-        logger.info("trying")
-        images_dir = os.listdir(directory)
-        logger.info(directory)
-        if not images_dir:
-            raise GenericError("No Images")
-        return [f"{directory}{path}" for path in images_dir]
-    except (FileNotFoundError, GenericError):
-        logger.info("fetching images")
-        # if not found, fetch images
-        logger.info("scibird: " + str(sciBird))
-        return await download_images(sciBird, addOn, directory)
-
-
-# function that gets bird images to run in pool (blocking prevention)
-async def get_image(ctx, bird, addOn=None):
-    # fetch scientific names of birds
-    if bird in birdList:
-        sciBird = sciBirdList[birdList.index(bird)]
-    else:
-        sciBird = bird
-    images = await get_images(sciBird,addOn)
-    logger.info("images: " + str(images))
-    prevJ = int(str(database.lindex(str(ctx.channel.id), 7))[2:-1])
-    # Randomize start (choose beginning 4/5ths in case it fails checks)
-    if images:
-        j = (prevJ + 1) % len(images)
-        logger.debug("prevJ: " + str(prevJ))
-        logger.debug("j: " + str(j))
-
-        for x in range(j, len(images)):  # check file type and size
-            image_link = images[x]
-            extension = image_link.split('.')[-1]
-            logger.debug("extension: " + str(extension))
-            statInfo = os.stat(image_link)
-            logger.debug("size: " + str(statInfo.st_size))
-            if extension.lower(
-            ) in valid_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
-                logger.info("found one!")
-                break
-            elif x == len(images) - 1:
-                j = (j + 1) % (len(images))
-                raise GenericError("No Valid Images Found")
-
-        database.lset(str(ctx.channel.id), 7, str(j))
-    else:
-        raise GenericError("No Images Found")
-
-    return [image_link, extension]
 
 
 async def precache_images():
