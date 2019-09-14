@@ -41,7 +41,7 @@ class Check(commands.Cog):
         currentBird = str(database.lindex(str(ctx.channel.id), 0))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
-        else:  # if there is a bird, it checks answer 
+        else:  # if there is a bird, it checks answer
             await bird_setup(currentBird)
             index = birdList.index(currentBird)
             sciBird = sciBirdList[index]
@@ -74,7 +74,8 @@ class Check(commands.Cog):
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
-            logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
+            logger.info("currentBird: " +
+                        str(currentBird.lower().replace("-", " ")))
             logger.info("args: " + str(arg.lower().replace("-", " ")))
 
     # Check command - argument is the guess
@@ -122,7 +123,8 @@ class Check(commands.Cog):
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
-            logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
+            logger.info("currentBird: " +
+                        str(currentBird.lower().replace("-", " ")))
             logger.info("args: " + str(arg.lower().replace("-", " ")))
 
     # Check command - argument is the guess
@@ -172,7 +174,7 @@ class Check(commands.Cog):
                 page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
             logger.info("currentBird: " +
-                  str(currentSongBird.lower().replace("-", " ")))
+                        str(currentSongBird.lower().replace("-", " ")))
             logger.info("args: " + str(arg.lower().replace("-", " ")))
 
 

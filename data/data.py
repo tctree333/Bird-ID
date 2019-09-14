@@ -18,7 +18,6 @@ import logging
 import logging.handlers
 import os
 import sys
-
 import redis
 # Import modules for other files
 from discord.ext import commands
@@ -46,32 +45,40 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # "incorrect":[bird name, #incorrect]
 # }
 
-#setup logging
+# setup logging
 logger = logging.getLogger("bird-id")
 logger.setLevel(logging.DEBUG)
-os.makedirs("logs",exist_ok=True)
+os.makedirs("logs", exist_ok=True)
 
-file_handler=logging.handlers.TimedRotatingFileHandler("logs/log.txt",backupCount=4,when="midnight")
+file_handler = logging.handlers.TimedRotatingFileHandler(
+    "logs/log.txt", backupCount=4, when="midnight")
 file_handler.setLevel(logging.DEBUG)
-stream_handler=logging.StreamHandler()
+stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.DEBUG)
 
-file_handler.setFormatter(logging.Formatter("{asctime} - {filename:10} -  {levelname:8} - {message}",style="{"))
-stream_handler.setFormatter(logging.Formatter("{filename:10} -  {levelname:8} - {message}",style="{"))
+file_handler.setFormatter(logging.Formatter(
+    "{asctime} - {filename:10} -  {levelname:8} - {message}", style="{"))
+stream_handler.setFormatter(logging.Formatter(
+    "{filename:10} -  {levelname:8} - {message}", style="{"))
 
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-#log uncaught exceptions
+# log uncaught exceptions
+
+
 def handle_exception(exc_type, exc_value, exc_traceback):
     if issubclass(exc_type, KeyboardInterrupt):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
 
-    logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    logger.critical("Uncaught exception", exc_info=(
+        exc_type, exc_value, exc_traceback))
+
 
 sys.excepthook = handle_exception
-    
+
+
 class GenericError(commands.CommandError):
     def __init__(self, message=None):
         super().__init__(message=message)
@@ -81,18 +88,22 @@ class GenericError(commands.CommandError):
 
 
 goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
-sciGoat = ["Nyctidromus albicollis", "Antrostomus carolinensis", "Antrostomus vociferus"]
+sciGoat = ["Nyctidromus albicollis",
+           "Antrostomus carolinensis", "Antrostomus vociferus"]
+
 
 def _main():
-    filenames = ("birdList", "sciBirdList", "memeList", "songBirds", "sciSongBirds")
+    filenames = ("birdList", "sciBirdList", "memeList",
+                 "songBirds", "sciSongBirds")
     # Converts txt file of data into lists
-    lists=[]
+    lists = []
     for filename in filenames:
         logger.info(f"Working on {filename}")
         with open(f'data/{filename}.txt', 'r') as f:
             lists.append([line.strip() for line in f])
         logger.info("Done!")
-    return lists	
+    return lists
 
 
-birdList, sciBirdList, memeList, songBirds, sciSongBirds = _main() #pylint disable: unbalanced-tuple-unpacking
+# pylint disable: unbalanced-tuple-unpacking
+birdList, sciBirdList, memeList, songBirds, sciSongBirds = _main()

@@ -16,7 +16,7 @@
 
 import asyncio
 import contextlib
-from mimetypes import guess_all_extensions,guess_extension
+from mimetypes import guess_all_extensions, guess_extension
 import os
 import urllib.parse
 from random import randint
@@ -29,8 +29,8 @@ from data.data import GenericError, database, birdList, sciBirdList, songBirds, 
 
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 CATALOG_URL = ("https://search.macaulaylibrary.org/catalog.json?searchField=species" +
-"&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5")
-COUNT = 20  #set this to include a margin of error in case some urls throw error code 476 due to still being processed
+               "&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5")
+COUNT = 20  # set this to include a margin of error in case some urls throw error code 476 due to still being processed
 # Valid file types
 valid_extensions = {"jpg", "png", "jpeg"}
 
@@ -104,7 +104,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
     await ctx.trigger_typing()
 
     try:
-        response = await get_image(ctx, bird,addOn)
+        response = await get_image(ctx, bird, addOn)
     except GenericError as e:
         await delete.delete()
         await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {str(e)}")
@@ -135,7 +135,7 @@ async def get_image(ctx, bird, addOn=None):
         sciBird = sciBirdList[birdList.index(bird)]
     else:
         sciBird = bird
-    images = await get_images(sciBird,addOn)
+    images = await get_images(sciBird, addOn)
     logger.info("images: " + str(images))
     prevJ = int(str(database.lindex(str(ctx.channel.id), 7))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
@@ -166,7 +166,7 @@ async def get_image(ctx, bird, addOn=None):
 
 
 async def get_images(sciBird, addOn):
-    directory=f"cache/images/{sciBird}{addOn}/"
+    directory = f"cache/images/{sciBird}{addOn}/"
     try:
         logger.info("trying")
         images_dir = os.listdir(directory)
@@ -183,7 +183,7 @@ async def get_images(sciBird, addOn):
 
 async def download_images(bird, addOn="", directory=None, session=None):
     if directory is None:
-        directory=f"cache/images/{bird}{addOn}/"
+        directory = f"cache/images/{bird}{addOn}/"
     if addOn == "female":
         sex = "f"
     else:
@@ -194,12 +194,12 @@ async def download_images(bird, addOn="", directory=None, session=None):
         age = ""
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            session=await stack.enter_async_context(aiohttp.ClientSession())
+            session = await stack.enter_async_context(aiohttp.ClientSession())
         urls = await _get_urls(session, bird, "p", sex, age)
         if not os.path.exists(directory):
             os.makedirs(directory)
         paths = [f"{directory}{i}" for i in range(len(urls))]
-        filenames =  await asyncio.gather(*(_download_helper(path, url, session) for path,url in zip(paths, urls)))
+        filenames = await asyncio.gather(*(_download_helper(path, url, session) for path, url in zip(paths, urls)))
         logger.info(f"downloaded images for {bird}")
         return filenames
 
@@ -214,31 +214,32 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     return is list of urls. some urls may return an error code of 476(because it is still being processed);
         if so, ignore that url.
     """
-    #fix labeling issues in the library and on the list
+    # fix labeling issues in the library and on the list
     if bird == "Porphyrio martinicus":
         bird = "Porphyrio martinica"
     elif bird == "Strix acio":
         bird = "Screech Owl"
     logger.info(f"getting image urls for {bird}")
-    taxon_code_url=TAXON_CODE_URL.format(
-            urllib.parse.quote(
-                bird.replace("-"," ").replace("'s","")
-            )
+    taxon_code_url = TAXON_CODE_URL.format(
+        urllib.parse.quote(
+            bird.replace("-", " ").replace("'s", "")
         )
+    )
     async with session.get(taxon_code_url) as taxon_code_response:
-        if taxon_code_response.status!=200:
-            raise GenericError(f"An http error code of {taxon_code_response.status} occured"+
-                f" while fetching {taxon_code_url} for a {'image'if media_type=='p' else 'song'} for {bird}")
+        if taxon_code_response.status != 200:
+            raise GenericError(f"An http error code of {taxon_code_response.status} occured" +
+                               f" while fetching {taxon_code_url} for a {'image'if media_type=='p' else 'song'} for {bird}")
         taxon_code_data = await taxon_code_response.json()
         try:
             taxon_code = taxon_code_data[0]["code"]
         except IndexError:
             raise GenericError(f"No taxon code found for {bird}")
-    catalog_url=CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type) 
+    catalog_url = CATALOG_URL.format(
+        taxon_code, COUNT, media_type, sex, age, sound_type)
     async with session.get(catalog_url) as catalog_response:
-        if catalog_response.status!=200:
-            raise GenericError(f"An http error code of {catalog_response.status} occured "+
-                f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}")
+        if catalog_response.status != 200:
+            raise GenericError(f"An http error code of {catalog_response.status} occured " +
+                               f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}")
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
         urls = [data["mediaUrl"] for data in content]
@@ -248,15 +249,18 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
 async def _download_helper(path, url, session):
     try:
         async with session.get(url) as response:
-            #from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
-            content_type=response.headers['content-type'].partition(';')[0].strip()
-            if content_type.partition("/")[0]=="image":
-                ext = "."+(set(ext[1:] for ext in guess_all_extensions(content_type)) & valid_extensions).pop()
+            # from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
+            content_type = response.headers['content-type'].partition(';')[
+                0].strip()
+            if content_type.partition("/")[0] == "image":
+                ext = "." + \
+                    (set(ext[1:] for ext in guess_all_extensions(
+                        content_type)) & valid_extensions).pop()
             else:
                 ext = guess_extension(content_type)
-            filename=f"{path}{ext}"
-            #from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5    
-            with open(filename, 'wb') as out_file:                    
+            filename = f"{path}{ext}"
+            # from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5
+            with open(filename, 'wb') as out_file:
                 block_size = 1024 * 8
                 while True:
                     block = await response.content.read(block_size)  # pylint: disable=no-member
@@ -310,7 +314,8 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
             if response.status == 200:
                 data = await response.json()
                 recordings = data["recordings"]
-                logger.info(f"found {len(recordings)} recordings for {sciBird}")
+                logger.info(
+                    f"found {len(recordings)} recordings for {sciBird}")
                 if not recordings:  # bird not found
                     # try with common name instead
                     query = urllib.parse.quote(bird)
@@ -332,7 +337,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
                         f"https:{recordings[randint(0, len(recordings)-1)]['file']}"
                     )
                     logger.info("url: " + url)
-                    directory="cache/songs/"
+                    directory = "cache/songs/"
                     fileName = f"{directory}{url.split('/')[3]}.mp3"
                     async with session.get(url) as songFile:
                         if songFile.status == 200:
@@ -388,8 +393,8 @@ def spellcheck(worda, wordb):
     wrongcount = 0
     if worda != wordb:
         if len(worda) != len(wordb):
-            list1=list(worda)
-            list2=list(wordb)
+            list1 = list(worda)
+            list2 = list(wordb)
             longerword = max(list1, list2, key=len)
             shorterword = min(list1, list2, key=len)
             if abs(len(longerword) - len(shorterword)) > 1:

@@ -23,16 +23,21 @@ from functions import (channel_setup, error_skip, error_skip_goat,
                        error_skip_song, send_bird, send_birdsong, user_setup)
 
 BASE_MESSAGE = (
-"*Here you go!* \n" +
-"**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +
-"or `b!{skip_cmd}` to get a new bird. " +
-"Use `b!{check_cmd} guess` to check your answer. " +
-"Use `b!{hint_cmd}` for a hint.**"
+    "*Here you go!* \n" +
+    "**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +
+    "or `b!{skip_cmd}` to get a new bird. " +
+    "Use `b!{check_cmd} guess` to check your answer. " +
+    "Use `b!{hint_cmd}` for a hint.**"
 )
 
-BIRD_MESSAGE = BASE_MESSAGE.format(media="image",new_cmd="bird",skip_cmd="skip",check_cmd="check",hint_cmd="hint")
-GS_MESSAGE = BASE_MESSAGE.format(media="image",new_cmd="gs",skip_cmd="skipgoat",check_cmd="checkgoat",hint_cmd="hintgoat")
-SONG_MESSAGE = BASE_MESSAGE.format(media="song",new_cmd="song",skip_cmd="skipsong",check_cmd="checksong",hint_cmd="hintsong")
+BIRD_MESSAGE = BASE_MESSAGE.format(
+    media="image", new_cmd="bird", skip_cmd="skip", check_cmd="check", hint_cmd="hint")
+GS_MESSAGE = BASE_MESSAGE.format(
+    media="image", new_cmd="gs", skip_cmd="skipgoat", check_cmd="checkgoat", hint_cmd="hintgoat")
+SONG_MESSAGE = BASE_MESSAGE.format(
+    media="song", new_cmd="song", skip_cmd="skipsong", check_cmd="checksong", hint_cmd="hintsong")
+
+
 class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -52,8 +57,10 @@ class Birds(commands.Cog):
             await ctx.send("This command only takes female, juvenile, or nothing!")
             return
 
-        logger.info("bird: " + str(database.lindex(str(ctx.channel.id), 0))[2:-1])
-        logger.info("answered: " + str(int(database.lindex(str(ctx.channel.id), 1))))
+        logger.info(
+            "bird: " + str(database.lindex(str(ctx.channel.id), 0))[2:-1])
+        logger.info("answered: " +
+                    str(int(database.lindex(str(ctx.channel.id), 1))))
 
         answered = int(database.lindex(str(ctx.channel.id), 1))
         # check to see if previous bird was answered
@@ -70,16 +77,14 @@ class Birds(commands.Cog):
                 ctx,
                 currentBird,
                 on_error=error_skip,
-                message=
-                BIRD_MESSAGE,
+                message=BIRD_MESSAGE,
                 addOn=add_on)
         else:  # if no, give the same bird
             await send_bird(
                 ctx,
                 str(database.lindex(str(ctx.channel.id), 0))[2:-1],
                 on_error=error_skip,
-                message=
-                BIRD_MESSAGE,
+                message=BIRD_MESSAGE,
                 addOn=add_on)
 
     # goatsucker command - no args
@@ -102,16 +107,14 @@ class Birds(commands.Cog):
                 ctx,
                 currentBird,
                 on_error=error_skip_goat,
-                message=
-                GS_MESSAGE
+                message=GS_MESSAGE
             )
         else:  # if no, give the same bird
             await send_bird(
                 ctx,
                 str(database.lindex(str(ctx.channel.id), 5))[2:-1],
                 on_error=error_skip_goat,
-                message=
-                GS_MESSAGE
+                message=GS_MESSAGE
             )
             database.lset(str(ctx.channel.id), 6, "0")
 
@@ -139,8 +142,7 @@ class Birds(commands.Cog):
                 ctx,
                 currentSongBird,
                 on_error=error_skip_song,
-                message=
-                SONG_MESSAGE
+                message=SONG_MESSAGE
             )
             database.lset(str(ctx.channel.id), 3, "0")
         else:
@@ -148,8 +150,7 @@ class Birds(commands.Cog):
                 ctx,
                 str(database.lindex(str(ctx.channel.id), 2))[2:-1],
                 on_error=error_skip_song,
-                message=
-                SONG_MESSAGE
+                message=SONG_MESSAGE
             )
             database.lset(str(ctx.channel.id), 3, "0")
 

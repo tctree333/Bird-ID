@@ -30,14 +30,16 @@ from discord.ext import commands, tasks
 from data.data import database, logger
 from functions import channel_setup, precache_images
 
+
 def start_precache():
     asyncio.run(precache_images())
-        
+
+
 if __name__ == '__main__':
     # Initialize bot
     bot = commands.Bot(command_prefix=['b!', 'b.', 'b#', 'B!', 'B.', 'B#'],
-                    case_insensitive=True,
-                    description="BirdID - Your Very Own Ornithologist")
+                       case_insensitive=True,
+                       description="BirdID - Your Very Own Ornithologist")
 
     @bot.event
     async def on_ready():
@@ -49,7 +51,8 @@ if __name__ == '__main__':
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
         refresh_cache.start()
     # Here we load our extensions(cogs) that are located in the cogs directory
-    initial_extensions = ['cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.other']
+    initial_extensions = ['cogs.get_birds', 'cogs.check',
+                          'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.other']
     for extension in initial_extensions:
         try:
             bot.load_extension(extension)
@@ -73,18 +76,19 @@ if __name__ == '__main__':
     @bot.check
     def bot_has_permissions(ctx):
         # code copied from @commands.bot_has_permissions(send_messages=True, embed_links=True, attach_files=True)
-        perms = {"send_messages":True, "embed_links":True, "attach_files":True}
+        perms = {"send_messages": True,
+                 "embed_links": True, "attach_files": True}
         guild = ctx.guild
         me = guild.me if guild is not None else ctx.bot.user
         permissions = ctx.channel.permissions_for(me)
 
-        missing = [perm for perm, value in perms.items() if getattr(permissions, perm, None) != value]
+        missing = [perm for perm, value in perms.items(
+        ) if getattr(permissions, perm, None) != value]
 
         if not missing:
             return True
 
         raise commands.BotMissingPermissions(missing)
-
 
     ######
     # GLOBAL ERROR CHECKING
@@ -99,8 +103,8 @@ if __name__ == '__main__':
 
         if isinstance(error, commands.CommandOnCooldown):  # send cooldown
             await ctx.send("**Cooldown.** Try again after " +
-                        str(round(error.retry_after)) + " s.",
-                        delete_after=5.0)
+                           str(round(error.retry_after)) + " s.",
+                           delete_after=5.0)
 
         elif isinstance(error, commands.CommandNotFound):
             await ctx.send("Sorry, the command was not found.")
@@ -170,23 +174,24 @@ if __name__ == '__main__':
 **Error:**  """ + str(error))
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
+
     @tasks.loop(hours=72.0)
     async def refresh_cache():
         logger.info("clear cache")
         try:
-            shutil.rmtree(r'cache/images/',ignore_errors=True)
+            shutil.rmtree(r'cache/images/', ignore_errors=True)
             logger.info("Cleared image cache.")
         except FileNotFoundError:
             logger.info("Already cleared image cache.")
 
         try:
-            shutil.rmtree(r'cache/songs/',ignore_errors=True)
+            shutil.rmtree(r'cache/songs/', ignore_errors=True)
             logger.info("Cleared songs cache.")
         except FileNotFoundError:
-            logger.info("Already cleared songs cache.")    
-        event_loop=asyncio.get_event_loop()
+            logger.info("Already cleared songs cache.")
+        event_loop = asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
-            await event_loop.run_in_executor(executor,start_precache)
+            await event_loop.run_in_executor(executor, start_precache)
 
     # Actually run the bot
     token = os.getenv("token")

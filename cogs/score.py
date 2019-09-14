@@ -39,7 +39,7 @@ class Score(commands.Cog):
         totalCorrect = int(database.lindex(str(ctx.channel.id), 4))
         await ctx.send(
             f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! " +
-			"Good job everyone!"
+            "Good job everyone!"
         )
 
     # sends correct answers by a user
@@ -116,7 +116,7 @@ class Score(commands.Cog):
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
-        for i,stats in enumerate(leaderboard_list):
+        for i, stats in enumerate(leaderboard_list):
             if ctx.guild is not None:
                 user = ctx.guild.get_member(int(stats[0]))
             else:
@@ -151,8 +151,7 @@ class Score(commands.Cog):
     # missed - returns top 1-10 missed birds
     @commands.command(
         brief="- Top globally incorrect birds",
-        help=
-        "- Top globally incorrect birds, argument can be between 1 and 10, default is 5",
+        help="- Top globally incorrect birds, argument can be between 1 and 10, default is 5",
         aliases=["m"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def missed(self, ctx, placings=5):
@@ -177,7 +176,7 @@ class Score(commands.Cog):
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
-        for i,stats in enumerate(leaderboard_list):
+        for i, stats in enumerate(leaderboard_list):
             leaderboard += f"{str(i+1)}. {str(stats[0])[2:-1]} - {str(int(stats[1]))}\n"
         embed.add_field(name="Top Missed Birds",
                         value=leaderboard,
