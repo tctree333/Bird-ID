@@ -92,7 +92,7 @@ sciGoat = ["Nyctidromus albicollis",
            "Antrostomus carolinensis", "Antrostomus vociferus"]
 
 
-def _main():
+def _nats_lists():
     filenames = ("birdList", "sciBirdList", "memeList",
                  "songBirds", "sciSongBirds")
     # Converts txt file of data into lists
@@ -101,9 +101,38 @@ def _main():
         logger.info(f"Working on {filename}")
         with open(f'data/{filename}.txt', 'r') as f:
             lists.append([line.strip() for line in f])
-        logger.info("Done!")
+        logger.info(f"Done with {filename}")
+    logger.info("Done with nats list!")
     return lists
 
 
+#  states = { state name:
+#               {
+#               aliases: [alias1, alias2...],
+#               birdList: [bird1, bird2...],
+#               sciBirdList: [etc.],
+#               songBirds: [etc.],
+#               sciSongBirds: [etc.]
+#               }
+#          }
+
+def _state_lists():
+    filenames = ("birdList", "sciBirdList", "aliases",
+                 "songBirds", "sciSongBirds")
+    states = {}
+    state_names = os.listdir("data/state")
+    for state in state_names:
+        states[state] = {}
+        logger.info(f"Working on {state}")
+        for filename in filenames:
+            logger.info(f"Working on {filename}")
+            with open(f'data/state/{state}/{filename}.txt', 'r') as f:
+                states[state][filename] = [line.strip() for line in f]
+            logger.info(f"Done with {filename}")
+        logger.info(f"Done with {state}")
+    logger.info("Done with states list!")
+    return states
+
 # pylint disable: unbalanced-tuple-unpacking
-birdList, sciBirdList, memeList, songBirds, sciSongBirds = _main()
+birdList, sciBirdList, memeList, songBirds, sciSongBirds = _nats_lists()
+states = _state_lists()

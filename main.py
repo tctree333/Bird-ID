@@ -50,13 +50,13 @@ if __name__ == '__main__':
         logger.info(bot.user.id)
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
-        
+
         refresh_cache.start()
         update_backup.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory
     initial_extensions = ['cogs.get_birds', 'cogs.check',
-                          'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.other']
+                          'cogs.skip', 'cogs.hint', 'cogs.score','cogs.state', 'cogs.other']
     for extension in initial_extensions:
         try:
             bot.load_extension(extension)
@@ -81,7 +81,9 @@ if __name__ == '__main__':
     def bot_has_permissions(ctx):
         # code copied from @commands.bot_has_permissions(send_messages=True, embed_links=True, attach_files=True)
         perms = {"send_messages": True,
-                 "embed_links": True, "attach_files": True}
+                 "embed_links": True, 
+                 "attach_files": True,
+                 "manage_roles": True}
         guild = ctx.guild
         me = guild.me if guild is not None else ctx.bot.user
         permissions = ctx.channel.permissions_for(me)
