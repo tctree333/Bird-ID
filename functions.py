@@ -89,13 +89,14 @@ def error_skip_goat(ctx):
 
 def check_state_role(ctx):
     logger.info("checking roles")
-    user_role_names = [role.name.lower() for role in ctx.author.roles]
     user_states = []
-    for state in list(states.keys()):
-        if len(set(user_role_names + states[state]["aliases"]) -
-               set(user_role_names).symmetric_difference(set(states[state]["aliases"]))) is 0:  # gets similarities
-            user_states.append(state)
-    logger.info(f"user roles: {user_states}")
+    if ctx.guild is not None:
+        user_role_names = [role.name.lower() for role in ctx.author.roles]
+        for state in list(states.keys()):
+            if len(set(user_role_names + states[state]["aliases"]) -
+                set(user_role_names).symmetric_difference(set(states[state]["aliases"]))) is 0:  # gets similarities
+                user_states.append(state)
+        logger.info(f"user roles: {user_states}")
     return user_states
 
 
