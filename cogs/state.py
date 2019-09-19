@@ -27,6 +27,7 @@ class States(commands.Cog):
     # set state role
     @commands.command(help="- Sets your state", aliases=["state"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @guild_only()
     async def set(self, ctx, arg):
         logger.info("set")
 
@@ -74,6 +75,7 @@ class States(commands.Cog):
     # removes state role
     @commands.command(help="- Removes your state")
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @guild_only()
     async def remove(self, ctx, arg):
         logger.info("remove")
 
@@ -111,6 +113,8 @@ class States(commands.Cog):
             await ctx.send("**Cooldown.** Try again after " +
                            str(round(error.retry_after)) + " s.",
                            delete_after=5.0)
+        elif isinstance(error, commands.NoPrivateMessage):
+            await ctx.send("**This command is unavaliable in DMs!**")
         else:
             await ctx.send("""**An uncaught set error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 
@@ -127,6 +131,8 @@ class States(commands.Cog):
             await ctx.send("**Cooldown.** Try again after " +
                            str(round(error.retry_after)) + " s.",
                            delete_after=5.0)
+        elif isinstance(error, commands.NoPrivateMessage):
+            await ctx.send("**This command is unavaliable in DMs!**")
         else:
             await ctx.send("""**An uncaught remove error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 

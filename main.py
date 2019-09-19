@@ -79,21 +79,24 @@ if __name__ == '__main__':
     @bot.check
     def bot_has_permissions(ctx):
         # code copied from @commands.bot_has_permissions(send_messages=True, embed_links=True, attach_files=True)
-        perms = {"send_messages": True,
-                 "embed_links": True, 
-                 "attach_files": True,
-                 "manage_roles": True}
-        guild = ctx.guild
-        me = guild.me if guild is not None else ctx.bot.user
-        permissions = ctx.channel.permissions_for(me)
+        if ctx.guild is not None:
+            perms = {"send_messages": True,
+                    "embed_links": True, 
+                    "attach_files": True,
+                    "manage_roles": True}
+            guild = ctx.guild
+            me = guild.me if guild is not None else ctx.bot.user
+            permissions = ctx.channel.permissions_for(me)
 
-        missing = [perm for perm, value in perms.items(
-        ) if getattr(permissions, perm, None) != value]
+            missing = [perm for perm, value in perms.items(
+            ) if getattr(permissions, perm, None) != value]
 
-        if not missing:
+            if not missing:
+                return True
+
+            raise commands.BotMissingPermissions(missing)
+        else:
             return True
-
-        raise commands.BotMissingPermissions(missing)
 
     ######
     # GLOBAL ERROR CHECKING
@@ -130,6 +133,9 @@ if __name__ == '__main__':
             await ctx.send(f"""**The bot does not have enough permissions to fully function.**
 **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
 *Please try again once the correct permissions are set.*""")
+
+        elif isinstance(error, commands.NoPrivateMessage):
+            await ctx.send("**This command is unavaliable in DMs!**")
 
         elif isinstance(error, commands.CommandInvokeError):
             if isinstance(error.original, redis.exceptions.ResponseError):
