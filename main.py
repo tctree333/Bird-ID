@@ -52,7 +52,6 @@ if __name__ == '__main__':
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
         refresh_cache.start()
-        update_backup.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory
     initial_extensions = ['cogs.get_birds', 'cogs.check',
@@ -181,7 +180,7 @@ if __name__ == '__main__':
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
 
-    @tasks.loop(hours=72.0)
+    @tasks.loop(hours=48.0)
     async def refresh_cache():
         logger.info("clear cache")
         try:
@@ -198,25 +197,6 @@ if __name__ == '__main__':
         event_loop = asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, start_precache)
-
-    @tasks.loop(hours=12.0)
-    async def update_backup():
-        logger.info("Starting Backup")
-        await backup("leaderboard.txt", "users")
-        await backup("missed.txt", "incorrect")
-        await backup("score.txt", "score")
-        logger.info("Done!")
-
-    async def backup(filename, key):
-        logger.info(f"Backing up {key} from {filename}")
-        raw = database.zrevrangebyscore(key, "+inf", "-inf")
-        with open(f"backups/{filename}", 'w') as f:
-            for item in raw:
-                line = f"{str(item)[2:-1]},{str(int(database.zscore(key, item)))}\n"
-                f.write(line)
-        channel = bot.get_channel(BACKUPS_CHANNEL)
-        with open(f"backups/{filename}", 'r') as f:
-            await channel.send(file=discord.File(f, filename=filename))
 
     # Actually run the bot
     token = os.getenv("token")
