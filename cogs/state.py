@@ -27,7 +27,7 @@ class States(commands.Cog):
     # set state role
     @commands.command(help="- Sets your state", aliases=["state"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    @guild_only()
+    @commands.guild_only()
     async def set(self, ctx, arg):
         logger.info("set")
 
@@ -75,7 +75,7 @@ class States(commands.Cog):
     # removes state role
     @commands.command(help="- Removes your state")
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    @guild_only()
+    @commands.guild_only()
     async def remove(self, ctx, arg):
         logger.info("remove")
 
