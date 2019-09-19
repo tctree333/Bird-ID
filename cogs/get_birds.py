@@ -140,7 +140,7 @@ class Birds(commands.Cog):
         logger.info(
             "bird: " + str(database.lindex(str(ctx.channel.id), 2))[2:-1])
         logger.info("answered: " +
-                    str(int(database.lindex(str(ctx.channel.id), 2))))
+                    str(int(database.lindex(str(ctx.channel.id), 3))))
 
         songAnswered = int(database.lindex(str(ctx.channel.id), 3))
         # check to see if previous bird was answered
