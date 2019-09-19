@@ -25,7 +25,7 @@ class States(commands.Cog):
         self.bot = bot
 
     # set state role
-    @commands.command(help="- Sets your state")
+    @commands.command(help="- Sets your state", aliases=["state"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def set(self, ctx, arg):
         logger.info("set")
