@@ -129,8 +129,8 @@ class Other(commands.Cog):
             name="Invite",
             value=
             """To invite this bot to your own server, use the following invite links.\n
-**Bird-ID:** https://discordapp.com/api/oauth2/authorize?client_id=601917808137338900&permissions=51200&scope=bot\n
-**Orni-Bot:** https://discordapp.com/api/oauth2/authorize?client_id=601755752410906644&permissions=51200&scope=bot\n
+**Bird-ID:** https://discordapp.com/api/oauth2/authorize?client_id=601917808137338900&permissions=268486656&scope=bot\n
+**Orni-Bot:** https://discordapp.com/api/oauth2/authorize?client_id=601755752410906644&permissions=268486656&scope=bot\n
 For more information on the differences between the two bots, visit our support server below.""",
             inline=False)
         await ctx.send(embed=embed)
