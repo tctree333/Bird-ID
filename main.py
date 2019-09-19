@@ -210,12 +210,12 @@ if __name__ == '__main__':
     async def backup(filename, key):
         logger.info(f"Backing up {key} from {filename}")
         raw = database.zrevrangebyscore(key, "+inf", "-inf")
-        with open(filename, 'w') as f:
+        with open(f"backups/{filename}", 'w') as f:
             for item in raw:
                 line = f"{str(item)[2:-1]},{str(int(database.zscore(key, item)))}\n"
                 f.write(line)
         channel = bot.get_channel(BACKUPS_CHANNEL)
-        with open(filename, 'r') as f:
+        with open(f"backups/{filename}", 'r') as f:
             await channel.send(file=discord.File(f, filename=filename))
 
     # Actually run the bot

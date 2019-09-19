@@ -133,6 +133,26 @@ def _state_lists():
     logger.info("Done with states list!")
     return states
 
+
+def _all_birds():
+    lists = [birdList, sciBirdList,
+                 songBirds, sciSongBirds]
+    list_names = ["birdList", "sciBirdList",
+                 "songBirds", "sciSongBirds"]
+    master_lists = []
+    for bird_list in lists:
+        birds = bird_list
+        logger.info(f"Working on {list_names[lists.index(bird_list)]}")
+
+        for state in list(states.keys()):
+            birds += states[state][list_names[lists.index(bird_list)]]
+            master_lists.append(birds)
+
+        logger.info(f"Done with {list_names[lists.index(bird_list)]}")
+    logger.info("Done with master lists!")
+    return master_lists
+
 # pylint disable: unbalanced-tuple-unpacking
 birdList, sciBirdList, memeList, songBirds, sciSongBirds = _nats_lists()
 states = _state_lists()
+birdListMaster, sciBirdListMaster, songBirdsMaster, sciSongBirdsMaster = _all_birds()

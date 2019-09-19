@@ -19,7 +19,9 @@ import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import birdList, database, sciBirdList, sciSongBirds, songBirds, goatsuckers, sciGoat, logger
+from data.data import (goatsuckers, sciGoat,
+                       birdListMaster, sciBirdListMaster, songBirdsMaster, sciSongBirdsMaster,
+                       database, logger)
 from functions import bird_setup, channel_setup, spellcheck, user_setup
 
 # achievement values
@@ -43,8 +45,8 @@ class Check(commands.Cog):
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
             await bird_setup(currentBird)
-            index = birdList.index(currentBird)
-            sciBird = sciBirdList[index]
+            index = birdListMaster.index(currentBird)
+            sciBird = sciBirdListMaster[index]
             database.lset(str(ctx.channel.id), 0, "")
             database.lset(str(ctx.channel.id), 1, "1")
             if spellcheck(arg, currentBird) is True or spellcheck(
@@ -137,8 +139,8 @@ class Check(commands.Cog):
             await ctx.send("You must ask for a bird call first!")
         else:  # if there is a bird, it checks answer
             await bird_setup(currentSongBird)
-            index = songBirds.index(currentSongBird)
-            sciBird = sciSongBirds[index]
+            index = songBirdsMaster.index(currentSongBird)
+            sciBird = sciSongBirdsMaster[index]
             database.lset(str(ctx.channel.id), 2, "")
             database.lset(str(ctx.channel.id), 3, "1")
             if spellcheck(arg, currentSongBird) is True or spellcheck(

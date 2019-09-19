@@ -18,9 +18,10 @@ from random import randint
 
 from discord.ext import commands
 
-from data.data import birdList, database, goatsuckers, songBirds, logger
+from data.data import birdList, database, goatsuckers, songBirds, logger, states
 from functions import (channel_setup, error_skip, error_skip_goat,
-                       error_skip_song, send_bird, send_birdsong, user_setup)
+                       error_skip_song, send_bird, send_birdsong, user_setup,
+                       check_state_role)
 
 BASE_MESSAGE = (
     "*Here you go!* \n" +
@@ -66,10 +67,19 @@ class Birds(commands.Cog):
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
             database.lset(str(ctx.channel.id), 1, "0")
-            currentBird = birdList[randint(0, len(birdList) - 1)]
+
+            roles = check_state_role(ctx)
+            birds = birdList
+            if roles:
+                for state in roles:
+                    birds += states[state]["birdList"]
+                birds = list(set(birds))
+                logger.info(f"number of birds: {len(birds)}")
+
+            currentBird = birds[randint(0, len(birds) - 1)]
             prevB = str(database.lindex(str(ctx.channel.id), 8))[2:-1]
             while currentBird == prevB:
-                currentBird = birdList[randint(0, len(birdList) - 1)]
+                currentBird = birds[randint(0, len(birds) - 1)]
             database.lset(str(ctx.channel.id), 8, str(currentBird))
             database.lset(str(ctx.channel.id), 0, str(currentBird))
             logger.info("currentBird: " + str(currentBird))
@@ -127,14 +137,25 @@ class Birds(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
+        logger.info(
+            "bird: " + str(database.lindex(str(ctx.channel.id), 2))[2:-1])
+        logger.info("answered: " +
+                    str(int(database.lindex(str(ctx.channel.id), 2))))
+
         songAnswered = int(database.lindex(str(ctx.channel.id), 3))
         # check to see if previous bird was answered
         if songAnswered:  # if yes, give a new bird
-            v = randint(0, len(songBirds) - 1)
-            currentSongBird = songBirds[v]
+            roles = check_state_role(ctx)
+            birds = songBirds
+            if roles:
+                for state in roles:
+                    birds += states[state]["songBirds"]
+                birds = list(set(birds))
+
+            currentSongBird = birds[randint(0, len(birds) - 1)]
             prevS = str(database.lindex(str(ctx.channel.id), 9))[2:-1]
             while currentSongBird == prevS:
-                currentSongBird = songBirds[randint(0, len(songBirds) - 1)]
+                currentSongBird = birds[randint(0, len(birds) - 1)]
             database.lset(str(ctx.channel.id), 9, str(currentSongBird))
             database.lset(str(ctx.channel.id), 2, str(currentSongBird))
             logger.info("currentSongBird: " + str(currentSongBird))
@@ -152,7 +173,6 @@ class Birds(commands.Cog):
                 on_error=error_skip_song,
                 message=SONG_MESSAGE
             )
-            database.lset(str(ctx.channel.id), 3, "0")
 
 
 def setup(bot):

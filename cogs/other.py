@@ -21,7 +21,7 @@ import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import GenericError, memeList, sciBirdList, birdList, logger
+from data.data import GenericError, memeList, sciBirdListMaster, birdListMaster, logger
 from functions import channel_setup, send_bird, send_birdsong, user_setup
 
 
@@ -39,7 +39,7 @@ class Other(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        matches = get_close_matches(arg,birdList+sciBirdList,n=1)
+        matches = get_close_matches(arg,birdListMaster+sciBirdListMaster,n=1)
         if matches:
             bird = matches[0]
 

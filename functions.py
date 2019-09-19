@@ -25,7 +25,9 @@ import aiohttp
 import discord
 import eyed3
 
-from data.data import GenericError, database, birdList, sciBirdList, songBirds, sciSongBirds, logger
+from data.data import (GenericError, logger, states, database,
+                       birdListMaster, sciBirdListMaster,
+                       songBirdsMaster, sciSongBirdsMaster)
 
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 CATALOG_URL = ("https://search.macaulaylibrary.org/catalog.json?searchField=species" +
@@ -83,6 +85,18 @@ def error_skip_goat(ctx):
     logger.info("ok")
     database.lset(str(ctx.channel.id), 5, "")
     database.lset(str(ctx.channel.id), 6, "1")
+
+
+def check_state_role(ctx):
+    logger.info("checking roles")
+    user_role_names = [role.name.lower() for role in ctx.author.roles]
+    user_states = []
+    for state in list(states.keys()):
+        if len(set(user_role_names + states[state]["aliases"]) -
+               set(user_role_names).symmetric_difference(set(states[state]["aliases"]))) is 0:  # gets similarities
+            user_states.append(state)
+    logger.info(f"user roles: {user_states}")
+    return user_states
 
 
 # Gets a bird picture and sends it to user:
@@ -182,8 +196,8 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
 # Chooses one image to send
 async def get_image(ctx, bird, addOn=None):
     # fetch scientific names of birds
-    if bird in birdList:
-        sciBird = sciBirdList[birdList.index(bird)]
+    if bird in birdListMaster:
+        sciBird = sciBirdListMaster[birdListMaster.index(bird)]
     else:
         sciBird = bird
     images = await get_files(sciBird, "images", addOn)
@@ -220,8 +234,8 @@ async def get_image(ctx, bird, addOn=None):
 # Chooses one sound to send
 async def get_song(ctx, bird):
     # fetch scientific names of birds
-    if bird in songBirds:
-        sciBird = sciSongBirds[songBirds.index(bird)]
+    if bird in songBirdsMaster:
+        sciBird = sciSongBirdsMaster[songBirdsMaster.index(bird)]
     else:
         sciBird = bird
     songs = await get_files(sciBird, "songs")
@@ -386,13 +400,13 @@ async def precache():
     conn = aiohttp.TCPConnector(limit=100)
     async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
         logger.info("Starting cache")
-        await asyncio.gather(*(download_media(bird, "images", session=session) for bird in sciBirdList))
+        await asyncio.gather(*(download_media(bird, "images", session=session) for bird in sciBirdListMaster))
         logger.info("Starting females")
-        await asyncio.gather(*(download_media(bird, "images", addOn="female", session=session) for bird in sciBirdList))
+        await asyncio.gather(*(download_media(bird, "images", addOn="female", session=session) for bird in sciBirdListMaster))
         logger.info("Starting juveniles")
-        await asyncio.gather(*(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdList))
+        await asyncio.gather(*(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster))
         logger.info("Starting songs")
-        await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirds))
+        await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
     logger.info("Images Cached")
 
 
