@@ -94,7 +94,7 @@ def check_state_role(ctx):
         user_role_names = [role.name.lower() for role in ctx.author.roles]
         for state in list(states.keys()):
             if len(set(user_role_names + states[state]["aliases"]) -
-                set(user_role_names).symmetric_difference(set(states[state]["aliases"]))) is 0:  # gets similarities
+                set(user_role_names).symmetric_difference(set(states[state]["aliases"]))) is not 0:  # gets similarities
                 user_states.append(state)
     logger.info(f"user roles: {user_states}")
     return user_states

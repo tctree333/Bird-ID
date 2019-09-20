@@ -69,12 +69,14 @@ class Birds(commands.Cog):
             database.lset(str(ctx.channel.id), 1, "0")
 
             roles = check_state_role(ctx)
-            birds = birdList
+            birds = []
+            birds += birdList
             if roles:
                 for state in roles:
                     birds += states[state]["birdList"]
                 birds = list(set(birds))
             logger.info(f"number of birds: {len(birds)}")
+            print(list(set(birds).symmetric_difference(set(birdList))))
 
             currentBird = birds[randint(0, len(birds) - 1)]
             prevB = str(database.lindex(str(ctx.channel.id), 8))[2:-1]
@@ -146,7 +148,8 @@ class Birds(commands.Cog):
         # check to see if previous bird was answered
         if songAnswered:  # if yes, give a new bird
             roles = check_state_role(ctx)
-            birds = songBirds
+            birds = []
+            birds += songBirds
             if roles:
                 for state in roles:
                     birds += states[state]["songBirds"]
