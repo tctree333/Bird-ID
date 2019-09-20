@@ -141,7 +141,8 @@ def _all_birds():
                  "songBirds", "sciSongBirds"]
     master_lists = []
     for bird_list in lists:
-        birds = bird_list
+        birds = []
+        birds += bird_list
         logger.info(f"Working on {list_names[lists.index(bird_list)]}")
 
         for state in list(states.keys()):
@@ -156,3 +157,5 @@ def _all_birds():
 birdList, sciBirdList, memeList, songBirds, sciSongBirds = _nats_lists()
 states = _state_lists()
 birdListMaster, sciBirdListMaster, songBirdsMaster, sciSongBirdsMaster = _all_birds()
+logger.info(f"National Lengths: {len(birdList)}, {len(sciBirdList)}, {len(songBirds)}, {len(sciSongBirds)}")
+logger.info(f"Master Lengths: {len(birdListMaster)}, {len(sciBirdListMaster)}, {len(songBirdsMaster)}, {len(sciSongBirdsMaster)}")

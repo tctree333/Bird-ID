@@ -74,7 +74,7 @@ class Birds(commands.Cog):
                 for state in roles:
                     birds += states[state]["birdList"]
                 birds = list(set(birds))
-                logger.info(f"number of birds: {len(birds)}")
+            logger.info(f"number of birds: {len(birds)}")
 
             currentBird = birds[randint(0, len(birds) - 1)]
             prevB = str(database.lindex(str(ctx.channel.id), 8))[2:-1]
