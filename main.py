@@ -160,7 +160,7 @@ if __name__ == '__main__':
                 await ctx.send("Wikipedia page unavaliable. Try again later.")
 
             elif isinstance(error.original, aiohttp.ClientOSError):
-                if error.errno != errno.ECONNRESET:
+                if error.original.errno != errno.ECONNRESET:
                     await ctx.send("""**An unexpected ClientOSError has occurred.**
 *Please log this message in #support in the support server below, or try again.*
 **Error:** """ + str(error))

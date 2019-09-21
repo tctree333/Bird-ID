@@ -115,6 +115,11 @@ class States(commands.Cog):
                            delete_after=5.0)
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("**This command is unavaliable in DMs!**")
+        elif isinstance(error, commands.BotMissingPermissions):
+            logger.error("missing permissions error")
+            await ctx.send(f"""**The bot does not have enough permissions to fully function.**
+**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
+*Please try again once the correct permissions are set.*""")
         else:
             await ctx.send("""**An uncaught set error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 
@@ -133,6 +138,11 @@ class States(commands.Cog):
                            delete_after=5.0)
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("**This command is unavaliable in DMs!**")
+        elif isinstance(error, commands.BotMissingPermissions):
+            logger.error("missing permissions error")
+            await ctx.send(f"""**The bot does not have enough permissions to fully function.**
+**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
+*Please try again once the correct permissions are set.*""")
         else:
             await ctx.send("""**An uncaught remove error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 
