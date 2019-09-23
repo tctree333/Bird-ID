@@ -109,7 +109,7 @@ class Other(commands.Cog):
             name="Stats",
             value=
             f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. "+
-            f"There are {int(database.zcard('user'))} active users in {int(database.zcard('score'))} channels. "+
+            f"There are {int(database.zcard('users'))} active users in {int(database.zcard('score'))} channels. "+
 			f"The WebSocket latency is {str(round((self.bot.latency*1000)))} ms.",
             inline=False)
         await ctx.send(embed=embed)

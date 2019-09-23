@@ -38,7 +38,7 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # }
 
 # user format = {
-# "user":[user id, # of correct]
+# "users":[user id, # of correct]
 # }
 
 # incorrect birds format = {
