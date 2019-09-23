@@ -38,11 +38,15 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # }
 
 # user format = {
-# "user":[userid, #ofcorrect]
+# "user":[user id, # of correct]
 # }
 
 # incorrect birds format = {
 # "incorrect":[bird name, #incorrect]
+# }
+
+# channel score format = {
+# "score":[channel id, # of correct]
 # }
 
 # setup logging

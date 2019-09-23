@@ -45,18 +45,26 @@ class Birds(commands.Cog):
 
     # Bird command - no args
     # help text
-    @commands.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile]")
+    @commands.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile] [bw]")
     # 5 second cooldown
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def bird(self, ctx, add_on=""):
+    async def bird(self, ctx, add_on="", bw=""):
         logger.info("bird")
 
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        if not (add_on == "female" or add_on == "juvenile" or add_on == ""):
+        if not (add_on == "female" or add_on == "juvenile" or add_on == "bw"or add_on == ""):
             await ctx.send("This command only takes female, juvenile, or nothing!")
             return
+
+        if add_on == "bw":
+            add_on = ""
+            bw = True
+        elif bw == "bw":
+            bw = True
+        else:
+            bw = False
 
         logger.info(
             "bird: " + str(database.lindex(str(ctx.channel.id), 0))[2:-1])
@@ -90,14 +98,16 @@ class Birds(commands.Cog):
                 currentBird,
                 on_error=error_skip,
                 message=BIRD_MESSAGE,
-                addOn=add_on)
+                addOn=add_on,
+                bw=bw)
         else:  # if no, give the same bird
             await send_bird(
                 ctx,
                 str(database.lindex(str(ctx.channel.id), 0))[2:-1],
                 on_error=error_skip,
                 message=BIRD_MESSAGE,
-                addOn=add_on)
+                addOn=add_on,
+                bw=bw)
 
     # goatsucker command - no args
     @commands.command(help='- Sends a random goatsucker to ID', aliases=["gs"])

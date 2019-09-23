@@ -14,16 +14,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import asyncio
-import contextlib
-from mimetypes import guess_all_extensions, guess_extension
-import os
-import urllib.parse
-from random import randint
-
 import aiohttp
 import discord
 import eyed3
+import asyncio
+import contextlib
+import os
+import urllib.parse
+from PIL import Image
+from io import BytesIO
+from functools import partial
+from mimetypes import guess_all_extensions, guess_extension
+
 
 from data.data import (GenericError, logger, states, database,
                        birdListMaster, sciBirdListMaster,
@@ -33,6 +35,7 @@ TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 CATALOG_URL = ("https://search.macaulaylibrary.org/catalog.json?searchField=species" +
                "&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5")
 COUNT = 20  # set this to include a margin of error in case some urls throw error code 476 due to still being processed
+
 # Valid file types
 valid_image_extensions = {"jpg", "png", "jpeg", "gif"}
 valid_audio_extensions = {"mp3", "wav", "ogg", "m4a"}
@@ -94,11 +97,19 @@ def check_state_role(ctx):
         user_role_names = [role.name.lower() for role in ctx.author.roles]
         for state in list(states.keys()):
             if len(set(user_role_names + states[state]["aliases"]) -
-                set(user_role_names).symmetric_difference(set(states[state]["aliases"]))) is not 0:  # gets similarities
+                   set(user_role_names).symmetric_difference(set(states[state]["aliases"]))) is not 0:  # gets similarities
                 user_states.append(state)
     logger.info(f"user roles: {user_states}")
     return user_states
 
+
+def _black_and_white(input_image_path):
+    with Image.open(input_image_path) as color_image:
+        bw = color_image.convert('L')
+        final_buffer = BytesIO()
+        bw.save(final_buffer, "png")
+    final_buffer.seek(0)
+    return final_buffer
 
 # Gets a bird picture and sends it to user:
 # ctx - context for message (discord thing)
@@ -106,7 +117,7 @@ def check_state_role(ctx):
 # on_error - function to run when an error occurs (function)
 # message - text message to send before bird picture (str)
 # addOn - string to append to search for female/juvenile birds (str)
-async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
+async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
     if bird == "":
         logger.error("error - bird is blank")
         await ctx.send(
@@ -135,13 +146,20 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn=""):
         await delete.delete()
         await ctx.send("**Oops! File too large :(**\n*Please try again.*")
     else:
-        with open(filename, 'rb') as img:
-            if message is not None:
-                await ctx.send(message)
-            # change filename to avoid spoilers
-            await ctx.send(file=discord.File(img, filename="bird." + extension)
-                           )
-            await delete.delete()
+        if bw:
+            loop = asyncio.get_running_loop()
+            fn = partial(_black_and_white, filename)
+            file_stream = await loop.run_in_executor(None, fn)
+        else:
+            file_stream = filename
+
+        if message is not None:
+            await ctx.send(message)
+
+        # change filename to avoid spoilers
+        file_obj = discord.File(file_stream, filename=f"bird.{extension}")
+        await ctx.send(file=file_obj)
+        await delete.delete()
 
 
 # Gets a bird sound and sends it to user:
