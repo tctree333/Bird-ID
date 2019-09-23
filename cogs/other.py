@@ -21,7 +21,7 @@ import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import GenericError, memeList, sciBirdListMaster, birdListMaster, logger
+from data.data import GenericError, memeList, sciBirdListMaster, birdListMaster, logger, database
 from functions import channel_setup, send_bird, send_birdsong, user_setup
 
 
@@ -108,7 +108,8 @@ class Other(commands.Cog):
         embed.add_field(
             name="Stats",
             value=
-            f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers."+
+            f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. "+
+            f"There are {int(database.zcard('user'))} active users in {int(database.zcard('score'))} channels. "+
 			f"The WebSocket latency is {str(round((self.bot.latency*1000)))} ms.",
             inline=False)
         await ctx.send(embed=embed)
