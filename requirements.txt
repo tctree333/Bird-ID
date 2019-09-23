@@ -3,4 +3,4 @@ wikipedia==1.4.0
 aiohttp==3.6.1
 eyeD3==0.8.10
 redis==3.3.8
-PIL==6.1.0
+PIL==1.1.6
