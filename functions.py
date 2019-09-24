@@ -28,12 +28,12 @@ from mimetypes import guess_all_extensions, guess_extension
 
 
 from data.data import (GenericError, logger, states, database,
-                       birdListMaster, sciBirdListMaster,
-                       songBirdsMaster, sciSongBirdsMaster)
+                       sciBirdListMaster, sciSongBirdsMaster)
 
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 CATALOG_URL = ("https://search.macaulaylibrary.org/catalog.json?searchField=species" +
                "&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5")
+SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
 COUNT = 20  # set this to include a margin of error in case some urls throw error code 476 due to still being processed
 
 # Valid file types
@@ -48,10 +48,10 @@ async def channel_setup(ctx):
     else:
         # ['prevS', 'prevB', 'prevJ', 'goatsucker answered', 'goatsucker',
         #  'totalCorrect', 'songanswered', 'songbird', 'answered', 'bird']
-        database.hmset(f"channel:{str(ctx.channel.id)}", 
-                    {"bird":"", "answered":1, "sBird":"", "sAnswered":1,
-                     "goatsucker":"", "gsAnswered":1,
-                     "prevJ":20, "prevB":"", "prevS":"", "prevK":20})
+        database.hmset(f"channel:{str(ctx.channel.id)}",
+                       {"bird": "", "answered": 1, "sBird": "", "sAnswered": 1,
+                        "goatsucker": "", "gsAnswered": 1,
+                        "prevJ": 20, "prevB": "", "prevS": "", "prevK": 20})
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
         await ctx.send("Ok, setup! I'm all ready to use!")
 
@@ -105,6 +105,57 @@ def check_state_role(ctx):
     return user_states
 
 
+# fetch scientific name from common name or taxon code
+async def get_sciname(bird, session=None):
+    logger.info("getting sciname")
+    async with contextlib.AsyncExitStack() as stack:
+        if session is None:
+            session = await stack.enter_async_context(aiohttp.ClientSession())
+        try:
+            code = await get_taxon(bird, session)
+        except GenericError as e:
+            if e.code == 111:
+                code = bird
+            else:
+                raise
+
+        sciname_url = SCINAME_URL.format(urllib.parse.quote(code))
+        async with session.get(sciname_url) as sciname_response:
+            if sciname_response.status != 200:
+                raise GenericError(f"An http error code of {sciname_response.status} occured" +
+                                   f" while fetching {sciname_url} for {code}", code=201)
+            sciname_data = await sciname_response.json()
+            try:
+                sciname = sciname_data[0]["sciName"]
+            except IndexError:
+                raise GenericError(f"No sciname found for {code}", code=111)
+    return sciname
+
+# fetch taxonomic code from common/scientific name
+
+
+async def get_taxon(bird, session=None):
+    logger.info("getting taxon code")
+    async with contextlib.AsyncExitStack() as stack:
+        if session is None:
+            session = await stack.enter_async_context(aiohttp.ClientSession())
+        taxon_code_url = TAXON_CODE_URL.format(
+            urllib.parse.quote(
+                bird.replace("-", " ").replace("'s", "")
+            )
+        )
+        async with session.get(taxon_code_url) as taxon_code_response:
+            if taxon_code_response.status != 200:
+                raise GenericError(f"An http error code of {taxon_code_response.status} occured" +
+                                   f" while fetching {taxon_code_url} for {bird}", code=201)
+            taxon_code_data = await taxon_code_response.json()
+            try:
+                taxon_code = taxon_code_data[0]["code"]
+            except IndexError:
+                raise GenericError(f"No taxon code found for {bird}", code=111)
+    return taxon_code
+
+
 def _black_and_white(input_image_path):
     with Image.open(input_image_path) as color_image:
         bw = color_image.convert('L')
@@ -119,6 +170,8 @@ def _black_and_white(input_image_path):
 # on_error - function to run when an error occurs (function)
 # message - text message to send before bird picture (str)
 # addOn - string to append to search for female/juvenile birds (str)
+
+
 async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
     if bird == "":
         logger.error("error - bird is blank")
@@ -217,13 +270,14 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
 # Chooses one image to send
 async def get_image(ctx, bird, addOn=None):
     # fetch scientific names of birds
-    if bird in birdListMaster:
-        sciBird = sciBirdListMaster[birdListMaster.index(bird)]
-    else:
+    try:
+        sciBird = await get_sciname(bird)
+    except GenericError:
         sciBird = bird
     images = await get_files(sciBird, "images", addOn)
     logger.info("images: " + str(images))
-    prevJ = int(str(database.hget(f"channel:{str(ctx.channel.id)}", "prevJ"))[2:-1])
+    prevJ = int(
+        str(database.hget(f"channel:{str(ctx.channel.id)}", "prevJ"))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if images:
         j = (prevJ + 1) % len(images)
@@ -242,11 +296,11 @@ async def get_image(ctx, bird, addOn=None):
                 break
             elif x == len(images) - 1:
                 j = (j + 1) % (len(images))
-                raise GenericError("No Valid Images Found")
+                raise GenericError("No Valid Images Found", code=999)
 
         database.hset(f"channel:{str(ctx.channel.id)}", "prevJ", str(j))
     else:
-        raise GenericError("No Images Found")
+        raise GenericError("No Images Found", code=100)
 
     return [image_link, extension]
 
@@ -255,13 +309,14 @@ async def get_image(ctx, bird, addOn=None):
 # Chooses one sound to send
 async def get_song(ctx, bird):
     # fetch scientific names of birds
-    if bird in songBirdsMaster:
-        sciBird = sciSongBirdsMaster[songBirdsMaster.index(bird)]
-    else:
+    try:
+        sciBird = await get_sciname(bird)
+    except GenericError:
         sciBird = bird
     songs = await get_files(sciBird, "songs")
     logger.info("songs: " + str(songs))
-    prevK = int(str(database.hget(f"channel:{str(ctx.channel.id)}", "prevK"))[2:-1])
+    prevK = int(
+        str(database.hget(f"channel:{str(ctx.channel.id)}", "prevK"))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if songs:
         k = (prevK + 1) % len(songs)
@@ -280,11 +335,11 @@ async def get_song(ctx, bird):
                 break
             elif x == len(songs) - 1:
                 k = (k + 1) % (len(songs))
-                raise GenericError("No Valid Songs Found")
+                raise GenericError("No Valid Songs Found", code=999)
 
         database.hset(f"channel:{str(ctx.channel.id)}", "prevK", str(k))
     else:
-        raise GenericError("No Songs Found")
+        raise GenericError("No Songs Found", code=100)
 
     return [song_link, extension]
 
@@ -297,7 +352,7 @@ async def get_files(sciBird, media_type, addOn=""):
         files_dir = os.listdir(directory)
         logger.info(directory)
         if not files_dir:
-            raise GenericError("No Files")
+            raise GenericError("No Files", code=100)
         return [f"{directory}{path}" for path in files_dir]
     except (FileNotFoundError, GenericError):
         logger.info("fetching files")
@@ -355,26 +410,13 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     elif bird == "Strix acio":
         bird = "Screech Owl"
     logger.info(f"getting file urls for {bird}")
-    taxon_code_url = TAXON_CODE_URL.format(
-        urllib.parse.quote(
-            bird.replace("-", " ").replace("'s", "")
-        )
-    )
-    async with session.get(taxon_code_url) as taxon_code_response:
-        if taxon_code_response.status != 200:
-            raise GenericError(f"An http error code of {taxon_code_response.status} occured" +
-                               f" while fetching {taxon_code_url} for a {'image'if media_type=='p' else 'song'} for {bird}")
-        taxon_code_data = await taxon_code_response.json()
-        try:
-            taxon_code = taxon_code_data[0]["code"]
-        except IndexError:
-            raise GenericError(f"No taxon code found for {bird}")
+    taxon_code = await get_taxon(bird, session)
     catalog_url = CATALOG_URL.format(
         taxon_code, COUNT, media_type, sex, age, sound_type)
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
             raise GenericError(f"An http error code of {catalog_response.status} occured " +
-                               f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}")
+                               f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}", code=201)
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
         urls = [data["mediaUrl"] for data in content]
