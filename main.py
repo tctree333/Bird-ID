@@ -32,6 +32,7 @@ from functions import channel_setup, precache
 
 BACKUPS_CHANNEL = 622547928946311188
 
+
 def start_precache():
     asyncio.run(precache())
 
@@ -55,7 +56,7 @@ if __name__ == '__main__':
 
     # Here we load our extensions(cogs) that are located in the cogs directory
     initial_extensions = ['cogs.get_birds', 'cogs.check',
-                          'cogs.skip', 'cogs.hint', 'cogs.score','cogs.state', 'cogs.other']
+                          'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.state', 'cogs.other']
     for extension in initial_extensions:
         try:
             bot.load_extension(extension)
@@ -81,9 +82,9 @@ if __name__ == '__main__':
         # code copied from @commands.bot_has_permissions(send_messages=True, embed_links=True, attach_files=True)
         if ctx.guild is not None:
             perms = {"send_messages": True,
-                    "embed_links": True, 
-                    "attach_files": True,
-                    "manage_roles": True}
+                     "embed_links": True,
+                     "attach_files": True,
+                     "manage_roles": True}
             guild = ctx.guild
             me = guild.me if guild is not None else ctx.bot.user
             permissions = ctx.channel.permissions_for(me)

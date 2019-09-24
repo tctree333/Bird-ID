@@ -14,15 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
 import discord
 import wikipedia
 from discord.ext import commands
-
-from data.data import (goatsuckers, sciGoat,
-                       birdListMaster, sciBirdListMaster, songBirdsMaster, sciSongBirdsMaster,
-                       database, logger)
-from functions import bird_setup, channel_setup, spellcheck, user_setup
+from data.data import goatsuckers, sciGoat, database, logger
+from functions import bird_setup, channel_setup, spellcheck, user_setup, get_sciname
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690]
@@ -40,13 +36,13 @@ class Check(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
-        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
+        currentBird = str(database.hget(
+            f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
             await bird_setup(currentBird)
-            index = birdListMaster.index(currentBird)
-            sciBird = sciBirdListMaster[index]
+            sciBird = await get_sciname(currentBird)
             database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
             database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
             if spellcheck(arg, currentBird) is True or spellcheck(
@@ -87,7 +83,8 @@ class Check(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
+        currentBird = str(database.hget(
+            f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
@@ -134,13 +131,13 @@ class Check(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentSongBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
+        currentSongBird = str(database.hget(
+            f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
         if currentSongBird == "":  # no bird
             await ctx.send("You must ask for a bird call first!")
         else:  # if there is a bird, it checks answer
             await bird_setup(currentSongBird)
-            index = songBirdsMaster.index(currentSongBird)
-            sciBird = sciSongBirdsMaster[index]
+            sciBird = await get_sciname(currentSongBird)
             database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
             database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
             if spellcheck(arg, currentSongBird) is True or spellcheck(

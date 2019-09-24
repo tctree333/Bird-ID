@@ -33,7 +33,8 @@ class Hint(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
+        currentBird = str(database.hget(
+            f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
         if currentBird != "":  # check if there is bird
             await ctx.send(f"The first letter is {currentBird[0]}")
         else:
@@ -49,7 +50,8 @@ class Hint(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
+        currentBird = str(database.hget(
+            f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
         if currentBird != "":  # check if there is bird
             await ctx.send(f"The first letter is {currentBird[0]}")
         else:
@@ -65,7 +67,8 @@ class Hint(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentSongBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
+        currentSongBird = str(database.hget(
+            f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
         if currentSongBird != "":  # check if there is bird
             await ctx.send(f"The first letter is {currentSongBird[0]}")
         else:

@@ -15,10 +15,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import typing
-
 import discord
 from discord.ext import commands
-
 from data.data import database, logger
 from functions import channel_setup, user_setup
 

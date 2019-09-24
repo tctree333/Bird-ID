@@ -16,7 +16,6 @@
 
 import wikipedia
 from discord.ext import commands
-
 from data.data import database, logger
 from functions import channel_setup, user_setup
 
@@ -35,7 +34,8 @@ class Skip(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
+        currentBird = str(database.hget(
+            f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
         database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
         database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
         if currentBird != "":  # check if there is bird
@@ -56,7 +56,8 @@ class Skip(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
+        currentBird = str(database.hget(
+            f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
         database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
         database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
         if currentBird != "":  # check if there is bird
@@ -77,7 +78,8 @@ class Skip(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentSongBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
+        currentSongBird = str(database.hget(
+            f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
         database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
         database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
         if currentSongBird != "":  # check if there is bird

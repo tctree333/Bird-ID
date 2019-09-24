@@ -90,13 +90,19 @@ sys.excepthook = handle_exception
 
 
 class GenericError(commands.CommandError):
-    def __init__(self, message=None):
+    def __init__(self, message=None, code=0):
+        self.code = code
         super().__init__(message=message)
+
+# Error codes: (can add more if needed)
+# 0 - no code
+# 111 - Index Error
+# 201 - HTTP Error
+# 999 - Invalid
+# 100 - Blank
 
 
 # Lists of birds, memes, and other info
-
-
 goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
 sciGoat = ["Nyctidromus albicollis",
            "Antrostomus carolinensis", "Antrostomus vociferus"]
@@ -146,9 +152,9 @@ def _state_lists():
 
 def _all_birds():
     lists = [birdList, sciBirdList,
-                 songBirds, sciSongBirds]
+             songBirds, sciSongBirds]
     list_names = ["birdList", "sciBirdList",
-                 "songBirds", "sciSongBirds"]
+                  "songBirds", "sciSongBirds"]
     master_lists = []
     for bird_list in lists:
         birds = []
@@ -163,9 +169,12 @@ def _all_birds():
     logger.info("Done with master lists!")
     return master_lists
 
+
 # pylint disable: unbalanced-tuple-unpacking
 birdList, sciBirdList, memeList, songBirds, sciSongBirds = _nats_lists()
 states = _state_lists()
 birdListMaster, sciBirdListMaster, songBirdsMaster, sciSongBirdsMaster = _all_birds()
-logger.info(f"National Lengths: {len(birdList)}, {len(sciBirdList)}, {len(songBirds)}, {len(sciSongBirds)}")
-logger.info(f"Master Lengths: {len(birdListMaster)}, {len(sciBirdListMaster)}, {len(songBirdsMaster)}, {len(sciSongBirdsMaster)}")
+logger.info(
+    f"National Lengths: {len(birdList)}, {len(sciBirdList)}, {len(songBirds)}, {len(sciSongBirds)}")
+logger.info(
+    f"Master Lengths: {len(birdListMaster)}, {len(sciBirdListMaster)}, {len(songBirdsMaster)}, {len(sciSongBirdsMaster)}")

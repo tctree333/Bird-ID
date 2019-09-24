@@ -42,7 +42,7 @@ class States(commands.Cog):
             await ctx.send(f"Sorry, not a valid state.\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`")
 
         elif len(set(roles + states[arg]["aliases"]) -
-                 set(roles).symmetric_difference(set(states[arg]["aliases"]))) is 0: # gets similarities
+                 set(roles).symmetric_difference(set(states[arg]["aliases"]))) is 0:  # gets similarities
             # need to add roles (does not have role)
             logger.info("add roles")
             raw_roles = ctx.guild.roles
@@ -98,11 +98,10 @@ class States(commands.Cog):
         else:
             logger.info("deleting role")
             index = user_role_names.index(
-                    states[arg]["aliases"][0].lower())
+                states[arg]["aliases"][0].lower())
             role = ctx.guild.get_role(user_role_ids[index])
             await ctx.author.remove_roles(role, reason="Delete state role for bird list")
             await ctx.send("**Ok, deleted!**")
-
 
     @set.error
     async def set_error(self, ctx, error):
