@@ -90,8 +90,8 @@ class Birds(commands.Cog):
             prevB = str(database.hget(f"channel:{str(ctx.channel.id)}", "prevB"))[2:-1]
             while currentBird == prevB:
                 currentBird = birds[randint(0, len(birds) - 1)]
-            database.hget(f"channel:{str(ctx.channel.id)}", "prevB", str(currentBird))
-            database.hget(f"channel:{str(ctx.channel.id)}", "bird", str(currentBird))
+            database.hset(f"channel:{str(ctx.channel.id)}", "prevB", str(currentBird))
+            database.hset(f"channel:{str(ctx.channel.id)}", "bird", str(currentBird))
             logger.info("currentBird: " + str(currentBird))
             await send_bird(
                 ctx,
@@ -181,7 +181,7 @@ class Birds(commands.Cog):
         else:
             await send_birdsong(
                 ctx,
-                str(database.hget(f"channel:{str(ctx.channel.id)}", "answered"))[2:-1],
+                str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1],
                 on_error=error_skip_song,
                 message=SONG_MESSAGE
             )
