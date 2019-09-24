@@ -35,9 +35,9 @@ class Skip(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentBird = str(database.lindex(str(ctx.channel.id), 0))[2:-1]
-        database.lset(str(ctx.channel.id), 0, "")
-        database.lset(str(ctx.channel.id), 1, "1")
+        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
+        database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
+        database.hset(f"channel:{str(ctx.channel.id)}" "answered", "1")
         if currentBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentBird} (bird)")
             await ctx.send(
@@ -56,9 +56,9 @@ class Skip(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentBird = str(database.lindex(str(ctx.channel.id), 5))[2:-1]
-        database.lset(str(ctx.channel.id), 5, "")
-        database.lset(str(ctx.channel.id), 6, "1")
+        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
+        database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
+        database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
         if currentBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentBird} (bird)")
             await ctx.send(
@@ -77,8 +77,9 @@ class Skip(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        database.lset(str(ctx.channel.id), 3, "1")
-        currentSongBird = str(database.lindex(str(ctx.channel.id), 2))[2:-1]
+        currentSongBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
+        database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
+        database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
         if currentSongBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentSongBird} (bird)")
             await ctx.send(

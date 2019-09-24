@@ -40,15 +40,15 @@ class Check(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
-        currentBird = str(database.lindex(str(ctx.channel.id), 0))[2:-1]
+        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
             await bird_setup(currentBird)
             index = birdListMaster.index(currentBird)
             sciBird = sciBirdListMaster[index]
-            database.lset(str(ctx.channel.id), 0, "")
-            database.lset(str(ctx.channel.id), 1, "1")
+            database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
+            database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
             if spellcheck(arg, currentBird) is True or spellcheck(
                     arg, sciBird) is True:
                 await ctx.send("Correct! Good job!")
@@ -87,15 +87,15 @@ class Check(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentBird = str(database.lindex(str(ctx.channel.id), 5))[2:-1]
+        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
             await bird_setup(currentBird)
             index = goatsuckers.index(currentBird)
             sciBird = sciGoat[index]
-            database.lset(str(ctx.channel.id), 6, "1")
-            database.lset(str(ctx.channel.id), 5, "")
+            database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
+            database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
             if spellcheck(arg, currentBird) is True or spellcheck(
                     arg, sciBird) is True:
                 await ctx.send("Correct! Good job!")
@@ -134,15 +134,15 @@ class Check(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentSongBird = str(database.lindex(str(ctx.channel.id), 2))[2:-1]
+        currentSongBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
         if currentSongBird == "":  # no bird
             await ctx.send("You must ask for a bird call first!")
         else:  # if there is a bird, it checks answer
             await bird_setup(currentSongBird)
             index = songBirdsMaster.index(currentSongBird)
             sciBird = sciSongBirdsMaster[index]
-            database.lset(str(ctx.channel.id), 2, "")
-            database.lset(str(ctx.channel.id), 3, "1")
+            database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
+            database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
             if spellcheck(arg, currentSongBird) is True or spellcheck(
                     arg, sciBird) is True:
 

@@ -43,13 +43,15 @@ valid_audio_extensions = {"mp3", "wav", "ogg", "m4a"}
 
 # sets up new channel
 async def channel_setup(ctx):
-    if database.exists(str(ctx.channel.id)):
+    if database.exists(f"channel:{str(ctx.channel.id)}"):
         return
     else:
         # ['prevS', 'prevB', 'prevJ', 'goatsucker answered', 'goatsucker',
         #  'totalCorrect', 'songanswered', 'songbird', 'answered', 'bird']
-        database.lpush(str(ctx.channel.id), "20", "", "", "20", "1", "", "0", "1",
-                       "", "1", "")
+        database.hmset(f"channel:{str(ctx.channel.id)}", 
+                    {"bird":"", "answered":1, "sBird":"", "sAnswered":1,
+                     "goatsucker":"", "gsAnswered":1,
+                     "prevJ":20, "prevB":"", "prevS":"", "prevK":20})
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
         await ctx.send("Ok, setup! I'm all ready to use!")
 
@@ -74,20 +76,20 @@ async def bird_setup(bird):
 # Function to run on error
 def error_skip(ctx):
     logger.info("ok")
-    database.lset(str(ctx.channel.id), 0, "")
-    database.lset(str(ctx.channel.id), 1, "1")
+    database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
+    database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
 
 
 def error_skip_song(ctx):
     logger.info("ok")
-    database.lset(str(ctx.channel.id), 2, "")
-    database.lset(str(ctx.channel.id), 3, "1")
+    database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
+    database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
 
 
 def error_skip_goat(ctx):
     logger.info("ok")
-    database.lset(str(ctx.channel.id), 5, "")
-    database.lset(str(ctx.channel.id), 6, "1")
+    database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
+    database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
 
 
 def check_state_role(ctx):
@@ -221,7 +223,7 @@ async def get_image(ctx, bird, addOn=None):
         sciBird = bird
     images = await get_files(sciBird, "images", addOn)
     logger.info("images: " + str(images))
-    prevJ = int(str(database.lindex(str(ctx.channel.id), 7))[2:-1])
+    prevJ = int(str(database.hget(f"channel:{str(ctx.channel.id)}", "prevJ"))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if images:
         j = (prevJ + 1) % len(images)
@@ -242,7 +244,7 @@ async def get_image(ctx, bird, addOn=None):
                 j = (j + 1) % (len(images))
                 raise GenericError("No Valid Images Found")
 
-        database.lset(str(ctx.channel.id), 7, str(j))
+        database.hset(f"channel:{str(ctx.channel.id)}", "prevJ", str(j))
     else:
         raise GenericError("No Images Found")
 
@@ -259,7 +261,7 @@ async def get_song(ctx, bird):
         sciBird = bird
     songs = await get_files(sciBird, "songs")
     logger.info("songs: " + str(songs))
-    prevK = int(str(database.lindex(str(ctx.channel.id), 10))[2:-1])
+    prevK = int(str(database.hget(f"channel:{str(ctx.channel.id)}", "prevK"))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if songs:
         k = (prevK + 1) % len(songs)
@@ -280,7 +282,7 @@ async def get_song(ctx, bird):
                 k = (k + 1) % (len(songs))
                 raise GenericError("No Valid Songs Found")
 
-        database.lset(str(ctx.channel.id), 7, str(k))
+        database.hset(f"channel:{str(ctx.channel.id)}", "prevK", str(k))
     else:
         raise GenericError("No Songs Found")
 

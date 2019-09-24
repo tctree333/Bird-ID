@@ -37,6 +37,12 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 #                     prevJ, prevB, prevS, prevK]
 # }
 
+# server format = {
+# ctx.channel.id : { "bird", "answered", "sBird", "sAnswered",
+#                     "goatsucker", "gsAnswered",
+#                     "prevJ", "prevB", "prevS", "prevK" }
+# }
+
 # user format = {
 # "users":[user id, # of correct]
 # }

@@ -67,14 +67,14 @@ class Birds(commands.Cog):
             bw = False
 
         logger.info(
-            "bird: " + str(database.lindex(str(ctx.channel.id), 0))[2:-1])
+            "bird: " + str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1])
         logger.info("answered: " +
-                    str(int(database.lindex(str(ctx.channel.id), 1))))
+                    str(int(database.hget(f"channel:{str(ctx.channel.id)}", "answered"))))
 
-        answered = int(database.lindex(str(ctx.channel.id), 1))
+        answered = int(database.hget(f"channel:{str(ctx.channel.id)}", "answered"))
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
-            database.lset(str(ctx.channel.id), 1, "0")
+            database.hset(f"channel:{str(ctx.channel.id)}", "answered", "0")
 
             roles = check_state_role(ctx)
             birds = []
@@ -87,11 +87,11 @@ class Birds(commands.Cog):
             print(list(set(birds).symmetric_difference(set(birdList))))
 
             currentBird = birds[randint(0, len(birds) - 1)]
-            prevB = str(database.lindex(str(ctx.channel.id), 8))[2:-1]
+            prevB = str(database.hget(f"channel:{str(ctx.channel.id)}", "prevB"))[2:-1]
             while currentBird == prevB:
                 currentBird = birds[randint(0, len(birds) - 1)]
-            database.lset(str(ctx.channel.id), 8, str(currentBird))
-            database.lset(str(ctx.channel.id), 0, str(currentBird))
+            database.hget(f"channel:{str(ctx.channel.id)}", "prevB", str(currentBird))
+            database.hget(f"channel:{str(ctx.channel.id)}", "bird", str(currentBird))
             logger.info("currentBird: " + str(currentBird))
             await send_bird(
                 ctx,
@@ -103,7 +103,7 @@ class Birds(commands.Cog):
         else:  # if no, give the same bird
             await send_bird(
                 ctx,
-                str(database.lindex(str(ctx.channel.id), 0))[2:-1],
+                str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1],
                 on_error=error_skip,
                 message=BIRD_MESSAGE,
                 addOn=add_on,
@@ -118,12 +118,12 @@ class Birds(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        answered = int(database.lindex(str(ctx.channel.id), 6))
+        answered = int(database.hget(f"channel:{str(ctx.channel.id)}", "gsAnswered"))
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
-            database.lset(str(ctx.channel.id), 6, "0")
+            database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "0")
             currentBird = goatsuckers[randint(0, 2)]
-            database.lset(str(ctx.channel.id), 5, str(currentBird))
+            database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", str(currentBird))
             logger.info("currentBird: " + str(currentBird))
             await send_bird(
                 ctx,
@@ -134,11 +134,10 @@ class Birds(commands.Cog):
         else:  # if no, give the same bird
             await send_bird(
                 ctx,
-                str(database.lindex(str(ctx.channel.id), 5))[2:-1],
+                str(database.hget(f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1],
                 on_error=error_skip_goat,
                 message=GS_MESSAGE
             )
-            database.lset(str(ctx.channel.id), 6, "0")
 
     # picks a random bird call to send
     @commands.command(help="- Sends a bird call to ID", aliases=["s"])
@@ -150,11 +149,11 @@ class Birds(commands.Cog):
         await user_setup(ctx)
 
         logger.info(
-            "bird: " + str(database.lindex(str(ctx.channel.id), 2))[2:-1])
+            "bird: " + str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1])
         logger.info("answered: " +
-                    str(int(database.lindex(str(ctx.channel.id), 3))))
+                    str(int(database.hget(f"channel:{str(ctx.channel.id)}", "sAnswered"))))
 
-        songAnswered = int(database.lindex(str(ctx.channel.id), 3))
+        songAnswered = int(database.hget(f"channel:{str(ctx.channel.id)}", "sAnswered"))
         # check to see if previous bird was answered
         if songAnswered:  # if yes, give a new bird
             roles = check_state_role(ctx)
@@ -166,11 +165,11 @@ class Birds(commands.Cog):
                 birds = list(set(birds))
 
             currentSongBird = birds[randint(0, len(birds) - 1)]
-            prevS = str(database.lindex(str(ctx.channel.id), 9))[2:-1]
+            prevS = str(database.hget(f"channel:{str(ctx.channel.id)}", "prevS"))[2:-1]
             while currentSongBird == prevS:
                 currentSongBird = birds[randint(0, len(birds) - 1)]
-            database.lset(str(ctx.channel.id), 9, str(currentSongBird))
-            database.lset(str(ctx.channel.id), 2, str(currentSongBird))
+            database.hset(f"channel:{str(ctx.channel.id)}", "prevS", str(currentSongBird))
+            database.hset(f"channel:{str(ctx.channel.id)}", "sBird", str(currentSongBird))
             logger.info("currentSongBird: " + str(currentSongBird))
             await send_birdsong(
                 ctx,
@@ -178,11 +177,11 @@ class Birds(commands.Cog):
                 on_error=error_skip_song,
                 message=SONG_MESSAGE
             )
-            database.lset(str(ctx.channel.id), 3, "0")
+            database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "0")
         else:
             await send_birdsong(
                 ctx,
-                str(database.lindex(str(ctx.channel.id), 2))[2:-1],
+                str(database.hget(f"channel:{str(ctx.channel.id)}", "answered"))[2:-1],
                 on_error=error_skip_song,
                 message=SONG_MESSAGE
             )

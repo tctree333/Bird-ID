@@ -139,7 +139,7 @@ if __name__ == '__main__':
 
         elif isinstance(error, commands.CommandInvokeError):
             if isinstance(error.original, redis.exceptions.ResponseError):
-                if database.exists(str(ctx.channel.id)):
+                if database.exists(f"channel:{str(ctx.channel.id)}"):
                     await ctx.send("""**An unexpected ResponseError has occurred.**
 *Please log this message in #support in the support server below, or try again.*
 **Error:** """ + str(error))
