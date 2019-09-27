@@ -19,6 +19,7 @@ import discord
 import eyed3
 import asyncio
 import contextlib
+import difflib
 import os
 import urllib.parse
 from PIL import Image
@@ -474,28 +475,11 @@ async def precache():
 
 
 # spellcheck - allows one letter off/extra
-def spellcheck(worda, wordb):
+def spellcheck(worda, wordb, cutoff=4):
     worda = worda.lower().replace("-", " ").replace("'", "")
     wordb = wordb.lower().replace("-", " ").replace("'", "")
     wrongcount = 0
     if worda != wordb:
-        if len(worda) != len(wordb):
-            list1 = list(worda)
-            list2 = list(wordb)
-            longerword = max(list1, list2, key=len)
-            shorterword = min(list1, list2, key=len)
-            if abs(len(longerword) - len(shorterword)) > 1:
-                return False
-            else:
-                for i in range(len(shorterword)):
-                    try:
-                        if longerword[i] != shorterword[i]:
-                            wrongcount += 1
-                            del longerword[i]
-                    except IndexError:
-                        wrongcount = 100
-        else:
-            wrongcount = sum(x != y for x, y in zip(worda, wordb))
-        return wrongcount <= 1
-    else:
-        return True
+        if len(list(difflib.Differ().compare(worda, wordb)))-len(wordb) >= cutoff:
+            return False
+    return True
