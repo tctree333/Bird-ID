@@ -77,13 +77,13 @@ class Birds(commands.Cog):
 
             roles = check_state_role(ctx)
             birds = []
-            birds += birdList
             if roles:
                 for state in roles:
                     birds += states[state]["birdList"]
                 birds = list(set(birds))
+            else:
+                birds += birdList
             logger.info(f"number of birds: {len(birds)}")
-            print(list(set(birds).symmetric_difference(set(birdList))))
 
             currentBird = birds[randint(0, len(birds) - 1)]
             prevB = str(database.hget(
@@ -165,11 +165,13 @@ class Birds(commands.Cog):
         if songAnswered:  # if yes, give a new bird
             roles = check_state_role(ctx)
             birds = []
-            birds += songBirds
             if roles:
                 for state in roles:
                     birds += states[state]["songBirds"]
                 birds = list(set(birds))
+            else:
+                birds += songBirds
+            logger.info(f"number of birds: {len(birds)}")
 
             currentSongBird = birds[randint(0, len(birds) - 1)]
             prevS = str(database.hget(

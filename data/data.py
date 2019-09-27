@@ -116,7 +116,8 @@ def _nats_lists():
     for filename in filenames:
         logger.info(f"Working on {filename}")
         with open(f'data/{filename}.txt', 'r') as f:
-            lists.append([line.strip() for line in f])
+            lists.append([line.strip().replace(
+                "-", " ").replace("'", "").title() for line in f])
         logger.info(f"Done with {filename}")
     logger.info("Done with nats list!")
     return lists
@@ -132,6 +133,10 @@ def _nats_lists():
 #               }
 #          }
 
+# state birds are picked from state/[state]/birdList or songBirds
+# sci lists are only for new, state specific birds
+# either lists can be in any order
+
 def _state_lists():
     filenames = ("birdList", "sciBirdList", "aliases",
                  "songBirds", "sciSongBirds")
@@ -143,7 +148,10 @@ def _state_lists():
         for filename in filenames:
             logger.info(f"Working on {filename}")
             with open(f'data/state/{state}/{filename}.txt', 'r') as f:
-                states[state][filename] = [line.strip() for line in f]
+                states[state][filename] = [line.strip().replace("-", " ").replace("'", "").title()
+                                           if filename is not "aliases"
+                                           else line.strip().replace("-", " ").replace("'", "")
+                                           for line in f]
             logger.info(f"Done with {filename}")
         logger.info(f"Done with {state}")
     logger.info("Done with states list!")
@@ -163,8 +171,8 @@ def _all_birds():
 
         for state in list(states.keys()):
             birds += states[state][list_names[lists.index(bird_list)]]
-            master_lists.append(birds)
 
+        master_lists.append(list(set(birds)))
         logger.info(f"Done with {list_names[lists.index(bird_list)]}")
     logger.info("Done with master lists!")
     return master_lists
