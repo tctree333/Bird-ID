@@ -41,8 +41,7 @@ class States(commands.Cog):
             logger.info("invalid state")
             await ctx.send(f"Sorry, not a valid state.\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`")
 
-        elif len(set(roles + states[arg]["aliases"]) -
-                 set(roles).symmetric_difference(set(states[arg]["aliases"]))) is 0:  # gets similarities
+        elif len(set(roles).intersection(set(states[arg]["aliases"]))) is 0:  # gets similarities
             # need to add roles (does not have role)
             logger.info("add roles")
             raw_roles = ctx.guild.roles

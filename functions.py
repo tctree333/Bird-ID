@@ -47,8 +47,6 @@ async def channel_setup(ctx):
     if database.exists(f"channel:{str(ctx.channel.id)}"):
         return
     else:
-        # ['prevS', 'prevB', 'prevJ', 'goatsucker answered', 'goatsucker',
-        #  'totalCorrect', 'songanswered', 'songbird', 'answered', 'bird']
         database.hmset(f"channel:{str(ctx.channel.id)}",
                        {"bird": "", "answered": 1, "sBird": "", "sAnswered": 1,
                         "goatsucker": "", "gsAnswered": 1,
@@ -99,8 +97,7 @@ def check_state_role(ctx):
     if ctx.guild is not None:
         user_role_names = [role.name.lower() for role in ctx.author.roles]
         for state in list(states.keys()):
-            if len(set(user_role_names + states[state]["aliases"]) -
-                   set(user_role_names).symmetric_difference(set(states[state]["aliases"]))) is not 0:  # gets similarities
+            if len(set(user_role_names).interesection(set(states[state]["aliases"]))) is not 0:  # gets similarities
                 user_states.append(state)
     logger.info(f"user roles: {user_states}")
     return user_states
@@ -133,9 +130,8 @@ async def get_sciname(bird, session=None):
     logger.info(f"sciname: {sciname}")
     return sciname
 
+
 # fetch taxonomic code from common/scientific name
-
-
 async def get_taxon(bird, session=None):
     logger.info(f"getting taxon code for {bird}")
     async with contextlib.AsyncExitStack() as stack:
@@ -168,14 +164,13 @@ def _black_and_white(input_image_path):
     final_buffer.seek(0)
     return final_buffer
 
+
 # Gets a bird picture and sends it to user:
 # ctx - context for message (discord thing)
 # bird - bird picture to send (str)
 # on_error - function to run when an error occurs (function)
 # message - text message to send before bird picture (str)
 # addOn - string to append to search for female/juvenile birds (str)
-
-
 async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
     if bird == "":
         logger.error("error - bird is blank")
