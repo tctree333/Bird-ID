@@ -152,7 +152,9 @@ async def get_taxon(bird, session=None):
                                    f" while fetching {taxon_code_url} for {bird}", code=201)
             taxon_code_data = await taxon_code_response.json()
             try:
+                logger.info(f"raw data: {taxon_code_data}")
                 taxon_code = taxon_code_data[0]["code"]
+                logger.info(f"first item: {taxon_code_data[0]}")
             except IndexError:
                 raise GenericError(f"No taxon code found for {bird}", code=111)
     logger.info(f"taxon code: {taxon_code}")
