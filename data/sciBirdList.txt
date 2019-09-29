@@ -42,7 +42,7 @@ Cathartes aura
 Gymnogyps californianus
 Rallus crepitans
 Porzana carolina
-Porphyrio martinicus
+Porphyrio martinica
 Fulica americana
 Grus americana
 Pluvialis dominica
@@ -73,7 +73,7 @@ Tyto alba
 Bubo virginianus
 Bubo scandiacus
 Strix varia
-Strix acio
+Megascops asio
 Antrostomus carolinensis
 Chordeiles minor
 Chaetura pelagica
