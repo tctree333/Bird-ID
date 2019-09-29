@@ -108,7 +108,7 @@ def check_state_role(ctx):
 
 # fetch scientific name from common name or taxon code
 async def get_sciname(bird, session=None):
-    logger.info("getting sciname")
+    logger.info(f"getting sciname for {bird}")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
             session = await stack.enter_async_context(aiohttp.ClientSession())
@@ -130,13 +130,14 @@ async def get_sciname(bird, session=None):
                 sciname = sciname_data[0]["sciName"]
             except IndexError:
                 raise GenericError(f"No sciname found for {code}", code=111)
+    logger.info(f"sciname: {sciname}")
     return sciname
 
 # fetch taxonomic code from common/scientific name
 
 
 async def get_taxon(bird, session=None):
-    logger.info("getting taxon code")
+    logger.info(f"getting taxon code for {bird}")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
             session = await stack.enter_async_context(aiohttp.ClientSession())
@@ -154,10 +155,12 @@ async def get_taxon(bird, session=None):
                 taxon_code = taxon_code_data[0]["code"]
             except IndexError:
                 raise GenericError(f"No taxon code found for {bird}", code=111)
+    logger.info(f"taxon code: {taxon_code}")
     return taxon_code
 
 
 def _black_and_white(input_image_path):
+    logger.info("black and white")
     with Image.open(input_image_path) as color_image:
         bw = color_image.convert('L')
         final_buffer = BytesIO()
@@ -391,6 +394,7 @@ async def download_media(bird, media_type, addOn="", directory=None, session=Non
         paths = [f"{directory}{i}" for i in range(len(urls))]
         filenames = await asyncio.gather(*(_download_helper(path, url, session) for path, url in zip(paths, urls)))
         logger.info(f"downloaded {media_type} for {bird}")
+        logger.info(f"filenames: {filenames}")
         return filenames
 
 
@@ -405,11 +409,6 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     return is list of urls. some urls may return an error code of 476(because it is still being processed);
         if so, ignore that url.
     """
-    # fix labeling issues in the library and on the list
-    if bird == "Porphyrio martinicus":
-        bird = "Porphyrio martinica"
-    elif bird == "Strix acio":
-        bird = "Screech Owl"
     logger.info(f"getting file urls for {bird}")
     taxon_code = await get_taxon(bird, session)
     catalog_url = CATALOG_URL.format(
@@ -478,8 +477,9 @@ async def precache():
 def spellcheck(worda, wordb, cutoff=4):
     worda = worda.lower().replace("-", " ").replace("'", "")
     wordb = wordb.lower().replace("-", " ").replace("'", "")
+    shorterword = min(worda, wordb, key=len)
     wrongcount = 0
     if worda != wordb:
-        if len(list(difflib.Differ().compare(worda, wordb)))-len(wordb) >= cutoff:
+        if len(list(difflib.Differ().compare(worda, wordb)))-len(shorterword) >= cutoff:
             return False
     return True
