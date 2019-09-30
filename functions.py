@@ -438,14 +438,20 @@ async def _download_helper(path, url, session):
             content_type = response.headers['content-type'].partition(';')[
                 0].strip()
             if content_type.partition("/")[0] == "image":
-                ext = "." + \
-                    (set(ext[1:] for ext in guess_all_extensions(
-                        content_type)) & valid_image_extensions).pop()
+                try:
+                    ext = "." + \
+                        (set(ext[1:] for ext in guess_all_extensions(
+                            content_type)) & valid_image_extensions).pop()
+                except KeyError:
+                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
 
             elif content_type.partition("/")[0] == "audio":
-                ext = "." + \
-                    (set(ext[1:] for ext in guess_all_extensions(
-                        content_type)) & valid_audio_extensions).pop()
+                try:
+                    ext = "." + \
+                        (set(ext[1:] for ext in guess_all_extensions(
+                            content_type)) & valid_audio_extensions).pop()
+                except KeyError:
+                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
 
             else:
                 ext = guess_extension(content_type)
