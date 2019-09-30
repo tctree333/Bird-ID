@@ -151,6 +151,16 @@ async def get_taxon(bird, session=None):
                 logger.info(f"raw data: {taxon_code_data}")
                 taxon_code = taxon_code_data[0]["code"]
                 logger.info(f"first item: {taxon_code_data[0]}")
+                if len(taxon_code_data) > 1:
+                    logger.info("entering check")
+                    for item in taxon_code_data:
+                        logger.info(f"checking: {item}")
+                        if spellcheck(item["name"].split(" - ")[0], bird, 6
+                                      ) or spellcheck(item["name"].split(" - ")[1], bird, 6):
+                            logger.info("ok")
+                            taxon_code = item["code"]
+                            break
+                        logger.info("fail")
             except IndexError:
                 raise GenericError(f"No taxon code found for {bird}", code=111)
     logger.info(f"taxon code: {taxon_code}")
