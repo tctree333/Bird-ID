@@ -117,7 +117,7 @@ def _nats_lists():
         logger.info(f"Working on {filename}")
         with open(f'data/{filename}.txt', 'r') as f:
             lists.append([line.strip().replace(
-                "-", " ").replace("'", "").title() for line in f])
+                "-", " ").title() for line in f])
         logger.info(f"Done with {filename}")
     logger.info("Done with nats list!")
     return lists
@@ -148,9 +148,9 @@ def _state_lists():
         for filename in filenames:
             logger.info(f"Working on {filename}")
             with open(f'data/state/{state}/{filename}.txt', 'r') as f:
-                states[state][filename] = [line.strip().replace("-", " ").replace("'", "").title()
+                states[state][filename] = [line.strip().replace("-", " ").title()
                                            if filename is not "aliases"
-                                           else line.strip().replace("-", " ").replace("'", "")
+                                           else line.strip()
                                            for line in f]
             logger.info(f"Done with {filename}")
         logger.info(f"Done with {state}")
