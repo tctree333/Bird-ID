@@ -21,6 +21,7 @@ import asyncio
 import contextlib
 import difflib
 import os
+import string
 import urllib.parse
 from PIL import Image
 from io import BytesIO
@@ -66,10 +67,10 @@ async def user_setup(ctx):
 
 # sets up new birds
 async def bird_setup(bird):
-    if database.zscore("incorrect", str(bird).title()) is not None:
+    if database.zscore("incorrect", string.capwords(str(bird))) is not None:
         return
     else:
-        database.zadd("incorrect", {str(bird).title(): 0})
+        database.zadd("incorrect", {string.capwords(str(bird)): 0})
 
 
 # Function to run on error

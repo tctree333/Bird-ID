@@ -16,6 +16,7 @@
 
 from functions import channel_setup, user_setup
 from discord.ext import commands
+import string
 import discord
 from data.data import states, database, logger
 
@@ -57,7 +58,7 @@ class States(commands.Cog):
             else:
                 # create role
                 logger.info("creating role")
-                role = await ctx.guild.create_role(name=states[arg]["aliases"][0].title(),
+                role = await ctx.guild.create_role(name=string.capwords(states[arg]["aliases"][0]),
                                                    permissions=discord.Permissions.none(),
                                                    hoist=False,
                                                    mentionable=False,

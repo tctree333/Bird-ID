@@ -19,6 +19,7 @@ import logging.handlers
 import os
 import sys
 import redis
+import string
 from discord.ext import commands
 
 # define database for one connection
@@ -116,8 +117,8 @@ def _nats_lists():
     for filename in filenames:
         logger.info(f"Working on {filename}")
         with open(f'data/{filename}.txt', 'r') as f:
-            lists.append([line.strip().replace(
-                "-", " ").title() for line in f])
+            lists.append([string.capwords(line.strip().replace(
+                "-", " ")) for line in f])
         logger.info(f"Done with {filename}")
     logger.info("Done with nats list!")
     return lists
@@ -148,7 +149,7 @@ def _state_lists():
         for filename in filenames:
             logger.info(f"Working on {filename}")
             with open(f'data/state/{state}/{filename}.txt', 'r') as f:
-                states[state][filename] = [line.strip().replace("-", " ").title()
+                states[state][filename] = [string.capwords(line.strip().replace("-", " "))
                                            if filename is not "aliases"
                                            else line.strip()
                                            for line in f]
