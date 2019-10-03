@@ -40,7 +40,7 @@ COUNT = 20  # set this to include a margin of error in case some urls throw erro
 
 # Valid file types
 valid_image_extensions = {"jpg", "png", "jpeg", "gif"}
-valid_audio_extensions = {"mp3", "wav", "ogg", "m4a"}
+valid_audio_extensions = {"mp3"}
 
 
 # sets up new channel
@@ -96,10 +96,13 @@ def check_state_role(ctx):
     logger.info("checking roles")
     user_states = []
     if ctx.guild is not None:
+        logger.info("server context")
         user_role_names = [role.name.lower() for role in ctx.author.roles]
         for state in list(states.keys()):
             if len(set(user_role_names).intersection(set(states[state]["aliases"]))) is not 0:  # gets similarities
                 user_states.append(state)
+    else:
+        logger.info("dm context")
     logger.info(f"user roles: {user_states}")
     return user_states
 
@@ -176,6 +179,13 @@ def _black_and_white(input_image_path):
         bw.save(final_buffer, "png")
     final_buffer.seek(0)
     return final_buffer
+
+
+def session_increment(ctx, item, amount):
+    logger.info(f"incrementing {item} by {amount}")
+    value = int(database.hget(f"session.data:{ctx.author.id}", item))
+    value += int(amount)
+    database.hset(f"session.data:{ctx.author.id}", item, str(value))
 
 
 # Gets a bird picture and sends it to user:

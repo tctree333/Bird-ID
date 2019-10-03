@@ -18,7 +18,8 @@ import discord
 import wikipedia
 from discord.ext import commands
 from data.data import goatsuckers, sciGoat, database, logger
-from functions import bird_setup, channel_setup, spellcheck, user_setup, get_sciname
+from functions import (bird_setup, channel_setup, spellcheck,
+                       user_setup, get_sciname, session_increment)
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690]
@@ -47,6 +48,12 @@ class Check(commands.Cog):
             database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
             if spellcheck(arg, currentBird) is True or spellcheck(
                     arg, sciBird) is True:
+                logger.info("correct")
+
+                if database.exists(f"session.data:{ctx.author.id}"):
+                    logger.info("session active")
+                    session_increment(ctx, "correct", 1)
+
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
@@ -66,6 +73,12 @@ class Check(commands.Cog):
                             file=discord.File(img, filename="award.png"))
 
             else:
+                logger.info("incorrect")
+
+                if database.exists(f"session.data:{ctx.author.id}"):
+                    logger.info("session active")
+                    session_increment(ctx, "incorrect", 1)
+
                 database.zincrby("incorrect", 1, str(currentBird))
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(f"{currentBird} (bird)")
@@ -95,6 +108,12 @@ class Check(commands.Cog):
             database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
             if spellcheck(arg, currentBird) is True or spellcheck(
                     arg, sciBird) is True:
+                logger.info("correct")
+
+                if database.exists(f"session.data:{ctx.author.id}"):
+                    logger.info("session active")
+                    session_increment(ctx, "correct", 1)
+
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
@@ -114,6 +133,12 @@ class Check(commands.Cog):
                             file=discord.File(img, filename="award.png"))
 
             else:
+                logger.info("incorrect")
+
+                if database.exists(f"session.data:{ctx.author.id}"):
+                    logger.info("session active")
+                    session_increment(ctx, "incorrect", 1)
+
                 database.zincrby("incorrect", 1, str(currentBird))
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(f"{currentBird} (bird)")
@@ -142,6 +167,11 @@ class Check(commands.Cog):
             database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
             if spellcheck(arg, currentSongBird) is True or spellcheck(
                     arg, sciBird) is True:
+                logger.info("correct")
+
+                if database.exists(f"session.data:{ctx.author.id}"):
+                    logger.info("session active")
+                    session_increment(ctx, "correct", 1)
 
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentSongBird} (bird)")
@@ -162,6 +192,12 @@ class Check(commands.Cog):
                             file=discord.File(img, filename="award.png"))
 
             else:
+                logger.info("incorrect")
+
+                if database.exists(f"session.data:{ctx.author.id}"):
+                    logger.info("session active")
+                    session_increment(ctx, "incorrect", 1)
+
                 database.zincrby("incorrect", 1, str(currentSongBird))
                 await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
                 page = wikipedia.page(f"{currentSongBird} (bird)")

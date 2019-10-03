@@ -33,16 +33,15 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # prevK - makes sure it sends a diff sound
 
 # server format = {
-# ctx.channel.id : [bird, answered, songbird, songanswered,
-#                     totalCorrect (NOT USED), goatsucker, goatsuckeranswered,
-#                     prevJ, prevB, prevS, prevK]
-# }
-
-# server format = {
-# ctx.channel.id : { "bird", "answered", "sBird", "sAnswered",
+# channel:channel_id : { "bird", "answered", "sBird", "sAnswered",
 #                     "goatsucker", "gsAnswered",
 #                     "prevJ", "prevB", "prevS", "prevK" }
 # }
+
+# session format:
+# session.data:user_id : {"start": 0, "stop": 0,
+#                         "correct": 0, "incorrect": 0, "total": 0,
+#                         "bw": bw, "state": state, "addon": addon}
 
 # user format = {
 # "users":[user id, # of correct]
