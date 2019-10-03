@@ -40,7 +40,7 @@ COUNT = 20  # set this to include a margin of error in case some urls throw erro
 
 # Valid file types
 valid_image_extensions = {"jpg", "png", "jpeg", "gif"}
-valid_audio_extensions = {"mp3", "wav", "ogg", "m4a"}
+valid_audio_extensions = {"mp3"}
 
 
 # sets up new channel
@@ -184,9 +184,7 @@ def _black_and_white(input_image_path):
 def session_increment(ctx, item, amount):
     logger.info(f"incrementing {item} by {amount}")
     value = int(database.hget(f"session.data:{ctx.author.id}", item))
-    print(value)
     value += int(amount)
-    print(value)
     database.hset(f"session.data:{ctx.author.id}", item, str(value))
 
 

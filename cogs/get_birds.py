@@ -76,10 +76,11 @@ class Birds(commands.Cog):
             elif add_on == session_add_on:
                 add_on = ""
             else:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Falling back on defaults...*")
+                await ctx.send("**Juvenile females are not yet supported.**\n*Overriding session options...*")
 
             if len(str(database.hget(f"session.data:{ctx.author.id}", "bw"))[2:-1]) is not 0:
                 bw = not bw
+
             roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
             if roles[0] == "":
                 roles = []
@@ -185,9 +186,16 @@ class Birds(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
+        roles = check_state_role(ctx)
+
         if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("session active")
             session_increment(ctx, "total", 1)
+
+            roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
+            if roles[0] == "":
+                roles = []
+            logger.info(f"roles: {roles}")
 
         logger.info(
             "bird: " + str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1])
@@ -198,7 +206,6 @@ class Birds(commands.Cog):
             f"channel:{str(ctx.channel.id)}", "sAnswered"))
         # check to see if previous bird was answered
         if songAnswered:  # if yes, give a new bird
-            roles = check_state_role(ctx)
             birds = []
             if roles:
                 for state in roles:
