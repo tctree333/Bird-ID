@@ -81,11 +81,6 @@ class Birds(commands.Cog):
             if len(str(database.hget(f"session.data:{ctx.author.id}", "bw"))[2:-1]) is not 0:
                 bw = not bw
 
-            roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
-            if roles[0] == "":
-                roles = []
-            logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
-        
         if add_on == "":
             message = BIRD_MESSAGE.format(option="n image")
         else:
@@ -101,7 +96,14 @@ class Birds(commands.Cog):
 
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
-            database.hset(f"channel:{str(ctx.channel.id)}", "answered", "0")
+            if database.exists(f"session.data:{ctx.author.id}"):
+                logger.info("session active")
+                session_increment(ctx, "total", 1)
+
+                roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
+                if roles[0] == "":
+                    roles = []
+                logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
 
             birds = []
             if roles:
@@ -129,6 +131,7 @@ class Birds(commands.Cog):
                 message=message,
                 addOn=add_on,
                 bw=bw)
+            database.hset(f"channel:{str(ctx.channel.id)}", "answered", "0")
         else:  # if no, give the same bird
             await send_bird(
                 ctx,
@@ -149,14 +152,14 @@ class Birds(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        if database.exists(f"session.data:{ctx.author.id}"):
-            logger.info("session active")
-            session_increment(ctx, "total", 1)
-
         answered = int(database.hget(
             f"channel:{str(ctx.channel.id)}", "gsAnswered"))
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
+            if database.exists(f"session.data:{ctx.author.id}"):
+                logger.info("session active")
+                session_increment(ctx, "total", 1)
+
             database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "0")
             currentBird = goatsuckers[randint(0, 2)]
             database.hset(f"channel:{str(ctx.channel.id)}",
@@ -186,17 +189,6 @@ class Birds(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        roles = check_state_role(ctx)
-
-        if database.exists(f"session.data:{ctx.author.id}"):
-            logger.info("session active")
-            session_increment(ctx, "total", 1)
-
-            roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
-            if roles[0] == "":
-                roles = []
-            logger.info(f"roles: {roles}")
-
         logger.info(
             "bird: " + str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1])
         logger.info("answered: " +
@@ -206,6 +198,17 @@ class Birds(commands.Cog):
             f"channel:{str(ctx.channel.id)}", "sAnswered"))
         # check to see if previous bird was answered
         if songAnswered:  # if yes, give a new bird
+            roles = check_state_role(ctx)
+
+            if database.exists(f"session.data:{ctx.author.id}"):
+                logger.info("session active")
+                session_increment(ctx, "total", 1)
+
+                roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
+                if roles[0] == "":
+                    roles = []
+                logger.info(f"roles: {roles}")
+
             birds = []
             if roles:
                 for state in roles:
