@@ -21,6 +21,7 @@ import typing
 import time
 import datetime
 
+
 class Sessions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -53,7 +54,8 @@ class Sessions(commands.Cog):
             if "bw" in args:
                 bw = "bw"
             if len(set(states.keys()).intersection(set([arg.upper() for arg in args]))) is not 0:
-                state = " ".join(set(states.keys()).intersection(set([arg.upper() for arg in args]))).strip()
+                state = " ".join(set(states.keys()).intersection(
+                    set([arg.upper() for arg in args]))).strip()
             if "female" in args and "juvenile" in args:
                 await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
                 return
@@ -74,8 +76,8 @@ class Sessions(commands.Cog):
                            f"*Black & White:* {'True' if len(bw) is not 0 else 'False'}\n" +
                            f"*Special bird list:* {state if len(state) is not 0 else 'None'}")
 
-
     # views session
+
     @commands.command(brief="- Views session", help="- Views session\n" +
                       "Sessions will record your activity for an amount of time and " +
                       "will give you stats on how your performance " +
@@ -98,21 +100,26 @@ class Sessions(commands.Cog):
             if "bw" in args:
                 if len(database.hget(f"session.data:{str(ctx.author.id)}", "bw")) is 0:
                     logger.info("adding bw")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "bw", "bw")
+                    database.hset(
+                        f"session.data:{str(ctx.author.id)}", "bw", "bw")
                 else:
                     logger.info("removing bw")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "bw", "")
+                    database.hset(
+                        f"session.data:{str(ctx.author.id)}", "bw", "")
 
             if len(set(states.keys()).intersection(set([arg.upper() for arg in args]))) is not 0:
-                toggle_states = list(set(states.keys()).intersection(set([arg.upper() for arg in args])))
-                current_states = str(database.hget(f"session.data:{str(ctx.author.id)}", "state"))[2:-1].split(" ")
+                toggle_states = list(set(states.keys()).intersection(
+                    set([arg.upper() for arg in args])))
+                current_states = str(database.hget(
+                    f"session.data:{str(ctx.author.id)}", "state"))[2:-1].split(" ")
                 add_states = []
                 logger.info(f"toggle states: {toggle_states}")
                 logger.info(f"current states: {current_states}")
                 for state in set(toggle_states).symmetric_difference(set(current_states)):
                     add_states.append(state)
                 logger.info(f"adding states: {add_states}")
-                database.hset(f"session.data:{str(ctx.author.id)}", "state", " ".join(add_states).strip())
+                database.hset(
+                    f"session.data:{str(ctx.author.id)}", "state", " ".join(add_states).strip())
 
             if "female" in args and "juvenile" in args:
                 await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
@@ -121,18 +128,22 @@ class Sessions(commands.Cog):
                 addon = "female"
                 if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) is 0:
                     logger.info("adding female")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "addon", addon)
+                    database.hset(
+                        f"session.data:{str(ctx.author.id)}", "addon", addon)
                 else:
                     logger.info("removing female")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
+                    database.hset(
+                        f"session.data:{str(ctx.author.id)}", "addon", "")
             elif "juvenile" in args:
                 addon = "juvenile"
                 if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) is 0:
                     logger.info("adding juvenile")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "addon", addon)
+                    database.hset(
+                        f"session.data:{str(ctx.author.id)}", "addon", addon)
                 else:
                     logger.info("removing juvenile")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
+                    database.hset(
+                        f"session.data:{str(ctx.author.id)}", "addon", "")
 
             start, correct, incorrect, total = database.hmget(
                 f"session.data:{str(ctx.author.id)}",
@@ -142,7 +153,8 @@ class Sessions(commands.Cog):
                 f"session.data:{str(ctx.author.id)}",
                 ["bw", "addon", "state"])
 
-            elapsed = str(datetime.timedelta(seconds=int(round(time.time()))-int(start)))
+            elapsed = str(datetime.timedelta(
+                seconds=int(round(time.time()))-int(start)))
 
             await ctx.send(f"**Session started {elapsed} ago with options:**\n" +
                            f"*Age/Sex:* {str(addon)[2:-1] if len(addon) is not 0 else 'default'}\n" +
@@ -151,11 +163,11 @@ class Sessions(commands.Cog):
 
             await ctx.send(f"**Session Stats:**\n" +
                            f"*# Correct:* {int(correct)}\n" +
-                           f"*# Incorrect* {int(incorrect)}\n" +
-                           f"*Accuracy* {0 if int(total) is 0 else 100*(int(correct)/int(total))}%")
+                           f"*# Incorrect:* {int(incorrect)}\n" +
+                           f"*Total Birds:* {int(total)}\n" +
+                           f"*Accuracy:* {0 if int(total) is 0 else round(100*(int(correct)/(int(correct)+int(incorrect))), 2)}%")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!start`*")
-
 
     # stops session
     @commands.command(help="- Stops session",
@@ -168,7 +180,8 @@ class Sessions(commands.Cog):
         await user_setup(ctx)
 
         if database.exists(f"session.data:{str(ctx.author.id)}"):
-            database.hset(f"session.data:{str(ctx.author.id)}", "stop", round(time.time()))
+            database.hset(
+                f"session.data:{str(ctx.author.id)}", "stop", round(time.time()))
 
             start, stop, correct, incorrect, total = database.hmget(
                 f"session.data:{str(ctx.author.id)}",
@@ -190,9 +203,9 @@ class Sessions(commands.Cog):
             await ctx.send(f"**Session Stats:**\n" +
                            f"*Duration:* {elapsed}\n" +
                            f"*# Correct:* {int(correct)}\n" +
-                           f"*# Incorrect* {int(incorrect)}\n" +
+                           f"*# Incorrect:* {int(incorrect)}\n" +
                            f"*Total Birds:* {int(total)}\n" +
-                           f"*Accuracy* {0 if int(total) is 0 else 100*(int(correct)/int(total))}%")
+                           f"*Accuracy:* {0 if int(total) is 0 else round(100*(int(correct)/(int(correct)+int(incorrect))), 2)}%")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!start`*")
 
