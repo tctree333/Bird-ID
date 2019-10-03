@@ -76,8 +76,8 @@ class Sessions(commands.Cog):
                            f"*Black & White:* {'True' if len(bw) is not 0 else 'False'}\n" +
                            f"*Special bird list:* {state if len(state) is not 0 else 'None'}")
 
-    # views session
 
+    # views session
     @commands.command(brief="- Views session", help="- Views session\n" +
                       "Sessions will record your activity for an amount of time and " +
                       "will give you stats on how your performance " +
@@ -165,9 +165,10 @@ class Sessions(commands.Cog):
                            f"*# Correct:* {int(correct)}\n" +
                            f"*# Incorrect:* {int(incorrect)}\n" +
                            f"*Total Birds:* {int(total)}\n" +
-                           f"*Accuracy:* {0 if int(total) is 0 else round(100*(int(correct)/(int(correct)+int(incorrect))), 2)}%")
+                           f"*Accuracy:* {0 if (int(correct)+int(incorrect)) is 0 else round(100*(int(correct)/(int(correct)+int(incorrect))), 2)}%")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!start`*")
+
 
     # stops session
     @commands.command(help="- Stops session",
@@ -205,7 +206,7 @@ class Sessions(commands.Cog):
                            f"*# Correct:* {int(correct)}\n" +
                            f"*# Incorrect:* {int(incorrect)}\n" +
                            f"*Total Birds:* {int(total)}\n" +
-                           f"*Accuracy:* {0 if int(total) is 0 else round(100*(int(correct)/(int(correct)+int(incorrect))), 2)}%")
+                           f"*Accuracy:* {0 if (int(correct)+int(incorrect)) is 0 else round(100*(int(correct)/(int(correct)+int(incorrect))), 2)}%")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!start`*")
 
