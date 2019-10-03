@@ -55,8 +55,8 @@ if __name__ == '__main__':
         refresh_cache.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory
-    initial_extensions = ['cogs.get_birds', 'cogs.check',
-                          'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.state', 'cogs.other']
+    initial_extensions = ['cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint',
+                          'cogs.score', 'cogs.state', 'cogs.sessions', 'cogs.other']
     for extension in initial_extensions:
         try:
             bot.load_extension(extension)
