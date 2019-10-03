@@ -30,7 +30,7 @@ BASE_MESSAGE = (
 )
 
 BIRD_MESSAGE = BASE_MESSAGE.format(
-    media="image", new_cmd="bird", skip_cmd="skip", check_cmd="check", hint_cmd="hint")
+    media="image", new_cmd="bird", skip_cmd="skip", check_cmd="check", hint_cmd="hint") + "\n*This is a{option}.*"
 GS_MESSAGE = BASE_MESSAGE.format(
     media="image", new_cmd="gs", skip_cmd="skipgoat", check_cmd="checkgoat", hint_cmd="hintgoat")
 SONG_MESSAGE = BASE_MESSAGE.format(
@@ -64,6 +64,30 @@ class Birds(commands.Cog):
         else:
             bw = False
 
+        roles = check_state_role(ctx)
+
+        if database.exists(f"session.data:{ctx.author.id}"):
+            logger.info("session parameters")
+            session_add_on = str(database.hget(f"session.data:{ctx.author.id}", "addon"))[2:-1]
+            if add_on == "":
+                add_on = session_add_on
+            elif add_on == session_add_on:
+                add_on = ""
+            else:
+                await ctx.send("**Juvenile females are not yet supported.**\n*Falling back on defaults...*")
+
+            if len(str(database.hget(f"session.data:{ctx.author.id}", "bw"))[2:-1]) is not 0:
+                bw = not bw
+            roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
+            if roles[0] == "":
+                roles = []
+            logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
+        
+        if add_on == "":
+            message = BIRD_MESSAGE.format(option="n image")
+        else:
+            message = BIRD_MESSAGE.format(option=f" {add_on}")
+
         logger.info(
             "bird: " + str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1])
         logger.info("answered: " +
@@ -71,11 +95,11 @@ class Birds(commands.Cog):
 
         answered = int(database.hget(
             f"channel:{str(ctx.channel.id)}", "answered"))
+
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
             database.hset(f"channel:{str(ctx.channel.id)}", "answered", "0")
 
-            roles = check_state_role(ctx)
             birds = []
             if roles:
                 for state in roles:
@@ -99,7 +123,7 @@ class Birds(commands.Cog):
                 ctx,
                 currentBird,
                 on_error=error_skip,
-                message=BIRD_MESSAGE,
+                message=message,
                 addOn=add_on,
                 bw=bw)
         else:  # if no, give the same bird
@@ -108,11 +132,12 @@ class Birds(commands.Cog):
                 str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[
                     2:-1],
                 on_error=error_skip,
-                message=BIRD_MESSAGE,
+                message=message,
                 addOn=add_on,
                 bw=bw)
 
     # goatsucker command - no args
+    # just for fun, no real purpose
     @commands.command(help='- Sends a random goatsucker to ID', aliases=["gs"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def goatsucker(self, ctx):

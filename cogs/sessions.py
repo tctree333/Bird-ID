@@ -41,17 +41,19 @@ class Sessions(commands.Cog):
         await user_setup(ctx)
 
         if database.exists(f"session.data:{str(ctx.author.id)}"):
+            logger.info("already session")
             await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session`*")
             return
         else:
             args = args.split(" ")
+            logger.info(f"args: {args}")
             bw = ""
             state = ""
             addon = ""
             if "bw" in args:
                 bw = "bw"
             if len(set(states.keys()).intersection(set([arg.upper() for arg in args]))) is not 0:
-                state = " ".join(set(states.keys()).intersection(set([arg.upper() for arg in args])))
+                state = " ".join(set(states.keys()).intersection(set([arg.upper() for arg in args]))).strip()
             if "female" in args and "juvenile" in args:
                 await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
                 return
@@ -60,15 +62,18 @@ class Sessions(commands.Cog):
             elif "juvenile" in args:
                 addon = "juvenile"
 
+            logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}")
+
             database.hmset(f"session.data:{str(ctx.author.id)}",
                            {"start": round(time.time()), "stop": 0,
                             "correct": 0, "incorrect": 0, "total": 0,
-                            "bw": bw, "state": state, "addon": addon})
+                            "bw": bw, "state": state.strip(), "addon": addon})
 
             await ctx.send(f"**Session started with options:**\n" +
                            f"*Age/Sex:* {addon if len(addon) is not 0 else 'default'}\n" +
                            f"*Black & White:* {'True' if len(bw) is not 0 else 'False'}\n" +
                            f"*Special bird list:* {state if len(state) is not 0 else 'None'}")
+
 
     # views session
     @commands.command(brief="- Views session", help="- Views session\n" +
@@ -107,7 +112,7 @@ class Sessions(commands.Cog):
                 for state in set(toggle_states).symmetric_difference(set(current_states)):
                     add_states.append(state)
                 logger.info(f"adding states: {add_states}")
-                database.hset(f"session.data:{str(ctx.author.id)}", "state", " ".join(add_states))
+                database.hset(f"session.data:{str(ctx.author.id)}", "state", " ".join(add_states).strip())
 
             if "female" in args and "juvenile" in args:
                 await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
