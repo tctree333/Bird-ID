@@ -181,6 +181,15 @@ def _black_and_white(input_image_path):
     return final_buffer
 
 
+def session_increment(ctx, item, amount):
+    logger.info(f"incrementing {item} by {amount}")
+    value = int(database.hget(f"session.data:{ctx.author.id}", item))
+    print(value)
+    value += int(amount)
+    print(value)
+    database.hset(f"session.data:{ctx.author.id}", item, str(value))
+
+
 # Gets a bird picture and sends it to user:
 # ctx - context for message (discord thing)
 # bird - bird picture to send (str)

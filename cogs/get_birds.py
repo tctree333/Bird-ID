@@ -19,7 +19,7 @@ from discord.ext import commands
 from data.data import birdList, database, goatsuckers, songBirds, logger, states
 from functions import (channel_setup, error_skip, error_skip_goat,
                        error_skip_song, send_bird, send_birdsong, user_setup,
-                       check_state_role)
+                       check_state_role, session_increment)
 
 BASE_MESSAGE = (
     "*Here you go!* \n" +
@@ -68,6 +68,8 @@ class Birds(commands.Cog):
 
         if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("session parameters")
+            session_increment(ctx, "total", 1)
+
             session_add_on = str(database.hget(f"session.data:{ctx.author.id}", "addon"))[2:-1]
             if add_on == "":
                 add_on = session_add_on
@@ -146,6 +148,10 @@ class Birds(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
+        if database.exists(f"session.data:{ctx.author.id}"):
+            logger.info("session active")
+            session_increment(ctx, "total", 1)
+
         answered = int(database.hget(
             f"channel:{str(ctx.channel.id)}", "gsAnswered"))
         # check to see if previous bird was answered
@@ -178,6 +184,10 @@ class Birds(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
+
+        if database.exists(f"session.data:{ctx.author.id}"):
+            logger.info("session active")
+            session_increment(ctx, "total", 1)
 
         logger.info(
             "bird: " + str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1])
