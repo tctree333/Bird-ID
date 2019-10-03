@@ -102,6 +102,7 @@ class Birds(commands.Cog):
                 if roles[0] == "":
                     roles = []
                 if len(roles) is 0:
+                    logger.info("no session lists")
                     roles = check_state_role(ctx)
                 logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
 
@@ -207,6 +208,7 @@ class Birds(commands.Cog):
                 if roles[0] == "":
                     roles = []
                 if len(roles) is 0:
+                    logger.info("no session lists")
                     roles = check_state_role(ctx)
                 logger.info(f"roles: {roles}")
 
