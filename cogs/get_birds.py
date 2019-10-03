@@ -64,11 +64,8 @@ class Birds(commands.Cog):
         else:
             bw = False
 
-        roles = check_state_role(ctx)
-
         if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("session parameters")
-            session_increment(ctx, "total", 1)
 
             session_add_on = str(database.hget(f"session.data:{ctx.author.id}", "addon"))[2:-1]
             if add_on == "":
@@ -96,6 +93,7 @@ class Birds(commands.Cog):
 
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
+            roles = []
             if database.exists(f"session.data:{ctx.author.id}"):
                 logger.info("session active")
                 session_increment(ctx, "total", 1)
@@ -103,6 +101,8 @@ class Birds(commands.Cog):
                 roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
                 if roles[0] == "":
                     roles = []
+                if len(roles) is 0:
+                    roles = check_state_role(ctx)
                 logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
 
             birds = []
@@ -198,8 +198,7 @@ class Birds(commands.Cog):
             f"channel:{str(ctx.channel.id)}", "sAnswered"))
         # check to see if previous bird was answered
         if songAnswered:  # if yes, give a new bird
-            roles = check_state_role(ctx)
-
+            roles = []
             if database.exists(f"session.data:{ctx.author.id}"):
                 logger.info("session active")
                 session_increment(ctx, "total", 1)
@@ -207,6 +206,8 @@ class Birds(commands.Cog):
                 roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
                 if roles[0] == "":
                     roles = []
+                if len(roles) is 0:
+                    roles = check_state_role(ctx)
                 logger.info(f"roles: {roles}")
 
             birds = []
