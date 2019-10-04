@@ -172,7 +172,7 @@ def _all_birds():
         for state in list(states.keys()):
             birds += states[state][list_names[lists.index(bird_list)]]
 
-        master_lists.append(list(set(birds)))
+        master_lists.append(list(set(birds).discard("EMPTY")))
         logger.info(f"Done with {list_names[lists.index(bird_list)]}")
     logger.info("Done with master lists!")
     return master_lists
