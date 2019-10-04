@@ -94,6 +94,7 @@ class Birds(commands.Cog):
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
             roles = []
+            roles = check_state_role(ctx)
             if database.exists(f"session.data:{ctx.author.id}"):
                 logger.info("session active")
                 session_increment(ctx, "total", 1)
@@ -200,6 +201,7 @@ class Birds(commands.Cog):
         # check to see if previous bird was answered
         if songAnswered:  # if yes, give a new bird
             roles = []
+            roles = check_state_role(ctx)
             if database.exists(f"session.data:{ctx.author.id}"):
                 logger.info("session active")
                 session_increment(ctx, "total", 1)
