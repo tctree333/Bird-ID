@@ -158,7 +158,7 @@ class Score(commands.Cog):
                 else:
                     user = f"**{user.name}#{user.discriminator}**"
             else:
-                user = str(user.mention)
+                user = f"**{user.name}#{user.discriminator}** ({str(user.mention)})"
 
             leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
 
@@ -238,7 +238,7 @@ class Score(commands.Cog):
         leaderboard = ""
 
         for i, stats in enumerate(leaderboard_list):
-            leaderboard += f"{str(i+1)}. {str(stats[0])[2:-1]} - {str(int(stats[1]))}\n"
+            leaderboard += f"{str(i+1)}. **{str(stats[0])[2:-1]}** - {str(int(stats[1]))}\n"
         embed.add_field(name=f"Top Missed Birds ({scope})",
                         value=leaderboard,
                         inline=False)
