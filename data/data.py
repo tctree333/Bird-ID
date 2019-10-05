@@ -43,16 +43,19 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 #                         "correct": 0, "incorrect": 0, "total": 0,
 #                         "bw": bw, "state": state, "addon": addon}
 
-# user format = {
-# "users":[user id, # of correct]
+# leaderboard format = {
+#    "users:global":[user id, # of correct]
+#    "users:server_id":[user id, # of correct]
 # }
 
 # incorrect birds format = {
-# "incorrect":[bird name, #incorrect]
+#    "incorrect:global":[bird name, # incorrect]
+#    "incorrect:server_id":[bird name, # incorrect]
+#    "incorrect:user_id:":[bird name, # incorrect]
 # }
 
 # channel score format = {
-# "score":[channel id, # of correct]
+#   "score:global":[channel id, # of correct]
 # }
 
 # setup logging
