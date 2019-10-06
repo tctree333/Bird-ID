@@ -34,7 +34,7 @@ class Score(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        totalCorrect = int(database.zscore("score", str(ctx.channel.id)))
+        totalCorrect = int(database.zscore("score:global", str(ctx.channel.id)))
         await ctx.send(
             f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! " +
             "Good job everyone!"
@@ -63,18 +63,18 @@ class Score(commands.Cog):
                 return
             usera = user.id
             logger.info(usera)
-            if database.zscore("users", str(usera)) is not None:
-                times = str(int(database.zscore("users", str(usera))))
+            if database.zscore("users:global", str(usera)) is not None:
+                times = str(int(database.zscore("users:global", str(usera))))
                 user = f"<@{str(usera)}>"
             else:
                 await ctx.send("This user does not exist on our records!")
                 return
         else:
-            if database.zscore("users", str(
-                    ctx.message.author.id)) is not None:
-                user = f"<@{str(ctx.message.author.id)}>"
+            if database.zscore("users:global", str(
+                    ctx.author.id)) is not None:
+                user = f"<@{str(ctx.author.id)}>"
                 times = str(
-                    int(database.zscore("users", str(ctx.message.author.id))))
+                    int(database.zscore("users:global", str(ctx.author.id))))
             else:
                 await ctx.send(
                     "You haven't used this bot yet! (except for this)")
@@ -164,9 +164,9 @@ class Score(commands.Cog):
 
         embed.add_field(name=f"Leaderboard ({scope})", value=leaderboard, inline=False)
 
-        if database.zscore(database_key, str(ctx.message.author.id)) is not None:
+        if database.zscore(database_key, str(ctx.author.id)) is not None:
             placement = int(
-                database.zrevrank(database_key, str(ctx.message.author.id))) + 1
+                database.zrevrank(database_key, str(ctx.author.id))) + 1
             embed.add_field(
                 name="You:",
                 value=f"You are #{str(placement)} on the leaderboard.",

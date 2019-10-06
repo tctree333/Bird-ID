@@ -55,22 +55,47 @@ async def channel_setup(ctx):
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
         await ctx.send("Ok, setup! I'm all ready to use!")
 
+    if database.zscore("score:global", str(ctx.channel.id)) is not None:
+        return
+    else:
+        database.zadd("score:global", {str(ctx.channel.id): 0})
+
 
 # sets up new user
 async def user_setup(ctx):
-    if database.zscore("users", str(ctx.message.author.id)) is not None:
+    if database.zscore("users:global", str(ctx.author.id)) is not None:
         return
     else:
-        database.zadd("users", {str(ctx.message.author.id): 0})
-        await ctx.send("Welcome <@" + str(ctx.message.author.id) + ">!")
+        database.zadd("users:global", {str(ctx.author.id): 0})
+        await ctx.send("Welcome <@" + str(ctx.author.id) + ">!")
+
+    if ctx.guild is not None:
+        if database.zscore(f"users:{ctx.guild.id}", str(ctx.author.id)) is not None:
+            return
+        else:
+            score = int(database.zscore("users:global", str(ctx.author.id)))
+            database.zadd(f"users:{ctx.guild.id}", {str(ctx.author.id): score})
 
 
 # sets up new birds
-async def bird_setup(bird):
-    if database.zscore("incorrect", string.capwords(str(bird))) is not None:
+async def bird_setup(ctx, bird):
+    if database.zscore("incorrect:global", string.capwords(str(bird))) is not None:
         return
     else:
-        database.zadd("incorrect", {string.capwords(str(bird)): 0})
+        database.zadd("incorrect:global", {string.capwords(str(bird)): 0})
+
+    if database.zscore(f"incorrect:{ctx.author.id}", string.capwords(str(bird))) is not None:
+        return
+    else:
+        database.zadd(f"incorrect:{ctx.author.id}", {
+                      string.capwords(str(bird)): 0})
+
+    if ctx.guild is not None:
+        if database.zscore(f"incorrect:{ctx.guild.id}", string.capwords(str(bird))) is not None:
+            return
+        else:
+            database.zadd(f"incorrect:{ctx.guild.id}", {
+                          string.capwords(str(bird)): 0})
 
 
 # Function to run on error
@@ -99,7 +124,8 @@ def check_state_role(ctx):
         logger.info("server context")
         user_role_names = [role.name.lower() for role in ctx.author.roles]
         for state in list(states.keys()):
-            if len(set(user_role_names).intersection(set(states[state]["aliases"]))) is not 0:  # gets similarities
+            # gets similarities
+            if len(set(user_role_names).intersection(set(states[state]["aliases"]))) is not 0:
                 user_states.append(state)
     else:
         logger.info("dm context")
@@ -454,7 +480,8 @@ async def _download_helper(path, url, session):
                         (set(ext[1:] for ext in guess_all_extensions(
                             content_type)) & valid_image_extensions).pop()
                 except KeyError:
-                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
+                    raise GenericError(
+                        f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
 
             elif content_type.partition("/")[0] == "audio":
                 try:
@@ -462,7 +489,8 @@ async def _download_helper(path, url, session):
                         (set(ext[1:] for ext in guess_all_extensions(
                             content_type)) & valid_audio_extensions).pop()
                 except KeyError:
-                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
+                    raise GenericError(
+                        f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
 
             else:
                 ext = guess_extension(content_type)

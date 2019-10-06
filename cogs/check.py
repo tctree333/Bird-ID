@@ -42,7 +42,7 @@ class Check(commands.Cog):
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
-            await bird_setup(currentBird)
+            await bird_setup(ctx, currentBird)
             sciBird = await get_sciname(currentBird)
             database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
             database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
@@ -57,14 +57,14 @@ class Check(commands.Cog):
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
-                database.zincrby("score", 1, str(ctx.channel.id))
-                database.zincrby("users", 1, str(ctx.message.author.id))
-                if int(database.zscore("users", str(
-                        ctx.message.author.id))) in achievement:
+                database.zincrby("score:global", 1, str(ctx.channel.id))
+                database.zincrby("users:global", 1, str(ctx.author.id))
+                if int(database.zscore("users:global", str(
+                        ctx.author.id))) in achievement:
                     number = str(
                         int(
-                            database.zscore("users",
-                                            str(ctx.message.author.id))))
+                            database.zscore("users:global",
+                                            str(ctx.author.id))))
                     await ctx.send(
                         f"Wow! You have answered {number} birds correctly!")
                     filename = 'achievements/' + number + ".PNG"
@@ -101,7 +101,7 @@ class Check(commands.Cog):
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
-            await bird_setup(currentBird)
+            await bird_setup(ctx, currentBird)
             index = goatsuckers.index(currentBird)
             sciBird = sciGoat[index]
             database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
@@ -117,14 +117,14 @@ class Check(commands.Cog):
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
-                database.zincrby("score", 1, str(ctx.channel.id))
-                database.zincrby("users", 1, str(ctx.message.author.id))
-                if int(database.zscore("users", str(
-                        ctx.message.author.id))) in achievement:
+                database.zincrby("score:global", 1, str(ctx.channel.id))
+                database.zincrby("users:global", 1, str(ctx.author.id))
+                if int(database.zscore("users:global", str(
+                        ctx.author.id))) in achievement:
                     number = str(
                         int(
-                            database.zscore("users",
-                                            str(ctx.message.author.id))))
+                            database.zscore("users:global",
+                                            str(ctx.author.id))))
                     await ctx.send(
                         f"Wow! You have answered {number} birds correctly!")
                     filename = 'achievements/' + number + ".PNG"
@@ -161,7 +161,7 @@ class Check(commands.Cog):
         if currentSongBird == "":  # no bird
             await ctx.send("You must ask for a bird call first!")
         else:  # if there is a bird, it checks answer
-            await bird_setup(currentSongBird)
+            await bird_setup(ctx, currentSongBird)
             sciBird = await get_sciname(currentSongBird)
             database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
             database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
@@ -176,14 +176,14 @@ class Check(commands.Cog):
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
-                database.zincrby("score", 1, str(ctx.channel.id))
-                database.zincrby("users", 1, str(ctx.message.author.id))
-                if int(database.zscore("users", str(
-                        ctx.message.author.id))) in achievement:
+                database.zincrby("score:global", 1, str(ctx.channel.id))
+                database.zincrby("users:global", 1, str(ctx.author.id))
+                if int(database.zscore("users:global", str(
+                        ctx.author.id))) in achievement:
                     number = str(
                         int(
-                            database.zscore("users",
-                                            str(ctx.message.author.id))))
+                            database.zscore("users:global",
+                                            str(ctx.author.id))))
                     await ctx.send(
                         f"Wow! You have answered {number} birds correctly!")
                     filename = f"achievements/{number}.PNG"
