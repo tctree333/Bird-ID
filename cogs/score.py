@@ -34,7 +34,7 @@ class Score(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        totalCorrect = int(database.zscore("score", str(ctx.channel.id)))
+        totalCorrect = int(database.zscore("score:global", str(ctx.channel.id)))
         await ctx.send(
             f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! " +
             "Good job everyone!"
@@ -63,18 +63,18 @@ class Score(commands.Cog):
                 return
             usera = user.id
             logger.info(usera)
-            if database.zscore("users", str(usera)) is not None:
-                times = str(int(database.zscore("users", str(usera))))
+            if database.zscore("users:global", str(usera)) is not None:
+                times = str(int(database.zscore("users:global", str(usera))))
                 user = f"<@{str(usera)}>"
             else:
                 await ctx.send("This user does not exist on our records!")
                 return
         else:
-            if database.zscore("users", str(
-                    ctx.message.author.id)) is not None:
-                user = f"<@{str(ctx.message.author.id)}>"
+            if database.zscore("users:global", str(
+                    ctx.author.id)) is not None:
+                user = f"<@{str(ctx.author.id)}>"
                 times = str(
-                    int(database.zscore("users", str(ctx.message.author.id))))
+                    int(database.zscore("users:global", str(ctx.author.id))))
             else:
                 await ctx.send(
                     "You haven't used this bot yet! (except for this)")
@@ -89,26 +89,61 @@ class Score(commands.Cog):
     # leaderboard - returns top 1-10 users
     @commands.command(
         brief="- Top scores",
-        help="- Top scores, argument can be between 1 and 10, default is 5",
+        help="- Top scores, argument can be between 1 and 10, default is 5. " +
+             "Scope is either global or server. (g, s)",
         aliases=["lb"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def leaderboard(self, ctx, placings=5):
+    async def leaderboard(self, ctx, scope="", placings=5):
         logger.info("leaderboard")
 
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        leaderboard_list = []
-        if database.zcard("users") == 0:
-            await ctx.send("There are no users in the database.")
+        try:
+            placings = int(scope)
+        except ValueError:
+            if scope is "":
+                scope = "global"
+            scope = scope.lower()
+        else:
+            scope = "global"
+
+        logger.info(f"scope: {scope}")
+        logger.info(f"placings: {placings}")
+
+        if not scope in ("global", "server", "g", "s"):
+            logger.info("invalid scope")
+            await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server`")
             return
+
         if placings > 10 or placings < 1:
+            logger.info("invalid placings")
             await ctx.send("Not a valid number. Pick one between 1 and 10!")
             return
-        if placings > database.zcard("users"):
-            placings = database.zcard("users")
 
-        leaderboard_list = database.zrevrangebyscore("users", "+inf", "-inf",
+        database_key = ""
+        if scope in ("server", "s"):
+            if ctx.guild is not None:
+                database_key = f"users.server:{ctx.guild.id}"
+                scope = "server"
+            else:
+                logger.info("dm context")
+                await ctx.send("**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*")
+                scope = "global"
+                database_key = "users:global"
+        else:
+            database_key = "users:global"
+            scope = "global"
+
+        if database.zcard(database_key) is 0:
+            logger.info(f"no users in {database_key}")
+            await ctx.send("There are no users in the database.")
+            return
+
+        if placings > database.zcard(database_key):
+            placings = database.zcard(database_key)
+
+        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf",
                                                      0, placings, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
@@ -127,15 +162,15 @@ class Score(commands.Cog):
                 else:
                     user = f"**{user.name}#{user.discriminator}**"
             else:
-                user = str(user.mention)
+                user = f"**{user.name}#{user.discriminator}** ({str(user.mention)})"
 
             leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
 
-        embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
+        embed.add_field(name=f"Leaderboard ({scope})", value=leaderboard, inline=False)
 
-        if database.zscore("users", str(ctx.message.author.id)) is not None:
+        if database.zscore(database_key, str(ctx.author.id)) is not None:
             placement = int(
-                database.zrevrank("users", str(ctx.message.author.id))) + 1
+                database.zrevrank(database_key, str(ctx.author.id))) + 1
             embed.add_field(
                 name="You:",
                 value=f"You are #{str(placement)} on the leaderboard.",
@@ -149,34 +184,72 @@ class Score(commands.Cog):
     # missed - returns top 1-10 missed birds
     @commands.command(
         brief="- Top globally incorrect birds",
-        help="- Top globally incorrect birds, argument can be between 1 and 10, default is 5",
+        help="- Top globally incorrect birds, argument can be between 1 and 10, default is 5. " +
+             "Scope is either global, server, or me. (g, s, m)",
         aliases=["m"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def missed(self, ctx, placings=5):
+    async def missed(self, ctx, scope="", placings=5):
         logger.info("missed")
 
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        leaderboard_list = []
-        if database.zcard("incorrect") == 0:
-            await ctx.send("There are no birds in the database.")
+        try:
+            placings = int(scope)
+        except ValueError:
+            if scope is "":
+                scope = "global"
+                scope = scope.lower()
+        else:
+            scope = "global"
+
+        logger.info(f"scope: {scope}")
+        logger.info(f"placings: {placings}")
+
+        if not scope in ("global", "server", "me", "g", "s", "m"):
+            logger.info("invalid scope")
+            await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me`")
             return
+
         if placings > 10 or placings < 1:
+            logger.info("invalid placings")
             await ctx.send("Not a valid number. Pick one between 1 and 10!")
             return
-        if placings > database.zcard("incorrect"):
-            placings = database.zcard("incorrect")
 
-        leaderboard_list = database.zrevrangebyscore("incorrect", "+inf",
+        database_key = ""
+        if scope in ("server", "s"):
+            if ctx.guild is not None:
+                database_key = f"incorrect.server:{ctx.guild.id}"
+                scope = "server"
+            else:
+                logger.info("dm context")
+                await ctx.send("**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*")
+                scope = "global"
+                database_key = "incorrect:global"
+        elif scope in ("me", "m"):
+            database_key = f"incorrect.user:{ctx.author.id}"
+            scope = "me"
+        else:
+            database_key = "incorrect:global"
+            scope = "global"
+
+        if database.zcard(database_key) is 0:
+            logger.info(f"no users in {database_key}")
+            await ctx.send("There are no birds in the database.")
+            return
+
+        if placings > database.zcard(database_key):
+            placings = database.zcard(database_key)
+
+        leaderboard_list = database.zrevrangebyscore(database_key, "+inf",
                                                      "-inf", 0, placings, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
         for i, stats in enumerate(leaderboard_list):
-            leaderboard += f"{str(i+1)}. {str(stats[0])[2:-1]} - {str(int(stats[1]))}\n"
-        embed.add_field(name="Top Missed Birds",
+            leaderboard += f"{str(i+1)}. **{str(stats[0])[2:-1]}** - {str(int(stats[1]))}\n"
+        embed.add_field(name=f"Top Missed Birds ({scope})",
                         value=leaderboard,
                         inline=False)
 

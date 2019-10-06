@@ -45,32 +45,76 @@ valid_audio_extensions = {"mp3"}
 
 # sets up new channel
 async def channel_setup(ctx):
+    logger.info("checking channel setup")
     if database.exists(f"channel:{str(ctx.channel.id)}"):
-        return
+        logger.info("channel data ok")
     else:
         database.hmset(f"channel:{str(ctx.channel.id)}",
                        {"bird": "", "answered": 1, "sBird": "", "sAnswered": 1,
                         "goatsucker": "", "gsAnswered": 1,
                         "prevJ": 20, "prevB": "", "prevS": "", "prevK": 20})
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
+        logger.info("channel data added")
         await ctx.send("Ok, setup! I'm all ready to use!")
+
+    if database.zscore("score:global", str(ctx.channel.id)) is not None:
+        logger.info("channel score ok")
+    else:
+        database.zadd("score:global", {str(ctx.channel.id): 0})
+        logger.info("channel score added")
 
 
 # sets up new user
 async def user_setup(ctx):
-    if database.zscore("users", str(ctx.message.author.id)) is not None:
-        return
+    logger.info("checking user data")
+    if database.zscore("users:global", str(ctx.author.id)) is not None:
+        logger.info("user global ok")
     else:
-        database.zadd("users", {str(ctx.message.author.id): 0})
-        await ctx.send("Welcome <@" + str(ctx.message.author.id) + ">!")
+        database.zadd("users:global", {str(ctx.author.id): 0})
+        logger.info("user global added")
+        await ctx.send("Welcome <@" + str(ctx.author.id) + ">!")
+
+    if ctx.guild is not None:
+        logger.info("no dm")
+        if database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id)) is not None:
+            server_score = database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id))
+            global_score = database.zscore("users:global", str(ctx.author.id))
+            if server_score is global_score:
+                logger.info("user server ok")
+            else:
+                database.zadd(f"users.server:{ctx.guild.id}", {str(ctx.author.id): global_score})
+        else:
+            score = int(database.zscore("users:global", str(ctx.author.id)))
+            database.zadd(f"users.server:{ctx.guild.id}", {str(ctx.author.id): score})
+            logger.info("user server added")
+    else:
+        logger.info("dm context")
 
 
 # sets up new birds
-async def bird_setup(bird):
-    if database.zscore("incorrect", string.capwords(str(bird))) is not None:
-        return
+async def bird_setup(ctx, bird):
+    logger.info("checking bird data")
+    if database.zscore("incorrect:global", string.capwords(str(bird))) is not None:
+        logger.info("bird global ok")
     else:
-        database.zadd("incorrect", {string.capwords(str(bird)): 0})
+        database.zadd("incorrect:global", {string.capwords(str(bird)): 0})
+        logger.info("bird global added")
+
+    if database.zscore(f"incorrect.user:{ctx.author.id}", string.capwords(str(bird))) is not None:
+        logger.info("bird user ok")
+    else:
+        database.zadd(f"incorrect.user:{ctx.author.id}", {string.capwords(str(bird)): 0})
+        logger.info("bird user added")
+
+    if ctx.guild is not None:
+        logger.info("no dm")
+        if database.zscore(f"incorrect.server:{ctx.guild.id}", string.capwords(str(bird))) is not None:
+            logger.info("bird server ok")
+        else:
+            database.zadd(f"incorrect.server:{ctx.guild.id}", {string.capwords(str(bird)): 0})
+            logger.info("bird server added")
+    else:
+        logger.info("dm context")
 
 
 # Function to run on error
@@ -99,7 +143,8 @@ def check_state_role(ctx):
         logger.info("server context")
         user_role_names = [role.name.lower() for role in ctx.author.roles]
         for state in list(states.keys()):
-            if len(set(user_role_names).intersection(set(states[state]["aliases"]))) is not 0:  # gets similarities
+            # gets similarities
+            if len(set(user_role_names).intersection(set(states[state]["aliases"]))) is not 0:
                 user_states.append(state)
     else:
         logger.info("dm context")
@@ -187,6 +232,25 @@ def session_increment(ctx, item, amount):
     value += int(amount)
     database.hset(f"session.data:{ctx.author.id}", item, str(value))
 
+def incorrect_increment(ctx, bird, amount):
+    logger.info(f"incrementing incorrect {bird} by {amount}")
+    database.zincrby("incorrect:global", amount, str(bird))
+    database.zincrby(f"incorrect.user:{ctx.author.id}", amount, str(bird))
+    if ctx.guild is not None:
+        logger.info("no dm")
+        database.zincrby(f"incorrect.server:{ctx.guild.id}", amount, str(bird))
+    else:
+        logger.info("dm context")
+
+def score_increment(ctx, amount):
+    logger.info(f"incrementing score by {amount}")
+    database.zincrby("score:global", amount, str(ctx.channel.id))
+    database.zincrby("users:global", amount, str(ctx.author.id))
+    if ctx.guild is not None:
+        logger.info("no dm")
+        database.zincrby(f"users.server:{ctx.guild.id}", amount, str(ctx.author.id))
+    else:
+        logger.info("dm context")
 
 # Gets a bird picture and sends it to user:
 # ctx - context for message (discord thing)
@@ -454,7 +518,8 @@ async def _download_helper(path, url, session):
                         (set(ext[1:] for ext in guess_all_extensions(
                             content_type)) & valid_image_extensions).pop()
                 except KeyError:
-                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
+                    raise GenericError(
+                        f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
 
             elif content_type.partition("/")[0] == "audio":
                 try:
@@ -462,7 +527,8 @@ async def _download_helper(path, url, session):
                         (set(ext[1:] for ext in guess_all_extensions(
                             content_type)) & valid_audio_extensions).pop()
                 except KeyError:
-                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
+                    raise GenericError(
+                        f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
 
             else:
                 ext = guess_extension(content_type)
