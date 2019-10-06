@@ -89,7 +89,8 @@ class Score(commands.Cog):
     # leaderboard - returns top 1-10 users
     @commands.command(
         brief="- Top scores",
-        help="- Top scores, argument can be between 1 and 10, default is 5",
+        help="- Top scores, argument can be between 1 and 10, default is 5. " +
+             "Scope is either global or server. (g, s)",
         aliases=["lb"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def leaderboard(self, ctx, scope="", placings=5):
@@ -181,7 +182,8 @@ class Score(commands.Cog):
     # missed - returns top 1-10 missed birds
     @commands.command(
         brief="- Top globally incorrect birds",
-        help="- Top globally incorrect birds, argument can be between 1 and 10, default is 5",
+        help="- Top globally incorrect birds, argument can be between 1 and 10, default is 5. " +
+             "Scope is either global, server, or me. (g, s, m)",
         aliases=["m"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def missed(self, ctx, scope="", placings=5):

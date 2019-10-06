@@ -77,11 +77,18 @@ async def user_setup(ctx):
     if ctx.guild is not None:
         logger.info("no dm")
         if database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id)) is not None:
-            logger.info("user server ok")
+            server_score = database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id))
+            global_score = database.zscore("users:global", str(ctx.author.id))
+            if server_score is global_score:
+                logger.info("user server ok")
+            else:
+                database.zadd(f"users.server:{ctx.guild.id}", {str(ctx.author.id): global_score})
         else:
             score = int(database.zscore("users:global", str(ctx.author.id)))
             database.zadd(f"users.server:{ctx.guild.id}", {str(ctx.author.id): score})
             logger.info("user server added")
+    else:
+        logger.info("dm context")
 
 
 # sets up new birds
@@ -106,6 +113,8 @@ async def bird_setup(ctx, bird):
         else:
             database.zadd(f"incorrect.server:{ctx.guild.id}", {string.capwords(str(bird)): 0})
             logger.info("bird server added")
+    else:
+        logger.info("dm context")
 
 
 # Function to run on error
@@ -223,6 +232,25 @@ def session_increment(ctx, item, amount):
     value += int(amount)
     database.hset(f"session.data:{ctx.author.id}", item, str(value))
 
+def incorrect_increment(ctx, bird, amount):
+    logger.info(f"incrementing incorrect {bird} by {amount}")
+    database.zincrby("incorrect:global", amount, str(bird))
+    database.zincrby(f"incorrect.user:{ctx.author.id}", amount, str(bird))
+    if ctx.guild is not None:
+        logger.info("no dm")
+        database.zincrby(f"incorrect.server:{ctx.guild.id}", amount, str(bird))
+    else:
+        logger.info("dm context")
+
+def score_increment(ctx, amount):
+    logger.info(f"incrementing score by {amount}")
+    database.zincrby("score:global", amount, str(ctx.channel.id))
+    database.zincrby("users:global", amount, str(ctx.author.id))
+    if ctx.guild is not None:
+        logger.info("no dm")
+        database.zincrby(f"users.server:{ctx.guild.id}", amount, str(ctx.author.id))
+    else:
+        logger.info("dm context")
 
 # Gets a bird picture and sends it to user:
 # ctx - context for message (discord thing)

@@ -19,7 +19,8 @@ import wikipedia
 from discord.ext import commands
 from data.data import goatsuckers, sciGoat, database, logger
 from functions import (bird_setup, channel_setup, spellcheck,
-                       user_setup, get_sciname, session_increment)
+                       user_setup, get_sciname, session_increment, 
+                       score_increment, incorrect_increment)
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690]
@@ -57,8 +58,7 @@ class Check(commands.Cog):
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
-                database.zincrby("score:global", 1, str(ctx.channel.id))
-                database.zincrby("users:global", 1, str(ctx.author.id))
+                score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(
                         ctx.author.id))) in achievement:
                     number = str(
@@ -79,7 +79,7 @@ class Check(commands.Cog):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
 
-                database.zincrby("incorrect", 1, str(currentBird))
+                incorrect_increment(ctx, str(currentBird), 1)
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
@@ -117,8 +117,7 @@ class Check(commands.Cog):
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
-                database.zincrby("score:global", 1, str(ctx.channel.id))
-                database.zincrby("users:global", 1, str(ctx.author.id))
+                score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(
                         ctx.author.id))) in achievement:
                     number = str(
@@ -139,7 +138,7 @@ class Check(commands.Cog):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
 
-                database.zincrby("incorrect", 1, str(currentBird))
+                incorrect_increment(ctx, str(currentBird), 1)
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
@@ -176,8 +175,7 @@ class Check(commands.Cog):
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
-                database.zincrby("score:global", 1, str(ctx.channel.id))
-                database.zincrby("users:global", 1, str(ctx.author.id))
+                score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(
                         ctx.author.id))) in achievement:
                     number = str(
@@ -198,7 +196,7 @@ class Check(commands.Cog):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
 
-                database.zincrby("incorrect", 1, str(currentSongBird))
+                incorrect_increment(ctx, str(currentSongBird), 1)
                 await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
                 page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
