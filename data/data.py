@@ -45,13 +45,13 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 
 # leaderboard format = {
 #    "users:global":[user id, # of correct]
-#    "users:server_id":[user id, # of correct]
+#    "users.server:server_id":[user id, # of correct]
 # }
 
 # incorrect birds format = {
 #    "incorrect:global":[bird name, # incorrect]
-#    "incorrect:server_id":[bird name, # incorrect]
-#    "incorrect:user_id:":[bird name, # incorrect]
+#    "incorrect.server:server_id":[bird name, # incorrect]
+#    "incorrect.user:user_id:":[bird name, # incorrect]
 # }
 
 # channel score format = {

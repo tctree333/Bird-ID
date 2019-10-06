@@ -45,57 +45,67 @@ valid_audio_extensions = {"mp3"}
 
 # sets up new channel
 async def channel_setup(ctx):
+    logger.info("checking channel setup")
     if database.exists(f"channel:{str(ctx.channel.id)}"):
-        return
+        logger.info("channel data ok")
     else:
         database.hmset(f"channel:{str(ctx.channel.id)}",
                        {"bird": "", "answered": 1, "sBird": "", "sAnswered": 1,
                         "goatsucker": "", "gsAnswered": 1,
                         "prevJ": 20, "prevB": "", "prevS": "", "prevK": 20})
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
+        logger.info("channel data added")
         await ctx.send("Ok, setup! I'm all ready to use!")
 
     if database.zscore("score:global", str(ctx.channel.id)) is not None:
-        return
+        logger.info("channel score ok")
     else:
         database.zadd("score:global", {str(ctx.channel.id): 0})
+        logger.info("channel score added")
 
 
 # sets up new user
 async def user_setup(ctx):
+    logger.info("checking user data")
     if database.zscore("users:global", str(ctx.author.id)) is not None:
-        return
+        logger.info("user global ok")
     else:
         database.zadd("users:global", {str(ctx.author.id): 0})
+        logger.info("user global added")
         await ctx.send("Welcome <@" + str(ctx.author.id) + ">!")
 
     if ctx.guild is not None:
-        if database.zscore(f"users:{ctx.guild.id}", str(ctx.author.id)) is not None:
-            return
+        logger.info("no dm")
+        if database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id)) is not None:
+            logger.info("user server ok")
         else:
             score = int(database.zscore("users:global", str(ctx.author.id)))
-            database.zadd(f"users:{ctx.guild.id}", {str(ctx.author.id): score})
+            database.zadd(f"users.server:{ctx.guild.id}", {str(ctx.author.id): score})
+            logger.info("user server added")
 
 
 # sets up new birds
 async def bird_setup(ctx, bird):
+    logger.info("checking bird data")
     if database.zscore("incorrect:global", string.capwords(str(bird))) is not None:
-        return
+        logger.info("bird global ok")
     else:
         database.zadd("incorrect:global", {string.capwords(str(bird)): 0})
+        logger.info("bird global added")
 
-    if database.zscore(f"incorrect:{ctx.author.id}", string.capwords(str(bird))) is not None:
-        return
+    if database.zscore(f"incorrect.user:{ctx.author.id}", string.capwords(str(bird))) is not None:
+        logger.info("bird user ok")
     else:
-        database.zadd(f"incorrect:{ctx.author.id}", {
-                      string.capwords(str(bird)): 0})
+        database.zadd(f"incorrect.user:{ctx.author.id}", {string.capwords(str(bird)): 0})
+        logger.info("bird user added")
 
     if ctx.guild is not None:
-        if database.zscore(f"incorrect:{ctx.guild.id}", string.capwords(str(bird))) is not None:
-            return
+        logger.info("no dm")
+        if database.zscore(f"incorrect.server:{ctx.guild.id}", string.capwords(str(bird))) is not None:
+            logger.info("bird server ok")
         else:
-            database.zadd(f"incorrect:{ctx.guild.id}", {
-                          string.capwords(str(bird)): 0})
+            database.zadd(f"incorrect.server:{ctx.guild.id}", {string.capwords(str(bird)): 0})
+            logger.info("bird server added")
 
 
 # Function to run on error

@@ -123,10 +123,11 @@ class Score(commands.Cog):
         database_key = ""
         if scope in ("server", "s"):
             if ctx.guild is not None:
-                database_key = f"users:{ctx.guild.id}"
+                database_key = f"users.server:{ctx.guild.id}"
             else:
                 logger.info("dm context")
                 await ctx.send("**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*")
+                scope = "global"
                 database_key = "users:global"
         else:
             database_key = "users:global"
@@ -214,17 +215,19 @@ class Score(commands.Cog):
         database_key = ""
         if scope in ("server", "s"):
             if ctx.guild is not None:
-                database_key = f"incorrect:{ctx.guild.id}"
+                database_key = f"incorrect.server:{ctx.guild.id}"
             else:
                 logger.info("dm context")
                 await ctx.send("**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*")
+                scope = "global"
                 database_key = "incorrect:global"
         elif scope in ("me", "m"):
-            database_key = f"incorrect:{ctx.author.id}"
+            database_key = f"incorrect.user:{ctx.author.id}"
         else:
             database_key = "incorrect:global"
 
         if database.zcard(database_key) is 0:
+            logger.info(f"no users in {database_key}")
             await ctx.send("There are no birds in the database.")
             return
 
