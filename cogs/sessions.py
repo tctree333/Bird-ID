@@ -22,16 +22,16 @@ from discord.ext import commands
 from data.data import database, logger, states
 from functions import channel_setup, user_setup, check_state_role
 
-#TODO: change bw to boolean
 class Sessions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
     async def _send_options(self, ctx, preamble):
         bw, addon, state = database.hmget(f"session.data:{str(ctx.author.id)}", ["bw", "addon", "state"])
+        print(bw)
         await ctx.send(
             preamble + f"""*Age/Sex:* {str(addon)[2:-1] if addon else 'default'}
-*Black & White:* {bw!=b''}
+*Black & White:* {bw==b'bw'}
 *Special bird list:* {str(state)[2:-1] if state else 'None'}"""
         )
     
@@ -82,12 +82,11 @@ class Sessions(commands.Cog):
                 bw = "bw"
             else:
                 bw = ""
-            #TODO: extract the set out as a variable
-            #TODO: make multi-state sessions work
-            if set(states.keys()).intersection(set(arg.upper() for arg in args)):
-                state = " ".join(set(states.keys()).intersection(set(arg.upper() for arg in args))).strip()
+            states_args = set(states.keys()) & {arg.upper() for arg in args}
+            if states_args:
+                state = " ".join(states_args).strip()
             else:
-                state = ""
+                state = " ".join(check_state_role(ctx))
             if "female" in args and "juvenile" in args:
                 await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
                 return
@@ -97,8 +96,6 @@ class Sessions(commands.Cog):
                 addon = "juvenile"
             else:
                 addon = ""
-            if not state:
-                state = check_state_role(ctx)[0]
             logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}")
             
             database.hmset(
@@ -127,13 +124,13 @@ class Sessions(commands.Cog):
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def session(self, ctx, *, args_str: str = ""):
         logger.info("view session")
-        logger.info(f"args: {args_str}")
         
         await channel_setup(ctx)
         await user_setup(ctx)
         
         if database.exists(f"session.data:{str(ctx.author.id)}"):
             args = args_str.split(" ")
+            logger.info(f"args: {args}")
             if "bw" in args:
                 if len(database.hget(f"session.data:{str(ctx.author.id)}", "bw")) is 0:
                     logger.info("adding bw")
@@ -141,9 +138,9 @@ class Sessions(commands.Cog):
                 else:
                     logger.info("removing bw")
                     database.hset(f"session.data:{str(ctx.author.id)}", "bw", "")
-            #TODO: refactor to reuse same code as start session
-            if len(set(states.keys()) & {arg.upper() for arg in args}) is not 0:
-                toggle_states = list(set(states.keys()) & {arg.upper() for arg in args})
+            states_args = set(states.keys()) & {arg.upper() for arg in args}
+            if states_args:
+                toggle_states = list(states_args)
                 current_states = str(database.hget(f"session.data:{str(ctx.author.id)}", "state"))[2:-1].split(" ")
                 add_states = []
                 logger.info(f"toggle states: {toggle_states}")
