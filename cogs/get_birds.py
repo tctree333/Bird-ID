@@ -48,23 +48,32 @@ class Birds(commands.Cog):
     @commands.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile] [bw]")
     # 5 second cooldown
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def bird(self, ctx, add_on="", bw=""):
+    async def bird(self, ctx, add_on: str = "", bw_str: str = ""):
         logger.info("bird")
         
         await channel_setup(ctx)
         await user_setup(ctx)
-        
-        if not (add_on == "female" or add_on == "juvenile" or add_on == "bw" or add_on == ""):
+        valid_addons = ("female", "juvenile", "f", "j", "")
+        if add_on == "bw":
+            if not bw_str in valid_addons:
+                await ctx.send("This command only takes female, juvenile, or nothing!")
+                return
+            add_on = bw_str
+            bw = True
+        elif bw_str == "bw":
+            bw = True
+        elif bw_str == "":
+            bw = False
+        else:
+            await ctx.send("This command only takes bw or nothing!")
+            return
+        if add_on not in valid_addons:
             await ctx.send("This command only takes female, juvenile, or nothing!")
             return
-        
-        if add_on == "bw":
-            add_on = ""
-            bw = True
-        elif bw == "bw":
-            bw = True
-        else:
-            bw = False
+        if add_on == "f":
+            add_on = "female"
+        elif add_on == "j":
+            add_on = "juvenile"
         
         if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("session parameters")

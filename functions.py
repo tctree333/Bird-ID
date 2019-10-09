@@ -511,8 +511,9 @@ async def _download_helper(path, url, session):
             
             elif content_type.partition("/")[0] == "audio":
                 try:
-                    ext = "." + (set(ext[1:]
-                                     for ext in guess_all_extensions(content_type)).intersection(valid_audio_extensions)).pop()
+                    ext = "." + (
+                        set(ext[1:] for ext in guess_all_extensions(content_type)).intersection(valid_audio_extensions)
+                    ).pop()
                 except KeyError:
                     raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
             

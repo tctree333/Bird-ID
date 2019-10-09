@@ -87,12 +87,14 @@ class Sessions(commands.Cog):
                 state = " ".join(states_args).strip()
             else:
                 state = " ".join(check_state_role(ctx))
-            if "female" in args and "juvenile" in args:
+            female = "female" in args or "f" in args
+            juvenile = "juvenile" in args or "j" in args
+            if female and juvenile:
                 await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
                 return
-            elif "female" in args:
+            elif female:
                 addon = "female"
-            elif "juvenile" in args:
+            elif juvenile:
                 addon = "juvenile"
             else:
                 addon = ""
@@ -149,11 +151,12 @@ class Sessions(commands.Cog):
                     add_states.append(state)
                 logger.info(f"adding states: {add_states}")
                 database.hset(f"session.data:{str(ctx.author.id)}", "state", " ".join(add_states).strip())
-            
-            if "female" in args and "juvenile" in args:
+            female = "female" in args or "f" in args
+            juvenile = "juvenile" in args or "j" in args
+            if female and juvenile:
                 await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
                 return
-            elif "female" in args:
+            elif female:
                 addon = "female"
                 if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) is 0:
                     logger.info("adding female")
@@ -161,7 +164,7 @@ class Sessions(commands.Cog):
                 else:
                     logger.info("removing female")
                     database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
-            elif "juvenile" in args:
+            elif juvenile:
                 addon = "juvenile"
                 if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) is 0:
                     logger.info("adding juvenile")
