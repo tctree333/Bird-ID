@@ -82,7 +82,7 @@ class Sessions(commands.Cog):
                 bw = "bw"
             else:
                 bw = ""
-            states_args = set(states.keys()) & {arg.upper() for arg in args}
+            states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
                 state = " ".join(states_args).strip()
             else:
@@ -138,7 +138,7 @@ class Sessions(commands.Cog):
                 else:
                     logger.info("removing bw")
                     database.hset(f"session.data:{str(ctx.author.id)}", "bw", "")
-            states_args = set(states.keys()) & {arg.upper() for arg in args}
+            states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
                 toggle_states = list(states_args)
                 current_states = str(database.hget(f"session.data:{str(ctx.author.id)}", "state"))[2:-1].split(" ")
