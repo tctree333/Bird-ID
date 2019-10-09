@@ -66,7 +66,7 @@ class Sessions(commands.Cog):
         usage="[bw] [state] [female|juvenile]"
     )
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
-    async def start(self, ctx, *, args: str = ""):
+    async def start(self, ctx, *, args_str: str = ""):
         logger.info("start session")
         
         await channel_setup(ctx)
@@ -77,7 +77,7 @@ class Sessions(commands.Cog):
             await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session`*")
             return
         else:
-            args = args.split(" ")
+            args = args_str.split(" ")
             logger.info(f"args: {args}")
             bw = ""
             state = ""

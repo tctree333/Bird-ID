@@ -173,7 +173,6 @@ class Birds(commands.Cog):
         songAnswered = int(database.hget(f"channel:{str(ctx.channel.id)}", "sAnswered"))
         # check to see if previous bird was answered
         if songAnswered:  # if yes, give a new bird
-            roles = []
             roles = check_state_role(ctx)
             if database.exists(f"session.data:{ctx.author.id}"):
                 logger.info("session active")
@@ -187,13 +186,10 @@ class Birds(commands.Cog):
                     roles = check_state_role(ctx)
                 logger.info(f"roles: {roles}")
             
-            birds = []
             if roles:
-                for state in roles:
-                    birds += states[state]["songBirds"]
-                birds = list(set(birds))
+                birds = list(set(states[state]["songBirds"] for state in roles))
             else:
-                birds += songBirds
+                birds = songBirds
             logger.info(f"number of birds: {len(birds)}")
             
             currentSongBird = random.choice(birds)

@@ -35,8 +35,8 @@ class Score(commands.Cog):
         
         totalCorrect = int(database.zscore("score:global", str(ctx.channel.id)))
         await ctx.send(
-            f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! "
-            + "Good job everyone!"
+            f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! " +
+            "Good job everyone!"
         )
     
     # sends correct answers by a user
@@ -48,12 +48,7 @@ class Score(commands.Cog):
         aliases=["us"]
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def userscore(
-        self,
-        ctx,
-        *,
-        user: typing.Optional[typing.Union[discord.Member, str]] = None
-    ):
+    async def userscore(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
         logger.info("user score")
         
         await channel_setup(ctx)
@@ -74,21 +69,14 @@ class Score(commands.Cog):
         else:
             if database.zscore("users:global", str(ctx.author.id)) is not None:
                 user = f"<@{str(ctx.author.id)}>"
-                times = str(
-                    int(database.zscore("users:global", str(ctx.author.id)))
-                )
+                times = str(int(database.zscore("users:global", str(ctx.author.id))))
             else:
-                await ctx.send(
-                    "You haven't used this bot yet! (except for this)"
-                )
+                await ctx.send("You haven't used this bot yet! (except for this)")
                 return
         
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
-        embed.add_field(
-            name="User Score:",
-            value=f"{user} has answered correctly {times} times."
-        )
+        embed.add_field(name="User Score:", value=f"{user} has answered correctly {times} times.")
         await ctx.send(embed=embed)
     
     # leaderboard - returns top 1-10 users
@@ -119,9 +107,7 @@ class Score(commands.Cog):
         
         if not scope in ("global", "server", "g", "s"):
             logger.info("invalid scope")
-            await ctx.send(
-                f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server`"
-            )
+            await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server`")
             return
         
         if placings > 10 or placings < 1:
@@ -136,9 +122,7 @@ class Score(commands.Cog):
                 scope = "server"
             else:
                 logger.info("dm context")
-                await ctx.send(
-                    "**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*"
-                )
+                await ctx.send("**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*")
                 scope = "global"
                 database_key = "users:global"
         else:
@@ -153,9 +137,7 @@ class Score(commands.Cog):
         if placings > database.zcard(database_key):
             placings = database.zcard(database_key)
         
-        leaderboard_list = database.zrevrangebyscore(
-            database_key, "+inf", "-inf", 0, placings, True
-        )
+        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", 0, placings, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
@@ -177,32 +159,21 @@ class Score(commands.Cog):
             
             leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
         
-        embed.add_field(
-            name=f"Leaderboard ({scope})", value=leaderboard, inline=False
-        )
+        embed.add_field(name=f"Leaderboard ({scope})", value=leaderboard, inline=False)
         
         if database.zscore(database_key, str(ctx.author.id)) is not None:
-            placement = int(
-                database.zrevrank(database_key, str(ctx.author.id))
-            ) + 1
-            embed.add_field(
-                name="You:",
-                value=f"You are #{str(placement)} on the leaderboard.",
-                inline=False
-            )
+            placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
+            embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.", inline=False)
         else:
-            embed.add_field(
-                name="You:", value="You haven't answered any correctly."
-            )
+            embed.add_field(name="You:", value="You haven't answered any correctly.")
         
         await ctx.send(embed=embed)
     
     # missed - returns top 1-10 missed birds
     @commands.command(
         brief="- Top globally incorrect birds",
-        help=
-        "- Top globally incorrect birds, argument can be between 1 and 10, default is 5. "
-        + "Scope is either global, server, or me. (g, s, m)",
+        help="- Top globally incorrect birds, argument can be between 1 and 10, default is 5. " +
+        "Scope is either global, server, or me. (g, s, m)",
         aliases=["m"]
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
@@ -226,9 +197,7 @@ class Score(commands.Cog):
         
         if not scope in ("global", "server", "me", "g", "s", "m"):
             logger.info("invalid scope")
-            await ctx.send(
-                f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me`"
-            )
+            await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me`")
             return
         
         if placings > 10 or placings < 1:
@@ -243,9 +212,7 @@ class Score(commands.Cog):
                 scope = "server"
             else:
                 logger.info("dm context")
-                await ctx.send(
-                    "**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*"
-                )
+                await ctx.send("**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*")
                 scope = "global"
                 database_key = "incorrect:global"
         elif scope in ("me", "m"):
@@ -263,18 +230,14 @@ class Score(commands.Cog):
         if placings > database.zcard(database_key):
             placings = database.zcard(database_key)
         
-        leaderboard_list = database.zrevrangebyscore(
-            database_key, "+inf", "-inf", 0, placings, True
-        )
+        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", 0, placings, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
         
         for i, stats in enumerate(leaderboard_list):
             leaderboard += f"{str(i+1)}. **{str(stats[0])[2:-1]}** - {str(int(stats[1]))}\n"
-        embed.add_field(
-            name=f"Top Missed Birds ({scope})", value=leaderboard, inline=False
-        )
+        embed.add_field(name=f"Top Missed Birds ({scope})", value=leaderboard, inline=False)
         
         await ctx.send(embed=embed)
     
@@ -285,11 +248,7 @@ class Score(commands.Cog):
         if isinstance(error, commands.BadArgument):
             await ctx.send('Not an integer!')
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send(
-                "**Cooldown.** Try again after " +
-                str(round(error.retry_after)) + " s.",
-                delete_after=5.0
-            )
+            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
         elif isinstance(error, commands.BotMissingPermissions):
             logger.error("missing permissions error")
             await ctx.send(
@@ -312,11 +271,7 @@ class Score(commands.Cog):
         if isinstance(error, commands.BadArgument):
             await ctx.send('Not an integer!')
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send(
-                "**Cooldown.** Try again after " +
-                str(round(error.retry_after)) + " s.",
-                delete_after=5.0
-            )
+            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
         elif isinstance(error, commands.BotMissingPermissions):
             logger.error("missing permissions error")
             await ctx.send(

@@ -102,7 +102,7 @@ class States(commands.Cog):
             elif states[arg]["aliases"][0].lower() not in user_role_names[1:]:
                 logger.info("doesn't have role")
                 await ctx.send(
-                    f"**You don't have the `{arg}` state role!**\n*Your Roles:* `{', '.join(map(str, list(user_role_names[1:])))}`"
+                    f"**You don't have the `{arg}` state role!**\n*Your Roles:* `{', '.join(map(str, user_role_names[1:]))}`"
                 )
             
             else:
