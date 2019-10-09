@@ -36,16 +36,15 @@ class Sessions(commands.Cog):
         )
     
     async def _send_stats(self, ctx, opts_preamble):
-        start, stop, correct, incorrect, total = map(
-            int,
-            database.hmget(f"session.data:{str(ctx.author.id)}", ["start", "stop", "correct", "incorrect", "total"])
+        start, correct, incorrect, total = map(
+            int, database.hmget(f"session.data:{str(ctx.author.id)}", ["start", "correct", "incorrect", "total"])
         )
-        elapsed = str(datetime.timedelta(seconds=stop - start))
+        elapsed = str(datetime.timedelta(seconds=round(time.time()) - start))
         try:
             accuracy = round(100 * (correct / (correct + incorrect)), 2)
         except ZeroDivisionError:
             accuracy = 0
-        database.delete(f"session.data:{str(ctx.author.id)}")
+        
         await self._send_options(ctx, opts_preamble)
         await ctx.send(
             f"""**Session Stats:**
@@ -186,6 +185,7 @@ class Sessions(commands.Cog):
             database.hset(f"session.data:{str(ctx.author.id)}", "stop", round(time.time()))
             
             await self._send_stats(ctx, "**Session stopped.**\n**Session Options:**\n")
+            database.delete(f"session.data:{str(ctx.author.id)}")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!start`*")
 

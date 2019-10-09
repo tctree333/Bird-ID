@@ -140,7 +140,7 @@ def _state_lists():
             with open(f'data/state/{state}/{filename}.txt', 'r') as f:
                 states[state][filename] = [
                     string.capwords(line.strip().replace("-", " ")) if filename is not "aliases" else line.strip()
-                    for line in f
+                    for line in f if line != "EMPTY"
                 ]
             logger.info(f"Done with {filename}")
         logger.info(f"Done with {state}")
@@ -148,19 +148,16 @@ def _state_lists():
     return states
 
 def _all_birds():
-    lists = [birdList, sciBirdList, songBirds, sciSongBirds]
-    list_names = ["birdList", "sciBirdList", "songBirds", "sciSongBirds"]
+    lists = (birdList, sciBirdList, songBirds, sciSongBirds)
+    list_names = ("birdList", "sciBirdList", "songBirds", "sciSongBirds")
     master_lists = []
     for bird_list in lists:
-        birds = []
-        birds += bird_list
+        birds = bird_list
         logger.info(f"Working on {list_names[lists.index(bird_list)]}")
         
-        for state in list(states.keys()):
-            birds += states[state][list_names[lists.index(bird_list)]]
-        birds = set(birds)
-        birds.discard("Empty")
-        master_lists.append(list(birds))
+        for state in states.values():
+            birds += state[list_names[lists.index(bird_list)]]
+        master_lists.append(birds)
         logger.info(f"Done with {list_names[lists.index(bird_list)]}")
     logger.info("Done with master lists!")
     return master_lists
