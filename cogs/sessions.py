@@ -20,7 +20,7 @@ import time
 from discord.ext import commands
 
 from data.data import database, logger, states
-from functions import channel_setup, user_setup
+from functions import channel_setup, user_setup, check_state_role
 
 #TODO: change bw to boolean
 class Sessions(commands.Cog):
@@ -31,7 +31,7 @@ class Sessions(commands.Cog):
         bw, addon, state = database.hmget(f"session.data:{str(ctx.author.id)}", ["bw", "addon", "state"])
         await ctx.send(
             preamble + f"""*Age/Sex:* {str(addon)[2:-1] if addon else 'default'}
-*Black & White:* {bw!=''}
+*Black & White:* {bw!=b''}
 *Special bird list:* {str(state)[2:-1] if state else 'None'}"""
         )
     
@@ -78,15 +78,16 @@ class Sessions(commands.Cog):
         else:
             args = args_str.split(" ")
             logger.info(f"args: {args}")
-            bw = ""
-            state = ""
-            addon = ""
             if "bw" in args:
                 bw = "bw"
-            if len(
-                set(states.keys()).intersection(set(arg.upper() for arg in args))
-            ) is not 0:  #TODO: extract the set out as a variable
+            else:
+                bw = ""
+            #TODO: extract the set out as a variable
+            #TODO: make multi-state sessions work
+            if set(states.keys()).intersection(set(arg.upper() for arg in args)):
                 state = " ".join(set(states.keys()).intersection(set(arg.upper() for arg in args))).strip()
+            else:
+                state = ""
             if "female" in args and "juvenile" in args:
                 await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
                 return
@@ -94,7 +95,10 @@ class Sessions(commands.Cog):
                 addon = "female"
             elif "juvenile" in args:
                 addon = "juvenile"
-            
+            else:
+                addon = ""
+            if not state:
+                state = check_state_role(ctx)[0]
             logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}")
             
             database.hmset(
@@ -105,7 +109,7 @@ class Sessions(commands.Cog):
                     "incorrect": 0,
                     "total": 0,
                     "bw": bw,
-                    "state": state.strip(),
+                    "state": state,
                     "addon": addon
                 }
             )

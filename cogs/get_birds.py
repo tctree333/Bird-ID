@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import itertools
 import random
 from discord.ext import commands
 from data.data import birdList, database, goatsuckers, songBirds, logger, states
@@ -98,13 +99,13 @@ class Birds(commands.Cog):
                 roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
                 if roles[0] == "":
                     roles = []
-                if len(roles) is 0:
+                if not roles:
                     logger.info("no session lists")
                     roles = check_state_role(ctx)
                 logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
             
             if roles:
-                birds = list(set(states[state]["birdList"] for state in roles))
+                birds = list(itertools.chain.from_iterable(states[state]["birdList"] for state in roles))
             else:
                 birds = birdList
             logger.info(f"number of birds: {len(birds)}")
@@ -187,7 +188,7 @@ class Birds(commands.Cog):
                 logger.info(f"roles: {roles}")
             
             if roles:
-                birds = list(set(states[state]["songBirds"] for state in roles))
+                birds = list(itertools.chain.from_iterable(states[state]["songBirds"] for state in roles))
             else:
                 birds = songBirds
             logger.info(f"number of birds: {len(birds)}")
