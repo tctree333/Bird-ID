@@ -25,7 +25,7 @@ from functions import channel_setup, user_setup, check_state_role
 class Sessions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     async def _send_options(self, ctx, preamble):
         bw, addon, state = database.hmget(f"session.data:{str(ctx.author.id)}", ["bw", "addon", "state"])
         print(bw)
@@ -34,7 +34,7 @@ class Sessions(commands.Cog):
 *Black & White:* {bw==b'bw'}
 *Special bird list:* {str(state)[2:-1] if state else 'None'}"""
         )
-    
+
     async def _send_stats(self, ctx, opts_preamble):
         start, correct, incorrect, total = map(
             int, database.hmget(f"session.data:{str(ctx.author.id)}", ["start", "correct", "incorrect", "total"])
@@ -44,7 +44,7 @@ class Sessions(commands.Cog):
             accuracy = round(100 * (correct / (correct + incorrect)), 2)
         except ZeroDivisionError:
             accuracy = 0
-        
+
         await self._send_options(ctx, opts_preamble)
         await ctx.send(
             f"""**Session Stats:**
@@ -54,23 +54,24 @@ class Sessions(commands.Cog):
 *Total Birds:* {total}
 *Accuracy:* {accuracy}%"""
         )
-    
+
     # starts session
     @commands.command(
         brief="- Starts session",
-        help="- Starts session.\n" + "Arguments passed will become the default arguments to b!bird, " +
-        "but can be manually overwritten during use. " + "These settings can be changed at any time with b!session, " +
-        "and arguments can be passed in any order. " + "However, having both females and juveniles are not supported.",
+        help="""- Starts session.
+        Arguments passed will become the default arguments to b!bird, but can be manually overwritten during use. 
+        These settings can be changed at any time with b!session, and arguments can be passed in any order. 
+        However, having both females and juveniles are not supported.""",
         aliases=["st"],
         usage="[bw] [state] [female|juvenile]"
     )
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def start(self, ctx, *, args_str: str = ""):
         logger.info("start session")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         if database.exists(f"session.data:{str(ctx.author.id)}"):
             logger.info("already session")
             await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session`*")
@@ -99,7 +100,7 @@ class Sessions(commands.Cog):
             else:
                 addon = ""
             logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}")
-            
+
             database.hmset(
                 f"session.data:{str(ctx.author.id)}", {
                     "start": round(time.time()),
@@ -113,12 +114,12 @@ class Sessions(commands.Cog):
                 }
             )
             await self._send_options(ctx, "**Session started with options:**\n")
-    
+
     # views session
     @commands.command(
         brief="- Views session",
-        help="- Views session\n" + "Sessions will record your activity for an amount of time and " +
-        "will give you stats on how your performance " + "and also set global variables such as black and white, " +
+        help="- Views session\nSessions will record your activity for an amount of time and " +
+        "will give you stats on how your performance and also set global variables such as black and white, " +
         "state specific bird lists, or bird age/sex. ",
         aliases=["ses", "sesh"],
         usage="[bw] [state] [female|juvenile]"
@@ -126,10 +127,10 @@ class Sessions(commands.Cog):
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def session(self, ctx, *, args_str: str = ""):
         logger.info("view session")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         if database.exists(f"session.data:{str(ctx.author.id)}"):
             args = args_str.split(" ")
             logger.info(f"args: {args}")
@@ -175,19 +176,19 @@ class Sessions(commands.Cog):
             await self._send_stats(ctx, f"**Session started previously with options:**\n")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!start`*")
-    
+
     # stops session
     @commands.command(help="- Stops session", aliases=["sp", "stp"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def stop(self, ctx):
         logger.info("stop session")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         if database.exists(f"session.data:{str(ctx.author.id)}"):
             database.hset(f"session.data:{str(ctx.author.id)}", "stop", round(time.time()))
-            
+
             await self._send_stats(ctx, "**Session stopped.**\n**Session Options:**\n")
             database.delete(f"session.data:{str(ctx.author.id)}")
         else:

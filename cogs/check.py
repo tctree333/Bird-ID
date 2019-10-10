@@ -30,13 +30,13 @@ achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690]
 class Check(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     # Check command - argument is the guess
     @commands.command(help='- Checks your answer.', usage="guess", aliases=["guess", "c"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def check(self, ctx, *, arg):
         logger.info("check")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
         currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
@@ -49,11 +49,11 @@ class Check(commands.Cog):
             database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
             if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
-                
+
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
-                
+
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
@@ -64,30 +64,30 @@ class Check(commands.Cog):
                     filename = 'achievements/' + number + ".PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
-            
+
             else:
                 logger.info("incorrect")
-                
+
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
-                
+
                 incorrect_increment(ctx, str(currentBird), 1)
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
             logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
             logger.info("args: " + str(arg.lower().replace("-", " ")))
-    
+
     # Check command - argument is the guess
     @commands.command(help='- Checks your goatsucker.', usage="guess", aliases=["cg"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def checkgoat(self, ctx, *, arg):
         logger.info("checkgoat")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
@@ -99,11 +99,11 @@ class Check(commands.Cog):
             database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
             if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
-                
+
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
-                
+
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
@@ -114,30 +114,30 @@ class Check(commands.Cog):
                     filename = 'achievements/' + number + ".PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
-            
+
             else:
                 logger.info("incorrect")
-                
+
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
-                
+
                 incorrect_increment(ctx, str(currentBird), 1)
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
             logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
             logger.info("args: " + str(arg.lower().replace("-", " ")))
-    
+
     # Check command - argument is the guess
     @commands.command(help='- Checks the song', aliases=["songcheck", "cs", "sc"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def checksong(self, ctx, *, arg):
         logger.info("checksong")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         currentSongBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
         if currentSongBird == "":  # no bird
             await ctx.send("You must ask for a bird call first!")
@@ -148,11 +148,11 @@ class Check(commands.Cog):
             database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
             if spellcheck(arg, currentSongBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
-                
+
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
-                
+
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentSongBird} (bird)")
                 await ctx.send(page.url)
@@ -163,14 +163,14 @@ class Check(commands.Cog):
                     filename = f"achievements/{number}.PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
-            
+
             else:
                 logger.info("incorrect")
-                
+
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
-                
+
                 incorrect_increment(ctx, str(currentSongBird), 1)
                 await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
                 page = wikipedia.page(f"{currentSongBird} (bird)")

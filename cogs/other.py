@@ -27,37 +27,37 @@ from functions import (channel_setup, get_sciname, send_bird, send_birdsong, use
 class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     # Info - Gives call+image of 1 bird
     @commands.command(help="- Gives an image and call of a bird", aliases=['i'])
     @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
     async def info(self, ctx, *, arg):
         logger.info("info")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         matches = get_close_matches(arg, birdListMaster + sciBirdListMaster, n=1)
         if matches:
             bird = matches[0]
-            
+
             delete = await ctx.send("Please wait a moment.")
             await send_bird(ctx, str(bird), message="Here's the image!")
             await send_birdsong(ctx, str(bird), message="Here's the call!")
             await delete.delete()
-        
+
         else:
             await ctx.send("Bird not found. Are you sure it's on the list?")
-    
+
     # Wiki command - argument is the wiki page
     @commands.command(help="- Fetch the wikipedia page for any given argument")
     @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
     async def wiki(self, ctx, *, arg):
         logger.info("wiki")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         try:
             page = wikipedia.page(arg)
             await ctx.send(page.url)
@@ -65,17 +65,17 @@ class Other(commands.Cog):
             await ctx.send("Sorry, that page was not found. Try being more specific.")
         except wikipedia.exceptions.PageError:
             await ctx.send("Sorry, that page was not found.")
-    
+
     # meme command - sends a random bird video/gif
     @commands.command(help="- Sends a funny bird video!")
     @commands.cooldown(1, 300.0, type=commands.BucketType.channel)
     async def meme(self, ctx):
         logger.info("meme")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
         await ctx.send(random.choice(memeList))
-    
+
     # bot info command - gives info on bot
     @commands.command(
         help="- Gives info on bot, support server invite, stats", aliases=["bot_info", "support", "stats"]
@@ -83,10 +83,10 @@ class Other(commands.Cog):
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def botinfo(self, ctx):
         logger.info("bot info")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         embed.add_field(
@@ -110,16 +110,16 @@ class Other(commands.Cog):
         )
         await ctx.send(embed=embed)
         await ctx.send("https://discord.gg/fXxYyDJ")
-    
+
     # invite command - sends invite link
     @commands.command(help="- Get the invite link for this bot")
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def invite(self, ctx):
         logger.info("invite")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         embed.add_field(
@@ -132,7 +132,7 @@ For more information on the differences between the two bots, visit our support 
         )
         await ctx.send(embed=embed)
         await ctx.send("https://discord.gg/fXxYyDJ")
-    
+
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
     async def test(self, ctx, *, bird):

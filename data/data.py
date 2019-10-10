@@ -81,7 +81,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     if issubclass(exc_type, KeyboardInterrupt):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
-    
+
     logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 sys.excepthook = handle_exception
@@ -154,7 +154,7 @@ def _all_birds():
     for bird_list in lists:
         birds = bird_list
         logger.info(f"Working on {list_names[lists.index(bird_list)]}")
-        
+
         for state in states.values():
             birds += state[list_names[lists.index(bird_list)]]
         master_lists.append(birds)

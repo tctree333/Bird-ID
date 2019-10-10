@@ -66,7 +66,7 @@ async def channel_setup(ctx):
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
         logger.info("channel data added")
         await ctx.send("Ok, setup! I'm all ready to use!")
-    
+
     if database.zscore("score:global", str(ctx.channel.id)) is not None:
         logger.info("channel score ok")
     else:
@@ -82,7 +82,7 @@ async def user_setup(ctx):
         database.zadd("users:global", {str(ctx.author.id): 0})
         logger.info("user global added")
         await ctx.send("Welcome <@" + str(ctx.author.id) + ">!")
-    
+
     if ctx.guild is not None:
         logger.info("no dm")
         if database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id)) is not None:
@@ -107,13 +107,13 @@ async def bird_setup(ctx, bird):
     else:
         database.zadd("incorrect:global", {string.capwords(str(bird)): 0})
         logger.info("bird global added")
-    
+
     if database.zscore(f"incorrect.user:{ctx.author.id}", string.capwords(str(bird))) is not None:
         logger.info("bird user ok")
     else:
         database.zadd(f"incorrect.user:{ctx.author.id}", {string.capwords(str(bird)): 0})
         logger.info("bird user added")
-    
+
     if ctx.guild is not None:
         logger.info("no dm")
         if database.zscore(f"incorrect.server:{ctx.guild.id}", string.capwords(str(bird))) is not None:
@@ -168,7 +168,7 @@ async def get_sciname(bird, session=None):
                 code = bird
             else:
                 raise
-        
+
         sciname_url = SCINAME_URL.format(urllib.parse.quote(code))
         async with session.get(sciname_url) as sciname_response:
             if sciname_response.status != 200:
@@ -267,11 +267,11 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
         if on_error is not None:
             on_error(ctx)
         return
-    
+
     delete = await ctx.send("**Fetching.** This may take a while.")
     # trigger "typing" discord message
     await ctx.trigger_typing()
-    
+
     try:
         response = await get_image(ctx, bird, addOn)
     except GenericError as e:
@@ -280,7 +280,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
         if on_error is not None:
             on_error(ctx)
         return
-    
+
     filename = str(response[0])
     extension = str(response[1])
     statInfo = os.stat(filename)
@@ -294,10 +294,10 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
             file_stream = await loop.run_in_executor(None, fn)
         else:
             file_stream = filename
-        
+
         if message is not None:
             await ctx.send(message)
-        
+
         # change filename to avoid spoilers
         file_obj = discord.File(file_stream, filename=f"bird.{extension}")
         await ctx.send(file=file_obj)
@@ -315,11 +315,11 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
         if on_error is not None:
             on_error(ctx)
         return
-    
+
     delete = await ctx.send("**Fetching.** This may take a while.")
     # trigger "typing" discord message
     await ctx.trigger_typing()
-    
+
     try:
         response = await get_song(ctx, bird)
     except GenericError as e:
@@ -328,15 +328,15 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
         if on_error is not None:
             on_error(ctx)
         return
-    
+
     filename = str(response[0])
     extension = str(response[1])
-    
+
     # remove spoilers in tag metadata
     audioFile = eyed3.load(filename)
     if audioFile is not None and audioFile.tag is not None:
         audioFile.tag.remove(filename)
-    
+
     statInfo = os.stat(filename)
     if statInfo.st_size > 8000000:  # another filesize check
         await delete.delete()
@@ -365,7 +365,7 @@ async def get_image(ctx, bird, addOn=None):
         j = (prevJ + 1) % len(images)
         logger.debug("prevJ: " + str(prevJ))
         logger.debug("j: " + str(j))
-        
+
         for x in range(j, len(images)):  # check file type and size
             image_link = images[x]
             extension = image_link.split('.')[-1]
@@ -378,11 +378,11 @@ async def get_image(ctx, bird, addOn=None):
             elif x == len(images) - 1:
                 j = (j + 1) % (len(images))
                 raise GenericError("No Valid Images Found", code=999)
-        
+
         database.hset(f"channel:{str(ctx.channel.id)}", "prevJ", str(j))
     else:
         raise GenericError("No Images Found", code=100)
-    
+
     return [image_link, extension]
 
 # Function that gets bird sounds to run in pool (blocking prevention)
@@ -401,7 +401,7 @@ async def get_song(ctx, bird):
         k = (prevK + 1) % len(songs)
         logger.debug("prevK: " + str(prevK))
         logger.debug("k: " + str(k))
-        
+
         for x in range(k, len(songs)):  # check file type and size
             song_link = songs[x]
             extension = song_link.split('.')[-1]
@@ -414,11 +414,11 @@ async def get_song(ctx, bird):
             elif x == len(songs) - 1:
                 k = (k + 1) % (len(songs))
                 raise GenericError("No Valid Songs Found", code=999)
-        
+
         database.hset(f"channel:{str(ctx.channel.id)}", "prevK", str(k))
     else:
         raise GenericError("No Songs Found", code=100)
-    
+
     return [song_link, extension]
 
 # Manages cache
@@ -441,22 +441,22 @@ async def get_files(sciBird, media_type, addOn=""):
 async def download_media(bird, media_type, addOn="", directory=None, session=None):
     if directory is None:
         directory = f"cache/{media_type}/{bird}{addOn}/"
-    
+
     if addOn == "female":
         sex = "f"
     else:
         sex = ""
-    
+
     if addOn == "juvenile":
         age = "j"
     else:
         age = ""
-    
+
     if media_type == "images":
         media = "p"
     elif media_type == "songs":
         media = "a"
-    
+
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
             session = await stack.enter_async_context(aiohttp.ClientSession())
@@ -508,7 +508,7 @@ async def _download_helper(path, url, session):
                         content_type)).intersection(valid_image_extensions)).pop()
                 except KeyError:
                     raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
-            
+
             elif content_type.partition("/")[0] == "audio":
                 try:
                     ext = "." + (
@@ -516,12 +516,12 @@ async def _download_helper(path, url, session):
                     ).pop()
                 except KeyError:
                     raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
-            
+
             else:
                 ext = guess_extension(content_type)  # type: ignore
                 if ext is None:
                     raise GenericError(f"No extensions found.")
-            
+
             filename = f"{path}{ext}"
             # from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5
             with open(filename, 'wb') as out_file:

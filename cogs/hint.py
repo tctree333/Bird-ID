@@ -22,46 +22,46 @@ from functions import channel_setup, user_setup
 class Hint(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     # give hint
     @commands.command(help="- Gives first letter of current bird", aliases=["h"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hint(self, ctx):
         logger.info("hint")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
         if currentBird != "":  # check if there is bird
             await ctx.send(f"The first letter is {currentBird[0]}")
         else:
             await ctx.send("You need to ask for a bird first!")
-    
+
     # give hint for goat
     @commands.command(help="- Gives first letter of current goatsucker", aliases=["goathint", "hg", "gh"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hintgoat(self, ctx):
         logger.info("hintgoat")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
         if currentBird != "":  # check if there is bird
             await ctx.send(f"The first letter is {currentBird[0]}")
         else:
             await ctx.send("You need to ask for a bird first!")
-    
+
     # give hint for song
     @commands.command(help="- Gives first letter of current bird call", aliases=["songhint", "hs", "sh"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hintsong(self, ctx):
         logger.info("hintsong")
-        
+
         await channel_setup(ctx)
         await user_setup(ctx)
-        
+
         currentSongBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
         if currentSongBird != "":  # check if there is bird
             await ctx.send(f"The first letter is {currentSongBird[0]}")
