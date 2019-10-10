@@ -14,12 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from functions import channel_setup, user_setup
-from discord.ext import commands
 import string
-import discord
-from data.data import states, database, logger
 
+import discord
+from discord.ext import commands
+
+from data.data import logger, states
+from functions import channel_setup, user_setup
 
 class States(commands.Cog):
     def __init__(self, bot):
@@ -41,7 +42,9 @@ class States(commands.Cog):
         for arg in args:
             if arg not in list(states.keys()):
                 logger.info("invalid state")
-                await ctx.send(f"**Sorry, `{arg}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`")
+                await ctx.send(
+                    f"**Sorry, `{arg}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
+                )
 
             elif len(set(roles).intersection(set(states[arg]["aliases"]))) is 0:  # gets similarities
                 # need to add roles (does not have role)
@@ -52,18 +55,19 @@ class States(commands.Cog):
 
                 if states[arg]["aliases"][0].lower() in guild_role_names:
                     # guild has role
-                    index = guild_role_names.index(
-                        states[arg]["aliases"][0].lower())
+                    index = guild_role_names.index(states[arg]["aliases"][0].lower())
                     role = ctx.guild.get_role(guild_role_ids[index])
 
                 else:
                     # create role
                     logger.info("creating role")
-                    role = await ctx.guild.create_role(name=string.capwords(states[arg]["aliases"][0]),
-                                                    permissions=discord.Permissions.none(),
-                                                    hoist=False,
-                                                    mentionable=False,
-                                                    reason="Create state role for bird list")
+                    role = await ctx.guild.create_role(
+                        name=string.capwords(states[arg]["aliases"][0]),
+                        permissions=discord.Permissions.none(),
+                        hoist=False,
+                        mentionable=False,
+                        reason="Create state role for bird list"
+                    )
 
                 await ctx.author.add_roles(role, reason="Set state role for bird list")
                 await ctx.send(f"**Ok, added the {role.name} role!**")
@@ -91,16 +95,19 @@ class States(commands.Cog):
         for arg in args:
             if arg not in list(states.keys()):
                 logger.info("invalid state")
-                await ctx.send(f"**Sorry, `{arg}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`")
+                await ctx.send(
+                    f"**Sorry, `{arg}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
+                )
 
             elif states[arg]["aliases"][0].lower() not in user_role_names[1:]:
                 logger.info("doesn't have role")
-                await ctx.send(f"**You don't have the `{arg}` state role!**\n*Your Roles:* `{', '.join(map(str, list(user_role_names[1:])))}`")
+                await ctx.send(
+                    f"**You don't have the `{arg}` state role!**\n*Your Roles:* `{', '.join(map(str, user_role_names[1:]))}`"
+                )
 
             else:
                 logger.info("deleting role")
-                index = user_role_names.index(
-                    states[arg]["aliases"][0].lower())
+                index = user_role_names.index(states[arg]["aliases"][0].lower())
                 role = ctx.guild.get_role(user_role_ids[index])
                 await ctx.author.remove_roles(role, reason="Delete state role for bird list")
                 await ctx.send(f"**Ok, role {role.name} deleted!**")
@@ -109,22 +116,26 @@ class States(commands.Cog):
     async def set_error(self, ctx, error):
         logger.info("set error")
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"**Please enter your state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`")
+            await ctx.send(
+                f"**Please enter your state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
+            )
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after " +
-                           str(round(error.retry_after)) + " s.",
-                           delete_after=5.0)
+            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("**This command is unavaliable in DMs!**")
         elif isinstance(error, commands.BotMissingPermissions):
             logger.error("missing permissions error")
-            await ctx.send(f"""**The bot does not have enough permissions to fully function.**
+            await ctx.send(
+                f"""**The bot does not have enough permissions to fully function.**
 **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
-*Please try again once the correct permissions are set.*""")
+*Please try again once the correct permissions are set.*"""
+            )
         else:
-            await ctx.send("""**An uncaught set error has occurred.**
+            await ctx.send(
+                """**An uncaught set error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 
-**Error:** """ + str(error))
+**Error:** """ + str(error)
+            )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
 
@@ -134,23 +145,24 @@ class States(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"**Please enter a state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`")
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after " +
-                           str(round(error.retry_after)) + " s.",
-                           delete_after=5.0)
+            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("**This command is unavaliable in DMs!**")
         elif isinstance(error, commands.BotMissingPermissions):
             logger.error("missing permissions error")
-            await ctx.send(f"""**The bot does not have enough permissions to fully function.**
+            await ctx.send(
+                f"""**The bot does not have enough permissions to fully function.**
 **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
-*Please try again once the correct permissions are set.*""")
+*Please try again once the correct permissions are set.*"""
+            )
         else:
-            await ctx.send("""**An uncaught remove error has occurred.**
+            await ctx.send(
+                """**An uncaught remove error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 
-**Error:** """ + str(error))
+**Error:** """ + str(error)
+            )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
-
 
 def setup(bot):
     bot.add_cog(States(bot))

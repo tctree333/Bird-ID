@@ -14,27 +14,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import aiohttp
-import discord
-import eyed3
 import asyncio
 import contextlib
 import difflib
 import os
 import string
 import urllib.parse
-from PIL import Image
-from io import BytesIO
 from functools import partial
+from io import BytesIO
 from mimetypes import guess_all_extensions, guess_extension
 
+import aiohttp
+import discord
+import eyed3
+from PIL import Image
 
-from data.data import (GenericError, logger, states, database,
-                       sciBirdListMaster, sciSongBirdsMaster)
+from data.data import (GenericError, database, logger, sciBirdListMaster, sciSongBirdsMaster, states)
 
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
-CATALOG_URL = ("https://search.macaulaylibrary.org/catalog.json?searchField=species" +
-               "&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5")
+CATALOG_URL = (
+    "https://search.macaulaylibrary.org/catalog.json?searchField=species" +
+    "&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5"
+)
 SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
 COUNT = 20  # set this to include a margin of error in case some urls throw error code 476 due to still being processed
 
@@ -42,17 +43,26 @@ COUNT = 20  # set this to include a margin of error in case some urls throw erro
 valid_image_extensions = {"jpg", "png", "jpeg", "gif"}
 valid_audio_extensions = {"mp3"}
 
-
 # sets up new channel
 async def channel_setup(ctx):
     logger.info("checking channel setup")
     if database.exists(f"channel:{str(ctx.channel.id)}"):
         logger.info("channel data ok")
     else:
-        database.hmset(f"channel:{str(ctx.channel.id)}",
-                       {"bird": "", "answered": 1, "sBird": "", "sAnswered": 1,
-                        "goatsucker": "", "gsAnswered": 1,
-                        "prevJ": 20, "prevB": "", "prevS": "", "prevK": 20})
+        database.hmset(
+            f"channel:{str(ctx.channel.id)}", {
+                "bird": "",
+                "answered": 1,
+                "sBird": "",
+                "sAnswered": 1,
+                "goatsucker": "",
+                "gsAnswered": 1,
+                "prevJ": 20,
+                "prevB": "",
+                "prevS": "",
+                "prevK": 20
+            }
+        )
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
         logger.info("channel data added")
         await ctx.send("Ok, setup! I'm all ready to use!")
@@ -62,7 +72,6 @@ async def channel_setup(ctx):
     else:
         database.zadd("score:global", {str(ctx.channel.id): 0})
         logger.info("channel score added")
-
 
 # sets up new user
 async def user_setup(ctx):
@@ -90,7 +99,6 @@ async def user_setup(ctx):
     else:
         logger.info("dm context")
 
-
 # sets up new birds
 async def bird_setup(ctx, bird):
     logger.info("checking bird data")
@@ -116,25 +124,21 @@ async def bird_setup(ctx, bird):
     else:
         logger.info("dm context")
 
-
 # Function to run on error
 def error_skip(ctx):
     logger.info("ok")
     database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
     database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
 
-
 def error_skip_song(ctx):
     logger.info("ok")
     database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
     database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
 
-
 def error_skip_goat(ctx):
     logger.info("ok")
     database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
     database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
-
 
 def check_state_role(ctx):
     logger.info("checking roles")
@@ -150,7 +154,6 @@ def check_state_role(ctx):
         logger.info("dm context")
     logger.info(f"user roles: {user_states}")
     return user_states
-
 
 # fetch scientific name from common name or taxon code
 async def get_sciname(bird, session=None):
@@ -169,8 +172,11 @@ async def get_sciname(bird, session=None):
         sciname_url = SCINAME_URL.format(urllib.parse.quote(code))
         async with session.get(sciname_url) as sciname_response:
             if sciname_response.status != 200:
-                raise GenericError(f"An http error code of {sciname_response.status} occured" +
-                                   f" while fetching {sciname_url} for {code}", code=201)
+                raise GenericError(
+                    f"An http error code of {sciname_response.status} occured" +
+                    f" while fetching {sciname_url} for {code}",
+                    code=201
+                )
             sciname_data = await sciname_response.json()
             try:
                 sciname = sciname_data[0]["sciName"]
@@ -179,22 +185,20 @@ async def get_sciname(bird, session=None):
     logger.info(f"sciname: {sciname}")
     return sciname
 
-
 # fetch taxonomic code from common/scientific name
 async def get_taxon(bird, session=None):
     logger.info(f"getting taxon code for {bird}")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
             session = await stack.enter_async_context(aiohttp.ClientSession())
-        taxon_code_url = TAXON_CODE_URL.format(
-            urllib.parse.quote(
-                bird.replace("-", " ").replace("'s", "")
-            )
-        )
+        taxon_code_url = TAXON_CODE_URL.format(urllib.parse.quote(bird.replace("-", " ").replace("'s", "")))
         async with session.get(taxon_code_url) as taxon_code_response:
             if taxon_code_response.status != 200:
-                raise GenericError(f"An http error code of {taxon_code_response.status} occured" +
-                                   f" while fetching {taxon_code_url} for {bird}", code=201)
+                raise GenericError(
+                    f"An http error code of {taxon_code_response.status} occured" +
+                    f" while fetching {taxon_code_url} for {bird}",
+                    code=201
+                )
             taxon_code_data = await taxon_code_response.json()
             try:
                 logger.info(f"raw data: {taxon_code_data}")
@@ -204,8 +208,8 @@ async def get_taxon(bird, session=None):
                     logger.info("entering check")
                     for item in taxon_code_data:
                         logger.info(f"checking: {item}")
-                        if spellcheck(item["name"].split(" - ")[0], bird, 6
-                                      ) or spellcheck(item["name"].split(" - ")[1], bird, 6):
+                        if spellcheck(item["name"].split(" - ")[0], bird,
+                                      6) or spellcheck(item["name"].split(" - ")[1], bird, 6):
                             logger.info("ok")
                             taxon_code = item["code"]
                             break
@@ -215,7 +219,6 @@ async def get_taxon(bird, session=None):
     logger.info(f"taxon code: {taxon_code}")
     return taxon_code
 
-
 def _black_and_white(input_image_path):
     logger.info("black and white")
     with Image.open(input_image_path) as color_image:
@@ -224,7 +227,6 @@ def _black_and_white(input_image_path):
         bw.save(final_buffer, "png")
     final_buffer.seek(0)
     return final_buffer
-
 
 def session_increment(ctx, item, amount):
     logger.info(f"incrementing {item} by {amount}")
@@ -261,8 +263,7 @@ def score_increment(ctx, amount):
 async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
     if bird == "":
         logger.error("error - bird is blank")
-        await ctx.send(
-            "**There was an error fetching birds.**\n*Please try again.*")
+        await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
         if on_error is not None:
             on_error(ctx)
         return
@@ -302,7 +303,6 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
         await ctx.send(file=file_obj)
         await delete.delete()
 
-
 # Gets a bird sound and sends it to user:
 # ctx - context for message (discord thing)
 # bird - bird picture to send (str)
@@ -311,8 +311,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
 async def send_birdsong(ctx, bird, on_error=None, message=None):
     if bird == "":
         logger.error("error - bird is blank")
-        await ctx.send(
-            "**There was an error fetching birds.**\n*Please try again.*")
+        await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
         if on_error is not None:
             on_error(ctx)
         return
@@ -347,10 +346,8 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
             if message is not None:
                 await ctx.send(message)
             # change filename to avoid spoilers
-            await ctx.send(file=discord.File(img, filename="bird." + extension)
-                           )
+            await ctx.send(file=discord.File(img, filename="bird." + extension))
             await delete.delete()
-
 
 # Function that gets bird images to run in pool (blocking prevention)
 # Chooses one image to send
@@ -362,8 +359,7 @@ async def get_image(ctx, bird, addOn=None):
         sciBird = bird
     images = await get_files(sciBird, "images", addOn)
     logger.info("images: " + str(images))
-    prevJ = int(
-        str(database.hget(f"channel:{str(ctx.channel.id)}", "prevJ"))[2:-1])
+    prevJ = int(str(database.hget(f"channel:{str(ctx.channel.id)}", "prevJ"))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if images:
         j = (prevJ + 1) % len(images)
@@ -376,8 +372,7 @@ async def get_image(ctx, bird, addOn=None):
             logger.debug("extension: " + str(extension))
             statInfo = os.stat(image_link)
             logger.debug("size: " + str(statInfo.st_size))
-            if extension.lower(
-            ) in valid_image_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
+            if extension.lower() in valid_image_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
                 logger.info("found one!")
                 break
             elif x == len(images) - 1:
@@ -390,7 +385,6 @@ async def get_image(ctx, bird, addOn=None):
 
     return [image_link, extension]
 
-
 # Function that gets bird sounds to run in pool (blocking prevention)
 # Chooses one sound to send
 async def get_song(ctx, bird):
@@ -401,8 +395,7 @@ async def get_song(ctx, bird):
         sciBird = bird
     songs = await get_files(sciBird, "songs")
     logger.info("songs: " + str(songs))
-    prevK = int(
-        str(database.hget(f"channel:{str(ctx.channel.id)}", "prevK"))[2:-1])
+    prevK = int(str(database.hget(f"channel:{str(ctx.channel.id)}", "prevK"))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if songs:
         k = (prevK + 1) % len(songs)
@@ -415,8 +408,7 @@ async def get_song(ctx, bird):
             logger.debug("extension: " + str(extension))
             statInfo = os.stat(song_link)
             logger.debug("size: " + str(statInfo.st_size))
-            if extension.lower(
-            ) in valid_audio_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
+            if extension.lower() in valid_audio_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
                 logger.info("found one!")
                 break
             elif x == len(songs) - 1:
@@ -428,7 +420,6 @@ async def get_song(ctx, bird):
         raise GenericError("No Songs Found", code=100)
 
     return [song_link, extension]
-
 
 # Manages cache
 async def get_files(sciBird, media_type, addOn=""):
@@ -445,7 +436,6 @@ async def get_files(sciBird, media_type, addOn=""):
         # if not found, fetch images
         logger.info("scibird: " + str(sciBird))
         return await download_media(sciBird, media_type, addOn, directory)
-
 
 # Manages downloads
 async def download_media(bird, media_type, addOn="", directory=None, session=None):
@@ -479,7 +469,6 @@ async def download_media(bird, media_type, addOn="", directory=None, session=Non
         logger.info(f"filenames: {filenames}")
         return filenames
 
-
 # Gets urls for downloading
 async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     """
@@ -488,50 +477,50 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     sex is m,f or blank
     age is a(for adult), j(for juvenile), i(for immature(may be very few pics)) or blank
     sound_type is s(for song),c(for call) or blank
-    return is list of urls. some urls may return an error code of 476(because it is still being processed);
+    return is list of urls. some urls may return an error code of 476(because it is still being processed); 
         if so, ignore that url.
     """
     logger.info(f"getting file urls for {bird}")
     taxon_code = await get_taxon(bird, session)
-    catalog_url = CATALOG_URL.format(
-        taxon_code, COUNT, media_type, sex, age, sound_type)
+    catalog_url = CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type)
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
-            raise GenericError(f"An http error code of {catalog_response.status} occured " +
-                               f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}", code=201)
+            raise GenericError(
+                f"An http error code of {catalog_response.status} occured " +
+                f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}",
+                code=201
+            )
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
         urls = [data["mediaUrl"] for data in content]
         return urls
-
 
 # Actually downloads the file
 async def _download_helper(path, url, session):
     try:
         async with session.get(url) as response:
             # from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
-            content_type = response.headers['content-type'].partition(';')[
-                0].strip()
+            content_type = response.headers['content-type'].partition(';')[0].strip()
             if content_type.partition("/")[0] == "image":
                 try:
                     ext = "." + \
-                        (set(ext[1:] for ext in guess_all_extensions(
-                            content_type)) & valid_image_extensions).pop()
+                                                      (set(ext[1:] for ext in guess_all_extensions(
+                        content_type)).intersection(valid_image_extensions)).pop()
                 except KeyError:
-                    raise GenericError(
-                        f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
+                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
 
             elif content_type.partition("/")[0] == "audio":
                 try:
-                    ext = "." + \
-                        (set(ext[1:] for ext in guess_all_extensions(
-                            content_type)) & valid_audio_extensions).pop()
+                    ext = "." + (
+                        set(ext[1:] for ext in guess_all_extensions(content_type)).intersection(valid_audio_extensions)
+                    ).pop()
                 except KeyError:
-                    raise GenericError(
-                        f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
+                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
 
             else:
-                ext = guess_extension(content_type)
+                ext = guess_extension(content_type)  # type: ignore
+                if ext is None:
+                    raise GenericError(f"No extensions found.")
 
             filename = f"{path}{ext}"
             # from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5
@@ -547,29 +536,30 @@ async def _download_helper(path, url, session):
         logger.error(f"Client Error with url {url} and path {path}")
         raise
 
-
 async def precache():
-    timeout = aiohttp.ClientTimeout(total=10*60)
+    timeout = aiohttp.ClientTimeout(total=10 * 60)
     conn = aiohttp.TCPConnector(limit=100)
     async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
         logger.info("Starting cache")
         await asyncio.gather(*(download_media(bird, "images", session=session) for bird in sciBirdListMaster))
         logger.info("Starting females")
-        await asyncio.gather(*(download_media(bird, "images", addOn="female", session=session) for bird in sciBirdListMaster))
+        await asyncio.gather(
+            *(download_media(bird, "images", addOn="female", session=session) for bird in sciBirdListMaster)
+        )
         logger.info("Starting juveniles")
-        await asyncio.gather(*(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster))
+        await asyncio.gather(
+            *(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster)
+        )
         logger.info("Starting songs")
         await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
     logger.info("Images Cached")
-
 
 # spellcheck - allows one letter off/extra
 def spellcheck(worda, wordb, cutoff=4):
     worda = worda.lower().replace("-", " ").replace("'", "")
     wordb = wordb.lower().replace("-", " ").replace("'", "")
     shorterword = min(worda, wordb, key=len)
-    wrongcount = 0
     if worda != wordb:
-        if len(list(difflib.Differ().compare(worda, wordb)))-len(shorterword) >= cutoff:
+        if len(list(difflib.Differ().compare(worda, wordb))) - len(shorterword) >= cutoff:
             return False
     return True
