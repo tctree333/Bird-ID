@@ -20,7 +20,6 @@ from discord.ext import commands
 from data.data import database, logger
 from functions import channel_setup, user_setup
 
-
 class Score(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -41,17 +40,15 @@ class Score(commands.Cog):
         )
 
     # sends correct answers by a user
-    @commands.command(brief="- How many correct answers given by a user",
-                      help="""- How many correct answers given by a user.
+    @commands.command(
+        brief="- How many correct answers given by a user",
+        help="""- How many correct answers given by a user.
                             Mention someone to get their score.
                             Don't mention anyone to get your score.""",
-                      aliases=["us"])
+        aliases=["us"]
+    )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def userscore(
-            self,
-            ctx,
-            *,
-            user: typing.Optional[typing.Union[discord.Member, str]] = None):
+    async def userscore(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
         logger.info("user score")
 
         await channel_setup(ctx)
@@ -70,28 +67,25 @@ class Score(commands.Cog):
                 await ctx.send("This user does not exist on our records!")
                 return
         else:
-            if database.zscore("users:global", str(
-                    ctx.author.id)) is not None:
+            if database.zscore("users:global", str(ctx.author.id)) is not None:
                 user = f"<@{str(ctx.author.id)}>"
-                times = str(
-                    int(database.zscore("users:global", str(ctx.author.id))))
+                times = str(int(database.zscore("users:global", str(ctx.author.id))))
             else:
-                await ctx.send(
-                    "You haven't used this bot yet! (except for this)")
+                await ctx.send("You haven't used this bot yet! (except for this)")
                 return
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
-        embed.add_field(name="User Score:",
-                        value=f"{user} has answered correctly {times} times.")
+        embed.add_field(name="User Score:", value=f"{user} has answered correctly {times} times.")
         await ctx.send(embed=embed)
 
     # leaderboard - returns top 1-10 users
     @commands.command(
         brief="- Top scores",
         help="- Top scores, argument can be between 1 and 10, default is 5. " +
-             "Scope is either global or server. (g, s)",
-        aliases=["lb"])
+        "Scope is either global or server. (g, s)",
+        aliases=["lb"]
+    )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def leaderboard(self, ctx, scope="", placings=5):
         logger.info("leaderboard")
@@ -143,8 +137,7 @@ class Score(commands.Cog):
         if placings > database.zcard(database_key):
             placings = database.zcard(database_key)
 
-        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf",
-                                                     0, placings, True)
+        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", 0, placings, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
@@ -169,15 +162,10 @@ class Score(commands.Cog):
         embed.add_field(name=f"Leaderboard ({scope})", value=leaderboard, inline=False)
 
         if database.zscore(database_key, str(ctx.author.id)) is not None:
-            placement = int(
-                database.zrevrank(database_key, str(ctx.author.id))) + 1
-            embed.add_field(
-                name="You:",
-                value=f"You are #{str(placement)} on the leaderboard.",
-                inline=False)
+            placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
+            embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.", inline=False)
         else:
-            embed.add_field(name="You:",
-                            value="You haven't answered any correctly.")
+            embed.add_field(name="You:", value="You haven't answered any correctly.")
 
         await ctx.send(embed=embed)
 
@@ -185,8 +173,9 @@ class Score(commands.Cog):
     @commands.command(
         brief="- Top globally incorrect birds",
         help="- Top globally incorrect birds, argument can be between 1 and 10, default is 5. " +
-             "Scope is either global, server, or me. (g, s, m)",
-        aliases=["m"])
+        "Scope is either global, server, or me. (g, s, m)",
+        aliases=["m"]
+    )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def missed(self, ctx, scope="", placings=5):
         logger.info("missed")
@@ -241,17 +230,14 @@ class Score(commands.Cog):
         if placings > database.zcard(database_key):
             placings = database.zcard(database_key)
 
-        leaderboard_list = database.zrevrangebyscore(database_key, "+inf",
-                                                     "-inf", 0, placings, True)
+        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", 0, placings, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
         for i, stats in enumerate(leaderboard_list):
             leaderboard += f"{str(i+1)}. **{str(stats[0])[2:-1]}** - {str(int(stats[1]))}\n"
-        embed.add_field(name=f"Top Missed Birds ({scope})",
-                        value=leaderboard,
-                        inline=False)
+        embed.add_field(name=f"Top Missed Birds ({scope})", value=leaderboard, inline=False)
 
         await ctx.send(embed=embed)
 
@@ -262,18 +248,20 @@ class Score(commands.Cog):
         if isinstance(error, commands.BadArgument):
             await ctx.send('Not an integer!')
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after " +
-                           str(round(error.retry_after)) + " s.",
-                           delete_after=5.0)
+            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
         elif isinstance(error, commands.BotMissingPermissions):
             logger.error("missing permissions error")
-            await ctx.send(f"""**The bot does not have enough permissions to fully function.**
+            await ctx.send(
+                f"""**The bot does not have enough permissions to fully function.**
 **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
-*Please try again once the correct permissions are set.*""")
+*Please try again once the correct permissions are set.*"""
+            )
         else:
-            await ctx.send("""**An uncaught leaderboard error has occurred.**
+            await ctx.send(
+                """**An uncaught leaderboard error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 
-**Error:** """ + str(error))
+**Error:** """ + str(error)
+            )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
 
@@ -283,21 +271,22 @@ class Score(commands.Cog):
         if isinstance(error, commands.BadArgument):
             await ctx.send('Not an integer!')
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after " +
-                           str(round(error.retry_after)) + " s.",
-                           delete_after=5.0)
+            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
         elif isinstance(error, commands.BotMissingPermissions):
             logger.error("missing permissions error")
-            await ctx.send(f"""**The bot does not have enough permissions to fully function.**
+            await ctx.send(
+                f"""**The bot does not have enough permissions to fully function.**
 **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
-*Please try again once the correct permissions are set.*""")
+*Please try again once the correct permissions are set.*"""
+            )
         else:
-            await ctx.send("""**An uncaught missed birds error has occurred.**
+            await ctx.send(
+                """**An uncaught missed birds error has occurred.**
 *Please log this message in #support in the support server below, or try again.* 
-**Error:** """ + str(error))
+**Error:** """ + str(error)
+            )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
-
 
 def setup(bot):
     bot.add_cog(Score(bot))

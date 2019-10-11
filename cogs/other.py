@@ -14,22 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from random import randint
+import random
 from difflib import get_close_matches
+
 import discord
 import wikipedia
 from discord.ext import commands
-from data.data import memeList, sciBirdListMaster, birdListMaster, logger, database
-from functions import channel_setup, send_bird, send_birdsong, user_setup, get_sciname
 
+from data.data import (birdListMaster, database, logger, memeList, sciBirdListMaster)
+from functions import (channel_setup, get_sciname, send_bird, send_birdsong, user_setup)
 
 class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     # Info - Gives call+image of 1 bird
-    @commands.command(help="- Gives an image and call of a bird",
-                      aliases=['i'])
+    @commands.command(help="- Gives an image and call of a bird", aliases=['i'])
     @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
     async def info(self, ctx, *, arg):
         logger.info("info")
@@ -37,7 +37,7 @@ class Other(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        matches = get_close_matches(arg, birdListMaster+sciBirdListMaster, n=1)
+        matches = get_close_matches(arg, birdListMaster + sciBirdListMaster, n=1)
         if matches:
             bird = matches[0]
 
@@ -62,8 +62,7 @@ class Other(commands.Cog):
             page = wikipedia.page(arg)
             await ctx.send(page.url)
         except wikipedia.exceptions.DisambiguationError:
-            await ctx.send(
-                "Sorry, that page was not found. Try being more specific.")
+            await ctx.send("Sorry, that page was not found. Try being more specific.")
         except wikipedia.exceptions.PageError:
             await ctx.send("Sorry, that page was not found.")
 
@@ -75,13 +74,12 @@ class Other(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
-
-        x = randint(0, len(memeList))
-        await ctx.send(memeList[x])
+        await ctx.send(random.choice(memeList))
 
     # bot info command - gives info on bot
-    @commands.command(help="- Gives info on bot, support server invite, stats",
-                      aliases=["bot_info", "support", "stats"])
+    @commands.command(
+        help="- Gives info on bot, support server invite, stats", aliases=["bot_info", "support", "stats"]
+    )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def botinfo(self, ctx):
         logger.info("bot info")
@@ -95,18 +93,21 @@ class Other(commands.Cog):
             name="Bot Info",
             value="This bot was created by EraserBird and person_v1.32 " +
             "for helping people practice bird identification for Science Olympiad.",
-            inline=False)
+            inline=False
+        )
         embed.add_field(
             name="Support",
             value="If you are experiencing any issues, have feature requests, " +
             "or want to get updates on bot status, join our support server below.",
-            inline=False)
+            inline=False
+        )
         embed.add_field(
             name="Stats",
             value=f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. " +
             f"There are {int(database.zcard('users'))} active users in {int(database.zcard('score'))} channels. " +
             f"The WebSocket latency is {str(round((self.bot.latency*1000)))} ms.",
-            inline=False)
+            inline=False
+        )
         await ctx.send(embed=embed)
         await ctx.send("https://discord.gg/fXxYyDJ")
 
@@ -127,7 +128,8 @@ class Other(commands.Cog):
 **Bird-ID:** https://discordapp.com/api/oauth2/authorize?client_id=601917808137338900&permissions=268486656&scope=bot\n
 **Orni-Bot:** https://discordapp.com/api/oauth2/authorize?client_id=601755752410906644&permissions=268486656&scope=bot\n
 For more information on the differences between the two bots, visit our support server below.""",
-            inline=False)
+            inline=False
+        )
         await ctx.send(embed=embed)
         await ctx.send("https://discord.gg/fXxYyDJ")
 
@@ -137,7 +139,6 @@ For more information on the differences between the two bots, visit our support 
         logger.info("test")
         sciname = await get_sciname(bird)
         await ctx.send(sciname)
-
 
 def setup(bot):
     bot.add_cog(Other(bot))
