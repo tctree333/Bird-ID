@@ -1,5 +1,5 @@
 discord.py==1.2.3
 wikipedia==1.4.0
 eyeD3==0.8.10
-redis==3.3.8
+redis==3.3.10
 Pillow==6.2.0
