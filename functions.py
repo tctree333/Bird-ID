@@ -481,6 +481,7 @@ async def _get_urls(session, bird, media_type, sex="", age="", tag="", sound_typ
     media_type is either p(for pictures), a(for audio) or v(for video)
     sex is m,f or blank
     age is a(for adult), j(for juvenile), i(for immature(may be very few pics)) or blank
+    tag is egg (not very many pics) or blank
     sound_type is s(for song),c(for call) or blank
     return is list of urls. some urls may return an error code of 476(because it is still being processed); 
         if so, ignore that url.
