@@ -45,7 +45,7 @@ class Birds(commands.Cog):
 
     # Bird command - no args
     # help text
-    @commands.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile] [bw]")
+    @commands.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile|egg] [bw]")
     # 5 second cooldown
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def bird(self, ctx, add_on: str = "", bw_str: str = ""):
@@ -56,7 +56,7 @@ class Birds(commands.Cog):
         valid_addons = ("female", "juvenile", "egg", "e", "f", "j", "")
         if add_on == "bw":
             if bw_str not in valid_addons:
-                await ctx.send("This command only takes female, juvenile, or nothing!")
+                await ctx.send("This command only takes female, juvenile, egg, or nothing!")
                 return
             add_on = bw_str
             bw = True
@@ -86,7 +86,7 @@ class Birds(commands.Cog):
             elif add_on == session_add_on:
                 add_on = ""
             else:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Overriding session options...*")
+                await ctx.send("**Multiple ages/sexes are not yet supported.**\n*Overriding session options...*")
 
             if str(database.hget(f"session.data:{ctx.author.id}", "bw"))[2:-1]:
                 bw = not bw
