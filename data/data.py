@@ -152,7 +152,8 @@ def _all_birds():
     list_names = ("birdList", "sciBirdList", "songBirds", "sciSongBirds")
     master_lists = []
     for bird_list in lists:
-        birds = bird_list
+        birds = []
+        birds += bird_list
         logger.info(f"Working on {list_names[lists.index(bird_list)]}")
 
         for state in states.values():
