@@ -259,7 +259,7 @@ def score_increment(ctx, amount):
 # bird - bird picture to send (str)
 # on_error - function to run when an error occurs (function)
 # message - text message to send before bird picture (str)
-# addOn - string to append to search for female/juvenile birds (str)
+# addOn - string to append to search for female/juvenile/egg birds (str)
 async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
     if bird == "":
         logger.error("error - bird is blank")
@@ -554,6 +554,10 @@ async def precache():
         logger.info("Starting juveniles")
         await asyncio.gather(
             *(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster)
+        )
+        logger.info("Starting eggs")
+        await asyncio.gather(
+            *(download_media(bird, "images", addOn="egg", session=session) for bird in sciBirdListMaster)
         )
         logger.info("Starting songs")
         await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
