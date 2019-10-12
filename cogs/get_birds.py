@@ -53,7 +53,7 @@ class Birds(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
-        valid_addons = ("female", "juvenile", "f", "j", "")
+        valid_addons = ("female", "juvenile", "egg", "e", "f", "j", "")
         if add_on == "bw":
             if bw_str not in valid_addons:
                 await ctx.send("This command only takes female, juvenile, or nothing!")
@@ -68,12 +68,14 @@ class Birds(commands.Cog):
             await ctx.send("This command only takes bw or nothing!")
             return
         if add_on not in valid_addons:
-            await ctx.send("This command only takes female, juvenile, or nothing!")
+            await ctx.send("This command only takes female, juvenile, egg, or nothing!")
             return
         if add_on == "f":
             add_on = "female"
         elif add_on == "j":
             add_on = "juvenile"
+        elif add_on == "e":
+            add_on = "egg"
 
         if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("session parameters")

@@ -34,7 +34,7 @@ from data.data import (GenericError, database, logger, sciBirdListMaster, sciSon
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 CATALOG_URL = (
     "https://search.macaulaylibrary.org/catalog.json?searchField=species" +
-    "&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5"
+    "&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&tag={}&qua=3,4,5"
 )
 SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
 COUNT = 20  # set this to include a margin of error in case some urls throw error code 476 due to still being processed
@@ -452,6 +452,11 @@ async def download_media(bird, media_type, addOn="", directory=None, session=Non
     else:
         age = ""
 
+    if addOn == "egg":
+        tag = "egg"
+    else:
+        tag = ""
+
     if media_type == "images":
         media = "p"
     elif media_type == "songs":
@@ -460,7 +465,7 @@ async def download_media(bird, media_type, addOn="", directory=None, session=Non
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
             session = await stack.enter_async_context(aiohttp.ClientSession())
-        urls = await _get_urls(session, bird, media, sex, age)
+        urls = await _get_urls(session, bird, media, sex, age, tag)
         if not os.path.exists(directory):
             os.makedirs(directory)
         paths = [f"{directory}{i}" for i in range(len(urls))]
@@ -470,7 +475,7 @@ async def download_media(bird, media_type, addOn="", directory=None, session=Non
         return filenames
 
 # Gets urls for downloading
-async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
+async def _get_urls(session, bird, media_type, sex="", age="", tag="", sound_type=""):
     """
     bird can be either common name or scientific name
     media_type is either p(for pictures), a(for audio) or v(for video)
@@ -482,7 +487,7 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     """
     logger.info(f"getting file urls for {bird}")
     taxon_code = await get_taxon(bird, session)
-    catalog_url = CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type)
+    catalog_url = CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type, tag)
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
             raise GenericError(
