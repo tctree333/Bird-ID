@@ -61,9 +61,9 @@ class Sessions(commands.Cog):
         help="""- Starts session.
         Arguments passed will become the default arguments to b!bird, but can be manually overwritten during use. 
         These settings can be changed at any time with b!session, and arguments can be passed in any order. 
-        However, having both females and juveniles are not supported.""",
+        However, having both multiple ages/sexes are not supported.""",
         aliases=["st"],
-        usage="[bw] [state] [female|juvenile]"
+        usage="[bw] [state] [female|juvenile|egg]"
     )
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def start(self, ctx, *, args_str: str = ""):
@@ -90,13 +90,16 @@ class Sessions(commands.Cog):
                 state = " ".join(check_state_role(ctx))
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
-            if female and juvenile:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
+            egg = "egg" in args or "e" in args
+            if int(female + juvenile + egg) > 1:
+                await ctx.send("**Multiple ages/sexes are not yet supported.**\n*Please try again*")
                 return
             elif female:
                 addon = "female"
             elif juvenile:
                 addon = "juvenile"
+            elif egg:
+                addon = "egg"
             else:
                 addon = ""
             logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}")
@@ -122,7 +125,7 @@ class Sessions(commands.Cog):
         "will give you stats on how your performance and also set global variables such as black and white, " +
         "state specific bird lists, or bird age/sex. ",
         aliases=["ses", "sesh"],
-        usage="[bw] [state] [female|juvenile]"
+        usage="[bw] [state] [female|juvenile|egg]"
     )
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def session(self, ctx, *, args_str: str = ""):
@@ -154,8 +157,9 @@ class Sessions(commands.Cog):
                 database.hset(f"session.data:{str(ctx.author.id)}", "state", " ".join(add_states).strip())
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
-            if female and juvenile:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
+            egg = "egg" in args or "e" in args
+            if int(female + juvenile + egg) > 1:
+                await ctx.send("**Multiple ages/sexes are not yet supported.**\n*Please try again*")
                 return
             elif female:
                 addon = "female"
@@ -172,6 +176,14 @@ class Sessions(commands.Cog):
                     database.hset(f"session.data:{str(ctx.author.id)}", "addon", addon)
                 else:
                     logger.info("removing juvenile")
+                    database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
+            elif egg:
+                addon = "egg"
+                if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) is 0:
+                    logger.info("adding egg")
+                    database.hset(f"session.data:{str(ctx.author.id)}", "addon", addon)
+                else:
+                    logger.info("removing egg")
                     database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
             await self._send_stats(ctx, f"**Session started previously with options:**\n")
         else:
