@@ -104,7 +104,7 @@ class Other(commands.Cog):
         embed.add_field(
             name="Stats",
             value=f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. " +
-            f"There are {int(database.zcard('users'))} active users in {int(database.zcard('score'))} channels. " +
+            f"There are {int(database.zcard('users:global'))} active users in {int(database.zcard('score:global'))} channels. " +
             f"The WebSocket latency is {str(round((self.bot.latency*1000)))} ms.",
             inline=False
         )
