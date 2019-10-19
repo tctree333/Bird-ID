@@ -38,7 +38,7 @@ def start_precache():
 if __name__ == '__main__':
     # Initialize bot
     bot = commands.Bot(
-        command_prefix=['b!', 'b.', 'b#', 'B!', 'B.', 'B#'],
+        command_prefix=['b!', 'b.', 'b#', 'B!', 'B.', 'B#', 'o>', 'O>'],
         case_insensitive=True,
         description="BirdID - Your Very Own Ornithologist"
     )

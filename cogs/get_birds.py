@@ -49,7 +49,7 @@ class Birds(commands.Cog):
     # 5 second cooldown
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def bird(self, ctx, add_on: str = "", bw_str: str = ""):
-        logger.info("bird")
+        logger.info("command: bird")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -143,7 +143,7 @@ class Birds(commands.Cog):
     @commands.command(help='- Sends a random goatsucker to ID', aliases=["gs"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def goatsucker(self, ctx):
-        logger.info("goatsucker")
+        logger.info("command: goatsucker")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -172,7 +172,7 @@ class Birds(commands.Cog):
     @commands.command(help="- Sends a bird call to ID", aliases=["s"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def song(self, ctx):
-        logger.info("song")
+        logger.info("command: song")
 
         await channel_setup(ctx)
         await user_setup(ctx)

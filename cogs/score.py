@@ -28,7 +28,7 @@ class Score(commands.Cog):
     @commands.command(help="- Total correct answers in a channel")
     @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
     async def score(self, ctx):
-        logger.info("score")
+        logger.info("command: score")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -49,7 +49,7 @@ class Score(commands.Cog):
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def userscore(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
-        logger.info("user score")
+        logger.info("command: userscore")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -88,7 +88,7 @@ class Score(commands.Cog):
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def leaderboard(self, ctx, scope="", placings=5):
-        logger.info("leaderboard")
+        logger.info("command: leaderboard")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -178,7 +178,7 @@ class Score(commands.Cog):
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def missed(self, ctx, scope="", placings=5):
-        logger.info("missed")
+        logger.info("command: missed")
 
         await channel_setup(ctx)
         await user_setup(ctx)

@@ -27,7 +27,7 @@ class Skip(commands.Cog):
     @commands.command(help="- Skip the current bird to get a new one", aliases=["sk"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def skip(self, ctx):
-        logger.info("skip")
+        logger.info("command: skip")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -45,7 +45,7 @@ class Skip(commands.Cog):
     @commands.command(help="- Skip the current goatsucker to get a new one", aliases=["goatskip", "sg"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def skipgoat(self, ctx):
-        logger.info("skipgoat")
+        logger.info("command: skipgoat")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -63,7 +63,7 @@ class Skip(commands.Cog):
     @commands.command(help="- Skip the current bird call to get a new one", aliases=["songskip", "ss"])
     @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
     async def skipsong(self, ctx):
-        logger.info("skipsong")
+        logger.info("command: skipsong")
 
         await channel_setup(ctx)
         await user_setup(ctx)

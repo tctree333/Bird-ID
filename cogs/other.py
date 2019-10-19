@@ -32,7 +32,7 @@ class Other(commands.Cog):
     @commands.command(help="- Gives an image and call of a bird", aliases=['i'])
     @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
     async def info(self, ctx, *, arg):
-        logger.info("info")
+        logger.info("command: info")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -53,7 +53,7 @@ class Other(commands.Cog):
     @commands.command(help="- Fetch the wikipedia page for any given argument")
     @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
     async def wiki(self, ctx, *, arg):
-        logger.info("wiki")
+        logger.info("command: wiki")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -70,7 +70,7 @@ class Other(commands.Cog):
     @commands.command(help="- Sends a funny bird video!")
     @commands.cooldown(1, 300.0, type=commands.BucketType.channel)
     async def meme(self, ctx):
-        logger.info("meme")
+        logger.info("command: meme")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -82,7 +82,7 @@ class Other(commands.Cog):
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def botinfo(self, ctx):
-        logger.info("bot info")
+        logger.info("command: botinfo")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -115,7 +115,7 @@ class Other(commands.Cog):
     @commands.command(help="- Get the invite link for this bot")
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def invite(self, ctx):
-        logger.info("invite")
+        logger.info("command: invite")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -127,7 +127,7 @@ class Other(commands.Cog):
             value="""To invite this bot to your own server, use the following invite links.\n
 **Bird-ID:** https://discordapp.com/api/oauth2/authorize?client_id=601917808137338900&permissions=268486656&scope=bot\n
 **Orni-Bot:** https://discordapp.com/api/oauth2/authorize?client_id=601755752410906644&permissions=268486656&scope=bot\n
-For more information on the differences between the two bots, visit our support server below.""",
+Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our support server below.""",
             inline=False
         )
         await ctx.send(embed=embed)
@@ -136,7 +136,7 @@ For more information on the differences between the two bots, visit our support 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
     async def test(self, ctx, *, bird):
-        logger.info("test")
+        logger.info("command: test")
         sciname = await get_sciname(bird)
         await ctx.send(sciname)
 

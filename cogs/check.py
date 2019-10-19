@@ -35,7 +35,7 @@ class Check(commands.Cog):
     @commands.command(help='- Checks your answer.', usage="guess", aliases=["guess", "c"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def check(self, ctx, *, arg):
-        logger.info("check")
+        logger.info("command: check")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -83,7 +83,7 @@ class Check(commands.Cog):
     @commands.command(help='- Checks your goatsucker.', usage="guess", aliases=["cg"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def checkgoat(self, ctx, *, arg):
-        logger.info("checkgoat")
+        logger.info("command: checkgoat")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -133,7 +133,7 @@ class Check(commands.Cog):
     @commands.command(help='- Checks the song', aliases=["songcheck", "cs", "sc"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def checksong(self, ctx, *, arg):
-        logger.info("checksong")
+        logger.info("command: checksong")
 
         await channel_setup(ctx)
         await user_setup(ctx)

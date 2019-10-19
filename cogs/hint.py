@@ -27,7 +27,7 @@ class Hint(commands.Cog):
     @commands.command(help="- Gives first letter of current bird", aliases=["h"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hint(self, ctx):
-        logger.info("hint")
+        logger.info("command: hint")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -42,7 +42,7 @@ class Hint(commands.Cog):
     @commands.command(help="- Gives first letter of current goatsucker", aliases=["goathint", "hg", "gh"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hintgoat(self, ctx):
-        logger.info("hintgoat")
+        logger.info("command: hintgoat")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -57,7 +57,7 @@ class Hint(commands.Cog):
     @commands.command(help="- Gives first letter of current bird call", aliases=["songhint", "hs", "sh"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def hintsong(self, ctx):
-        logger.info("hintsong")
+        logger.info("command: hintsong")
 
         await channel_setup(ctx)
         await user_setup(ctx)
