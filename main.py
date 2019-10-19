@@ -51,6 +51,7 @@ if __name__ == '__main__':
         logger.info(bot.user.id)
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
+        bot.owner_ids = set(str(os.getenv("ids")).split(","))
 
         refresh_cache.start()
 
