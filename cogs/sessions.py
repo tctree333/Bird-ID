@@ -28,7 +28,6 @@ class Sessions(commands.Cog):
 
     async def _send_options(self, ctx, preamble):
         bw, addon, state = database.hmget(f"session.data:{str(ctx.author.id)}", ["bw", "addon", "state"])
-        print(bw)
         await ctx.send(
             preamble + f"""*Age/Sex:* {str(addon)[2:-1] if addon else 'default'}
 *Black & White:* {bw==b'bw'}
@@ -55,8 +54,18 @@ class Sessions(commands.Cog):
 *Accuracy:* {accuracy}%"""
         )
 
+    @commands.group(brief="- Base session command",
+                    help="- Base session command\n" +
+                         "Sessions will record your activity for an amount of time and " +
+                         "will give you stats on how your performance and " +
+                         "also set global variables such as black and white, " +
+                         "state specific bird lists, or bird age/sex. ")
+    async def session(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send('**Invalid subcommand passed.**\n*Valid Subcommands:* `start, view, stop`')
+
     # starts session
-    @commands.command(
+    @session.command(
         brief="- Starts session",
         help="""- Starts session.
         Arguments passed will become the default arguments to b!bird, but can be manually overwritten during use. 
@@ -67,7 +76,7 @@ class Sessions(commands.Cog):
     )
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def start(self, ctx, *, args_str: str = ""):
-        logger.info("start session")
+        logger.info("command: start session")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -116,17 +125,17 @@ class Sessions(commands.Cog):
             await self._send_options(ctx, "**Session started with options:**\n")
 
     # views session
-    @commands.command(
+    @session.command(
         brief="- Views session",
         help="- Views session\nSessions will record your activity for an amount of time and " +
         "will give you stats on how your performance and also set global variables such as black and white, " +
         "state specific bird lists, or bird age/sex. ",
-        aliases=["ses", "sesh"],
+        aliases=["view"],
         usage="[bw] [state] [female|juvenile]"
     )
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
-    async def session(self, ctx, *, args_str: str = ""):
-        logger.info("view session")
+    async def edit(self, ctx, *, args_str: str = ""):
+        logger.info("command: view session")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -178,10 +187,10 @@ class Sessions(commands.Cog):
             await ctx.send("**There is no session running.** *You can start one with `b!start`*")
 
     # stops session
-    @commands.command(help="- Stops session", aliases=["sp", "stp"])
+    @session.command(help="- Stops session", aliases=["stp"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def stop(self, ctx):
-        logger.info("stop session")
+        logger.info("command: stop session")
 
         await channel_setup(ctx)
         await user_setup(ctx)
