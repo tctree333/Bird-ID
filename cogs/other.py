@@ -22,7 +22,7 @@ import wikipedia
 from discord.ext import commands
 
 from data.data import (birdListMaster, database, logger, memeList, sciBirdListMaster)
-from functions import (channel_setup, get_sciname, send_bird, send_birdsong, user_setup, owner_check)
+from functions import (channel_setup, get_sciname, send_bird, send_birdsong, user_setup)
 
 class Other(commands.Cog):
     def __init__(self, bot):
@@ -135,7 +135,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # Send command - for testing purposes only
     @commands.command(help="- send command", hidden=True, aliases=["sendas"])
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def send_as_bot(self, ctx, *, args):
         logger.info("command: send")
         logger.info(f"args: {args}")

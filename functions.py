@@ -254,9 +254,6 @@ def score_increment(ctx, amount):
     else:
         logger.info("dm context")
 
-def owner_check(ctx):
-    owners = set(str(os.getenv("ids")).split(","))
-    return ctx.message.author.id in owners
 
 # Gets a bird picture and sends it to user:
 # ctx - context for message (discord thing)
