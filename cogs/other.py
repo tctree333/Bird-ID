@@ -133,6 +133,18 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
         await ctx.send(embed=embed)
         await ctx.send("https://discord.gg/fXxYyDJ")
 
+    # Send command - for testing purposes only
+    @commands.command(help="- send command", hidden=True, aliases=["sendas"])
+    @commands.is_owner()
+    async def send_as_bot(self, ctx, *, args):
+        logger.info("command: send")
+        logger.info(f"args: {args}")
+        channel_id = int(args.split(' ')[0])
+        message = args.strip(str(channel_id))
+        channel = self.bot.get_channel(channel_id)
+        await channel.send(message)
+        await ctx.send("Ok, sent!")
+
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
     async def test(self, ctx, *, bird):
