@@ -555,7 +555,8 @@ async def precache():
     logger.info("Images Cached")
 
 # spellcheck - allows one letter off/extra
-def spellcheck(worda, wordb, cutoff=4):
+# cutoff - allows for difference of that amount
+def spellcheck(worda, wordb, cutoff=3):
     worda = worda.lower().replace("-", " ").replace("'", "")
     wordb = wordb.lower().replace("-", " ").replace("'", "")
     shorterword = min(worda, wordb, key=len)
