@@ -282,6 +282,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
     except GenericError as e:
         await delete.delete()
         await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {str(e)}")
+        logger.exception(e)
         if on_error is not None:
             on_error(ctx)
         return
@@ -330,6 +331,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
     except GenericError as e:
         await delete.delete()
         await ctx.send(f"**An error has occurred while fetching songs.**\n*Please try again.*\n**Reason:** {str(e)}")
+        logger.exception(e)
         if on_error is not None:
             on_error(ctx)
         return
