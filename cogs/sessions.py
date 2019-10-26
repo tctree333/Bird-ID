@@ -69,7 +69,7 @@ class Sessions(commands.Cog):
         brief="- Starts session",
         help="""- Starts session.
         Arguments passed will become the default arguments to b!bird, but can be manually overwritten during use. 
-        These settings can be changed at any time with b!session, and arguments can be passed in any order. 
+        These settings can be changed at any time with `b!session edit`, and arguments can be passed in any order. 
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
         usage="[bw] [state] [female|juvenile]"
@@ -83,7 +83,7 @@ class Sessions(commands.Cog):
 
         if database.exists(f"session.data:{str(ctx.author.id)}"):
             logger.info("already session")
-            await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session`*")
+            await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session edit`*")
             return
         else:
             args = args_str.split(" ")
@@ -184,7 +184,7 @@ class Sessions(commands.Cog):
                     database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
             await self._send_stats(ctx, f"**Session started previously with options:**\n")
         else:
-            await ctx.send("**There is no session running.** *You can start one with `b!start`*")
+            await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
 
     # stops session
     @session.command(help="- Stops session", aliases=["stp"])
@@ -201,7 +201,7 @@ class Sessions(commands.Cog):
             await self._send_stats(ctx, "**Session stopped.**\n**Session Options:**\n")
             database.delete(f"session.data:{str(ctx.author.id)}")
         else:
-            await ctx.send("**There is no session running.** *You can start one with `b!start`*")
+            await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
 
 def setup(bot):
     bot.add_cog(Sessions(bot))
