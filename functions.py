@@ -256,7 +256,7 @@ def score_increment(ctx, amount):
 
 def owner_check(ctx):
     owners = set(str(os.getenv("ids")).split(","))
-    return str(ctx.message.author.id) in owners
+    return str(ctx.author.id) in owners
 
 
 # Gets a bird picture and sends it to user:
