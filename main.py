@@ -52,7 +52,7 @@ if __name__ == '__main__':
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
-        #refresh_cache.start()
+        refresh_cache.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory
     initial_extensions = [
