@@ -145,6 +145,7 @@ if __name__ == '__main__':
 **Error:** """ + str(error)
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
+                    logger.exception(error.original)
                 else:
                     await channel_setup(ctx)
                     await ctx.send("Please run that command again.")
@@ -166,6 +167,7 @@ if __name__ == '__main__':
 **Error:** """ + str(error)
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
+                    logger.exception(error.original)
                 else:
                     await ctx.send("**An error has occured with discord. :(**\n*Please try again.*")
 
