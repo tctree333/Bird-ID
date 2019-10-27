@@ -21,8 +21,9 @@ import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import (birdListMaster, database, logger, memeList, sciBirdListMaster)
+from data.data import (birdListMaster, database, logger, memeList, sciBirdListMaster, states)
 from functions import (channel_setup, get_sciname, send_bird, send_birdsong, user_setup, owner_check)
+
 
 class Other(commands.Cog):
     def __init__(self, bot):
@@ -48,6 +49,59 @@ class Other(commands.Cog):
 
         else:
             await ctx.send("Bird not found. Are you sure it's on the list?")
+
+    # List command - argument is state/bird list
+    @commands.command(help="- DMs the user with the appropriate bird list.", name="list")
+    @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
+    async def list_of_birds(self, ctx, state: str = "blank"):
+        logger.info("command: list")
+
+        await channel_setup(ctx)
+        await user_setup(ctx)
+
+        state = state.upper()
+
+        if state not in list(states.keys()):
+            logger.info("invalid state")
+            await ctx.send(
+                f"**Sorry, `{state}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
+            )
+            return
+
+        birdLists = []
+        temp = ""
+        for bird in states[state]['birdList']:
+            temp += f"{str(bird)}\n"
+            if len(temp) > 1950:
+                birdLists.append(temp)
+                temp = ""
+        birdLists.append(temp)
+
+        songLists = []
+        temp = ""
+        for bird in states[state]['songBirds']:
+            temp += f"{str(bird)}\n"
+            if len(temp) > 1950:
+                songLists.append(temp)
+                temp = ""
+        songLists.append(temp)
+
+        if ctx.author.dm_channel is None:
+            await ctx.author.create_dm()
+
+        await ctx.author.dm_channel.send(f"**The {state} bird list:**")
+        for birds in birdLists:
+            await ctx.author.dm_channel.send(f"```{birds}```")
+
+        await ctx.author.dm_channel.send(f"**The {state} bird songs:**")
+        for birds in songLists:
+            await ctx.author.dm_channel.send(f"```{birds}```")
+
+        await ctx.send(
+            f"The `{state}` bird list has **{str(len(states[state]['birdList']))}** birds.\n" +
+            f"The `{state}` bird list has **{str(len(states[state]['songBirds']))}** songs.\n" +
+            "*A full list of birds has been sent to you via DMs.*"
+        )
 
     # Wiki command - argument is the wiki page
     @commands.command(help="- Fetch the wikipedia page for any given argument")
@@ -151,6 +205,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
         logger.info("command: test")
         sciname = await get_sciname(bird)
         await ctx.send(sciname)
+
 
 def setup(bot):
     bot.add_cog(Other(bot))
