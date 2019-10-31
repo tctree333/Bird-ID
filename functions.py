@@ -20,6 +20,7 @@ import difflib
 import os
 import string
 import urllib.parse
+import random
 from functools import partial
 from io import BytesIO
 from mimetypes import guess_all_extensions, guess_extension
@@ -29,7 +30,8 @@ import discord
 import eyed3
 from PIL import Image
 
-from data.data import (GenericError, database, logger, sciBirdListMaster, sciSongBirdsMaster, states)
+from data.data import (GenericError, database, logger, sciBirdListMaster, 
+                       sciSongBirdsMaster, states, screech_owls)
 
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 CATALOG_URL = (
@@ -272,6 +274,13 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
         if on_error is not None:
             on_error(ctx)
         return
+
+    # add special condition for screech owls
+    # since screech owl is a genus and SciOly
+    # doesn't specify a species
+    if bird == "Screech Owl":
+        logger.info("choosing specific Screech Owl")
+        bird = random.choice(screech_owls)
 
     delete = await ctx.send("**Fetching.** This may take a while.")
     # trigger "typing" discord message
