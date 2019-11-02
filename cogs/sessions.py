@@ -16,6 +16,7 @@
 
 import datetime
 import time
+import discord
 
 from discord.ext import commands
 
@@ -26,40 +27,64 @@ class Sessions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def _send_options(self, ctx, preamble):
-        bw, addon, state = database.hmget(f"session.data:{str(ctx.author.id)}", ["bw", "addon", "state"])
-        await ctx.send(
-            preamble + f"""*Age/Sex:* {str(addon)[2:-1] if addon else 'default'}
-*Black & White:* {bw==b'bw'}
-*Special bird list:* {str(state)[2:-1] if state else 'None'}"""
+    async def _get_options(self, ctx):
+        bw, addon, state = database.hmget(f"session.data:{str(ctx.author.id)}",
+                                                        ["bw", "addon", "state"])
+        options = str(
+            f"**Age/Sex:** {str(addon)[2:-1] if addon else 'default'}\n" +
+            f"**Black & White:** {bw==b'bw'}\n" +
+            f"**Special bird list:** {str(state)[2:-1] if state else 'None'}\n"
         )
+        return options
 
-    async def _send_stats(self, ctx, opts_preamble):
+    async def _get_stats(self, ctx):
         start, correct, incorrect, total = map(
-            int, database.hmget(f"session.data:{str(ctx.author.id)}", ["start", "correct", "incorrect", "total"])
-        )
+            int, database.hmget(f"session.data:{str(ctx.author.id)}", ["start", "correct", "incorrect", "total"]))
         elapsed = str(datetime.timedelta(seconds=round(time.time()) - start))
         try:
             accuracy = round(100 * (correct / (correct + incorrect)), 2)
         except ZeroDivisionError:
             accuracy = 0
 
-        await self._send_options(ctx, opts_preamble)
-        await ctx.send(
-            f"""**Session Stats:**
-*Duration:* {elapsed}
-*# Correct:* {correct}
-*# Incorrect:* {incorrect}
-*Total Birds:* {total}
-*Accuracy:* {accuracy}%"""
+        stats = str(
+            f"**Duration:** `{elapsed}`\n" +
+            f"**# Correct:** {correct}\n" +
+            f"**# Incorrect:** {incorrect}\n" +
+            f"**Total Birds:** {total}\n" +
+            f"**Accuracy:** {accuracy}%\n"
         )
+        return stats
+
+    async def _send_stats(self, ctx, preamble):
+        database_key = f"session.incorrect:{str(ctx.author.id)}"
+
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title=preamble)
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+
+        if database.zcard(database_key) is not 0:
+            leaderboard_list = database.zrevrangebyscore(
+                database_key, "+inf", "-inf", 0, 5, True)
+            leaderboard = ""
+
+            for i, stats in enumerate(leaderboard_list):
+                leaderboard += f"{str(i+1)}. **{str(stats[0])[2:-1]}** - {str(int(stats[1]))}\n"
+        else:
+            logger.info(f"no birds in {database_key}")
+            leaderboard = "**There are no missed birds.**"
+
+        embed.add_field(name="Options", value=await self._get_options(ctx), inline=False)
+        embed.add_field(name="Stats", value=await self._get_stats(ctx), inline=False)
+        embed.add_field(name=f"Top Missed Birds", value=leaderboard, inline=False)
+
+        await ctx.send(embed=embed)
 
     @commands.group(brief="- Base session command",
                     help="- Base session command\n" +
                          "Sessions will record your activity for an amount of time and " +
                          "will give you stats on how your performance and " +
                          "also set global variables such as black and white, " +
-                         "state specific bird lists, or bird age/sex. ")
+                         "state specific bird lists, or bird age/sex. ",
+                    aliases=["ses", "sesh"])
     async def session(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send('**Invalid subcommand passed.**\n*Valid Subcommands:* `start, view, stop`')
@@ -122,8 +147,7 @@ class Sessions(commands.Cog):
                     "addon": addon
                 }
             )
-            await self._send_options(ctx, "**Session started with options:**\n")
-
+            await ctx.send(f"**Session started with options:**\n{await self._get_options(ctx)}")
     # views session
     @session.command(
         brief="- Views session",
@@ -200,6 +224,7 @@ class Sessions(commands.Cog):
 
             await self._send_stats(ctx, "**Session stopped.**\n**Session Options:**\n")
             database.delete(f"session.data:{str(ctx.author.id)}")
+            database.delete(f"session.incorrect:{str(ctx.author.id)}")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
 

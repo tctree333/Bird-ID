@@ -126,6 +126,16 @@ async def bird_setup(ctx, bird):
     else:
         logger.info("dm context")
 
+    if database.exists(f"session.data:{str(ctx.author.id)}"):
+        logger.info("session in session")
+        if database.zscore(f"session.incorrect:{ctx.author.id}", string.capwords(str(bird))) is not None:
+            logger.info("bird session ok")
+        else:
+            database.zadd(f"session.incorrect:{ctx.author.id}", {string.capwords(str(bird)): 0})
+            logger.info("bird session added")
+    else:
+        logger.info("no session")
+
 # Function to run on error
 def error_skip(ctx):
     logger.info("ok")
@@ -245,6 +255,11 @@ def incorrect_increment(ctx, bird, amount):
         database.zincrby(f"incorrect.server:{ctx.guild.id}", amount, str(bird))
     else:
         logger.info("dm context")
+    if database.exists(f"session.data:{str(ctx.author.id)}"):
+        logger.info("session in session")
+        database.zincrby(f"session.incorrect:{ctx.author.id}", amount, str(bird))
+    else:
+        logger.info("no session")
 
 def score_increment(ctx, amount):
     logger.info(f"incrementing score by {amount}")
