@@ -43,7 +43,19 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # session.data:user_id : {"start": 0, "stop": 0,
 #                         "correct": 0, "incorrect": 0, "total": 0,
 #                         "bw": bw, "state": state, "addon": addon}
-# session.incorrect:user_id:[bird name, # incorrect]
+# session.incorrect:user_id : [bird name, # incorrect]
+
+# race format:
+# race.data:ctx.channel.id : { 
+#                    "start": 0
+#                    "stop": 0,
+#                    "limit": 10,
+#                    "bw": bw,
+#                    "state": state,
+#                    "addon": addon,
+#                    "media": media
+# }
+# race.scores:ctx.channel.id : [ctx.author.id, #correct]
 
 # leaderboard format = {
 #    users:global : [user id, # of correct]
