@@ -43,12 +43,16 @@ class Check(commands.Cog):
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
+            logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
+            logger.info("args: " + str(arg.lower().replace("-", " ")))
+
             await bird_setup(ctx, currentBird)
             sciBird = await get_sciname(currentBird)
-            database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
-            database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
             if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
+
+                database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
+                database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
 
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
@@ -56,7 +60,7 @@ class Check(commands.Cog):
 
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
-                await ctx.send(page.url)
+                await ctx.send(page.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{page.url}>")
                 score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
@@ -65,19 +69,30 @@ class Check(commands.Cog):
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
+                if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
+                        database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "image":
+                    logger.info("auto sending next bird image")
+                    addon, bw = map(str, database.hmget(f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
+                    birds = self.bot.get_cog("Birds")
+                    await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
+
             else:
                 logger.info("incorrect")
 
-                if database.exists(f"session.data:{ctx.author.id}"):
+                if database.exists(f"session.data:{str(ctx.author.id)}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
 
                 incorrect_increment(ctx, str(currentBird), 1)
-                await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
-                page = wikipedia.page(f"{currentBird} (bird)")
-                await ctx.send(page.url)
-            logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
-            logger.info("args: " + str(arg.lower().replace("-", " ")))
+
+                if database.exists(f"race.data:{str(ctx.channel.id)}"):
+                    await ctx.send("Sorry, that wasn't the right answer.")
+                else:
+                    database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
+                    database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
+                    await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
+                    page = wikipedia.page(f"{currentBird} (bird)")
+                    await ctx.send(page.url)
 
     # Check command - argument is the guess
     @commands.command(help='- Checks your goatsucker.', usage="guess", aliases=["cg"])
@@ -142,12 +157,16 @@ class Check(commands.Cog):
         if currentSongBird == "":  # no bird
             await ctx.send("You must ask for a bird call first!")
         else:  # if there is a bird, it checks answer
+            logger.info("currentBird: " + str(currentSongBird.lower().replace("-", " ")))
+            logger.info("args: " + str(arg.lower().replace("-", " ")))
+
             await bird_setup(ctx, currentSongBird)
             sciBird = await get_sciname(currentSongBird)
-            database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
-            database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
             if spellcheck(arg, currentSongBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
+
+                database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
+                database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
 
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
@@ -155,7 +174,7 @@ class Check(commands.Cog):
 
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentSongBird} (bird)")
-                await ctx.send(page.url)
+                await ctx.send(page.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{page.url}>")
                 score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
@@ -164,19 +183,28 @@ class Check(commands.Cog):
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
+                if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
+                        database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "song":
+                    logger.info("auto sending next bird song")
+                    birds = self.bot.get_cog("Birds")
+                    await birds.send_song_(ctx)
+
             else:
                 logger.info("incorrect")
 
-                if database.exists(f"session.data:{ctx.author.id}"):
+                if database.exists(f"session.data:{str(ctx.author.id)}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
 
                 incorrect_increment(ctx, str(currentSongBird), 1)
-                await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
-                page = wikipedia.page(f"{currentSongBird} (bird)")
-                await ctx.send(page.url)
-            logger.info("currentBird: " + str(currentSongBird.lower().replace("-", " ")))
-            logger.info("args: " + str(arg.lower().replace("-", " ")))
+                if database.exists(f"race.data:{str(ctx.channel.id)}"):
+                    await ctx.send("Sorry, that wasn't the right answer.")
+                else:
+                    database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
+                    database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
+                    await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
+                    page = wikipedia.page(f"{currentSongBird} (bird)")
+                    await ctx.send(page.url)
 
 def setup(bot):
     bot.add_cog(Check(bot))

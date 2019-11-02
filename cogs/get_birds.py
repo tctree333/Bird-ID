@@ -43,6 +43,101 @@ class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def send_bird_(self, ctx, add_on, bw):
+        if add_on == "":
+            message = BIRD_MESSAGE.format(option="n image")
+        else:
+            message = BIRD_MESSAGE.format(option=f" {add_on}")
+
+        if bw == "bw":
+            bw = True
+        elif bw == "":
+            bw = False
+
+        logger.info("bird: " + str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1])
+
+        answered = int(database.hget(f"channel:{str(ctx.channel.id)}", "answered"))
+        logger.info(f"answered: {answered}")
+        # check to see if previous bird was answered
+        if answered:  # if yes, give a new bird
+            roles = check_state_role(ctx)
+            if database.exists(f"session.data:{ctx.author.id}"):
+                logger.info("session active")
+                session_increment(ctx, "total", 1)
+
+                roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
+                if roles[0] == "":
+                    roles = []
+                if not roles:
+                    logger.info("no session lists")
+                    roles = check_state_role(ctx)
+                logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
+
+            if roles:
+                birds = list(set(itertools.chain.from_iterable(states[state]["birdList"] for state in roles)))
+            else:
+                birds = birdList
+            logger.info(f"number of birds: {len(birds)}")
+
+            currentBird = random.choice(birds)
+            prevB = str(database.hget(f"channel:{str(ctx.channel.id)}", "prevB"))[2:-1]
+            while currentBird == prevB:
+                currentBird = random.choice(birds)
+            database.hset(f"channel:{str(ctx.channel.id)}", "prevB", str(currentBird))
+            database.hset(f"channel:{str(ctx.channel.id)}", "bird", str(currentBird))
+            logger.info("currentBird: " + str(currentBird))
+            await send_bird(ctx, currentBird, on_error=error_skip, message=message, addOn=add_on, bw=bw)
+            database.hset(f"channel:{str(ctx.channel.id)}", "answered", "0")
+        else:  # if no, give the same bird
+            await send_bird(
+                ctx,
+                str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1],
+                on_error=error_skip,
+                message=message,
+                addOn=add_on,
+                bw=bw
+            )
+
+    async def send_song_(self, ctx):
+        songAnswered = int(database.hget(f"channel:{str(ctx.channel.id)}", "sAnswered"))
+        # check to see if previous bird was answered
+        if songAnswered:  # if yes, give a new bird
+            roles = check_state_role(ctx)
+            if database.exists(f"session.data:{ctx.author.id}"):
+                logger.info("session active")
+                session_increment(ctx, "total", 1)
+
+                roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
+                if roles[0] == "":
+                    roles = []
+                if len(roles) is 0:
+                    logger.info("no session lists")
+                    roles = check_state_role(ctx)
+                logger.info(f"roles: {roles}")
+
+            if roles:
+                birds = list(itertools.chain.from_iterable(states[state]["songBirds"] for state in roles))
+            else:
+                birds = songBirds
+            logger.info(f"number of birds: {len(birds)}")
+
+            currentSongBird = random.choice(birds)
+            prevS = str(database.hget(f"channel:{str(ctx.channel.id)}", "prevS"))[2:-1]
+            while currentSongBird == prevS:
+                currentSongBird = random.choice(birds)
+            database.hset(f"channel:{str(ctx.channel.id)}", "prevS", str(currentSongBird))
+            database.hset(f"channel:{str(ctx.channel.id)}", "sBird", str(currentSongBird))
+            logger.info("currentSongBird: " + str(currentSongBird))
+            await send_birdsong(ctx, currentSongBird, on_error=error_skip_song, message=SONG_MESSAGE)
+            database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "0")
+        else:
+            await send_birdsong(
+                ctx,
+                str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1],
+                on_error=error_skip_song,
+                message=SONG_MESSAGE
+            )
+
     # Bird command - no args
     # help text
     @commands.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile] [bw]")
@@ -89,54 +184,7 @@ class Birds(commands.Cog):
             if str(database.hget(f"session.data:{ctx.author.id}", "bw"))[2:-1]:
                 bw = not bw
 
-        if add_on == "":
-            message = BIRD_MESSAGE.format(option="n image")
-        else:
-            message = BIRD_MESSAGE.format(option=f" {add_on}")
-
-        logger.info("bird: " + str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1])
-
-        answered = int(database.hget(f"channel:{str(ctx.channel.id)}", "answered"))
-        logger.info(f"answered: {answered}")
-        # check to see if previous bird was answered
-        if answered:  # if yes, give a new bird
-            roles = check_state_role(ctx)
-            if database.exists(f"session.data:{ctx.author.id}"):
-                logger.info("session active")
-                session_increment(ctx, "total", 1)
-
-                roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
-                if roles[0] == "":
-                    roles = []
-                if not roles:
-                    logger.info("no session lists")
-                    roles = check_state_role(ctx)
-                logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
-
-            if roles:
-                birds = list(set(itertools.chain.from_iterable(states[state]["birdList"] for state in roles)))
-            else:
-                birds = birdList
-            logger.info(f"number of birds: {len(birds)}")
-
-            currentBird = random.choice(birds)
-            prevB = str(database.hget(f"channel:{str(ctx.channel.id)}", "prevB"))[2:-1]
-            while currentBird == prevB:
-                currentBird = random.choice(birds)
-            database.hset(f"channel:{str(ctx.channel.id)}", "prevB", str(currentBird))
-            database.hset(f"channel:{str(ctx.channel.id)}", "bird", str(currentBird))
-            logger.info("currentBird: " + str(currentBird))
-            await send_bird(ctx, currentBird, on_error=error_skip, message=message, addOn=add_on, bw=bw)
-            database.hset(f"channel:{str(ctx.channel.id)}", "answered", "0")
-        else:  # if no, give the same bird
-            await send_bird(
-                ctx,
-                str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1],
-                on_error=error_skip,
-                message=message,
-                addOn=add_on,
-                bw=bw
-            )
+        await self.send_bird_(ctx, add_on, bw)
 
     # goatsucker command - no args
     # just for fun, no real purpose
@@ -180,44 +228,7 @@ class Birds(commands.Cog):
         logger.info("bird: " + str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1])
         logger.info("answered: " + str(int(database.hget(f"channel:{str(ctx.channel.id)}", "sAnswered"))))
 
-        songAnswered = int(database.hget(f"channel:{str(ctx.channel.id)}", "sAnswered"))
-        # check to see if previous bird was answered
-        if songAnswered:  # if yes, give a new bird
-            roles = check_state_role(ctx)
-            if database.exists(f"session.data:{ctx.author.id}"):
-                logger.info("session active")
-                session_increment(ctx, "total", 1)
-
-                roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
-                if roles[0] == "":
-                    roles = []
-                if len(roles) is 0:
-                    logger.info("no session lists")
-                    roles = check_state_role(ctx)
-                logger.info(f"roles: {roles}")
-
-            if roles:
-                birds = list(itertools.chain.from_iterable(states[state]["songBirds"] for state in roles))
-            else:
-                birds = songBirds
-            logger.info(f"number of birds: {len(birds)}")
-
-            currentSongBird = random.choice(birds)
-            prevS = str(database.hget(f"channel:{str(ctx.channel.id)}", "prevS"))[2:-1]
-            while currentSongBird == prevS:
-                currentSongBird = random.choice(birds)
-            database.hset(f"channel:{str(ctx.channel.id)}", "prevS", str(currentSongBird))
-            database.hset(f"channel:{str(ctx.channel.id)}", "sBird", str(currentSongBird))
-            logger.info("currentSongBird: " + str(currentSongBird))
-            await send_birdsong(ctx, currentSongBird, on_error=error_skip_song, message=SONG_MESSAGE)
-            database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "0")
-        else:
-            await send_birdsong(
-                ctx,
-                str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1],
-                on_error=error_skip_song,
-                message=SONG_MESSAGE
-            )
+        await self.send_song_(ctx)
 
 def setup(bot):
     bot.add_cog(Birds(bot))

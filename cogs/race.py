@@ -53,7 +53,8 @@ class Race(commands.Cog):
 
         leaderboard_list = database.zrevrangebyscore(
             database_key, "+inf", "-inf", 0, placings, True)
-        embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title=preamble)
+        embed = discord.Embed(
+            type="rich", colour=discord.Color.blurple(), title=preamble)
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
@@ -75,7 +76,8 @@ class Race(commands.Cog):
             leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
 
         embed.add_field(name="Options", value=await self._get_options(ctx), inline=False)
-        embed.add_field(name="Stats", value=f"**Race Duration:** `{elapsed}`", inline=False)
+        embed.add_field(
+            name="Stats", value=f"**Race Duration:** `{elapsed}`", inline=False)
         embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
         if database.zscore(database_key, str(ctx.author.id)) is not None:
@@ -201,6 +203,18 @@ class Race(commands.Cog):
                           str(ctx.author.id): 0})
             await ctx.send(f"**Race started with options:**\n{await self._get_options(ctx)}")
 
+            if str(database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "image":
+                logger.info("auto sending next bird image")
+                addon, bw = map(str, database.hmget(
+                    f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
+                birds = self.bot.get_cog("Birds")
+                await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
+
+            if str(database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "song":
+                logger.info("auto sending next bird song")
+                birds = self.bot.get_cog("Birds")
+                await birds.send_song_(ctx)
+
     @race.command(
         brief="- Views race",
         help="- Views race.\nRaces allow you to compete with your friends to ID a certain bird first."
@@ -217,7 +231,7 @@ class Race(commands.Cog):
         else:
             await ctx.send("**There is no race in session.** *You can start one with `b!race start`*")
 
-    @race.command(help="- Stops race", aliases=["stp"])
+    @race.command(help="- Stops race", aliases=["stp", "end"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def stop(self, ctx):
         logger.info("command: stop race")
