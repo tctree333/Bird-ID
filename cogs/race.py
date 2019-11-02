@@ -32,11 +32,11 @@ class Race(commands.Cog):
         bw, addon, state, media, limit = database.hmget(f"race.data:{str(ctx.channel.id)}",
                                                         ["bw", "addon", "state", "media", "limit"])
         options = str(
-            f"*Age/Sex:* {str(addon)[2:-1] if addon else 'default'}\n" +
-            f"*Black & White:* {bw==b'bw'}\n" +
-            f"*Special bird list:* {str(state)[2:-1] if state else 'None'}\n" +
-            f"*Media Type:* {str(media)[2:-1]}\n" +
-            f"*Amount to Win:* {str(limit)[2:-1]}\n"
+            f"**Age/Sex:** {str(addon)[2:-1] if addon else 'default'}\n" +
+            f"**Black & White:** {bw==b'bw'}\n" +
+            f"**Special bird list:** {str(state)[2:-1] if state else 'None'}\n" +
+            f"**Media Type:** {str(media)[2:-1]}\n" +
+            f"**Amount to Win:** {str(limit)[2:-1]}\n"
         )
         return options
 
@@ -121,6 +121,12 @@ class Race(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
+
+        if not str(ctx.channel.name).startswith("racing"):
+            logger.info("not race channel")
+            await ctx.send("**Sorry, racing is not availiable in this channel.**\n" +
+                           "*Set the channel name to start with `racing` to enable it.*")
+            return
 
         if database.exists(f"race.data:{str(ctx.channel.id)}"):
             logger.info("already race")
