@@ -191,7 +191,7 @@ if __name__ == '__main__':
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
 
-    @tasks.loop(hours=48.0)
+    @tasks.loop(hours=24.0)
     async def refresh_cache():
         logger.info("clear cache")
         try:
