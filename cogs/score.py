@@ -163,7 +163,17 @@ class Score(commands.Cog):
 
         if database.zscore(database_key, str(ctx.author.id)) is not None:
             placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
-            embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.", inline=False)
+            distance = int(database.zrevrange(database_key, placement-2, placement-2, True)[0
+                            ][1]) - int(database.zscore(database_key, str(ctx.author.id)))
+            if distance is 0:
+                embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
+                f"You are tied with #{str(placement-1)}", inline=False)
+            elif placement is 1:
+                embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
+                f"You are in first place.", inline=False)
+            else:
+                embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
+                f"You are {str(distance)} away from #{str(placement-1)}", inline=False)
         else:
             embed.add_field(name="You:", value="You haven't answered any correctly.")
 

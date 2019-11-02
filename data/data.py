@@ -43,20 +43,21 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 # session.data:user_id : {"start": 0, "stop": 0,
 #                         "correct": 0, "incorrect": 0, "total": 0,
 #                         "bw": bw, "state": state, "addon": addon}
+# session.incorrect:user_id:[bird name, # incorrect]
 
 # leaderboard format = {
-#    "users:global":[user id, # of correct]
-#    "users.server:server_id":[user id, # of correct]
+#    users:global : [user id, # of correct]
+#    users.server:server_id : [user id, # of correct]
 # }
 
 # incorrect birds format = {
-#    "incorrect:global":[bird name, # incorrect]
-#    "incorrect.server:server_id":[bird name, # incorrect]
-#    "incorrect.user:user_id:":[bird name, # incorrect]
+#    incorrect:global : [bird name, # incorrect]
+#    incorrect.server:server_id : [bird name, # incorrect]
+#    incorrect.user:user_id: : [bird name, # incorrect]
 # }
 
 # channel score format = {
-#   "score:global":[channel id, # of correct]
+#   score:global : [channel id, # of correct]
 # }
 
 # setup logging
@@ -108,8 +109,10 @@ class GenericError(commands.CommandError):
 
 # Lists of birds, memes, and other info
 goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
-sciGoat = ["Nyctidromus albicollis",
-           "Antrostomus carolinensis", "Antrostomus vociferus"]
+sciGoat = ["Nyctidromus albicollis", "Antrostomus carolinensis", "Antrostomus vociferus"]
+
+screech_owls = ["Whiskered Screech-Owl", "Western Screech-Owl", "Eastern Screech-Owl"]
+sci_screech_owls = ["Megascops trichopsis", "Megascops kennicottii", "Megascops asio"]
 
 
 def _nats_lists():
@@ -174,8 +177,10 @@ def _all_birds():
 
         for state in states.values():
             birds += state[list_names[lists.index(bird_list)]]
-        master_lists.append(birds)
+        master_lists.append(list(set(birds)))
         logger.info(f"Done with {list_names[lists.index(bird_list)]}")
+    master_lists[1] += sci_screech_owls
+    master_lists[1] += sciGoat
     logger.info("Done with master lists!")
     return master_lists
 
