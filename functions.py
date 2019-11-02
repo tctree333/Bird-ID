@@ -270,6 +270,9 @@ def score_increment(ctx, amount):
         database.zincrby(f"users.server:{ctx.guild.id}", amount, str(ctx.author.id))
     else:
         logger.info("dm context")
+    if database.exists(f"race.data:{str(ctx.channel.id)}"):
+        logger.info("race in session")
+        database.zincrby(f"race.scores:{str(ctx.channel.id)}", amount, str(ctx.author.id))
 
 def owner_check(ctx):
     owners = set(str(os.getenv("ids")).split(","))

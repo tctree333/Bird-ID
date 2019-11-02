@@ -71,10 +71,18 @@ class Check(commands.Cog):
 
                 if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
                         database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "image":
-                    logger.info("auto sending next bird image")
-                    addon, bw = map(str, database.hmget(f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
-                    birds = self.bot.get_cog("Birds")
-                    await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
+
+                    limit = int(database.hget(f"race.data:{str(ctx.channel.id)}", "limit"))
+                    first = database.zrevrange(f"race.scores:{str(ctx.channel.id)}", 0, 0, True)[0]
+                    if int(first[1]) >= limit:
+                        logger.info("race ending")
+                        race = self.bot.get_cog("Race")
+                        await race.stop_race_(ctx)
+                    else:
+                        logger.info("auto sending next bird image")
+                        addon, bw = map(str, database.hmget(f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
+                        birds = self.bot.get_cog("Birds")
+                        await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
 
             else:
                 logger.info("incorrect")
@@ -185,9 +193,17 @@ class Check(commands.Cog):
 
                 if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
                         database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "song":
-                    logger.info("auto sending next bird song")
-                    birds = self.bot.get_cog("Birds")
-                    await birds.send_song_(ctx)
+
+                    limit = int(database.hget(f"race.data:{str(ctx.channel.id)}", "limit"))
+                    first = database.zrevrange(f"race.scores:{str(ctx.channel.id)}", 0, 0, True)[0]
+                    if int(first[1]) >= limit:
+                        logger.info("race ending")
+                        race = self.bot.get_cog("Race")
+                        await race.stop_race_(ctx)
+                    else:
+                        logger.info("auto sending next bird song")
+                        birds = self.bot.get_cog("Birds")
+                        await birds.send_song_(ctx)
 
             else:
                 logger.info("incorrect")

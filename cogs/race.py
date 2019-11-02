@@ -40,7 +40,7 @@ class Race(commands.Cog):
         )
         return options
 
-    async def _send_leaderboard(self, ctx, preamble, elapsed):
+    async def _send_stats(self, ctx, preamble):
         placings = 5
         database_key = f"race.scores:{str(ctx.channel.id)}"
         if database.zcard(database_key) is 0:
@@ -75,6 +75,9 @@ class Race(commands.Cog):
 
             leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
 
+        start = int(database.hget(f"race.data:{str(ctx.channel.id)}", "start"))
+        elapsed = str(datetime.timedelta(seconds=round(time.time()) - start))
+
         embed.add_field(name="Options", value=await self._get_options(ctx), inline=False)
         embed.add_field(
             name="Stats", value=f"**Race Duration:** `{elapsed}`", inline=False)
@@ -91,11 +94,31 @@ class Race(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    async def _send_stats(self, ctx, preamble):
-        start = int(database.hget(f"race.data:{str(ctx.channel.id)}", "start"))
-        elapsed = str(datetime.timedelta(seconds=round(time.time()) - start))
+    async def stop_race_(self, ctx):
+        first = database.zrevrange(f"race.scores:{str(ctx.channel.id)}", 0, 0, True)[0]
+        if ctx.guild is not None:
+                user = ctx.guild.get_member(int(first[0]))
+        else:
+            user = None
 
-        await self._send_leaderboard(ctx, preamble, elapsed)
+        if user is None:
+            user = self.bot.get_user(int(first[0]))
+            if user is None:
+                user = "Deleted"
+            else:
+                user = f"{user.name}#{user.discriminator}"
+        else:
+            user = f"{user.name}#{user.discriminator} ({str(user.mention)})"
+
+        await ctx.send(f"**Congratulations, {user}!**\n" +
+        f"You have won the race by correctly identifying `{str(int(first[1]))}` birds. " +
+        "*Way to go!*")
+
+        database.hset(f"race.data:{str(ctx.channel.id)}", "stop", round(time.time()))
+
+        await self._send_stats(ctx, "**Race stopped.**")
+        database.delete(f"race.data:{str(ctx.channel.id)}")
+        database.delete(f"race.scores:{str(ctx.channel.id)}")
 
     @commands.group(brief="- Base race command",
                     help="- Base race command\n" +
@@ -240,12 +263,7 @@ class Race(commands.Cog):
         await user_setup(ctx)
 
         if database.exists(f"race.data:{str(ctx.channel.id)}"):
-            database.hset(
-                f"race.data:{str(ctx.channel.id)}", "stop", round(time.time()))
-
-            await self._send_stats(ctx, "**Race stopped.**")
-            database.delete(f"race.data:{str(ctx.channel.id)}")
-            database.delete(f"race.scores:{str(ctx.channel.id)}")
+            await self.stop_race_(ctx)
         else:
             await ctx.send("**There is no race in session.** *You can start one with `b!race start`*")
 
