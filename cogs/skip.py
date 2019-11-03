@@ -37,7 +37,22 @@ class Skip(commands.Cog):
         database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
         if currentBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentBird} (bird)")
-            await ctx.send(f"Ok, skipping {currentBird.lower()}\n{birdPage.url}")  # sends wiki page
+            await ctx.send(f"Ok, skipping {currentBird.lower()}")
+            await ctx.send(birdPage.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{birdPage.url}>")  # sends wiki page
+            if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
+                        database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "image":
+
+                    limit = int(database.hget(f"race.data:{str(ctx.channel.id)}", "limit"))
+                    first = database.zrevrange(f"race.scores:{str(ctx.channel.id)}", 0, 0, True)[0]
+                    if int(first[1]) >= limit:
+                        logger.info("race ending")
+                        race = self.bot.get_cog("Race")
+                        await race.stop_race_(ctx)
+                    else:
+                        logger.info("auto sending next bird image")
+                        addon, bw = map(str, database.hmget(f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
+                        birds = self.bot.get_cog("Birds")
+                        await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
         else:
             await ctx.send("You need to ask for a bird first!")
 
@@ -73,7 +88,22 @@ class Skip(commands.Cog):
         database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
         if currentSongBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentSongBird} (bird)")
-            await ctx.send(f"Ok, skipping {currentSongBird.lower()}\n{birdPage.url}")  # sends wiki page
+            await ctx.send(f"Ok, skipping {currentSongBird.lower()}")
+            await ctx.send(birdPage.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{birdPage.url}>")  # sends wiki page
+            if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
+                        database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "song":
+
+                    limit = int(database.hget(f"race.data:{str(ctx.channel.id)}", "limit"))
+                    first = database.zrevrange(f"race.scores:{str(ctx.channel.id)}", 0, 0, True)[0]
+                    if int(first[1]) >= limit:
+                        logger.info("race ending")
+                        race = self.bot.get_cog("Race")
+                        await race.stop_race_(ctx)
+                    else:
+                        logger.info("auto sending next bird image")
+                        addon, bw = map(str, database.hmget(f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
+                        birds = self.bot.get_cog("Birds")
+                        await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
         else:
             await ctx.send("You need to ask for a bird first!")
 
