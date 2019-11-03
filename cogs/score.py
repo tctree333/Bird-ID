@@ -138,6 +138,7 @@ class Score(commands.Cog):
 
         if page > user_amount:
             page = user_amount - (user_amount % 10)
+
         leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", page, 10, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
@@ -182,20 +183,19 @@ class Score(commands.Cog):
 
     # missed - returns top 1-10 missed birds
     @commands.command(
-        brief="- Top globally incorrect birds",
-        help="- Top globally incorrect birds, argument can be between 1 and 10, default is 5. " +
-        "Scope is either global, server, or me. (g, s, m)",
+        brief="- Top incorrect birds",
+        help="- Top incorrect birds, scope is either global, server, or me. (g, s, m)",
         aliases=["m"]
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def missed(self, ctx, scope="", placings=5):
+    async def missed(self, ctx, scope="", page=5):
         logger.info("command: missed")
 
         await channel_setup(ctx)
         await user_setup(ctx)
 
         try:
-            placings = int(scope)
+            page = int(scope)
         except ValueError:
             if scope is "":
                 scope = "global"
@@ -204,16 +204,16 @@ class Score(commands.Cog):
             scope = "global"
 
         logger.info(f"scope: {scope}")
-        logger.info(f"placings: {placings}")
+        logger.info(f"page: {page}")
 
         if not scope in ("global", "server", "me", "g", "s", "m"):
             logger.info("invalid scope")
             await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me`")
             return
 
-        if placings > 10 or placings < 1:
-            logger.info("invalid placings")
-            await ctx.send("Not a valid number. Pick one between 1 and 10!")
+        if page < 1:
+            logger.info("invalid page")
+            await ctx.send("Not a valid number. Pick a positive integer!")
             return
 
         database_key = ""
@@ -233,21 +233,24 @@ class Score(commands.Cog):
             database_key = "incorrect:global"
             scope = "global"
 
-        if database.zcard(database_key) is 0:
+        user_amount = int(database.zcard(database_key))
+        page = (page * 10) - 10
+
+        if user_amount is 0:
             logger.info(f"no users in {database_key}")
             await ctx.send("There are no birds in the database.")
             return
+        
+        if page > user_amount:
+            page = user_amount - (user_amount % 10)
 
-        if placings > database.zcard(database_key):
-            placings = database.zcard(database_key)
-
-        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", 0, placings, True)
+        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", page, 10, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
         for i, stats in enumerate(leaderboard_list):
-            leaderboard += f"{str(i+1)}. **{str(stats[0])[2:-1]}** - {str(int(stats[1]))}\n"
+            leaderboard += f"{str(i+1+page)}. **{str(stats[0])[2:-1]}** - {str(int(stats[1]))}\n"
         embed.add_field(name=f"Top Missed Birds ({scope})", value=leaderboard, inline=False)
 
         await ctx.send(embed=embed)
