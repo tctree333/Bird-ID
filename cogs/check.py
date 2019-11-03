@@ -58,7 +58,8 @@ class Check(commands.Cog):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
 
-                await ctx.send("Correct! Good job!")
+                await ctx.send("Correct! Good job!" if not database.exists(f"race.data:{str(ctx.channel.id)}") 
+                                                    else f"**{str(ctx.author.mention)}**, you are correct!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{page.url}>")
                 score_increment(ctx, 1)
