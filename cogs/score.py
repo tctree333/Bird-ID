@@ -82,19 +82,18 @@ class Score(commands.Cog):
     # leaderboard - returns top 1-10 users
     @commands.command(
         brief="- Top scores",
-        help="- Top scores, argument can be between 1 and 10, default is 5. " +
-        "Scope is either global or server. (g, s)",
+        help="- Top scores, scope is either global or server. (g, s)",
         aliases=["lb"]
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def leaderboard(self, ctx, scope="", placings=5):
+    async def leaderboard(self, ctx, scope="", page=1):
         logger.info("command: leaderboard")
 
         await channel_setup(ctx)
         await user_setup(ctx)
 
         try:
-            placings = int(scope)
+            page = int(scope)
         except ValueError:
             if scope is "":
                 scope = "global"
@@ -103,16 +102,16 @@ class Score(commands.Cog):
             scope = "global"
 
         logger.info(f"scope: {scope}")
-        logger.info(f"placings: {placings}")
+        logger.info(f"page: {page}")
 
         if not scope in ("global", "server", "g", "s"):
             logger.info("invalid scope")
             await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server`")
             return
 
-        if placings > 10 or placings < 1:
-            logger.info("invalid placings")
-            await ctx.send("Not a valid number. Pick one between 1 and 10!")
+        if page < 1:
+            logger.info("invalid page")
+            await ctx.send("Not a valid number. Pick a positive integer!")
             return
 
         database_key = ""
@@ -128,16 +127,18 @@ class Score(commands.Cog):
         else:
             database_key = "users:global"
             scope = "global"
+        
+        user_amount = int(database.zcard(database_key))
+        page = (page * 10) - 10
 
-        if database.zcard(database_key) is 0:
+        if user_amount is 0:
             logger.info(f"no users in {database_key}")
             await ctx.send("There are no users in the database.")
             return
 
-        if placings > database.zcard(database_key):
-            placings = database.zcard(database_key)
-
-        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", 0, placings, True)
+        if page > user_amount:
+            page = user_amount - (user_amount % 10)
+        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", page, 10, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
@@ -157,7 +158,7 @@ class Score(commands.Cog):
             else:
                 user = f"**{user.name}#{user.discriminator}** ({str(user.mention)})"
 
-            leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
+            leaderboard += f"{str(i+1+page)}. {user} - {str(int(stats[1]))}\n"
 
         embed.add_field(name=f"Leaderboard ({scope})", value=leaderboard, inline=False)
 
@@ -165,12 +166,12 @@ class Score(commands.Cog):
             placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
             distance = int(database.zrevrange(database_key, placement-2, placement-2, True)[0
                             ][1]) - int(database.zscore(database_key, str(ctx.author.id)))
-            if distance is 0:
-                embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
-                f"You are tied with #{str(placement-1)}", inline=False)
-            elif placement is 1:
+            if placement is 1:
                 embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
                 f"You are in first place.", inline=False)
+            elif distance is 0:
+                embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
+                f"You are tied with #{str(placement-1)}", inline=False)
             else:
                 embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
                 f"You are {str(distance)} away from #{str(placement-1)}", inline=False)
