@@ -188,7 +188,7 @@ class Score(commands.Cog):
         aliases=["m"]
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def missed(self, ctx, scope="", page=5):
+    async def missed(self, ctx, scope="", page=1):
         logger.info("command: missed")
 
         await channel_setup(ctx)
