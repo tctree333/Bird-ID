@@ -608,9 +608,7 @@ async def backup_all():
         logger.info("Backups directory exists")
     with open("backups/dump.dump", 'wb') as f:
         with open("backups/keys.txt", 'w') as k:
-            logger.info("Opened Files")
             for i, item in enumerate(dump):
-                logger.info(f"trying number {i} and {item}")
                 pickle.dump(item, f)
                 k.write(f"{keys[i]}\n")
     logger.info("Backup Finished")
