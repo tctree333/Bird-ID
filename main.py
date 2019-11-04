@@ -233,7 +233,7 @@ if __name__ == '__main__':
 
         logger.info("Sending backup files")
         channel = bot.get_channel(BACKUPS_CHANNEL)
-        with open("backups/dump", 'rb') as f:
+        with open("backups/dump.dump", 'rb') as f:
             await channel.send(file=discord.File(f, filename="dump"))
         with open("backups/keys.txt", 'r') as f:
             await channel.send(file=discord.File(f, filename="keys.txt"))
