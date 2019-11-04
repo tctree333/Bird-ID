@@ -215,6 +215,19 @@ if __name__ == '__main__':
 
     @tasks.loop(hours=6.0)
     async def refresh_backup():
+        logger.info("Refreshing backup")
+        try:
+            os.remove('backups/dump')
+            logger.info("Cleared backup dump")
+        except FileNotFoundError:
+            logger.info("Already cleared backup dump")
+
+        try:
+            os.remove('backups/keys.txt')
+            logger.info("Cleared backup keys")
+        except FileNotFoundError:
+            logger.info("Already cleared backup keys")
+
         event_loop = asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, start_backup)
