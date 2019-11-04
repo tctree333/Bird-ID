@@ -213,7 +213,7 @@ if __name__ == '__main__':
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, start_precache)
 
-    @tasks.loop(hours=12.0, reconnect=False)
+    @tasks.loop(hours=6.0)
     async def refresh_backup():
         logger.info("Refreshing backup")
         try:
@@ -231,11 +231,13 @@ if __name__ == '__main__':
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, start_backup)
 
+        logger.info("Sending backup files")
         channel = bot.get_channel(BACKUPS_CHANNEL)
         with open("backups/dump", 'rb') as f:
             await channel.send(file=discord.File(f, filename="dump"))
         with open("backups/keys.txt", 'r') as f:
             await channel.send(file=discord.File(f, filename="keys.txt"))
+        logger.info("Backup Files Sent!")
 
     # Actually run the bot
     token = os.getenv("token")
