@@ -601,7 +601,7 @@ async def backup_all():
         dump.append(database.dump(key))
     logger.info("Finished Dump")
     logger.info("Writing To File")
-    with open("backups/dump", 'wb') as f:
+    with open("backups/dump.dump", 'wb') as f:
         with open("backups/keys.txt", 'w') as k:
             logger.info("Opened Files")
             for i, item in enumerate(dump):

@@ -217,7 +217,7 @@ if __name__ == '__main__':
     async def refresh_backup():
         logger.info("Refreshing backup")
         try:
-            os.remove('backups/dump')
+            os.remove('backups/dump.dump')
             logger.info("Cleared backup dump")
         except FileNotFoundError:
             logger.info("Already cleared backup dump")
