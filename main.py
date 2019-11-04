@@ -28,12 +28,15 @@ import wikipedia
 from discord.ext import commands, tasks
 
 from data.data import database, logger
-from functions import channel_setup, precache
+from functions import channel_setup, precache, backup_all
 
 BACKUPS_CHANNEL = 622547928946311188
 
 def start_precache():
     asyncio.run(precache())
+
+def start_backup():
+    asyncio.run(backup_all())
 
 if __name__ == '__main__':
     # Initialize bot
@@ -53,6 +56,7 @@ if __name__ == '__main__':
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
         refresh_cache.start()
+        refresh_backup.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory
     initial_extensions = [
@@ -208,6 +212,18 @@ if __name__ == '__main__':
         event_loop = asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, start_precache)
+
+    @tasks.loop(hours=6.0)
+    async def refresh_backup():
+        event_loop = asyncio.get_event_loop()
+        with concurrent.futures.ThreadPoolExecutor(1) as executor:
+            await event_loop.run_in_executor(executor, start_backup)
+
+        channel = bot.get_channel(BACKUPS_CHANNEL)
+        with open("backups/dump", 'rb') as f:
+            await channel.send(file=discord.File(f, filename="dump"))
+        with open("backups/keys.txt", 'r') as f:
+            await channel.send(file=discord.File(f, filename="keys.txt"))
 
     # Actually run the bot
     token = os.getenv("token")

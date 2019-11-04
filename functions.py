@@ -29,6 +29,7 @@ import aiohttp
 import discord
 import eyed3
 from PIL import Image
+import pickle
 
 from data.data import (GenericError, database, logger, sciBirdListMaster, 
                        sciSongBirdsMaster, states, screech_owls)
@@ -587,6 +588,25 @@ async def precache():
         logger.info("Starting songs")
         await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
     logger.info("Images Cached")
+
+def cleanup(string):
+    return str(string)[2:-1]
+
+async def backup_all():
+    logger.info("Starting Backup")
+    logger.info("Creating Dump")
+    keys = list(map(cleanup, database.keys()))
+    dump = []
+    for key in keys:
+        dump.append(database.dump(key))
+    logger.info("Finished Dump")
+    logger.info("Writing To File")
+    with open("backups/dump", 'wb') as f:
+        with open("backups/keys.txt", 'w') as k:
+            for i, item in enumerate(dump):
+                pickle.dump(item, f)
+                k.write(f"{keys[i]}\n")
+    logger.info("Backup Finished")
 
 # spellcheck - allows one letter off/extra
 # cutoff - allows for difference of that amount
