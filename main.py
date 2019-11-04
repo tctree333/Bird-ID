@@ -55,7 +55,7 @@ if __name__ == '__main__':
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
-        #refresh_cache.start()
+        refresh_cache.start()
         refresh_backup.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory
@@ -213,15 +213,14 @@ if __name__ == '__main__':
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, start_precache)
 
-    @tasks.loop(hours=12.0)
+    @tasks.loop(hours=12.0, reconnect=False)
     async def refresh_backup():
         logger.info("Refreshing backup")
         try:
-            os.remove('backups/dump')
+            os.remove('backups/dump.dump')
             logger.info("Cleared backup dump")
         except FileNotFoundError:
             logger.info("Already cleared backup dump")
-
         try:
             os.remove('backups/keys.txt')
             logger.info("Cleared backup keys")
