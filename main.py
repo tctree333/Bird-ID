@@ -213,7 +213,7 @@ if __name__ == '__main__':
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, start_precache)
 
-    @tasks.loop(hours=12.0)
+    @tasks.loop(hours=12.0, reconnect=False)
     async def refresh_backup():
         logger.info("Refreshing backup")
         try:
@@ -221,7 +221,6 @@ if __name__ == '__main__':
             logger.info("Cleared backup dump")
         except FileNotFoundError:
             logger.info("Already cleared backup dump")
-
         try:
             os.remove('backups/keys.txt')
             logger.info("Cleared backup keys")
