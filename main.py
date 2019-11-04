@@ -213,7 +213,7 @@ if __name__ == '__main__':
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, start_precache)
 
-    @tasks.loop(hours=6.0)
+    @tasks.loop(hours=12.0)
     async def refresh_backup():
         logger.info("Refreshing backup")
         try:
