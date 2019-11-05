@@ -147,6 +147,11 @@ class Race(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
+        if ctx.guild is None:
+            logger.info("dm context")
+            await ctx.send("**Sorry, racing is not avaliable in DMs.**")
+            return
+
         if not str(ctx.channel.name).startswith("racing"):
             logger.info("not race channel")
             await ctx.send("**Sorry, racing is not availiable in this channel.**\n" +

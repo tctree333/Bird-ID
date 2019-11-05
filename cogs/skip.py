@@ -100,7 +100,7 @@ class Skip(commands.Cog):
                         race = self.bot.get_cog("Race")
                         await race.stop_race_(ctx)
                     else:
-                        logger.info("auto sending next bird image")
+                        logger.info("auto sending next bird song")
                         addon, bw = map(str, database.hmget(f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
                         birds = self.bot.get_cog("Birds")
                         await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
