@@ -212,6 +212,10 @@ class Race(commands.Cog):
             else:
                 limit = 10
 
+            if limit > 1000000:
+                await ctx.send("**Sorry, the maximum amount to win is 1 million.**")
+                limit = 1000000
+
             logger.info(
                 f"adding bw: {bw}; addon: {addon}; state: {state}; media: {media}; limit: {limit}")
 
