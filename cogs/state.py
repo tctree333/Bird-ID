@@ -27,11 +27,11 @@ class States(commands.Cog):
         self.bot = bot
 
     # set state role
-    @commands.command(help="- Sets your state", name="set", aliases=["set"])
+    @commands.command(help="- Sets your state", name="set", aliases=["state"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.user)
     @commands.guild_only()
     async def state(self, ctx, *, args):
-        logger.info("set")
+        logger.info("command: state set")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -82,7 +82,7 @@ class States(commands.Cog):
     @commands.cooldown(1, 5.0, type=commands.BucketType.user)
     @commands.guild_only()
     async def remove(self, ctx, *, args):
-        logger.info("remove")
+        logger.info("command: remove")
 
         await channel_setup(ctx)
         await user_setup(ctx)
@@ -114,7 +114,7 @@ class States(commands.Cog):
 
     @state.error
     async def set_error(self, ctx, error):
-        logger.info("set error")
+        logger.info("state set error")
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
                 f"**Please enter your state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
