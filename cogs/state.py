@@ -27,10 +27,10 @@ class States(commands.Cog):
         self.bot = bot
 
     # set state role
-    @commands.command(help="- Sets your state", aliases=["state"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.command(help="- Sets your state", name="set", aliases=["set"])
+    @commands.cooldown(1, 5.0, type=commands.BucketType.user)
     @commands.guild_only()
-    async def set(self, ctx, *, args):
+    async def state(self, ctx, *, args):
         logger.info("set")
 
         await channel_setup(ctx)
@@ -79,7 +79,7 @@ class States(commands.Cog):
 
     # removes state role
     @commands.command(help="- Removes your state", aliases=["rm"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.cooldown(1, 5.0, type=commands.BucketType.user)
     @commands.guild_only()
     async def remove(self, ctx, *, args):
         logger.info("remove")

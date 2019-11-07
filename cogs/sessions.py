@@ -99,7 +99,7 @@ class Sessions(commands.Cog):
         aliases=["st"],
         usage="[bw] [state] [female|juvenile]"
     )
-    @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
+    @commands.cooldown(1, 3.0, type=commands.BucketType.user)
     async def start(self, ctx, *, args_str: str = ""):
         logger.info("command: start session")
 
@@ -157,7 +157,7 @@ class Sessions(commands.Cog):
         aliases=["view"],
         usage="[bw] [state] [female|juvenile]"
     )
-    @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
+    @commands.cooldown(1, 3.0, type=commands.BucketType.user)
     async def edit(self, ctx, *, args_str: str = ""):
         logger.info("command: view session")
 
@@ -212,7 +212,7 @@ class Sessions(commands.Cog):
 
     # stops session
     @session.command(help="- Stops session", aliases=["stp"])
-    @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
+    @commands.cooldown(1, 3.0, type=commands.BucketType.user)
     async def stop(self, ctx):
         logger.info("command: stop session")
 

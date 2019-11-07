@@ -31,7 +31,7 @@ class Other(commands.Cog):
 
     # Info - Gives call+image of 1 bird
     @commands.command(help="- Gives an image and call of a bird", aliases=['i'])
-    @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
+    @commands.cooldown(1, 10.0, type=commands.BucketType.user)
     async def info(self, ctx, *, arg):
         logger.info("command: info")
 
@@ -52,7 +52,7 @@ class Other(commands.Cog):
 
     # List command - argument is state/bird list
     @commands.command(help="- DMs the user with the appropriate bird list.", name="list")
-    @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
+    @commands.cooldown(1, 8.0, type=commands.BucketType.user)
     async def list_of_birds(self, ctx, state: str = "blank"):
         logger.info("command: list")
 
@@ -105,7 +105,7 @@ class Other(commands.Cog):
 
     # Wiki command - argument is the wiki page
     @commands.command(help="- Fetch the wikipedia page for any given argument")
-    @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
+    @commands.cooldown(1, 8.0, type=commands.BucketType.user)
     async def wiki(self, ctx, *, arg):
         logger.info("command: wiki")
 
@@ -122,7 +122,7 @@ class Other(commands.Cog):
 
     # meme command - sends a random bird video/gif
     @commands.command(help="- Sends a funny bird video!")
-    @commands.cooldown(1, 300.0, type=commands.BucketType.channel)
+    @commands.cooldown(1, 300.0, type=commands.BucketType.user)
     async def meme(self, ctx):
         logger.info("command: meme")
 
