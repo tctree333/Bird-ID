@@ -112,7 +112,7 @@ class States(commands.Cog):
                 await ctx.author.remove_roles(role, reason="Delete state role for bird list")
                 await ctx.send(f"**Ok, role {role.name} deleted!**")
 
-    @set.error
+    @state.error
     async def set_error(self, ctx, error):
         logger.info("set error")
         if isinstance(error, commands.MissingRequiredArgument):
