@@ -149,7 +149,7 @@ if __name__ == '__main__':
             await ctx.send("**This command is unavaliable in DMs!**")
         
         elif isinstance(error, GenericError):
-                if error.code is 842:
+                if error.code == 842:
                     await ctx.send("**Sorry, you cannot use this command.**")
                 else:
                     logger.error("uncaught generic error")
