@@ -27,7 +27,7 @@ import redis
 import wikipedia
 from discord.ext import commands, tasks
 
-from data.data import database, logger
+from data.data import database, logger, GenericError
 from functions import channel_setup, precache, backup_all
 
 BACKUPS_CHANNEL = 622547928946311188
@@ -55,8 +55,8 @@ if __name__ == '__main__':
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
-        refresh_cache.start()
-        refresh_backup.start()
+        #refresh_cache.start()
+        #refresh_backup.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory
     initial_extensions = [
@@ -100,6 +100,14 @@ if __name__ == '__main__':
             raise commands.BotMissingPermissions(missing)
         else:
             return True
+
+    # Global check for banned users
+    @bot.check
+    def user_banned(ctx):
+        if database.zscore("banned:global", str(ctx.author.id)) is None:
+            return True
+        else:
+            raise GenericError(code=842)
 
     ######
     # GLOBAL ERROR CHECKING
@@ -174,6 +182,19 @@ if __name__ == '__main__':
                     logger.exception(error.original)
                 else:
                     await ctx.send("**An error has occured with discord. :(**\n*Please try again.*")
+            
+            elif isinstance(error.original, GenericError):
+                if error.original.code is 842:
+                    await ctx.send("**Sorry, you cannot use this command.**")
+                else:
+                    logger.error("uncaught generic error")
+                    await ctx.send(
+                    """**An uncaught generic error has occurred.**
+*Please log this message in #support in the support server below, or try again.*
+**Error:**  """ + str(error)
+                    )
+                    await ctx.send("https://discord.gg/fXxYyDJ")
+                    raise error
 
             else:
                 logger.error("uncaught command error")

@@ -19,6 +19,7 @@ from difflib import get_close_matches
 
 import discord
 import wikipedia
+import typing
 from discord.ext import commands
 
 from data.data import (birdListMaster, database, logger, memeList, sciBirdListMaster, states)
@@ -186,6 +187,32 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
         )
         await ctx.send(embed=embed)
         await ctx.send("https://discord.gg/fXxYyDJ")
+
+    # ban command - prevents certain users from using the bot
+    @commands.command(help="- ban command", hidden=True)
+    @commands.check(owner_check)
+    async def ban(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
+        logger.info("command: ban")
+        if user is None:
+            logger.info("no args")
+            await ctx.send("Invalid User!")
+            return
+        logger.info(f"user-id: {user.id}")
+        database.zadd("banned:global", {str(user.id), 0})
+        await ctx.send(f"Ok, {user.username} cannot use the bot anymore!")
+    
+    # unban command - prevents certain users from using the bot
+    @commands.command(help="- unban command", hidden=True)
+    @commands.check(owner_check)
+    async def unban(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
+        logger.info("command: unban")
+        if user is None:
+            logger.info("no args")
+            await ctx.send("Invalid User!")
+            return
+        logger.info(f"user-id: {user.id}")
+        database.zrem("banned:global", str(user.id))
+        await ctx.send(f"Ok, {user.username} can use the bot!")
 
     # Send command - for testing purposes only
     @commands.command(help="- send command", hidden=True, aliases=["sendas"])

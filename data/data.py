@@ -72,6 +72,9 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 #   score:global : [channel id, # of correct]
 # }
 
+# ban format:
+#   banned:global : [user id, 0]
+
 # setup logging
 logger = logging.getLogger("bird-id")
 logger.setLevel(logging.DEBUG)
@@ -117,6 +120,7 @@ class GenericError(commands.CommandError):
 # 201 - HTTP Error
 # 999 - Invalid
 # 100 - Blank
+# 842 - Banned User
 
 
 # Lists of birds, memes, and other info
