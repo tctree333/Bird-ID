@@ -222,7 +222,7 @@ async def get_taxon(bird, session=None):
                     for item in taxon_code_data:
                         logger.info(f"checking: {item}")
                         if spellcheck(item["name"].split(" - ")[0], bird,
-                                      6) or spellcheck(item["name"].split(" - ")[1], bird, 6):
+                                      4) or spellcheck(item["name"].split(" - ")[1], bird, 4):
                             logger.info("ok")
                             taxon_code = item["code"]
                             break
