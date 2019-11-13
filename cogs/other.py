@@ -199,7 +199,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
             return
         logger.info(f"user-id: {user.id}")
         database.zadd("banned:global", {str(user.id): 0})
-        await ctx.send(f"Ok, {user.username} cannot use the bot anymore!")
+        await ctx.send(f"Ok, {user.name} cannot use the bot anymore!")
     
     # unban command - prevents certain users from using the bot
     @commands.command(help="- unban command", hidden=True)
@@ -212,7 +212,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
             return
         logger.info(f"user-id: {user.id}")
         database.zrem("banned:global", str(user.id))
-        await ctx.send(f"Ok, {user.username} can use the bot!")
+        await ctx.send(f"Ok, {user.name} can use the bot!")
 
     # Send command - for testing purposes only
     @commands.command(help="- send command", hidden=True, aliases=["sendas"])
