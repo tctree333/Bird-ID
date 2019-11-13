@@ -198,7 +198,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
             await ctx.send("Invalid User!")
             return
         logger.info(f"user-id: {user.id}")
-        database.zadd("banned:global", {str(user.id), 0})
+        database.zadd("banned:global", {str(user.id): 0})
         await ctx.send(f"Ok, {user.username} cannot use the bot anymore!")
     
     # unban command - prevents certain users from using the bot
