@@ -224,7 +224,7 @@ class Sessions(commands.Cog):
                 else:
                     logger.info("removing juvenile")
                     database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
-            await self._send_stats(ctx, f"**Session started previously with options:**\n")
+            await self._send_stats(ctx, f"**Session started previously.**\n")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
 
@@ -240,7 +240,7 @@ class Sessions(commands.Cog):
         if database.exists(f"session.data:{str(ctx.author.id)}"):
             database.hset(f"session.data:{str(ctx.author.id)}", "stop", round(time.time()))
 
-            await self._send_stats(ctx, "**Session stopped.**\n**Session Options:**\n")
+            await self._send_stats(ctx, "**Session stopped.**\n")
             database.delete(f"session.data:{str(ctx.author.id)}")
             database.delete(f"session.incorrect:{str(ctx.author.id)}")
         else:
