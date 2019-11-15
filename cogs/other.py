@@ -132,7 +132,7 @@ class Other(commands.Cog):
 
         birds_in_order = set(orders[order])
         birds_in_state = set(states[state]["birdList"])
-        song_birds_in_state = set(states[state]["birdList"])
+        song_birds_in_state = set(states[state]["songBirds"])
         bird_list = list(birds_in_order.intersection(birds_in_state))
         song_bird_list = list(birds_in_order.intersection(song_birds_in_state))
 
