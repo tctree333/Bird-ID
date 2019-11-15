@@ -186,6 +186,17 @@ class Birds(commands.Cog):
         if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("session parameters")
 
+            if order_args:
+                toggle_order = list(order_args)
+                current_orders = str(database.hget(f"session.data:{str(ctx.author.id)}", "order"))[2:-1].split(" ")
+                add_orders = []
+                logger.info(f"toggle orders: {toggle_order}")
+                logger.info(f"current orders: {current_orders}")
+                for o in set(toggle_order).symmetric_difference(set(current_orders)):
+                    add_orders.append(o)
+                logger.info(f"adding orders: {add_orders}")
+                order = " ".join(add_orders).strip()
+
             session_add_on = str(database.hget(f"session.data:{ctx.author.id}", "addon"))[2:-1]
             if add_on == "":
                 add_on = session_add_on
