@@ -159,6 +159,22 @@ def _nats_lists():
 # sci lists are only for new, state specific birds
 # either lists can be in any order
 
+def _orders():
+    # Converts txt file of data into lists
+    logger.info("Working on order lists")
+    logger.info("Working on order master list")
+    orders = {}
+    with open('data/orders/orders.txt', 'r') as f:
+        orders["orders"] = [string.capwords(line.strip().replace("-", " ")) for line in f]
+    logger.info("Done with order master list")
+    for filename in orders["orders"]:
+        logger.info(f"Working on {filename}")
+        with open(f'data/orders/{filename}.txt', 'r') as f:
+            orders[filename] = [string.capwords(line.strip().replace("-", " ")) for line in f]
+        logger.info(f"Done with {filename}")
+    logger.info("Done with order lists!")
+    return orders
+list()
 
 def _state_lists():
     filenames = ("birdList", "sciBirdList", "aliases",
@@ -204,6 +220,7 @@ def _all_birds():
 birdList, sciBirdList, memeList, songBirds, sciSongBirds = _nats_lists()
 states = _state_lists()
 birdListMaster, sciBirdListMaster, songBirdsMaster, sciSongBirdsMaster = _all_birds()
+orders = _orders()
 logger.info(
     f"National Lengths: {len(birdList)}, {len(sciBirdList)}, {len(songBirds)}, {len(sciSongBirds)}")
 logger.info(
