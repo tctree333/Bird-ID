@@ -171,8 +171,8 @@ class Other(commands.Cog):
             await ctx.author.dm_channel.send(f"```{birds}```")
 
         await ctx.send(
-            f"The `{state}` bird list has **{str(len(states[state]['birdList']))}** birds.\n" +
-            f"The `{state}` bird list has **{str(len(states[state]['songBirds']))}** songs.\n" +
+            f"The `{order}s` in the `{state}` bird list has **{str(len(bird_list))}** birds.\n" +
+            f"The `{order}s` in the `{state}` bird list has **{str(len(song_bird_list))}** songs.\n" +
             "*A full list of birds has been sent to you via DMs.*"
         )
 
