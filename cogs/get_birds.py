@@ -166,7 +166,7 @@ class Birds(commands.Cog):
             bw = True
         else:
             bw = False
-        order_args = set(orders["orders"]).intersection({arg.upper() for arg in args})
+        order_args = set(orders["orders"]).intersection({arg.lower() for arg in args})
         if order_args:
             order = " ".join(order_args).strip()
         else:
