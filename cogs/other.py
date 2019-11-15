@@ -152,7 +152,7 @@ class Other(commands.Cog):
 
         songLists = []
         temp = ""
-        for bird in states[state]['songBirds']:
+        for bird in song_bird_list:
             temp += f"{str(bird)}\n"
             if len(temp) > 1950:
                 songLists.append(temp)
@@ -162,11 +162,11 @@ class Other(commands.Cog):
         if ctx.author.dm_channel is None:
             await ctx.author.create_dm()
 
-        await ctx.author.dm_channel.send(f"**The {state} bird list:**")
+        await ctx.author.dm_channel.send(f"**The `{order}s` in the `{state}` bird list:**")
         for birds in birdLists:
             await ctx.author.dm_channel.send(f"```{birds}```")
 
-        await ctx.author.dm_channel.send(f"**The {state} bird songs:**")
+        await ctx.author.dm_channel.send(f"**The `{order}s` in the `{state}` bird songs:**")
         for birds in songLists:
             await ctx.author.dm_channel.send(f"```{birds}```")
 
