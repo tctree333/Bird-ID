@@ -22,7 +22,7 @@ import wikipedia
 import typing
 from discord.ext import commands
 
-from data.data import (birdListMaster, database, logger, memeList, sciBirdListMaster, states)
+from data.data import (birdListMaster, database, logger, memeList, sciBirdListMaster, states, orders)
 from functions import (channel_setup, get_sciname, send_bird, send_birdsong, user_setup, owner_check)
 
 
@@ -101,6 +101,78 @@ class Other(commands.Cog):
         await ctx.send(
             f"The `{state}` bird list has **{str(len(states[state]['birdList']))}** birds.\n" +
             f"The `{state}` bird list has **{str(len(states[state]['songBirds']))}** songs.\n" +
+            "*A full list of birds has been sent to you via DMs.*"
+        )
+
+    # List command - argument is state/bird list
+    @commands.command(help="- DMs the user with the appropriate bird list.", name="order", aliases=["orders"])
+    @commands.cooldown(1, 8.0, type=commands.BucketType.user)
+    async def bird_orders(self, ctx, order: str = "blank", state: str = "blank"):
+        logger.info("command: orders")
+
+        await channel_setup(ctx)
+        await user_setup(ctx)
+
+        order = order.lower()
+        state = state.upper()
+
+        if order not in list(orders["orders"]):
+            logger.info("invalid order")
+            await ctx.send(
+                f"**Sorry, `{order}` is not a valid order.**\n*Valid Orders:* `{', '.join(map(str, list(orders['orders'])))}`"
+            )
+            return
+
+        if state not in list(states.keys()):
+            logger.info("invalid state")
+            await ctx.send(
+                f"**Sorry, `{state}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
+            )
+            return
+
+        birds_in_order = set(orders[order])
+        birds_in_state = set(states[state]["birdList"])
+        song_birds_in_state = set(states[state]["songBirds"])
+        bird_list = list(birds_in_order.intersection(birds_in_state))
+        song_bird_list = list(birds_in_order.intersection(song_birds_in_state))
+
+        if len(bird_list) is 0 and len(song_bird_list) is 0:
+            logger.info("no birds for order/state")
+            await ctx.send(f"**Sorry, no birds could be found for the order/state combo.**\n*Please try again*")
+            return
+
+        birdLists = []
+        temp = ""
+        for bird in bird_list:
+            temp += f"{str(bird)}\n"
+            if len(temp) > 1950:
+                birdLists.append(temp)
+                temp = ""
+        birdLists.append(temp)
+
+        songLists = []
+        temp = ""
+        for bird in song_bird_list:
+            temp += f"{str(bird)}\n"
+            if len(temp) > 1950:
+                songLists.append(temp)
+                temp = ""
+        songLists.append(temp)
+
+        if ctx.author.dm_channel is None:
+            await ctx.author.create_dm()
+
+        await ctx.author.dm_channel.send(f"**The `{order}` in the `{state}` bird list:**")
+        for birds in birdLists:
+            await ctx.author.dm_channel.send(f"```{birds}```")
+
+        await ctx.author.dm_channel.send(f"**The `{order}` in the `{state}` bird songs:**")
+        for birds in songLists:
+            await ctx.author.dm_channel.send(f"```{birds}```")
+
+        await ctx.send(
+            f"The `{order}` in the `{state}` bird list has **{str(len(bird_list))}** birds.\n" +
+            f"The `{order}` in the `{state}` bird list has **{str(len(song_bird_list))}** songs.\n" +
             "*A full list of birds has been sent to you via DMs.*"
         )
 

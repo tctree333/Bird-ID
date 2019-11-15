@@ -20,7 +20,7 @@ import discord
 
 from discord.ext import commands
 
-from data.data import database, logger, states
+from data.data import database, logger, states, orders
 from functions import channel_setup, user_setup, check_state_role
 
 class Sessions(commands.Cog):
@@ -28,12 +28,13 @@ class Sessions(commands.Cog):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state = database.hmget(f"session.data:{str(ctx.author.id)}",
-                                                        ["bw", "addon", "state"])
+        bw, addon, state, order = database.hmget(f"session.data:{str(ctx.author.id)}",
+                                                        ["bw", "addon", "state", "order"])
         options = str(
             f"**Age/Sex:** {str(addon)[2:-1] if addon else 'default'}\n" +
             f"**Black & White:** {bw==b'bw'}\n" +
-            f"**Special bird list:** {str(state)[2:-1] if state else 'None'}\n"
+            f"**State bird list:** {str(state)[2:-1] if state else 'None'}\n" +
+            f"**Bird Order:** {str(order)[2:-1] if order else 'None'}\n"
         )
         return options
 
@@ -122,6 +123,11 @@ class Sessions(commands.Cog):
                 state = " ".join(states_args).strip()
             else:
                 state = " ".join(check_state_role(ctx))
+            order_args = set(orders["orders"]).intersection({arg.lower() for arg in args})
+            if order_args:
+                order = " ".join(order_args).strip()
+            else:
+                order = ""
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
             if female and juvenile:
@@ -144,7 +150,8 @@ class Sessions(commands.Cog):
                     "total": 0,
                     "bw": bw,
                     "state": state,
-                    "addon": addon
+                    "addon": addon,
+                    "order": order
                 }
             )
             await ctx.send(f"**Session started with options:**\n{await self._get_options(ctx)}")
@@ -185,6 +192,17 @@ class Sessions(commands.Cog):
                     add_states.append(state)
                 logger.info(f"adding states: {add_states}")
                 database.hset(f"session.data:{str(ctx.author.id)}", "state", " ".join(add_states).strip())
+            order_args = set(orders["orders"]).intersection({arg.lower() for arg in args})
+            if order_args:
+                toggle_order = list(order_args)
+                current_orders = str(database.hget(f"session.data:{str(ctx.author.id)}", "order"))[2:-1].split(" ")
+                add_orders = []
+                logger.info(f"toggle orders: {toggle_order}")
+                logger.info(f"current orders: {current_orders}")
+                for o in set(toggle_order).symmetric_difference(set(current_orders)):
+                    add_orders.append(o)
+                logger.info(f"adding orders: {add_orders}")
+                database.hset(f"session.data:{str(ctx.author.id)}", "order", " ".join(add_orders).strip())
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
             if female and juvenile:
@@ -206,7 +224,7 @@ class Sessions(commands.Cog):
                 else:
                     logger.info("removing juvenile")
                     database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
-            await self._send_stats(ctx, f"**Session started previously with options:**\n")
+            await self._send_stats(ctx, f"**Session started previously.**\n")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
 
@@ -222,7 +240,7 @@ class Sessions(commands.Cog):
         if database.exists(f"session.data:{str(ctx.author.id)}"):
             database.hset(f"session.data:{str(ctx.author.id)}", "stop", round(time.time()))
 
-            await self._send_stats(ctx, "**Session stopped.**\n**Session Options:**\n")
+            await self._send_stats(ctx, "**Session stopped.**\n")
             database.delete(f"session.data:{str(ctx.author.id)}")
             database.delete(f"session.incorrect:{str(ctx.author.id)}")
         else:

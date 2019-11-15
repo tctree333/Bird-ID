@@ -17,7 +17,7 @@
 import itertools
 import random
 from discord.ext import commands
-from data.data import birdList, database, goatsuckers, songBirds, logger, states
+from data.data import birdList, database, goatsuckers, songBirds, logger, states, orders
 from functions import (
     channel_setup, error_skip, error_skip_goat, error_skip_song, send_bird, send_birdsong, user_setup, check_state_role,
     session_increment
@@ -43,16 +43,14 @@ class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def send_bird_(self, ctx, add_on, bw):
+    async def send_bird_(self, ctx, add_on: str = "", bw: bool = False, order: str = ""):
         if add_on == "":
             message = BIRD_MESSAGE.format(option="n image")
         else:
             message = BIRD_MESSAGE.format(option=f" {add_on}")
-
-        if bw == "bw":
-            bw = True
-        elif bw == "":
-            bw = False
+        
+        if order:
+            order = order.split(" ")
 
         logger.info("bird: " + str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1])
 
@@ -73,10 +71,23 @@ class Birds(commands.Cog):
                     roles = check_state_role(ctx)
                 logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
 
-            if roles:
-                birds = list(set(itertools.chain.from_iterable(states[state]["birdList"] for state in roles)))
+            if order:
+                birds_in_order = set(itertools.chain.from_iterable(orders[o] for o in order))
+                if roles:
+                    birds_in_state = set(itertools.chain.from_iterable(states[state]["birdList"] for state in roles))
+                    birds = list(birds_in_order.intersection(birds_in_state))
+                else:
+                    birds = list(birds_in_order.intersection(set(birdList)))
             else:
-                birds = birdList
+                if roles:
+                    birds = list(set(itertools.chain.from_iterable(states[state]["birdList"] for state in roles)))
+                else:
+                    birds = birdList
+            
+            if len(birds) is 0:
+                logger.info("no birds for order/state")
+                await ctx.send(f"**Sorry, no birds could be found for the order/state combo.**\n*Please try again*")
+                return
             logger.info(f"number of birds: {len(birds)}")
 
             currentBird = random.choice(birds)
@@ -143,35 +154,50 @@ class Birds(commands.Cog):
     @commands.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile] [bw]")
     # 5 second cooldown
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
-    async def bird(self, ctx, add_on: str = "", bw_str: str = ""):
+    async def bird(self, ctx, *, args_str: str = ""):
         logger.info("command: bird")
 
         await channel_setup(ctx)
         await user_setup(ctx)
-        valid_addons = ("female", "juvenile", "f", "j", "")
-        if add_on == "bw":
-            if bw_str not in valid_addons:
-                await ctx.send("This command only takes female, juvenile, or nothing!")
-                return
-            add_on = bw_str
+
+        args = args_str.split(" ")
+        logger.info(f"args: {args}")
+        if "bw" in args:
             bw = True
-        elif bw_str == "bw":
-            bw = True
-        elif bw_str == "":
-            bw = False
         else:
-            await ctx.send("This command only takes bw or nothing!")
+            bw = False
+        order_args = set(orders["orders"]).intersection({arg.lower() for arg in args})
+        if order_args:
+            order = " ".join(order_args).strip()
+        else:
+            order = ""
+        female = "female" in args or "f" in args
+        juvenile = "juvenile" in args or "j" in args
+        if female and juvenile:
+            await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
             return
-        if add_on not in valid_addons:
-            await ctx.send("This command only takes female, juvenile, or nothing!")
-            return
-        if add_on == "f":
+        elif female:
             add_on = "female"
-        elif add_on == "j":
+        elif juvenile:
             add_on = "juvenile"
+        else:
+            add_on = ""
 
         if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("session parameters")
+
+            if order_args:
+                toggle_order = list(order_args)
+                current_orders = str(database.hget(f"session.data:{str(ctx.author.id)}", "order"))[2:-1].split(" ")
+                add_orders = []
+                logger.info(f"toggle orders: {toggle_order}")
+                logger.info(f"current orders: {current_orders}")
+                for o in set(toggle_order).symmetric_difference(set(current_orders)):
+                    add_orders.append(o)
+                logger.info(f"adding orders: {add_orders}")
+                order = " ".join(add_orders).strip()
+            else:
+                order = str(database.hget(f"session.data:{str(ctx.author.id)}", "order"))[2:-1]
 
             session_add_on = str(database.hget(f"session.data:{ctx.author.id}", "addon"))[2:-1]
             if add_on == "":
@@ -184,7 +210,15 @@ class Birds(commands.Cog):
             if str(database.hget(f"session.data:{ctx.author.id}", "bw"))[2:-1]:
                 bw = not bw
 
-        await self.send_bird_(ctx, add_on, bw)
+        logger.info(f"args: bw: {bw}; addon: {add_on}; order: {order}")
+        if int(database.hget(f"channel:{str(ctx.channel.id)}", "answered")):
+            await ctx.send(f"**Recongnized arguments:** *Black & White*: `{str(bw)}`, " +
+                           f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`, " +
+                           f"*Orders*: `{'None' if order == '' else order}`")
+        else:
+            await ctx.send(f"**Recongnized arguments:** *Black & White*: `{str(bw)}`")
+
+        await self.send_bird_(ctx, add_on, bw, order)
 
     # goatsucker command - no args
     # just for fun, no real purpose
