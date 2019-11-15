@@ -77,7 +77,7 @@ class Birds(commands.Cog):
                     birds_in_state = set(itertools.chain.from_iterable(states[state]["birdList"] for state in roles))
                     birds = list(birds_in_order.intersection(birds_in_state))
                 else:
-                    birds = list(birds_in_order)
+                    birds = list(birds_in_order.intersection(set(birdList)))
             else:
                 if roles:
                     birds = list(set(itertools.chain.from_iterable(states[state]["birdList"] for state in roles)))
