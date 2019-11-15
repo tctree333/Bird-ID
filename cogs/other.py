@@ -162,17 +162,17 @@ class Other(commands.Cog):
         if ctx.author.dm_channel is None:
             await ctx.author.create_dm()
 
-        await ctx.author.dm_channel.send(f"**The `{order}s` in the `{state}` bird list:**")
+        await ctx.author.dm_channel.send(f"**The `{order}` in the `{state}` bird list:**")
         for birds in birdLists:
             await ctx.author.dm_channel.send(f"```{birds}```")
 
-        await ctx.author.dm_channel.send(f"**The `{order}s` in the `{state}` bird songs:**")
+        await ctx.author.dm_channel.send(f"**The `{order}` in the `{state}` bird songs:**")
         for birds in songLists:
             await ctx.author.dm_channel.send(f"```{birds}```")
 
         await ctx.send(
-            f"The `{order}s` in the `{state}` bird list has **{str(len(bird_list))}** birds.\n" +
-            f"The `{order}s` in the `{state}` bird list has **{str(len(song_bird_list))}** songs.\n" +
+            f"The `{order}` in the `{state}` bird list has **{str(len(bird_list))}** birds.\n" +
+            f"The `{order}` in the `{state}` bird list has **{str(len(song_bird_list))}** songs.\n" +
             "*A full list of birds has been sent to you via DMs.*"
         )
 
