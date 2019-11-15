@@ -165,7 +165,7 @@ def _orders():
     logger.info("Working on order master list")
     orders = {}
     with open('data/orders/orders.txt', 'r') as f:
-        orders["orders"] = [string.capwords(line.strip().replace("-", " ")) for line in f]
+        orders["orders"] = [line.strip().lower() for line in f]
     logger.info("Done with order master list")
     for filename in orders["orders"]:
         logger.info(f"Working on {filename}")
