@@ -198,9 +198,12 @@ class Birds(commands.Cog):
                 bw = not bw
 
         logger.info(f"args: bw: {bw}; addon: {add_on}; order: {order}")
-        await ctx.send(f"**Recongnized arguments:** *Black & White*: `{str(bw)}`, " +
-                       f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`, " +
-                       f"*Orders*: `{'None' if order == '' else order}`")
+        if int(database.hget(f"channel:{str(ctx.channel.id)}", "answered")):
+            await ctx.send(f"**Recongnized arguments:** *Black & White*: `{str(bw)}`, " +
+                           f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`, " +
+                           f"*Orders*: `{'None' if order == '' else order}`")
+        else:
+            await ctx.send(f"**Recongnized arguments:** *Black & White*: `{str(bw)}`")
 
         await self.send_bird_(ctx, add_on, bw, order)
 
