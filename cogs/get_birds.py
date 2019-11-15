@@ -196,6 +196,8 @@ class Birds(commands.Cog):
                     add_orders.append(o)
                 logger.info(f"adding orders: {add_orders}")
                 order = " ".join(add_orders).strip()
+            else:
+                order = str(database.hget(f"session.data:{str(ctx.author.id)}", "order"))[2:-1]
 
             session_add_on = str(database.hget(f"session.data:{ctx.author.id}", "addon"))[2:-1]
             if add_on == "":
