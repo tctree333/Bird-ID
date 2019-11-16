@@ -28,7 +28,7 @@ Generally, we will retain *User Personal Information*, *Server Information*, or 
 We take many appropriate security measures to secure your data. Transmission of user data from Discord is encrypted using HTTPS and SSL/TLS. Note that no method of transmission or storage is 100% secure, and we cannot guarantee your information's absolute security.
 
 ## Changes
-We may change our Privacy Policy from time to time. Changes to this Privacy Policy will be announced at least 14 days prior to the change taking effect though the [Discord support server]([fXxYyDJ](https://discord.gg/fXxYyDJ)). 
+We may change our Privacy Policy from time to time. Changes to this Privacy Policy will be announced at least 14 days prior to the change taking effect though the [Discord support server](https://discord.gg/fXxYyDJ). 
 
 ## Contact
-Any questions, concerns, or comments regarding this Privacy Policy can be asked in the [Discord support server]([fXxYyDJ](https://discord.gg/fXxYyDJ)).
+Any questions, concerns, or comments regarding this Privacy Policy can be asked in the [Discord support server](https://discord.gg/fXxYyDJ).
