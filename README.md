@@ -14,4 +14,7 @@ If you have previous programming experience and would like to help us add featur
 
 If you find an issue with the bot, please report it in the support server instead of opening a Github issue.
 
-***Happy Identification!***
+## Terms
+By using this bot or adding it to a server, you agree to the [Terms of Service](TERMS.md), [Privacy Policy](PRIVACY.md), and [Community Code of Conduct](CODE_OF_CONDUCT.md).
+
+### ***Happy Identification!***
