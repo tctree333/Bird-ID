@@ -1,5 +1,5 @@
 # Bird-ID's Privacy Policy
-**Effective: December 2, 2019**
+**Effective: December 9, 2019**
 
 By using this bot or adding it to a server, you are agreeing to this Privacy Policy.
 

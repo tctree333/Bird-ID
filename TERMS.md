@@ -1,5 +1,5 @@
 # Bird-ID's Terms of Service
-**Effective: December 2, 2019**
+**Effective: December 9, 2019**
 
 Please read the following Terms of Service carefully before using this bot or adding it to a server.
 
