@@ -219,7 +219,10 @@ class Other(commands.Cog):
         embed.add_field(
             name="Bot Info",
             value="This bot was created by EraserBird and person_v1.32 " +
-            "for helping people practice bird identification for Science Olympiad.",
+            "for helping people practice bird identification for Science Olympiad.\n" +
+            "**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.\n" + 
+            "<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>, " +
+            "<https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>",
             inline=False
         )
         embed.add_field(
@@ -251,9 +254,11 @@ class Other(commands.Cog):
         embed.set_author(name="Bird ID - An Ornithology Bot")
         embed.add_field(
             name="Invite",
-            value="""To invite this bot to your own server, use the following invite links.\n
-**Bird-ID:** https://discordapp.com/api/oauth2/authorize?client_id=601917808137338900&permissions=268486656&scope=bot\n
+            value="""To invite this bot to your own server, use the following invite links.
+**Bird-ID:** https://discordapp.com/api/oauth2/authorize?client_id=601917808137338900&permissions=268486656&scope=bot
 **Orni-Bot:** https://discordapp.com/api/oauth2/authorize?client_id=601755752410906644&permissions=268486656&scope=bot\n
+**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.
+<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>, <https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>\n
 Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our support server below.""",
             inline=False
         )
