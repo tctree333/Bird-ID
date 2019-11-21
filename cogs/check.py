@@ -25,7 +25,7 @@ from functions import (
 )
 
 # achievement values
-achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690]
+achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
 
 class Check(commands.Cog):
     def __init__(self, bot):
