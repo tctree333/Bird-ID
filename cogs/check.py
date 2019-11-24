@@ -21,7 +21,7 @@ from discord.ext import commands
 from data.data import database, goatsuckers, logger, sciGoat
 from functions import (
     bird_setup, channel_setup, get_sciname, incorrect_increment, score_increment, session_increment, spellcheck,
-    user_setup
+    user_setup, create_streak
 )
 
 # achievement values
@@ -39,6 +39,8 @@ class Check(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
+        await create_streak(ctx.author.id)
+        
         currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
@@ -51,12 +53,18 @@ class Check(commands.Cog):
             if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
 
+                database.zincrby("streak:global", 1, str(ctx.author.id))
                 database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
                 database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
 
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
+                    
+                    
+                # check if streak is greater than max, if so, increases max
+                if database.zscore("streak:global", str(ctx.author.id))> database.zscore("streak.max:global", str(ctx.author.id)):
+                    database.zadd("streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))})
 
                 await ctx.send("Correct! Good job!" if not database.exists(f"race.data:{str(ctx.channel.id)}") 
                                                     else f"**{str(ctx.author.mention)}**, you are correct!")
@@ -87,7 +95,9 @@ class Check(commands.Cog):
 
             else:
                 logger.info("incorrect")
-
+                
+                database.zadd("streak:global", {str(ctx.author.id): 0})
+                
                 if database.exists(f"session.data:{str(ctx.author.id)}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
