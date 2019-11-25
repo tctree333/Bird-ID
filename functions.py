@@ -86,6 +86,15 @@ async def user_setup(ctx):
         logger.info("user global added")
         await ctx.send("Welcome <@" + str(ctx.author.id) + ">!")
 
+    #Add streak
+    if (database.zscore("streak:global", str(ctx.author.id)) is not None) and (
+            database.zscore("streak.max:global", str(ctx.author.id)) is not None):
+        logger.info("user streak in already")
+    else:
+        database.zadd("streak:global", {str(ctx.author.id): 0})
+        database.zadd("streak.max:global",{str(ctx.author.id): 0})
+        logger.info("added streak")
+
     if ctx.guild is not None:
         logger.info("no dm")
         if database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id)) is not None:

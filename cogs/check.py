@@ -39,6 +39,7 @@ class Check(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
+
         currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
@@ -57,6 +58,11 @@ class Check(commands.Cog):
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
+
+                database.zincrby("streak:global", 1, str(ctx.author.id))
+                # check if streak is greater than max, if so, increases max
+                if database.zscore("streak:global", str(ctx.author.id))> database.zscore("streak.max:global", str(ctx.author.id)):
+                    database.zadd("streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))})
 
                 await ctx.send("Correct! Good job!" if not database.exists(f"race.data:{str(ctx.channel.id)}") 
                                                     else f"**{str(ctx.author.mention)}**, you are correct!")
@@ -87,11 +93,13 @@ class Check(commands.Cog):
 
             else:
                 logger.info("incorrect")
-
+                
+                database.zadd("streak:global", {str(ctx.author.id): 0})
+                
                 if database.exists(f"session.data:{str(ctx.author.id)}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
-
+                    
                 incorrect_increment(ctx, str(currentBird), 1)
 
                 if database.exists(f"race.data:{str(ctx.channel.id)}"):
@@ -128,6 +136,11 @@ class Check(commands.Cog):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
 
+                # increment streak and update max
+                database.zincrby("streak:global", 1, str(ctx.author.id))
+                if database.zscore("streak:global", str(ctx.author.id))> database.zscore("streak.max:global", str(ctx.author.id)):
+                    database.zadd("streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))})
+
                 await ctx.send("Correct! Good job!")
                 page = wikipedia.page(f"{currentBird} (bird)")
                 await ctx.send(page.url)
@@ -141,7 +154,9 @@ class Check(commands.Cog):
 
             else:
                 logger.info("incorrect")
-
+                
+                database.zadd("streak:global", {str(ctx.author.id): 0})
+                
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
@@ -181,6 +196,11 @@ class Check(commands.Cog):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
 
+                # increment streak and update max
+                database.zincrby("streak:global", 1, str(ctx.author.id))
+                if database.zscore("streak:global", str(ctx.author.id))> database.zscore("streak.max:global", str(ctx.author.id)):
+                    database.zadd("streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))})
+
                 await ctx.send("Correct! Good job!" if not database.exists(f"race.data:{str(ctx.channel.id)}") 
                                                     else f"**{str(ctx.author.mention)}**, you are correct!")
                 page = wikipedia.page(f"{currentSongBird} (bird)")
@@ -209,7 +229,9 @@ class Check(commands.Cog):
 
             else:
                 logger.info("incorrect")
-
+                
+                database.zadd("streak:global", {str(ctx.author.id): 0})
+                
                 if database.exists(f"session.data:{str(ctx.author.id)}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)

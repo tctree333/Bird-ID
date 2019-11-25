@@ -39,6 +39,7 @@ class Skip(commands.Cog):
             birdPage = wikipedia.page(f"{currentBird} (bird)")
             await ctx.send(f"Ok, skipping {currentBird.lower()}")
             await ctx.send(birdPage.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{birdPage.url}>")  # sends wiki page
+            database.zadd("streak:global", {str(ctx.author.id): 0})  # end streak
             if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
                         database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "image":
 
@@ -71,6 +72,7 @@ class Skip(commands.Cog):
         if currentBird != "":  # check if there is bird
             birdPage = wikipedia.page(f"{currentBird} (bird)")
             await ctx.send(f"Ok, skipping {currentBird.lower()}\n{birdPage.url}")  # sends wiki page
+            database.zadd("streak:global", {str(ctx.author.id): 0})
         else:
             await ctx.send("You need to ask for a bird first!")
 
@@ -90,6 +92,7 @@ class Skip(commands.Cog):
             birdPage = wikipedia.page(f"{currentSongBird} (bird)")
             await ctx.send(f"Ok, skipping {currentSongBird.lower()}")
             await ctx.send(birdPage.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{birdPage.url}>")  # sends wiki page
+            database.zadd("streak:global", {str(ctx.author.id): 0})
             if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
                         database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "song":
 
