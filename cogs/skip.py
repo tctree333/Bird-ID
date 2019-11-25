@@ -17,7 +17,7 @@
 import wikipedia
 from discord.ext import commands
 from data.data import database, logger
-from functions import channel_setup, user_setup, create_streak
+from functions import channel_setup, user_setup
 
 class Skip(commands.Cog):
     def __init__(self, bot):
@@ -31,7 +31,6 @@ class Skip(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
-        await create_streak(ctx.author.id)
         
         database.zadd("streak:global", {str(ctx.author.id): 0})
         currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
@@ -66,7 +65,8 @@ class Skip(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
-
+        
+        database.zadd("streak:global", {str(ctx.author.id): 0})
         currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
         database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
         database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
@@ -85,6 +85,7 @@ class Skip(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
+        database.zadd("streak:global", {str(ctx.author.id): 0})
         currentSongBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
         database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
         database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
