@@ -21,7 +21,7 @@ from discord.ext import commands
 from data.data import database, goatsuckers, logger, sciGoat
 from functions import (
     bird_setup, channel_setup, get_sciname, incorrect_increment, score_increment, session_increment, spellcheck,
-    user_setup, create_streak
+    user_setup
 )
 
 # achievement values
@@ -39,7 +39,6 @@ class Check(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
-        await create_streak(ctx.author.id)
         
         currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
         if currentBird == "":  # no bird
@@ -101,7 +100,7 @@ class Check(commands.Cog):
                 if database.exists(f"session.data:{str(ctx.author.id)}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
-
+                    
                 incorrect_increment(ctx, str(currentBird), 1)
 
                 if database.exists(f"race.data:{str(ctx.channel.id)}"):
@@ -133,7 +132,12 @@ class Check(commands.Cog):
             database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
             if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
+                
+                database.zincrby("streak:global", 1, str(ctx.author.id))
+                if database.zscore("streak:global", str(ctx.author.id))> database.zscore("streak.max:global", str(ctx.author.id)):
+                    database.zadd("streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))})
 
+                
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
@@ -151,7 +155,9 @@ class Check(commands.Cog):
 
             else:
                 logger.info("incorrect")
-
+                
+                database.zadd("streak:global", {str(ctx.author.id): 0})
+                
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
@@ -183,6 +189,10 @@ class Check(commands.Cog):
             sciBird = await get_sciname(currentSongBird)
             if spellcheck(arg, currentSongBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
+                
+                database.zincrby("streak:global", 1, str(ctx.author.id))
+                if database.zscore("streak:global", str(ctx.author.id))> database.zscore("streak.max:global", str(ctx.author.id)):
+                    database.zadd("streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))})
 
                 database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
                 database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
@@ -219,7 +229,9 @@ class Check(commands.Cog):
 
             else:
                 logger.info("incorrect")
-
+                
+                database.zadd("streak:global", {str(ctx.author.id): 0})
+                
                 if database.exists(f"session.data:{str(ctx.author.id)}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
