@@ -81,7 +81,8 @@ class Score(commands.Cog):
 
     # gives streak of a user
     @commands.command(
-        help = '- Gives your current/max streak'
+        help = '- Gives your current/max streak',
+        aliases=["streaks", "stk"]
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.user)
     async def streak(self, ctx):
