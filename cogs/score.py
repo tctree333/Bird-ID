@@ -18,7 +18,7 @@ import typing
 import discord
 from discord.ext import commands
 from data.data import database, logger
-from functions import channel_setup, user_setup, create_streak
+from functions import channel_setup, user_setup
 
 class Score(commands.Cog):
     def __init__(self, bot):
@@ -86,8 +86,14 @@ class Score(commands.Cog):
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.user)
     async def streak(ctx):
-        await createStreak(ctx.author.id)
-        await ctx.send("Your current streak is "+ str(int(database.zscore("streak:global", str(ctx.author.id))))+". Your max streak is " + str(int(database.zscore("streak.max:global", str(ctx.author.id))))+".")
+        await user_setup(ctx)
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        streakScore = "Your current streak is "+ str(int(database.zscore("streak:global", str(ctx.author.id))))+". Your max streak is " + str(int(database.zscore("streak.max:global", str(ctx.author.id))))+"."
+        embed.add_field(name=f"User Score (Streak)", value=streakScore, inline=False)
+  #await ctx.send(embed=embed)
+
+  await ctx.send(embed = embed)
     
     # leaderboard - returns top 1-10 users
     @commands.command(
