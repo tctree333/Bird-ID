@@ -101,12 +101,10 @@ async def user_setup(ctx):
             logger.info("user server added")
     else:
         logger.info("dm context")
-
-# creates streak for user
-async def create_streak(UserID):
-  if (database.zscore("streak:global", str(UserID)) is not None) and (database.zscore("streak.max:global", str(UserID)) is not None):
+   #Add streak
+   if (database.zscore("streak:global", str(UserID)) is not None) and (database.zscore("streak.max:global", str(UserID)) is not None):
         logger.info("user streak in already")
-  else:
+   else:
         database.zadd("streak:global", {str(UserID): 0})
         database.zadd("streak.max:global",{str(UserID): 0})
         print("added streak")
