@@ -101,7 +101,14 @@ async def user_setup(ctx):
             logger.info("user server added")
     else:
         logger.info("dm context")
-
+   #Add streak
+   if (database.zscore("streak:global", str(UserID)) is not None) and (database.zscore("streak.max:global", str(UserID)) is not None):
+        logger.info("user streak in already")
+   else:
+        database.zadd("streak:global", {str(UserID): 0})
+        database.zadd("streak.max:global",{str(UserID): 0})
+        print("added streak")
+        
 # sets up new birds
 async def bird_setup(ctx, bird):
     logger.info("checking bird data")
