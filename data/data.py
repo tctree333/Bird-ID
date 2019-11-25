@@ -62,6 +62,11 @@ database = redis.from_url(os.getenv("REDIS_URL"))
 #    users.server:server_id : [user id, # of correct]
 # }
 
+# streaks format = {
+#    streak:global : [user id, current streak]
+#    streak.max:global : [user id, max streak]
+# }
+
 # incorrect birds format = {
 #    incorrect:global : [bird name, # incorrect]
 #    incorrect.server:server_id : [bird name, # incorrect]
