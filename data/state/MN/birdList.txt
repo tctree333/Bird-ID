@@ -1,0 +1,128 @@
+Snow Goose
+Canada Goose
+Trumpeter Swan
+Wood Duck
+Mallard
+Northern Shoveler
+Green-winged Teal
+Canvasback
+Hooded Merganser
+Ring-necked Pheasant
+Ruffed Grouse
+Wild Turkey
+Northern Bobwhite
+Red-throated Loon
+Common Loon
+Pied-billed Grebe
+Red-necked Grebe
+American White Pelican
+American Bittern
+Great Blue Heron
+Snowy Egret
+Green Heron
+Black-crowned Night-heron
+Double-crested Cormorant
+American Kestrel
+Peregrine Falcon
+Osprey
+Bald Eagle
+Northern Harrier
+Cooper's Hawk
+Red-tailed Hawk
+Golden Eagle
+Turkey Vulture
+Sora
+American Coot
+American Golden-Plover
+Killdeer
+American Avocet
+Spotted Sandpiper
+Ruddy Turnstone
+Dunlin
+Wilson's Snipe
+American Woodcock
+Ring-billed Gull
+Herring Gull
+Caspian Tern
+Black Tern
+Mourning Dove
+Rock Pigeon
+Black-billed Cuckoo
+Barn Owl
+Great Horned Owl
+Snowy Owl
+Barred Owl
+Eastern Screech Owl
+Common Nighthawk
+Chimney Swift
+Ruby-throated Hummingbird
+Belted Kingfisher
+Red-headed Woodpecker
+Yellow-bellied Sapsucker
+Downy Woodpecker
+Northern Flicker
+Pileated Woodpecker
+Olive-sided Flycatcher
+Eastern Phoebe
+Great Crested Flycatcher
+Eastern Kingbird
+Loggerhead Shrike
+Warbling Vireo
+Red-eyed Vireo 
+Blue Jay
+Black-billed Magpie
+American Crow
+Common Raven
+Horned Lark
+Purple Martin
+Cliff Swallow
+Barn Swallow
+Black-capped Chickadee
+Tufted Titmouse
+Red-breasted Nuthatch
+White-breasted Nuthatch
+Brown Creeper
+Marsh Wren
+Carolina Wren
+Golden-crowned Kinglet
+Ruby-crowned Kinglet 
+Blue-gray Gnatcatcher 
+Eastern Bluebird
+Wood Thrush
+American Robin
+Gray Catbird
+Northern Mockingbird
+Brown Thrasher
+Cedar Waxwing
+Yellow Warbler
+Magnolia Warbler
+Yellow-rumped Warbler
+Black-throated Green Warbler
+Black-and-white Warbler
+American Redstart
+Ovenbird
+Common Yellowthroat
+Lark Sparrow
+Harris's Sparrow
+White-crowned Sparrow
+Chipping Sparrow
+Dark-eyed Junco
+Lapland Longspur
+Snow Bunting
+Northern Cardinal
+Indigo Bunting
+Scarlet Tanager
+Bobolink
+Red-winged Blackbird
+Western Meadowlark
+Yellow-headed Blackbird
+Common Grackle
+Brown-headed Cowbird
+Baltimore Oriole
+Red Crossbill
+American Goldfinch
+Evening Grosbeak
+House Finch
+Pine Siskin
+House Sparrow
+European Starling
