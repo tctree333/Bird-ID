@@ -126,6 +126,7 @@ class GenericError(commands.CommandError):
 # 999 - Invalid
 # 100 - Blank
 # 842 - Banned User
+# 666 - No output error
 
 
 # Lists of birds, memes, and other info

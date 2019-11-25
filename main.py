@@ -19,6 +19,8 @@ import errno
 import os
 import shutil
 import sys
+import time
+import holidays
 import concurrent.futures
 
 import aiohttp
@@ -28,7 +30,7 @@ import wikipedia
 from discord.ext import commands, tasks
 
 from data.data import database, logger, GenericError
-from functions import channel_setup, precache, backup_all
+from functions import channel_setup, precache, backup_all, send_bird
 
 BACKUPS_CHANNEL = 622547928946311188
 
@@ -109,6 +111,17 @@ if __name__ == '__main__':
         else:
             raise GenericError(code=842)
 
+    @bot.check
+    async def is_holiday(ctx):
+        now = time.time()
+        us = holidays.US()
+        if now in us:
+            if us.get(now) == "Thanksgiving":
+                await send_bird(ctx, "Wild Turkey")
+                await ctx.send("**It's Thanksgiving!**\nGo celebrate with your family.")
+                raise GenericError(code=666)
+        return True
+
     ######
     # GLOBAL ERROR CHECKING
     ######
@@ -151,6 +164,8 @@ if __name__ == '__main__':
         elif isinstance(error, GenericError):
                 if error.code == 842:
                     await ctx.send("**Sorry, you cannot use this command.**")
+                elif error.code == 666:
+                    logger.info("GenericError 666")
                 else:
                     logger.error("uncaught generic error")
                     await ctx.send(
