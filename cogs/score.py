@@ -42,9 +42,9 @@ class Score(commands.Cog):
     # sends correct answers by a user
     @commands.command(
         brief="- How many correct answers given by a user",
-        help="""- How many correct answers given by a user.
-                            Mention someone to get their score.
-                            Don't mention anyone to get your score.""",
+        help="- Gives the amount of correct answers by a user.\n" +
+             "Mention someone to get their score,"+
+             "Don't mention anyone to get your score.",
         aliases=["us"]
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.user)
@@ -79,22 +79,25 @@ class Score(commands.Cog):
         embed.add_field(name="User Score:", value=f"{user} has answered correctly {times} times.")
         await ctx.send(embed=embed)
 
-        
     # gives streak of a user
     @commands.command(
-        help = '- Your current streak'
+        help = '- Gives your current/max streak'
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.user)
-    async def streak(ctx):
-        await user_setup(ctx)
-        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
-        embed.set_author(name="Bird ID - An Ornithology Bot")
-        streakScore = "Your current streak is "+ str(int(database.zscore("streak:global", str(ctx.author.id))))+". Your max streak is " + str(int(database.zscore("streak.max:global", str(ctx.author.id))))+"."
-        embed.add_field(name=f"User Score (Streak)", value=streakScore, inline=False)
-  #await ctx.send(embed=embed)
+    async def streak(self, ctx):
 
-  await ctx.send(embed = embed)
-    
+        await channel_setup(ctx)
+        await user_setup(ctx)
+
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title="**User Streaks**")
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        current_streak = f"You have answered `{str(int(database.zscore('streak:global', str(ctx.author.id))))}` in a row!"
+        max_streak = f"Your max was `{str(int(database.zscore('streak.max:global', str(ctx.author.id))))}` in a row!"
+        embed.add_field(name=f"**Current Streak**", value=current_streak, inline=False)
+        embed.add_field(name=f"**Max Streak**", value=max_streak, inline=False)
+
+        await ctx.send(embed=embed)
+
     # leaderboard - returns top 1-10 users
     @commands.command(
         brief="- Top scores",
