@@ -410,8 +410,9 @@ async def get_image(ctx, bird, addOn=None):
         logger.debug("prevJ: " + str(prevJ))
         logger.debug("j: " + str(j))
 
-        for x in range(j, len(images)):  # check file type and size
-            image_link = images[x]
+        for x in range(0, len(images)):  # check file type and size
+            y = (x + j) % len(images)
+            image_link = images[y]
             extension = image_link.split('.')[-1]
             logger.debug("extension: " + str(extension))
             statInfo = os.stat(image_link)
@@ -419,7 +420,7 @@ async def get_image(ctx, bird, addOn=None):
             if extension.lower() in valid_image_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
                 logger.info("found one!")
                 break
-            elif x == len(images) - 1:
+            elif y == prevJ:
                 j = (j + 1) % (len(images))
                 raise GenericError("No Valid Images Found", code=999)
 
