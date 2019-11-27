@@ -1,7 +1,7 @@
 # Bird-ID
 [![Discord Invite](https://discordapp.com/api/guilds/601913706288381952/embed.png)](https://discord.gg/tNyGDve) [![Maintainability](https://api.codeclimate.com/v1/badges/6731bd218230bbc9e088/maintainability)](https://codeclimate.com/github/tctree333/Bird-ID/maintainability)
 
-A discord bot for aspiring ornithologists. This bot is designed to help people practice the identification portion of the Science Olympiad Ornithology event.
+A discord bot for young ornithologists. This bot is designed to help people practice the identification portion of the Science Olympiad Ornithology event.
 
 ## Usage
 The prefix for this bot is `b!`. Use `b!help` to get a list of commands, and `b!help [command]` for help with a specific command.
