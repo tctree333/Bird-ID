@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
     @bot.check
     async def is_holiday(ctx):
-        now = time.time()
+        now = time.time() - 28800
         us = holidays.US()
         if now in us:
             if us.get(now) == "Thanksgiving":
