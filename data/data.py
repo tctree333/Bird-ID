@@ -124,6 +124,7 @@ class GenericError(commands.CommandError):
 # 111 - Index Error
 # 201 - HTTP Error
 # 999 - Invalid
+# 990 - Invalid Input
 # 100 - Blank
 # 842 - Banned User
 # 666 - No output error
@@ -232,3 +233,4 @@ logger.info(
 logger.info(
     f"Master Lengths: {len(birdListMaster)}, {len(sciBirdListMaster)}, {len(songBirdsMaster)}, {len(sciSongBirdsMaster)}"
 )
+logger.info("Done importing data!")

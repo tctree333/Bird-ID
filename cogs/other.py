@@ -268,7 +268,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
     # ban command - prevents certain users from using the bot
     @commands.command(help="- ban command", hidden=True)
     @commands.check(owner_check)
-    async def ban(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
+    async def ban(self, ctx, *, user: discord.Member = None):
         logger.info("command: ban")
         if user is None:
             logger.info("no args")
