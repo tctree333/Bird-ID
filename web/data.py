@@ -2,7 +2,7 @@ import random
 import os
 
 from flask import Flask, session
-from data.data import database, logger, GenericError, birdList
+from data.data import database, logger, GenericError, birdList, screech_owls
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
@@ -11,7 +11,8 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # web.session:session_id : {
 #   bird: ""
-#   answered: 0
+#   media_type: ""
+#   answered: 1
 #   prevB: ""
 #   prevJ: 20
 #   tempScore: 0
@@ -35,10 +36,11 @@ def web_session_setup(session_id):
         database.hmset(
             f"web.session:{session_id}", {
                 "bird": "",
-                "answered": 0,  # true = 1, false = 0
+                "media_type": "",
+                "answered": 1,  # true = 1, false = 0
                 "prevB": "",
                 "prevJ": 20,
-                "tempScore": 0, # not used = -1
+                "tempScore": 0,  # not used = -1
                 "user_id": 0
             }
         )
@@ -62,12 +64,12 @@ def update_web_user(user_data):
 def get_session_id():
     if "session_id" not in session:
         session["session_id"] = start_session()
-        return session["session_id"]
+        return str(session["session_id"])
     elif verify_session(session["session_id"]) is False:
         session["session_id"] = start_session()
-        return session["session_id"]
+        return str(session["session_id"])
     else:
-        return session["session_id"]
+        return str(session["session_id"])
 
 
 def start_session():

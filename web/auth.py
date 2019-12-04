@@ -39,5 +39,5 @@ def authorize():
     update_web_user(profile)
     database.hset(f"web.session:{session_id}", "user_id", str(profile["id"]))
     avatar_hash, avatar_url, username, discriminator = map(cleanup, database.hmget(f"web.user:{str(profile['id'])}",
-                                                                      "avatar_hash", "avatar_url", "username", "discriminator"))
+                                                                                   "avatar_hash", "avatar_url", "username", "discriminator"))
     return {"avatar_hash": avatar_hash, "avatar_url": avatar_url, "username": username, "discriminator": discriminator}

@@ -10,6 +10,7 @@ from . import practice, auth
 app.register_blueprint(practice.bp)
 app.register_blueprint(auth.bp)
 
+
 @app.route('/')
 def api_index():
     logger.info("index page accessed")
@@ -40,4 +41,3 @@ def bird_image(bird):
 def bird_song(bird):
     path, ext = asyncio.run(get_media(bird, "songs"))
     return flask.send_file(f"../{path}")
-
