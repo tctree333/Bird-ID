@@ -1,5 +1,59 @@
+import random
+import asyncio
+
+from flask import abort
+from functools import partial
+from io import BytesIO
+from PIL import Image
 from functions import get_sciname, get_files, valid_image_extensions, valid_audio_extensions
-from web.data import logger, GenericError, database, birdList, get_session_id
+from web.data import logger, GenericError, database, birdList, get_session_id, screech_owls
+
+
+def _black_and_white(input_image_path):
+    logger.info("black and white")
+    with Image.open(input_image_path) as color_image:
+        bw = color_image.convert('L')
+        final_buffer = BytesIO()
+        bw.save(final_buffer, "png")
+    final_buffer.seek(0)
+    return final_buffer
+
+
+async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = False):
+    if bird == "":
+        logger.error("error - bird is blank")
+        abort(406, "Bird is blank")
+        return
+
+    if media_type != "images" and media_type != "songs":
+        abort(406, "Invalid media type")
+        return
+
+    # add special condition for screech owls
+    # since screech owl is a genus and SciOly
+    # doesn't specify a species
+    if bird == "Screech Owl":
+        logger.info("choosing specific Screech Owl")
+        bird = random.choice(screech_owls)
+
+    try:
+        filename, ext = await get_media(bird, media_type, addOn)
+    except GenericError as e:
+        logger.exception(e)
+        abort(503, str(e))
+        return
+
+    if media_type == "images":
+        if bw:
+            loop = asyncio.get_running_loop()
+            fn = partial(_black_and_white, filename)
+            file_stream = await loop.run_in_executor(None, fn)
+        else:
+            file_stream = f"../{filename}"
+    elif media_type == "songs":
+        file_stream = f"../{filename}"
+
+    return file_stream, ext
 
 
 async def get_media(bird, media_type, addOn=""):  # images or songs
@@ -41,4 +95,4 @@ async def get_media(bird, media_type, addOn=""):  # images or songs
     else:
         raise GenericError(f"No {media_type.title()} Found", code=100)
 
-    return [media_path, extension]
+    return media_path, extension
