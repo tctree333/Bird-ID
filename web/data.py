@@ -49,7 +49,9 @@ def web_session_setup(session_id):
 
 def update_web_user(user_data):
     logger.info("updating user data")
+    session_id = get_session_id()
     user_id = str(user_data['id'])
+    database.hset(f"web.session:{session_id}", "user_id", user_id)
     database.hmset(
         f"web.user:{user_id}", {
             "avatar_hash": str(user_data['avatar']),
@@ -58,6 +60,10 @@ def update_web_user(user_data):
             "discriminator": str(user_data['discriminator'])
         }
     )
+    tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
+    if tempScore not in (0, -1):
+        database.zincrby("users:global", tempScore, int(user_id))
+        database.hset(f"web.session:{session_id}", "tempScore", -1)
     logger.info("updated user data")
 
 
