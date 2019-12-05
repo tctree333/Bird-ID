@@ -76,17 +76,22 @@ def check_bird():
             database.hset(f"web.session:{session_id}", "bird", "")
             database.hset(f"web.session:{session_id}", "answered", "1")
 
-            database.zincrby("streak:global", 1, str(user_id))
-            # check if streak is greater than max, if so, increases max
-            if database.zscore("streak:global", str(user_id)) > database.zscore("streak.max:global", str(user_id)):
-                database.zadd("streak.max:global", {str(user_id): database.zscore(
-                    "streak:global", str(user_id))})
+            database.zincrby("score:global", 1, "Web")
+
+            tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
+            if user_id is not 0:
+                database.zincrby("users:global", 1, str(user_id))
+                database.zincrby("streak:global", 1, str(user_id))
+                # check if streak is greater than max, if so, increases max
+                if database.zscore("streak:global", str(user_id)) > database.zscore("streak.max:global", str(user_id)):
+                    database.zadd("streak.max:global", {str(user_id): database.zscore(
+                        "streak:global", str(user_id))})
+            elif tempScore >= 10:
+                abort(403, "Sign in to continue")
+            else:
+                database.hset(f"web.session:{session_id}", "tempScore", str(tempScore+1))
 
             page = wikipedia.page(f"{currentBird} (bird)")
-
-            logger.info(f"incrementing score")
-            database.zincrby("score:global", 1, "Web")
-            database.zincrby("users:global", 1, str(user_id))
             return {"guess": bird_guess, "answer": currentBird, "sciname": sciBird,
                     "status": "correct", "wiki": page.url}
 
@@ -95,14 +100,13 @@ def check_bird():
 
             database.hset(f"web.session:{session_id}", "bird", "")
             database.hset(f"web.session:{session_id}", "answered", "1")
+            database.zincrby("incorrect:global", 1, currentBird)
 
-            database.zadd("streak:global", {str(user_id): 0})
+            if user_id is not 0:
+                database.zadd("streak:global", {str(user_id): 0})
+                database.zincrby(f"incorrect.user:{str(user_id)}", 1, currentBird)
 
             page = wikipedia.page(f"{currentBird} (bird)")
-
-            logger.info(f"incrementing incorrect {currentBird}")
-            database.zincrby("incorrect:global", 1, currentBird)
-            database.zincrby(f"incorrect.user:{str(user_id)}", 1, currentBird)
             return {"guess": bird_guess, "answer": currentBird, "sciname": sciBird,
                     "status": "incorrect", "wiki": page.url}
 
@@ -110,10 +114,23 @@ def check_bird():
 @bp.route('/skip', methods=['GET'])
 def skip_bird():
     logger.info("endpoint: skip bird")
-    return {"success": 200}
+    session_id = get_session_id()
+    user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
+
+    currentBird = str(database.hget(f"web.session:{session_id}", "bird"))[2:-1]
+    scibird = asyncio.run(get_sciname(currentBird))
+    database.hset(f"web.session:{session_id}", "bird", "")
+    database.hset(f"web.session:{session_id}", "answered", "1")
+    if currentBird != "":  # check if there is bird
+        birdPage = wikipedia.page(f"{currentBird} (bird)")  # sends wiki page
+        if user_id is not 0:
+            database.zadd("streak:global", {str(user_id): 0})  # end streak
+    else:
+        abort(406, "Bird is blank")
+    return {"answer": currentBird, "sciname": scibird}
 
 
 @bp.route('/hint', methods=['GET'])
 def hint_bird():
     logger.info("endpoint: hint bird")
-    return {"success": 200}
+    return {"hint": ""}
