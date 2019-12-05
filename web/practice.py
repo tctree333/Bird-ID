@@ -22,6 +22,11 @@ def get_bird():
     logger.info(
         "bird: " + str(database.hget(f"web.session:{session_id}", "bird"))[2:-1])
 
+    tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
+    if tempScore >= 10:
+        logger.info("trial maxed")
+        abort(403, "Sign in to continue")
+
     answered = int(database.hget(f"web.session:{session_id}", "answered"))
     logger.info(f"answered: {answered}")
     # check to see if previous bird was answered
@@ -77,8 +82,6 @@ def check_bird():
 
             database.hset(f"web.session:{session_id}", "bird", "")
             database.hset(f"web.session:{session_id}", "answered", "1")
-
-            database.zincrby("score:global", 1, "Web")
 
             tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
             if user_id is not 0:
@@ -139,7 +142,8 @@ def skip_bird():
 def hint_bird():
     logger.info("endpoint: hint bird")
 
-    currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
+    session_id = get_session_id()
+    currentBird = str(database.hget(f"web.session:{session_id}", "bird"))[2:-1]
     if currentBird != "":  # check if there is bird
         return {"hint": currentBird[0]}
     else:
