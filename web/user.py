@@ -5,7 +5,7 @@ from flask import Blueprint, request, url_for, render_template, redirect, sessio
 from web.data import app, database, update_web_user, get_session_id
 from functions import cleanup
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+bp = Blueprint('user', __name__, url_prefix='/user')
 oauth = OAuth(app)
 
 DISCORD_CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
@@ -25,7 +25,7 @@ discord = oauth.discord
 
 @bp.route('/login')
 def login():
-    redirect_uri = url_for('auth.authorize', _external=True)
+    redirect_uri = url_for('user.authorize', _external=True)
     return oauth.discord.authorize_redirect(redirect_uri)
 
 

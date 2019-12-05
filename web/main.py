@@ -6,9 +6,9 @@ import urllib.parse
 from web.data import birdList, logger, app
 from web.functions import get_media, get_sciname
 
-from . import practice, auth
+from . import practice, user
 app.register_blueprint(practice.bp)
-app.register_blueprint(auth.bp)
+app.register_blueprint(user.bp)
 
 
 @app.route('/')

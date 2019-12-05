@@ -45,6 +45,7 @@ def web_session_setup(session_id):
                 "user_id": 0
             }
         )
+        database.expire(f"web.session:{session_id}", 604800)
         logger.info("session set up")
 
 
@@ -53,6 +54,7 @@ def update_web_user(user_data):
     session_id = get_session_id()
     user_id = str(user_data['id'])
     database.hset(f"web.session:{session_id}", "user_id", user_id)
+    database.expire(f"web.session:{session_id}", 604800)
     database.hmset(
         f"web.user:{user_id}", {
             "avatar_hash": str(user_data['avatar']),
@@ -78,7 +80,7 @@ async def user_setup(user_id):
         database.zadd("users:global", {str(user_id): 0})
         logger.info("user global added")
 
-    #Add streak
+    # Add streak
     if (database.zscore("streak:global", str(user_id)) is not None) and (
             database.zscore("streak.max:global", str(user_id)) is not None):
         logger.info("user streak in already")
