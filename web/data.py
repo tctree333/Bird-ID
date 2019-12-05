@@ -72,7 +72,7 @@ def update_web_user(user_data):
 
 
 # sets up new user
-async def user_setup(user_id):
+def user_setup(user_id):
     logger.info("checking user data")
     if database.zscore("users:global", str(user_id)) is not None:
         logger.info("user global ok")
@@ -91,7 +91,7 @@ async def user_setup(user_id):
 
 
 # sets up new birds
-async def bird_setup(user_id, bird):
+def bird_setup(user_id, bird):
     logger.info("checking bird data")
     if database.zscore("incorrect:global", string.capwords(str(bird))) is not None:
         logger.info("bird global ok")
