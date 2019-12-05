@@ -1,5 +1,6 @@
 import random
 import os
+import string
 
 from flask import Flask, session
 from data.data import database, logger, GenericError, birdList, screech_owls
@@ -60,11 +61,47 @@ def update_web_user(user_data):
             "discriminator": str(user_data['discriminator'])
         }
     )
+    user_setup(user_id)
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
     if tempScore not in (0, -1):
         database.zincrby("users:global", tempScore, int(user_id))
         database.hset(f"web.session:{session_id}", "tempScore", -1)
     logger.info("updated user data")
+
+
+# sets up new user
+async def user_setup(user_id):
+    logger.info("checking user data")
+    if database.zscore("users:global", str(user_id)) is not None:
+        logger.info("user global ok")
+    else:
+        database.zadd("users:global", {str(user_id): 0})
+        logger.info("user global added")
+
+    #Add streak
+    if (database.zscore("streak:global", str(user_id)) is not None) and (
+            database.zscore("streak.max:global", str(user_id)) is not None):
+        logger.info("user streak in already")
+    else:
+        database.zadd("streak:global", {str(user_id): 0})
+        database.zadd("streak.max:global",{str(user_id): 0})
+        logger.info("added streak")
+
+
+# sets up new birds
+async def bird_setup(user_id, bird):
+    logger.info("checking bird data")
+    if database.zscore("incorrect:global", string.capwords(str(bird))) is not None:
+        logger.info("bird global ok")
+    else:
+        database.zadd("incorrect:global", {string.capwords(str(bird)): 0})
+        logger.info("bird global added")
+
+    if database.zscore(f"incorrect.user:{user_id}", string.capwords(str(bird))) is not None:
+        logger.info("bird user ok")
+    else:
+        database.zadd(f"incorrect.user:{user_id}", {string.capwords(str(bird)): 0})
+        logger.info("bird user added")
 
 
 def get_session_id():
