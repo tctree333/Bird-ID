@@ -60,8 +60,10 @@ def check_bird():
     currentBird = str(database.hget(
         f"web.session:{session_id}", "bird"))[2:-1]
     if currentBird == "":  # no bird
+        logger.info("bird is blank")
         abort(406, "Bird is blank")
     elif bird_guess == "":
+        logger.info("empty guess")
         abort(406, "Empty guess")
     else:  # if there is a bird, it checks answer
         logger.info("currentBird: " +
@@ -87,6 +89,7 @@ def check_bird():
                     database.zadd("streak.max:global", {str(user_id): database.zscore(
                         "streak:global", str(user_id))})
             elif tempScore >= 10:
+                logger.info("trial maxed")
                 abort(403, "Sign in to continue")
             else:
                 database.hset(f"web.session:{session_id}", "tempScore", str(tempScore+1))
@@ -118,14 +121,16 @@ def skip_bird():
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
 
     currentBird = str(database.hget(f"web.session:{session_id}", "bird"))[2:-1]
-    scibird = asyncio.run(get_sciname(currentBird))
-    database.hset(f"web.session:{session_id}", "bird", "")
-    database.hset(f"web.session:{session_id}", "answered", "1")
     if currentBird != "":  # check if there is bird
-        birdPage = wikipedia.page(f"{currentBird} (bird)")  # sends wiki page
+        database.hset(f"web.session:{session_id}", "bird", "")
+        database.hset(f"web.session:{session_id}", "answered", "1")
         if user_id is not 0:
             database.zadd("streak:global", {str(user_id): 0})  # end streak
+
+        scibird = asyncio.run(get_sciname(currentBird))
+        birdPage = wikipedia.page(f"{currentBird} (bird)")  # sends wiki page
     else:
+        logger.info("bird is blank")
         abort(406, "Bird is blank")
     return {"answer": currentBird, "sciname": scibird}
 
@@ -138,4 +143,5 @@ def hint_bird():
     if currentBird != "":  # check if there is bird
         return {"hint": currentBird[0]}
     else:
+        logger.info("bird is blank")
         abort(406, "Bird is blank")
