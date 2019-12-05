@@ -133,4 +133,9 @@ def skip_bird():
 @bp.route('/hint', methods=['GET'])
 def hint_bird():
     logger.info("endpoint: hint bird")
-    return {"hint": ""}
+
+    currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
+    if currentBird != "":  # check if there is bird
+        return {"hint": currentBird[0]}
+    else:
+        abort(406, "Bird is blank")
