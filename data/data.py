@@ -89,6 +89,21 @@ sentry_sdk.init(
 # ban format:
 #   banned:global : [user id, 0]
 
+#  states = { state name:
+#               {
+#               aliases: [alias1, alias2...],
+#               birdList: [bird1, bird2...],
+#               sciBirdList: [etc.],
+#               songBirds: [etc.],
+#               sciSongBirds: [etc.]
+#               }
+#          }
+
+# state birds are picked from state/[state]/birdList or songBirds
+# sci lists are only for new, state specific birds
+# either lists can be in any order
+
+
 # setup logging
 logger = logging.getLogger("bird-id")
 logger.setLevel(logging.DEBUG)
@@ -159,19 +174,6 @@ def _nats_lists():
     logger.info("Done with nats list!")
     return lists
 
-#  states = { state name:
-#               {
-#               aliases: [alias1, alias2...],
-#               birdList: [bird1, bird2...],
-#               sciBirdList: [etc.],
-#               songBirds: [etc.],
-#               sciSongBirds: [etc.]
-#               }
-#          }
-
-# state birds are picked from state/[state]/birdList or songBirds
-# sci lists are only for new, state specific birds
-# either lists can be in any order
 
 def _orders():
     # Converts txt file of data into lists
