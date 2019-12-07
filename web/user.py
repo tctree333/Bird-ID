@@ -1,6 +1,7 @@
 import random
 import os
 import flask
+import authlib
 
 from authlib.integrations.flask_client import OAuth
 from flask import Blueprint, request, url_for, render_template, redirect, session, abort
@@ -60,3 +61,9 @@ def profile():
     else:
         logger.info("not logged in")
         abort(403, "Sign in to continue")
+
+
+@app.errorhandler(authlib.common.errors.AuthlibBaseError)
+def handle_authlib_error(e):
+    logger.error("error with oauth login")
+    return 'An error occurred with the login', 500
