@@ -55,7 +55,7 @@ def profile():
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
 
     if user_id is not 0:
-        avatar_hash, avatar_url, username, discriminator = map(cleanup, database.hmget(f"web.user:{str(profile['id'])}",
+        avatar_hash, avatar_url, username, discriminator = map(cleanup, database.hmget(f"web.user:{str(user_id)}",
                                                                                     "avatar_hash", "avatar_url", "username", "discriminator"))
         return {"avatar_hash": avatar_hash, "avatar_url": avatar_url, "username": username, "discriminator": discriminator}
     else:
