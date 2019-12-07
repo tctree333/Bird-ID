@@ -131,11 +131,11 @@ def skip_bird():
             database.zadd("streak:global", {str(user_id): 0})  # end streak
 
         scibird = asyncio.run(get_sciname(currentBird))
-        birdPage = wikipedia.page(f"{currentBird} (bird)")  # sends wiki page
+        page = wikipedia.page(f"{currentBird} (bird)")  # sends wiki page
     else:
         logger.info("bird is blank")
         abort(406, "Bird is blank")
-    return {"answer": currentBird, "sciname": scibird}
+    return {"answer": currentBird, "sciname": scibird, "wiki": page.url}
 
 
 @bp.route('/hint', methods=['GET'])
