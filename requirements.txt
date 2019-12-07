@@ -4,3 +4,4 @@ eyeD3==0.8.10
 redis==3.3.11
 Pillow==6.2.1
 holidays==0.9.11
+sentry-sdk==0.13.5
