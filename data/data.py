@@ -16,6 +16,9 @@
 
 import logging
 import logging.handlers
+import sentry_sdk
+from sentry_sdk.integrations.redis import RedisIntegration
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 import os
 import string
 import sys
@@ -25,6 +28,12 @@ from discord.ext import commands
 
 # define database for one connection
 database = redis.from_url(os.getenv("REDIS_URL"))
+
+# add sentry logging
+sentry_sdk.init(
+    dsn=str(os.getenv("SENTRY_DISCORD_DSN")),
+    integrations=[RedisIntegration(), AioHttpIntegration()]
+)
 
 # Database Format Definitions
 
@@ -100,8 +109,6 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 # log uncaught exceptions
-
-
 def handle_exception(exc_type, exc_value, exc_traceback):
     if issubclass(exc_type, KeyboardInterrupt):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
