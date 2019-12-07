@@ -65,5 +65,5 @@ def profile():
 
 @app.errorhandler(authlib.common.errors.AuthlibBaseError)
 def handle_authlib_error(e):
-    logger.error("error with oauth login")
+    logger.error(f"error with oauth login: {e}")
     return 'An error occurred with the login', 500
