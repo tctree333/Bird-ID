@@ -41,3 +41,7 @@ def bird_image(bird):
 def bird_song(bird):
     path, ext = asyncio.run(get_media(bird, "songs"))
     return flask.send_file(f"../{path}")
+
+@app.route('/debug-sentry')
+def trigger_error():
+    division_by_zero = 1 / 0

@@ -1,10 +1,17 @@
 import random
 import os
 import string
+import sentry_sdk
 
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 from flask import Flask, session
 from data.data import database, logger, GenericError, birdList, screech_owls
 
+sentry_sdk.init(
+    dsn=str(os.getenv("SENTRY_API_DSN")),
+    integrations=[FlaskIntegration(), RedisIntegration()]
+)
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
