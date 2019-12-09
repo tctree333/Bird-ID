@@ -9,6 +9,12 @@ from web.functions import send_bird, spellcheck, get_sciname
 
 bp = Blueprint('practice', __name__, url_prefix='/practice')
 
+@bp.after_request # enable CORS
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
+    header['Access-Control-Allow-Credentials'] = 'true'
+    return response
 
 @bp.route('/get', methods=['GET'])
 def get_bird():
@@ -26,6 +32,11 @@ def get_bird():
     if tempScore >= 10:
         logger.info("trial maxed")
         abort(403, "Sign in to continue")
+
+    if media_type != "images" and media_type != "songs":
+        logger.error(f"invalid media type {media_type}")
+        abort(406, "Invalid media type")
+        return
 
     answered = int(database.hget(f"web.session:{session_id}", "answered"))
     logger.info(f"answered: {answered}")

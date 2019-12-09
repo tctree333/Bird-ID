@@ -26,6 +26,7 @@ async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = Fals
         return
 
     if media_type != "images" and media_type != "songs":
+        logger.error(f"invalid media type {media_type}")
         abort(406, "Invalid media type")
         return
 
