@@ -151,7 +151,7 @@ class Birds(commands.Cog):
 
     # Bird command - no args
     # help text
-    @commands.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile] [bw]")
+    @commands.command(help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile] [bw] [order]")
     # 5 second cooldown
     @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
     async def bird(self, ctx, *, args_str: str = ""):

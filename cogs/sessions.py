@@ -84,7 +84,7 @@ class Sessions(commands.Cog):
                          "Sessions will record your activity for an amount of time and " +
                          "will give you stats on how your performance and " +
                          "also set global variables such as black and white, " +
-                         "state specific bird lists, or bird age/sex. ",
+                         "state specific bird lists, specific bird orders, or bird age/sex. ",
                     aliases=["ses", "sesh"])
     async def session(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -98,7 +98,7 @@ class Sessions(commands.Cog):
         These settings can be changed at any time with 'b!session edit', and arguments can be passed in any order. 
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
-        usage="[bw] [state] [female|juvenile]"
+        usage="[bw] [state] [female|juvenile] [order]"
     )
     @commands.cooldown(1, 3.0, type=commands.BucketType.user)
     async def start(self, ctx, *, args_str: str = ""):
@@ -160,7 +160,7 @@ class Sessions(commands.Cog):
         brief="- Views session",
         help="- Views session\nSessions will record your activity for an amount of time and " +
         "will give you stats on how your performance and also set global variables such as black and white, " +
-        "state specific bird lists, or bird age/sex. ",
+        "state specific bird lists, specific bird orders, or bird age/sex. ",
         aliases=["view"],
         usage="[bw] [state] [female|juvenile]"
     )
