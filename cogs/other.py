@@ -104,10 +104,10 @@ class Other(commands.Cog):
             "*A full list of birds has been sent to you via DMs.*"
         )
 
-    # List command - argument is state/bird list
+    # Orders command - argument is state/bird list
     @commands.command(help="- DMs the user with the appropriate bird list.", name="order", aliases=["orders"])
     @commands.cooldown(1, 8.0, type=commands.BucketType.user)
-    async def bird_orders(self, ctx, order: str = "blank", state: str = "blank"):
+    async def bird_orders(self, ctx, order: str = "blank", state: str = "NATS"):
         logger.info("command: orders")
 
         await channel_setup(ctx)
