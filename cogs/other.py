@@ -310,6 +310,11 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
         sciname = await get_sciname(bird)
         await ctx.send(sciname)
 
+    # Test command - for testing purposes only
+    @commands.command(help="- test command", hidden=True)
+    async def error(self, ctx):
+        logger.info("command: error")
+        await ctx.send(1/0)
 
 def setup(bot):
     bot.add_cog(Other(bot))
