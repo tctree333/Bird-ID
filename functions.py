@@ -24,6 +24,7 @@ import random
 from functools import partial
 from io import BytesIO
 from mimetypes import guess_all_extensions, guess_extension
+from sentry_sdk import capture_exception
 
 import aiohttp
 import discord
@@ -577,7 +578,8 @@ async def _download_helper(path, url, session):
                         break
                     out_file.write(block)
             return filename
-    except aiohttp.ClientError:
+    except aiohttp.ClientError as e:
+        capture_exception(e)
         logger.error(f"Client Error with url {url} and path {path}")
         raise
 

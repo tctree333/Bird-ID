@@ -28,6 +28,7 @@ import discord
 import redis
 import wikipedia
 from discord.ext import commands, tasks
+from sentry_sdk import configure_scope
 
 from data.data import database, logger, GenericError
 from functions import channel_setup, precache, backup_all, send_bird
@@ -76,6 +77,13 @@ if __name__ == '__main__':
     ######
     # Global Command Checks
     ######
+
+    # Global check to set sentry tag
+    @bot.check
+    def set_sentry_tag(ctx):
+        with configure_scope() as scope:
+            scope.set_tag("command", ctx.command.name)
+        return True
 
     # Global check for dms - remove cooldowns
     @bot.check
