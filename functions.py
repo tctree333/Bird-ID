@@ -46,7 +46,7 @@ COUNT = 20  # set this to include a margin of error in case some urls throw erro
 
 # Valid file types
 valid_image_extensions = {"jpg", "png", "jpeg", "gif"}
-valid_audio_extensions = {"mp3", "wav"}
+valid_audio_extensions = {"mp3"}
 
 async def channel_setup(ctx):
     """Sets up a new discord channel.
