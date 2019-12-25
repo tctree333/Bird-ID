@@ -28,7 +28,7 @@ import discord
 import redis
 import wikipedia
 from discord.ext import commands, tasks
-from sentry_sdk import configure_scope
+from sentry_sdk import configure_scope, capture_exception
 
 from data.data import database, logger, GenericError
 from functions import channel_setup, precache, backup_all, send_bird
@@ -143,7 +143,8 @@ if __name__ == '__main__':
     @bot.event
     async def on_command_error(ctx, error):
         """Handles errors for all commands without local error handlers."""
-        logger.error("Error: " + str(error))
+        logger.info("Error: " + str(error))
+        capture_exception(error)
 
         # don't handle errors with local handlers
         if hasattr(ctx.command, 'on_error'):
