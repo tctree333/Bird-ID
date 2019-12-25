@@ -29,21 +29,10 @@ from discord.ext import commands
 # define database for one connection
 database = redis.from_url(os.getenv("REDIS_URL"))
 
-def before_sentry_send(event, hint):
-    if 'exc_info' in hint:
-        error = hint['exc_info'][1]
-        if isinstance(error, commands.CommandNotFound):
-            event['fingerprint'] = ['command-not-found']
-        elif isinstance(error, commands.CommandOnCooldown):
-            event['fingerprint'] = ['command-cooldown']
-
-    return event
-
 # add sentry logging
 sentry_sdk.init(
     dsn=str(os.getenv("SENTRY_DISCORD_DSN")),
-    integrations=[RedisIntegration(), AioHttpIntegration()],
-    before_send=before_sentry_send
+    integrations=[RedisIntegration(), AioHttpIntegration()]
 )
 
 # Database Format Definitions
