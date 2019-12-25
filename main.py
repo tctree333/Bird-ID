@@ -174,6 +174,9 @@ if __name__ == '__main__':
                     await ctx.send("**Sorry, you cannot use this command.**")
                 elif error.code == 666:
                     logger.info("GenericError 666")
+                elif error.code == 201:
+                    logger.info("HTTP Error")
+                    await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
                 else:
                     logger.error("uncaught generic error")
                     await ctx.send(
