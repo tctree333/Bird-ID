@@ -579,8 +579,8 @@ async def _download_helper(path, url, session):
                     out_file.write(block)
             return filename
     except aiohttp.ClientError as e:
+        logger.info(f"Client Error with url {url} and path {path}")
         capture_exception(e)
-        logger.error(f"Client Error with url {url} and path {path}")
         raise
 
 async def precache():

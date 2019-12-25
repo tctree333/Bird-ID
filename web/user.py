@@ -3,6 +3,7 @@ import os
 import flask
 import authlib
 
+from sentry_sdk import capture_exception
 from authlib.integrations.flask_client import OAuth
 from flask import Blueprint, request, url_for, render_template, redirect, session, abort
 from web.data import app, database, logger, update_web_user, get_session_id
@@ -65,5 +66,6 @@ def profile():
 
 @app.errorhandler(authlib.common.errors.AuthlibBaseError)
 def handle_authlib_error(e):
-    logger.error(f"error with oauth login: {e}")
+    logger.info(f"error with oauth login: {e}")
+    capture_exception(e)
     return 'An error occurred with the login', 500
