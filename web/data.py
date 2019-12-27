@@ -15,7 +15,7 @@ sentry_sdk.init(
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
-FRONTEND_URL = "http://127.0.0.1:5500"
+FRONTEND_URL = "https://bird-id.netlify.com/"
 
 # Web Database Keys
 
