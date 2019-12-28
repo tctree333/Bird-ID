@@ -14,7 +14,8 @@ sentry_sdk.init(
 )
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-app.config['SESSION_COOKIE_SAMESITE'] = "Lax"
+app.config['SESSION_COOKIE_SAMESITE'] = "Strict"
+app.config['SESSION_COOKIE_SECURE'] = True
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 
@@ -117,22 +118,22 @@ def bird_setup(user_id, bird):
 
 
 def get_session_id():
-    if "session_id" not in session:
-        session["session_id"] = start_session()
-        return str(session["session_id"])
-    elif verify_session(session["session_id"]) is False:
-        session["session_id"] = start_session()
-        return str(session["session_id"])
+    if "id" not in session:
+        session["id"] = start_session()
+        return str(session["id"])
+    elif verify_session(session["id"]) is False:
+        session["id"] = start_session()
+        return str(session["id"])
     else:
-        return str(session["session_id"])
+        return str(session["id"])
 
 
 def start_session():
     logger.info("creating session id")
     session_id = 0
-    session_id = random.randint(9999000000000000, 9999099999999999)
+    session_id = random.randint(420000000, 420999999)
     while database.exists(f"web.session:{session_id}") and session_id == 0:
-        session_id = random.randint(9999000000000000, 9999099999999999)
+        session_id = random.randint(420000000, 420999999)
     logger.info(f"session_id: {session_id}")
     web_session_setup(session_id)
     logger.info(f"created session id: {session_id}")
