@@ -40,7 +40,7 @@ def after_request(response):
 @bp.route('/login', methods=["GET"])
 def login():
     logger.info("endpoint: login")
-    redirect_uri = url_for('user.authorize', _external=True)
+    redirect_uri = url_for('user.authorize', _external=True, _scheme='https')
     resp = make_response(oauth.discord.authorize_redirect(redirect_uri))
     redirect_after = request.args.get("redirect", FRONTEND_URL, str)
     if regex.fullmatch(redirect_after) is not None:
