@@ -73,20 +73,21 @@ def logout():
 @bp.route('/authorize')
 def authorize():
     logger.info("endpoint: authorize")
-    token = oauth.discord.authorize_access_token()
+    redirect_uri = url_for('user.authorize', _external=True, _scheme='https')
+    token = oauth.discord.authorize_access_token(redirect_uri=redirect_uri)
     resp = oauth.discord.get('users/@me')
     profile = resp.json()
     # do something with the token and profile
     update_web_user(profile)
     avatar_hash, avatar_url, username, discriminator = map(cleanup, database.hmget(f"web.user:{str(profile['id'])}",
                                                                                    "avatar_hash", "avatar_url", "username", "discriminator"))
-    redirect_cookie = request.cookies.get("redirect")
+    redirect_cookie = str(request.cookies.get("redirect"))
     if regex.fullmatch(redirect_cookie) is not None:
         redirection = FRONTEND_URL + redirect_cookie
     else:
         redirection = FRONTEND_URL + "/"
     session.pop("redirect", None)
-    return username #redirect(redirection)
+    return redirect(redirection)
 
 @bp.route('/profile')
 def profile():
