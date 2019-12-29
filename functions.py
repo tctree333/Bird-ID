@@ -26,6 +26,7 @@ from io import BytesIO
 from mimetypes import guess_all_extensions, guess_extension
 from sentry_sdk import capture_exception
 
+import time
 import aiohttp
 import discord
 import eyed3
@@ -328,7 +329,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
     filename = str(response[0])
     extension = str(response[1])
     statInfo = os.stat(filename)
-    if statInfo.st_size > 8000000:  # another filesize check
+    if statInfo.st_size > 4000000:  # another filesize check (4mb)
         await delete.delete()
         await ctx.send("**Oops! File too large :(**\n*Please try again.*")
     else:
@@ -383,7 +384,7 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
         audioFile.tag.remove(filename)
 
     statInfo = os.stat(filename)
-    if statInfo.st_size > 8000000:  # another filesize check
+    if statInfo.st_size > 4000000:  # another filesize check (4mb)
         await delete.delete()
         await ctx.send("**Oops! File too large :(**\n*Please try again.*")
     else:
@@ -418,7 +419,7 @@ async def get_image(ctx, bird, addOn=None):
             logger.debug("extension: " + str(extension))
             statInfo = os.stat(image_link)
             logger.debug("size: " + str(statInfo.st_size))
-            if extension.lower() in valid_image_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
+            if extension.lower() in valid_image_extensions and statInfo.st_size < 4000000:  # keep files less than 4mb
                 logger.info("found one!")
                 break
             elif y == prevJ:
@@ -454,7 +455,7 @@ async def get_song(ctx, bird):
             logger.debug("extension: " + str(extension))
             statInfo = os.stat(song_link)
             logger.debug("size: " + str(statInfo.st_size))
-            if extension.lower() in valid_audio_extensions and statInfo.st_size < 8000000:  # 8mb discord limit
+            if extension.lower() in valid_audio_extensions and statInfo.st_size < 4000000:  # keep files less than 4mb
                 logger.info("found one!")
                 break
             elif x == len(songs) - 1:
@@ -584,6 +585,7 @@ async def _download_helper(path, url, session):
         raise
 
 async def precache():
+    start = time.time()
     timeout = aiohttp.ClientTimeout(total=10 * 60)
     conn = aiohttp.TCPConnector(limit=100)
     async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
@@ -599,7 +601,8 @@ async def precache():
         )
         logger.info("Starting songs")
         await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
-    logger.info("Images Cached")
+    end = time.time()
+    logger.info(f"Images Cached in {end-start} sec.")
 
 def cleanup(string):
     return str(string)[2:-1]
