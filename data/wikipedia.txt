@@ -1,222 +1,218 @@
-Acorn Woodpecker,https://en.wikipedia.org/wiki/American_avocet
-Allen's Hummingbird,https://en.wikipedia.org/wiki/White-winged_dove
-American Avocet,https://en.wikipedia.org/wiki/Anhinga
-American Bittern,https://en.wikipedia.org/wiki/Yellow-rumped_warbler
-American Coot,https://en.wikipedia.org/wiki/American_woodcock
-American Crow,https://en.wikipedia.org/wiki/Chuck-will%27s-widow
-American Dipper,https://en.wikipedia.org/wiki/Roseate_spoonbill
-American Golden Plover,https://en.wikipedia.org/wiki/Baltimore_oriole
-American Goldfinch,https://en.wikipedia.org/wiki/Song_sparrow
-American Kestrel,https://en.wikipedia.org/wiki/Least_tern
-American Oystercatcher,https://en.wikipedia.org/wiki/Yellow-headed_blackbird
-American Redstart,https://en.wikipedia.org/wiki/Carolina_chickadee
-American Robin,https://en.wikipedia.org/wiki/Barred_owl
-American White Pelican,https://en.wikipedia.org/wiki/Sora_(bird)
-American Woodcock,https://en.wikipedia.org/wiki/Chickadee
-Anhinga,https://en.wikipedia.org/wiki/Chipping_sparrow
-Bald Eagle,https://en.wikipedia.org/wiki/Killdeer
-Baltimore Oriole,https://en.wikipedia.org/wiki/American_coot
-Band Tailed Pigeon,https://en.wikipedia.org/wiki/Ruby-throated_hummingbird
-Barn Owl,https://en.wikipedia.org/wiki/Northern_jacana
-Barn Swallow,https://en.wikipedia.org/wiki/Magnolia_warbler
-Barred Owl,https://en.wikipedia.org/wiki/Dark-eyed_junco
-Bell's Vireo,https://en.wikipedia.org/wiki/Hooded_merganser
-Belted Kingfisher,https://en.wikipedia.org/wiki/Pomarine_jaeger
-Black And White Warbler,https://en.wikipedia.org/wiki/American_kestrel
-Black Bellied Whistling Duck,https://en.wikipedia.org/wiki/Common_eider
-Black Billed Cuckoo,https://en.wikipedia.org/wiki/Great_black-backed_gull
-Black Billed Magpie,https://en.wikipedia.org/wiki/Common_ground_dove
-Black Capped Chickadee,https://en.wikipedia.org/wiki/Common_grackle
-Black Chinned Sparrow,https://en.wikipedia.org/wiki/American_crow
-Black Crowned Night Heron,https://en.wikipedia.org/wiki/California_condor
-Black Footed Albatross,https://en.wikipedia.org/wiki/Kentucky_warbler
-Black Guillemot,https://en.wikipedia.org/wiki/Eastern_bluebird
+Acorn Woodpecker,https://en.wikipedia.org/wiki/Acorn_woodpecker
+Allen's Hummingbird,https://en.wikipedia.org/wiki/Allen%27s_hummingbird
+American Avocet,https://en.wikipedia.org/wiki/American_avocet
+American Bittern,https://en.wikipedia.org/wiki/American_bittern
+American Coot,https://en.wikipedia.org/wiki/American_coot
+American Crow,https://en.wikipedia.org/wiki/American_crow
+American Dipper,https://en.wikipedia.org/wiki/American_dipper
+American Golden Plover,https://en.wikipedia.org/wiki/American_golden_plover
+American Goldfinch,https://en.wikipedia.org/wiki/American_goldfinch
+American Kestrel,https://en.wikipedia.org/wiki/American_kestrel
+American Oystercatcher,https://en.wikipedia.org/wiki/American_oystercatcher
+American Redstart,https://en.wikipedia.org/wiki/American_redstart
+American Robin,https://en.wikipedia.org/wiki/American_robin
+American White Pelican,https://en.wikipedia.org/wiki/American_white_pelican
+American Woodcock,https://en.wikipedia.org/wiki/American_woodcock
+Anhinga,https://en.wikipedia.org/wiki/Anhinga
+Bald Eagle,https://en.wikipedia.org/wiki/Bald_eagle
+Baltimore Oriole,https://en.wikipedia.org/wiki/Baltimore_oriole
+Band Tailed Pigeon,https://en.wikipedia.org/wiki/Band-tailed_pigeon
+Barn Owl,https://en.wikipedia.org/wiki/Barn_owl
+Barn Swallow,https://en.wikipedia.org/wiki/Barn_swallow
+Barred Owl,https://en.wikipedia.org/wiki/Barred_owl
+Bell's Vireo,https://en.wikipedia.org/wiki/Bell%27s_vireo
+Belted Kingfisher,https://en.wikipedia.org/wiki/Belted_kingfisher
+Black And White Warbler,https://en.wikipedia.org/wiki/Black-and-white_warbler
+Black Bellied Whistling Duck,https://en.wikipedia.org/wiki/Black-bellied_whistling_duck
+Black Billed Cuckoo,https://en.wikipedia.org/wiki/Black-billed_cuckoo
+Black Billed Magpie,https://en.wikipedia.org/wiki/Black-billed_magpie
+Black Capped Chickadee,https://en.wikipedia.org/wiki/Black-capped_chickadee
+Black Chinned Sparrow,https://en.wikipedia.org/wiki/Black-chinned_sparrow
+Black Crowned Night Heron,https://en.wikipedia.org/wiki/Black-crowned_night_heron
+Black Footed Albatross,https://en.wikipedia.org/wiki/Black-footed_albatross
+Black Guillemot,https://en.wikipedia.org/wiki/Black_guillemot
 Black Necked Stilt,https://en.wikipedia.org/wiki/Black-necked_stilt
-Black Phoebe,https://en.wikipedia.org/wiki/Warbling_vireo
-Black Skimmer,https://en.wikipedia.org/wiki/Marbled_murrelet
-Black Tern,https://en.wikipedia.org/wiki/Black_phoebe
-Black Throated Green Warbler,https://en.wikipedia.org/wiki/Surf_scoter
-Blue Gray Gnatcatcher,https://en.wikipedia.org/wiki/Cooper%27s_hawk
-Blue Jay,https://en.wikipedia.org/wiki/Pied-billed_grebe
-Blue Throated Hummingbird,https://en.wikipedia.org/wiki/Snow_goose
-Bobolink,https://en.wikipedia.org/wiki/Greater_roadrunner
-Brown Creeper,https://en.wikipedia.org/wiki/Allen%27s_hummingbird
-Brown Headed Cowbird,https://en.wikipedia.org/wiki/Double-crested_cormorant
-Brown Thrasher,https://en.wikipedia.org/wiki/Tern
-Bufflehead,https://en.wikipedia.org/wiki/Great_blue_heron
-Burrowing Owl,https://en.wikipedia.org/wiki/Bell%27s_vireo
-Cactus Wren,https://en.wikipedia.org/wiki/Spotted_towhee
-California Condor,https://en.wikipedia.org/wiki/Northern_harrier
-California Gnatcatcher,https://en.wikipedia.org/wiki/Wilson%27s_snipe
-California Gull,https://en.wikipedia.org/wiki/Bald_eagle
-California Quail,https://en.wikipedia.org/wiki/Western_screech_owl
-Canada Goose,https://en.wikipedia.org/wiki/Purple_martin
-Canvasback,https://en.wikipedia.org/wiki/Swainson%27s_thrush
-Canyon Wren,https://en.wikipedia.org/wiki/Snowy_egret
-Carolina Chickadee,https://en.wikipedia.org/wiki/Wild_turkey
-Carolina Wren,https://en.wikipedia.org/wiki/Chuck-will%27s-widow
-Caspian Tern,https://en.wikipedia.org/wiki/Clapper_rail
-Cedar Waxwing,https://en.wikipedia.org/wiki/Barn_swallow
-Chimney Swift,https://en.wikipedia.org/wiki/Golden_eagle
-Chipping Sparrow,https://en.wikipedia.org/wiki/California_quail
-Chuck-will's-widow,https://en.wikipedia.org/wiki/Pauraque
-Chuck Will's Widow,https://en.wikipedia.org/wiki/Lark_bunting
-Cinnamon Teal,https://en.wikipedia.org/wiki/Greater_prairie_chicken
-Clapper Rail,https://en.wikipedia.org/wiki/Steller%27s_jay
-Clark's Nutcracker,https://en.wikipedia.org/wiki/Red-tailed_hawk
-Cliff Swallow,https://en.wikipedia.org/wiki/Common_raven
-Common Eider,https://en.wikipedia.org/wiki/Red_crossbill
-Common Grackle,https://en.wikipedia.org/wiki/Common_yellowthroat
-Common Ground Dove,https://en.wikipedia.org/wiki/Long-tailed_duck
-Common Loon,https://en.wikipedia.org/wiki/Red-eyed_vireo
-Common Merganser,https://en.wikipedia.org/wiki/Great_horned_owl
-Common Murre,https://en.wikipedia.org/wiki/Belted_kingfisher
-Common Nighthawk,https://en.wikipedia.org/wiki/Wood_duck
-Common Pauraque,https://en.wikipedia.org/wiki/Eastern_screech_owl
-Common Pauraque,https://en.wikipedia.org/wiki/Wood_stork
-Common Raven,https://en.wikipedia.org/wiki/Townsend%27s_warbler
-Common Yellowthroat,https://en.wikipedia.org/wiki/Ruby-throated_hummingbird
-Cooper's Hawk,https://en.wikipedia.org/wiki/Golden-crowned_kinglet
-Crested Caracara,https://en.wikipedia.org/wiki/Cedar_waxwing
-Curve Billed Thrasher,https://en.wikipedia.org/wiki/Black_guillemot
-Dark Eyed Junco,https://en.wikipedia.org/wiki/Laysan_albatross
-Double Crested Cormorant,https://en.wikipedia.org/wiki/Band-tailed_pigeon
-Downy Woodpecker,https://en.wikipedia.org/wiki/Canyon_wren
-Dunlin,https://en.wikipedia.org/wiki/Red-winged_blackbird
-Eastern Bluebird,https://en.wikipedia.org/wiki/Red-necked_grebe
-Eastern Kingbird,https://en.wikipedia.org/wiki/Pink-footed_shearwater
-Eastern Phoebe,https://en.wikipedia.org/wiki/Bobolink
-Eastern Screech-Owl,https://en.wikipedia.org/wiki/Whiskered_screech_owl
-Eastern Screech Owl,https://en.wikipedia.org/wiki/Ring-billed_gull
-Elegant Trogon,https://en.wikipedia.org/wiki/American_bittern
-European Starling,https://en.wikipedia.org/wiki/Dunlin
-Evening Grosbeak,https://en.wikipedia.org/wiki/Black-throated_green_warbler
-Golden Crowned Kinglet,https://en.wikipedia.org/wiki/Northern_mockingbird
-Golden Eagle,https://en.wikipedia.org/wiki/Red-headed_woodpecker
-Golden Fronted Woodpecker,https://en.wikipedia.org/wiki/American_redstart
-Gray Catbird,https://en.wikipedia.org/wiki/Black_skimmer
-Great Black Backed Gull,https://en.wikipedia.org/wiki/Wood_thrush
-Great Blue Heron,https://en.wikipedia.org/wiki/Peregrine_falcon
-Great Crested Flycatcher,https://en.wikipedia.org/wiki/Northern_flicker
-Greater Prairie Chicken,https://en.wikipedia.org/wiki/Eastern_phoebe
-Greater Roadrunner,https://en.wikipedia.org/wiki/Elegant_trogon
-Great Gray Owl,https://en.wikipedia.org/wiki/Acorn_woodpecker
-Great Horned Owl,https://en.wikipedia.org/wiki/Golden-fronted_woodpecker
-Green Heron,https://en.wikipedia.org/wiki/Brown_thrasher
-Green Winged Teal,https://en.wikipedia.org/wiki/Common_starling
-Harris's Sparrow,https://en.wikipedia.org/wiki/House_finch
-Heermann's Gull,https://en.wikipedia.org/wiki/Common_pheasant
-Herring Gull,https://en.wikipedia.org/wiki/Black-billed_cuckoo
-Hooded Merganser,https://en.wikipedia.org/wiki/American_robin
-Horned Lark,https://en.wikipedia.org/wiki/Black-and-white_warbler
-House Finch,https://en.wikipedia.org/wiki/Ruby-crowned_kinglet
-House Sparrow,https://en.wikipedia.org/wiki/Chimney_swift
-Inca Dove,https://en.wikipedia.org/wiki/Curve-billed_thrasher
-Indigo Bunting,https://en.wikipedia.org/wiki/Canada_goose
-Kentucky Warbler,https://en.wikipedia.org/wiki/Swainson%27s_hawk
-Killdeer,https://en.wikipedia.org/wiki/Green_heron
-Lapland Longspur,https://en.wikipedia.org/wiki/Common_loon
-Lark Bunting,https://en.wikipedia.org/wiki/European_herring_gull
-Lark Sparrow,https://en.wikipedia.org/wiki/Northern_saw-whet_owl
-Laughing Gull,https://en.wikipedia.org/wiki/Yellow-bellied_sapsucker
-Laysan Albatross,https://en.wikipedia.org/wiki/Tufted_puffin
-Least Tern,https://en.wikipedia.org/wiki/Burrowing_owl
-Loggerhead Shrike,https://en.wikipedia.org/wiki/Pauraque
-Long Eared Owl,https://en.wikipedia.org/wiki/Domestic_pigeon
-Long Tailed Duck,https://en.wikipedia.org/wiki/Laughing_gull
-Louisiana Waterthrush,https://en.wikipedia.org/wiki/White-crowned_sparrow
-Magnificent Frigatebird,https://en.wikipedia.org/wiki/Marsh_wren
-Magnolia Warbler,https://en.wikipedia.org/wiki/American_cliff_swallow
-Mallard,https://en.wikipedia.org/wiki/Caspian_tern
-Marbled Murrelet,https://en.wikipedia.org/wiki/Mourning_dove
-Marsh Wren,https://en.wikipedia.org/wiki/Turkey_vulture
-Mountain Chickadee,https://en.wikipedia.org/wiki/Lark_sparrow
-Mourning Dove,https://en.wikipedia.org/wiki/Eastern_screech_owl
-Northern Bobwhite,https://en.wikipedia.org/wiki/Canvasback
-Northern Cardinal,https://en.wikipedia.org/wiki/Ruffed_grouse
-Northern Flicker,https://en.wikipedia.org/wiki/Common_merganser
-Northern Fulmar,https://en.wikipedia.org/wiki/Northern_shoveler
-Northern Harrier,https://en.wikipedia.org/wiki/American_oystercatcher
-Northern Jacana,https://en.wikipedia.org/wiki/Spotted_sandpiper
-Northern Mockingbird,https://en.wikipedia.org/wiki/Painted_bunting
-Northern Saw Whet Owl,https://en.wikipedia.org/wiki/Trumpeter_swan
-Northern Shoveler,https://en.wikipedia.org/wiki/American_purple_gallinule
-Olive Sided Flycatcher,https://en.wikipedia.org/wiki/Black-capped_chickadee
-Osprey,https://en.wikipedia.org/wiki/House_sparrow
-Ovenbird,https://en.wikipedia.org/wiki/Eastern_kingbird
-Painted Bunting,https://en.wikipedia.org/wiki/Heermann%27s_gull
-Peregrine Falcon,https://en.wikipedia.org/wiki/Yellow-rumped_warbler
-Phainopepla,https://en.wikipedia.org/wiki/Western_kingbird
-Pied Billed Grebe,https://en.wikipedia.org/wiki/Bufflehead
-Pileated Woodpecker,https://en.wikipedia.org/wiki/American_white_pelican
-Pine Siskin
-Pink Footed Shearwater,https://en.wikipedia.org/wiki/Snow_bunting
-Pomarine Jaeger,https://en.wikipedia.org/wiki/Common_nighthawk
-Purple Finch,https://en.wikipedia.org/wiki/Red-bellied_woodpecker
-Purple Gallinule,https://en.wikipedia.org/wiki/Cactus_wren
-Purple Martin,https://en.wikipedia.org/wiki/Osprey
-Red Bellied Woodpecker,https://en.wikipedia.org/wiki/Harris%27s_sparrow
-Red Breasted Nuthatch,https://en.wikipedia.org/wiki/Pine_siskin
-Red Crossbill,https://en.wikipedia.org/wiki/Verdin
-Red Eyed Vireo,https://en.wikipedia.org/wiki/Black-billed_magpie
-Red Headed Woodpecker,https://en.wikipedia.org/wiki/Snowy_plover
-Red Necked Grebe,https://en.wikipedia.org/wiki/Horned_lark
-Red Tailed Hawk,https://en.wikipedia.org/wiki/Western_meadowlark
-Red Throated Loon,https://en.wikipedia.org/wiki/Tufted_titmouse
-Red Winged Blackbird,https://en.wikipedia.org/wiki/Loggerhead_shrike
-Ring Billed Gull,https://en.wikipedia.org/wiki/Scarlet_tanager
-Ring Necked Pheasant,https://en.wikipedia.org/wiki/Northern_bobwhite
-Rock Pigeon,https://en.wikipedia.org/wiki/Great_crested_flycatcher
-Roseate Spoonbill,https://en.wikipedia.org/wiki/Upland_sandpiper
-Rose Breasted Grosbeak,https://en.wikipedia.org/wiki/Clark%27s_nutcracker
-Ruby Crowned Kinglet,https://en.wikipedia.org/wiki/Pileated_woodpecker
-Ruby Throated Hummingbird,https://en.wikipedia.org/wiki/Green-winged_teal
-Ruddy Turnstone,https://en.wikipedia.org/wiki/Lapland_longspur
-Ruffed Grouse,https://en.wikipedia.org/wiki/Red-throated_loon
-Scarlet Tanager,https://en.wikipedia.org/wiki/Eastern_whip-poor-will,https://en.wikipedia.org/wiki/Eastern_whip-poor-will
-Scissor Tailed Flycatcher,https://en.wikipedia.org/wiki/Snowy_owl
+Black Phoebe,https://en.wikipedia.org/wiki/Black_phoebe
+Black Skimmer,https://en.wikipedia.org/wiki/Black_skimmer
+Black Tern,https://en.wikipedia.org/wiki/Black_tern
+Black Throated Green Warbler,https://en.wikipedia.org/wiki/Black-throated_green_warbler
+Blue Gray Gnatcatcher,https://en.wikipedia.org/wiki/Blue-gray_gnatcatcher
+Blue Jay,https://en.wikipedia.org/wiki/Blue_jay
+Blue Throated Hummingbird,https://en.wikipedia.org/wiki/Blue-throated_mountaingem
+Bobolink,https://en.wikipedia.org/wiki/Bobolink
+Brown Creeper,https://en.wikipedia.org/wiki/Brown_creeper
+Brown Headed Cowbird,https://en.wikipedia.org/wiki/Brown-headed_cowbird
+Brown Thrasher,https://en.wikipedia.org/wiki/Brown_thrasher
+Bufflehead,https://en.wikipedia.org/wiki/Bufflehead
+Burrowing Owl,https://en.wikipedia.org/wiki/Burrowing_owl
+Cactus Wren,https://en.wikipedia.org/wiki/Cactus_wren
+California Condor,https://en.wikipedia.org/wiki/California_condor
+California Gnatcatcher,https://en.wikipedia.org/wiki/California_gnatcatcher
+California Gull,https://en.wikipedia.org/wiki/California_gull
+California Quail,https://en.wikipedia.org/wiki/California_quail
+Canada Goose,https://en.wikipedia.org/wiki/Canada_goose
+Canvasback,https://en.wikipedia.org/wiki/Canvasback
+Canyon Wren,https://en.wikipedia.org/wiki/Canyon_wren
+Carolina Chickadee,https://en.wikipedia.org/wiki/Carolina_chickadee
+Carolina Wren,https://en.wikipedia.org/wiki/Carolina_wren
+Caspian Tern,https://en.wikipedia.org/wiki/Caspian_tern
+Cedar Waxwing,https://en.wikipedia.org/wiki/Cedar_waxwing
+Chimney Swift,https://en.wikipedia.org/wiki/Chimney_swift
+Chipping Sparrow,https://en.wikipedia.org/wiki/Chipping_sparrow
+Chuck Will's Widow,https://en.wikipedia.org/wiki/Chuck-will%27s-widow
+Cinnamon Teal,https://en.wikipedia.org/wiki/Cinnamon_teal
+Clapper Rail,https://en.wikipedia.org/wiki/Clapper_rail
+Clark's Nutcracker,https://en.wikipedia.org/wiki/Clark%27s_nutcracker
+Cliff Swallow,https://en.wikipedia.org/wiki/American_cliff_swallow
+Common Eider,https://en.wikipedia.org/wiki/Common_eider
+Common Grackle,https://en.wikipedia.org/wiki/Common_grackle
+Common Ground Dove,https://en.wikipedia.org/wiki/Common_ground_dove
+Common Loon,https://en.wikipedia.org/wiki/Common_loon
+Common Merganser,https://en.wikipedia.org/wiki/Common_merganser
+Common Murre,https://en.wikipedia.org/wiki/Common_murre
+Common Nighthawk,https://en.wikipedia.org/wiki/Common_nighthawk
+Common Pauraque,https://en.wikipedia.org/wiki/Pauraque
+Common Raven,https://en.wikipedia.org/wiki/Common_raven
+Common Yellowthroat,https://en.wikipedia.org/wiki/Common_yellowthroat
+Cooper's Hawk,https://en.wikipedia.org/wiki/Cooper%27s_hawk
+Crested Caracara,https://en.wikipedia.org/wiki/Northern_crested_caracara
+Curve Billed Thrasher,https://en.wikipedia.org/wiki/Curve-billed_thrasher
+Dark Eyed Junco,https://en.wikipedia.org/wiki/Dark-eyed_junco
+Double Crested Cormorant,https://en.wikipedia.org/wiki/Double-crested_cormorant
+Downy Woodpecker,https://en.wikipedia.org/wiki/Downy_woodpecker
+Dunlin,https://en.wikipedia.org/wiki/Dunlin
+Eastern Bluebird,https://en.wikipedia.org/wiki/Eastern_bluebird
+Eastern Kingbird,https://en.wikipedia.org/wiki/Eastern_kingbird
+Eastern Phoebe,https://en.wikipedia.org/wiki/Eastern_phoebe
+Eastern Screech Owl,https://en.wikipedia.org/wiki/Eastern_screech_owl
+Elegant Trogon,https://en.wikipedia.org/wiki/Elegant_trogon
+European Starling,https://en.wikipedia.org/wiki/Common_starling
+Evening Grosbeak,https://en.wikipedia.org/wiki/Evening_grosbeak
+Golden Crowned Kinglet,https://en.wikipedia.org/wiki/Golden-crowned_kinglet
+Golden Eagle,https://en.wikipedia.org/wiki/Golden_eagle
+Golden Fronted Woodpecker,https://en.wikipedia.org/wiki/Golden-fronted_woodpecker
+Gray Catbird,https://en.wikipedia.org/wiki/Gray_catbird
+Great Black Backed Gull,https://en.wikipedia.org/wiki/Great_black-backed_gull
+Great Blue Heron,https://en.wikipedia.org/wiki/Great_blue_heron
+Great Crested Flycatcher,https://en.wikipedia.org/wiki/Great_crested_flycatcher
+Great Gray Owl,https://en.wikipedia.org/wiki/Great_grey_owl
+Great Horned Owl,https://en.wikipedia.org/wiki/Great_horned_owl
+Greater Prairie Chicken,https://en.wikipedia.org/wiki/Greater_prairie_chicken
+Greater Roadrunner,https://en.wikipedia.org/wiki/Greater_roadrunner
+Green Heron,https://en.wikipedia.org/wiki/Green_heron
+Green Winged Teal,https://en.wikipedia.org/wiki/Green-winged_teal
+Harris's Sparrow,https://en.wikipedia.org/wiki/Harris%27s_sparrow
+Heermann's Gull,https://en.wikipedia.org/wiki/Heermann%27s_gull
+Herring Gull,https://en.wikipedia.org/wiki/European_herring_gull
+Hooded Merganser,https://en.wikipedia.org/wiki/Hooded_merganser
+Horned Lark,https://en.wikipedia.org/wiki/Horned_lark
+House Finch,https://en.wikipedia.org/wiki/House_finch
+House Sparrow,https://en.wikipedia.org/wiki/House_sparrow
+Inca Dove,https://en.wikipedia.org/wiki/Inca_dove
+Indigo Bunting,https://en.wikipedia.org/wiki/Indigo_bunting
+Kentucky Warbler,https://en.wikipedia.org/wiki/Kentucky_warbler
+Killdeer,https://en.wikipedia.org/wiki/Killdeer
+Lapland Longspur,https://en.wikipedia.org/wiki/Lapland_longspur
+Lark Bunting,https://en.wikipedia.org/wiki/Lark_bunting
+Lark Sparrow,https://en.wikipedia.org/wiki/Lark_sparrow
+Laughing Gull,https://en.wikipedia.org/wiki/Laughing_gull
+Laysan Albatross,https://en.wikipedia.org/wiki/Laysan_albatross
+Least Tern,https://en.wikipedia.org/wiki/Least_tern
+Loggerhead Shrike,https://en.wikipedia.org/wiki/Loggerhead_shrike
+Long Eared Owl,https://en.wikipedia.org/wiki/Long-eared_owl
+Long Tailed Duck,https://en.wikipedia.org/wiki/Long-tailed_duck
+Louisiana Waterthrush,https://en.wikipedia.org/wiki/Louisiana_waterthrush
+Magnificent Frigatebird,https://en.wikipedia.org/wiki/Magnificent_frigatebird
+Magnolia Warbler,https://en.wikipedia.org/wiki/Magnolia_warbler
+Mallard,https://en.wikipedia.org/wiki/Mallard
+Marbled Murrelet,https://en.wikipedia.org/wiki/Marbled_murrelet
+Marsh Wren,https://en.wikipedia.org/wiki/Marsh_wren
+Mountain Chickadee,https://en.wikipedia.org/wiki/Chickadee
+Mourning Dove,https://en.wikipedia.org/wiki/Mourning_dove
+Northern Bobwhite,https://en.wikipedia.org/wiki/Northern_bobwhite
+Northern Cardinal,https://en.wikipedia.org/wiki/Cardinal_(bird)
+Northern Flicker,https://en.wikipedia.org/wiki/Northern_flicker
+Northern Fulmar,https://en.wikipedia.org/wiki/Northern_fulmar
+Northern Harrier,https://en.wikipedia.org/wiki/Northern_harrier
+Northern Jacana,https://en.wikipedia.org/wiki/Northern_jacana
+Northern Mockingbird,https://en.wikipedia.org/wiki/Northern_mockingbird
+Northern Saw Whet Owl,https://en.wikipedia.org/wiki/Northern_saw-whet_owl
+Northern Shoveler,https://en.wikipedia.org/wiki/Northern_shoveler
+Olive Sided Flycatcher,https://en.wikipedia.org/wiki/Olive-sided_flycatcher
+Osprey,https://en.wikipedia.org/wiki/Osprey
+Ovenbird,https://en.wikipedia.org/wiki/Ovenbird
+Painted Bunting,https://en.wikipedia.org/wiki/Painted_bunting
+Peregrine Falcon,https://en.wikipedia.org/wiki/Peregrine_falcon
+Phainopepla,https://en.wikipedia.org/wiki/Phainopepla
+Pied Billed Grebe,https://en.wikipedia.org/wiki/Pied-billed_grebe
+Pileated Woodpecker,https://en.wikipedia.org/wiki/Pileated_woodpecker
+Pine Siskin,https://en.wikipedia.org/wiki/Pine_siskin
+Pink Footed Shearwater,https://en.wikipedia.org/wiki/Pink-footed_shearwater
+Pomarine Jaeger,https://en.wikipedia.org/wiki/Pomarine_jaeger
+Purple Finch,https://en.wikipedia.org/wiki/Purple_finch
+Purple Gallinule,https://en.wikipedia.org/wiki/American_purple_gallinule
+Purple Martin,https://en.wikipedia.org/wiki/Purple_martin
+Red Bellied Woodpecker,https://en.wikipedia.org/wiki/Red-bellied_woodpecker
+Red Breasted Nuthatch,https://en.wikipedia.org/wiki/Red-breasted_nuthatch
+Red Crossbill,https://en.wikipedia.org/wiki/Red_crossbill
+Red Eyed Vireo,https://en.wikipedia.org/wiki/Red-eyed_vireo
+Red Headed Woodpecker,https://en.wikipedia.org/wiki/Red-headed_woodpecker
+Red Necked Grebe,https://en.wikipedia.org/wiki/Red-necked_grebe
+Red Tailed Hawk,https://en.wikipedia.org/wiki/Red-tailed_hawk
+Red Throated Loon,https://en.wikipedia.org/wiki/Red-throated_loon
+Red Winged Blackbird,https://en.wikipedia.org/wiki/Red-winged_blackbird
+Ring Billed Gull,https://en.wikipedia.org/wiki/Ring-billed_gull
+Ring Necked Pheasant,https://en.wikipedia.org/wiki/Common_pheasant
+Rock Pigeon,https://en.wikipedia.org/wiki/Domestic_pigeon
+Rose Breasted Grosbeak,https://en.wikipedia.org/wiki/Rose-breasted_grosbeak
+Roseate Spoonbill,https://en.wikipedia.org/wiki/Roseate_spoonbill
+Ruby Crowned Kinglet,https://en.wikipedia.org/wiki/Ruby-crowned_kinglet
+Ruby Throated Hummingbird,https://en.wikipedia.org/wiki/Ruby-throated_hummingbird
+Ruddy Turnstone,https://en.wikipedia.org/wiki/Ruddy_turnstone
+Ruffed Grouse,https://en.wikipedia.org/wiki/Ruffed_grouse
+Scarlet Tanager,https://en.wikipedia.org/wiki/Scarlet_tanager
+Scissor Tailed Flycatcher,https://en.wikipedia.org/wiki/Scissor-tailed_flycatcher
 Screech Owl,https://en.wikipedia.org/wiki/Eastern_screech_owl
-Snow Bunting,https://en.wikipedia.org/wiki/California_gnatcatcher
-Snow Goose,https://en.wikipedia.org/wiki/Wilson%27s_phalarope
-Snowy Egret,https://en.wikipedia.org/wiki/Carolina_wren
-Snowy Owl,https://en.wikipedia.org/wiki/Phainopepla
-Snowy Plover,https://en.wikipedia.org/wiki/American_goldfinch
-Song Sparrow,https://en.wikipedia.org/wiki/Black-chinned_sparrow
-Sora,https://en.wikipedia.org/wiki/Magnificent_frigatebird
-Spotted Sandpiper,https://en.wikipedia.org/wiki/Purple_finch
-Spotted Towhee,https://en.wikipedia.org/wiki/American_dipper
-Steller's Jay,https://en.wikipedia.org/wiki/Great_grey_owl
-Surf Scoter,https://en.wikipedia.org/wiki/Ovenbird
-Swainson's Hawk,https://en.wikipedia.org/wiki/Northern_fulmar
-Swainson's Thrush,https://en.wikipedia.org/wiki/Gray_catbird
-Townsend's Warbler,https://en.wikipedia.org/wiki/Yellow-breasted_chat
-Trumpeter Swan,https://en.wikipedia.org/wiki/Mallard
-Tufted Puffin,https://en.wikipedia.org/wiki/Rose-breasted_grosbeak
-Tufted Titmouse,https://en.wikipedia.org/wiki/Inca_dove
-Turkey Vulture,https://en.wikipedia.org/wiki/Louisiana_waterthrush
-Upland Sandpiper,https://en.wikipedia.org/wiki/Western_grebe
-Verdin,https://en.wikipedia.org/wiki/Whooping_crane
+Snow Bunting,https://en.wikipedia.org/wiki/Snow_bunting
+Snow Goose,https://en.wikipedia.org/wiki/Snow_goose
+Snowy Egret,https://en.wikipedia.org/wiki/Snowy_egret
+Snowy Owl,https://en.wikipedia.org/wiki/Snowy_owl
+Snowy Plover,https://en.wikipedia.org/wiki/Snowy_plover
+Song Sparrow,https://en.wikipedia.org/wiki/Song_sparrow
+Sora,https://en.wikipedia.org/wiki/Sora_(bird)
+Spotted Sandpiper,https://en.wikipedia.org/wiki/Spotted_sandpiper
+Spotted Towhee,https://en.wikipedia.org/wiki/Spotted_towhee
+Steller's Jay,https://en.wikipedia.org/wiki/Steller%27s_jay
+Surf Scoter,https://en.wikipedia.org/wiki/Surf_scoter
+Swainson's Hawk,https://en.wikipedia.org/wiki/Swainson%27s_hawk
+Swainson's Thrush,https://en.wikipedia.org/wiki/Swainson%27s_thrush
+Townsend's Warbler,https://en.wikipedia.org/wiki/Townsend%27s_warbler
+Trumpeter Swan,https://en.wikipedia.org/wiki/Trumpeter_swan
+Tufted Puffin,https://en.wikipedia.org/wiki/Tufted_puffin
+Tufted Titmouse,https://en.wikipedia.org/wiki/Tufted_titmouse
+Turkey Vulture,https://en.wikipedia.org/wiki/Turkey_vulture
+Upland Sandpiper,https://en.wikipedia.org/wiki/Upland_sandpiper
+Verdin,https://en.wikipedia.org/wiki/Verdin
 Vermilion Flycatcher,https://en.wikipedia.org/wiki/Vermilion_flycatcher
-Warbling Vireo,https://en.wikipedia.org/wiki/Black-crowned_night_heron
-Western Grebe,https://en.wikipedia.org/wiki/Long-eared_owl
-Western Kingbird,https://en.wikipedia.org/wiki/Common_murre
-Western Meadowlark,https://en.wikipedia.org/wiki/Black-bellied_whistling_duck
-Western Screech-Owl,https://en.wikipedia.org/wiki/White-breasted_nuthatch
-Whip-poor-will,https://en.wikipedia.org/wiki/Cinnamon_teal
-Whip Poor Will,https://en.wikipedia.org/wiki/California_gull
-Whiskered Screech-Owl,https://en.wikipedia.org/wiki/Black-footed_albatross
-White Breasted Nuthatch,https://en.wikipedia.org/wiki/Downy_woodpecker
-White Crowned Sparrow,https://en.wikipedia.org/wiki/Northern_cardinal
-White Winged Dove,https://en.wikipedia.org/wiki/Barn_owl
-Whooping Crane,https://en.wikipedia.org/wiki/Red-breasted_nuthatch
-Wild Turkey,https://en.wikipedia.org/wiki/American_golden_plover
-Wilson's Phalarope,https://en.wikipedia.org/wiki/Brown_creeper
-Wilson's Snipe,https://en.wikipedia.org/wiki/Ruddy_turnstone
-Wood Duck,https://en.wikipedia.org/wiki/Blue-gray_gnatcatcher
-Wood Stork,https://en.wikipedia.org/wiki/Northern_crested_caracara
-Wood Thrush,https://en.wikipedia.org/wiki/Brown-headed_cowbird
-Yellow Bellied Sapsucker,https://en.wikipedia.org/wiki/Evening_grosbeak
-Yellow Breasted Chat,https://en.wikipedia.org/wiki/Blue_jay
-Yellow Headed Blackbird,https://en.wikipedia.org/wiki/Indigo_bunting
-Yellow Rumped Warbler,https://en.wikipedia.org/wiki/Scissor-tailed_flycatcher
-Yellow Warbler,https://en.wikipedia.org/wiki/Olive-sided_flycatcher
+Warbling Vireo,https://en.wikipedia.org/wiki/Warbling_vireo
+Western Grebe,https://en.wikipedia.org/wiki/Western_grebe
+Western Kingbird,https://en.wikipedia.org/wiki/Western_kingbird
+Western Meadowlark,https://en.wikipedia.org/wiki/Western_meadowlark
+Western Screech-Owl,https://en.wikipedia.org/wiki/Western_screech_owl
+Whip Poor Will,https://en.wikipedia.org/wiki/Eastern_whip-poor-will
+Whiskered Screech-Owl,https://en.wikipedia.org/wiki/Whiskered_screech_owl
+White Breasted Nuthatch,https://en.wikipedia.org/wiki/White-breasted_nuthatch
+White Crowned Sparrow,https://en.wikipedia.org/wiki/White-crowned_sparrow
+White Winged Dove,https://en.wikipedia.org/wiki/White-winged_dove
+Whooping Crane,https://en.wikipedia.org/wiki/Whooping_crane
+Wild Turkey,https://en.wikipedia.org/wiki/Wild_turkey
+Wilson's Phalarope,https://en.wikipedia.org/wiki/Wilson%27s_phalarope
+Wilson's Snipe,https://en.wikipedia.org/wiki/Wilson%27s_snipe
+Wood Duck,https://en.wikipedia.org/wiki/Wood_duck
+Wood Stork,https://en.wikipedia.org/wiki/Wood_stork
+Wood Thrush,https://en.wikipedia.org/wiki/Wood_thrush
+Yellow Bellied Sapsucker,https://en.wikipedia.org/wiki/Yellow-bellied_sapsucker
+Yellow Breasted Chat,https://en.wikipedia.org/wiki/Yellow-breasted_chat
+Yellow Headed Blackbird,https://en.wikipedia.org/wiki/Yellow-headed_blackbird
+Yellow Rumped Warbler,https://en.wikipedia.org/wiki/Yellow-rumped_warbler
+Yellow Warbler,https://en.wikipedia.org/wiki/American_yellow_warbler

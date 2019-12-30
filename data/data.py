@@ -169,13 +169,17 @@ sciGoat = ["Nyctidromus albicollis", "Antrostomus carolinensis", "Antrostomus vo
 screech_owls = ["Whiskered Screech-Owl", "Western Screech-Owl", "Eastern Screech-Owl"]
 sci_screech_owls = ["Megascops trichopsis", "Megascops kennicottii", "Megascops asio"]
 
-wikipedia_urls = {}
+
 def _wiki_urls():
+    logger.info("Working on wiki urls")
+    urls = {}
     with open(f'data/wikipedia.txt', 'r') as f:
         for line in f:
             bird = string.capwords(line.strip().split(',')[0].replace("-", " "))
             url = line.strip().split(',')[1]
-            wikipedia_urls[bird] = url
+            urls[bird] = url
+    logger.info("Done with wiki urls")
+    return urls
 
 
 def get_wiki_url(bird):
@@ -262,6 +266,7 @@ birdList, sciBirdList, memeList, songBirds, sciSongBirds = _nats_lists()
 states = _state_lists()
 birdListMaster, sciBirdListMaster, songBirdsMaster, sciSongBirdsMaster = _all_birds()
 orders = _orders()
+wikipedia_urls = _wiki_urls()
 logger.info(
     f"National Lengths: {len(birdList)}, {len(sciBirdList)}, {len(songBirds)}, {len(sciSongBirds)}")
 logger.info(
