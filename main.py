@@ -152,11 +152,11 @@ if __name__ == '__main__':
             await ctx.send("This command requires an argument!")
 
         elif isinstance(error, commands.BadArgument):
-            logger.error("bad argument")
+            logger.info("bad argument")
             await ctx.send("The argument passed was invalid. Please try again.")
 
         elif isinstance(error, commands.ArgumentParsingError):
-            logger.error("quote error")
+            logger.info("quote error")
             await ctx.send("An invalid character was detected. Please try again.")
 
         elif isinstance(error, commands.BotMissingPermissions):
@@ -178,7 +178,8 @@ if __name__ == '__main__':
                     logger.info("HTTP Error")
                     await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
                 else:
-                    logger.error("uncaught generic error")
+                    logger.info("uncaught generic error")
+                    capture_exception(error)
                     await ctx.send(
                     """**An uncaught generic error has occurred.**
 *Please log this message in #support in the support server below, or try again.*
@@ -223,7 +224,8 @@ if __name__ == '__main__':
                     await ctx.send("**An error has occured with discord. :(**\n*Please try again.*")
 
             else:
-                logger.error("uncaught command error")
+                logger.info("uncaught command error")
+                capture_exception(error)
                 await ctx.send(
                     """**An uncaught command error has occurred.**
 *Please log this message in #support in the support server below, or try again.*
@@ -233,7 +235,8 @@ if __name__ == '__main__':
                 raise error
 
         else:
-            logger.error("uncaught non-command")
+            logger.info("uncaught non-command")
+            capture_exception(error)
             await ctx.send(
                 """**An uncaught non-command error has occurred.**
 *Please log this message in #support in the support server below, or try again.*
