@@ -4,7 +4,7 @@ import asyncio
 import wikipedia
 
 from flask import request, Blueprint, abort
-from web.data import get_session_id, logger, database, birdList, bird_setup
+from web.data import get_session_id, logger, database, birdList, bird_setup, FRONTEND_URL
 from web.functions import send_bird, spellcheck, get_sciname
 
 bp = Blueprint('practice', __name__, url_prefix='/practice')
@@ -12,7 +12,7 @@ bp = Blueprint('practice', __name__, url_prefix='/practice')
 @bp.after_request # enable CORS
 def after_request(response):
     header = response.headers
-    header['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
+    header['Access-Control-Allow-Origin'] = FRONTEND_URL
     header['Access-Control-Allow-Credentials'] = 'true'
     return response
 

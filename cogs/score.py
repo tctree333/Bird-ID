@@ -284,7 +284,6 @@ class Score(commands.Cog):
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
             await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
         elif isinstance(error, commands.BotMissingPermissions):
-            logger.error("missing permissions error")
             await ctx.send(
                 f"""**The bot does not have enough permissions to fully function.**
 **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
@@ -307,7 +306,6 @@ class Score(commands.Cog):
         elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
             await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
         elif isinstance(error, commands.BotMissingPermissions):
-            logger.error("missing permissions error")
             await ctx.send(
                 f"""**The bot does not have enough permissions to fully function.**
 **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`

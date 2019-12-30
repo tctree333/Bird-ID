@@ -124,7 +124,6 @@ class States(commands.Cog):
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("**This command is unavaliable in DMs!**")
         elif isinstance(error, commands.BotMissingPermissions):
-            logger.error("missing permissions error")
             await ctx.send(
                 f"""**The bot does not have enough permissions to fully function.**
 **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
@@ -149,7 +148,6 @@ class States(commands.Cog):
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("**This command is unavaliable in DMs!**")
         elif isinstance(error, commands.BotMissingPermissions):
-            logger.error("missing permissions error")
             await ctx.send(
                 f"""**The bot does not have enough permissions to fully function.**
 **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
