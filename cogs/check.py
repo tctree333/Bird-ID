@@ -15,10 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import discord
-import wikipedia
 from discord.ext import commands
 
-from data.data import database, goatsuckers, logger, sciGoat
+from data.data import database, goatsuckers, logger, sciGoat, get_wiki_url
 from functions import (
     bird_setup, channel_setup, get_sciname, incorrect_increment, score_increment, session_increment, spellcheck,
     user_setup
@@ -66,8 +65,8 @@ class Check(commands.Cog):
 
                 await ctx.send("Correct! Good job!" if not database.exists(f"race.data:{str(ctx.channel.id)}") 
                                                     else f"**{str(ctx.author.mention)}**, you are correct!")
-                page = wikipedia.page(f"{currentBird} (bird)")
-                await ctx.send(page.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{page.url}>")
+                url = get_wiki_url(currentBird)
+                await ctx.send(url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{url}>")
                 score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
@@ -108,8 +107,8 @@ class Check(commands.Cog):
                     database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
                     database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
                     await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
-                    page = wikipedia.page(f"{currentBird} (bird)")
-                    await ctx.send(page.url)
+                    url = get_wiki_url(currentBird)
+                    await ctx.send(url)
 
     # Check command - argument is the guess
     @commands.command(help='- Checks your goatsucker.', usage="guess", aliases=["cg"])
@@ -142,8 +141,8 @@ class Check(commands.Cog):
                     database.zadd("streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))})
 
                 await ctx.send("Correct! Good job!")
-                page = wikipedia.page(f"{currentBird} (bird)")
-                await ctx.send(page.url)
+                url = get_wiki_url(currentBird)
+                await ctx.send(url)
                 score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
@@ -163,8 +162,8 @@ class Check(commands.Cog):
 
                 incorrect_increment(ctx, str(currentBird), 1)
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
-                page = wikipedia.page(f"{currentBird} (bird)")
-                await ctx.send(page.url)
+                url = get_wiki_url(currentBird)
+                await ctx.send(url)
             logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
             logger.info("args: " + str(arg.lower().replace("-", " ")))
 
@@ -203,8 +202,8 @@ class Check(commands.Cog):
 
                 await ctx.send("Correct! Good job!" if not database.exists(f"race.data:{str(ctx.channel.id)}") 
                                                     else f"**{str(ctx.author.mention)}**, you are correct!")
-                page = wikipedia.page(f"{currentSongBird} (bird)")
-                await ctx.send(page.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{page.url}>")
+                url = get_wiki_url(currentSongBird)
+                await ctx.send(url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{url}>")
                 score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
@@ -243,8 +242,8 @@ class Check(commands.Cog):
                     database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
                     database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
                     await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
-                    page = wikipedia.page(f"{currentSongBird} (bird)")
-                    await ctx.send(page.url)
+                    url = get_wiki_url(currentSongBird)
+                    await ctx.send(url)
 
 def setup(bot):
     bot.add_cog(Check(bot))

@@ -169,6 +169,19 @@ sciGoat = ["Nyctidromus albicollis", "Antrostomus carolinensis", "Antrostomus vo
 screech_owls = ["Whiskered Screech-Owl", "Western Screech-Owl", "Eastern Screech-Owl"]
 sci_screech_owls = ["Megascops trichopsis", "Megascops kennicottii", "Megascops asio"]
 
+wikipedia_urls = {}
+def _wiki_urls():
+    with open(f'data/wikipedia.txt', 'r') as f:
+        for line in f:
+            bird = string.capwords(line.strip().split(',')[0].replace("-", " "))
+            url = line.strip().split(',')[1]
+            wikipedia_urls[bird] = url
+
+
+def get_wiki_url(bird):
+    bird = string.capwords(bird.replace("-", " "))
+    return wikipedia_urls[bird]
+
 
 def _nats_lists():
     filenames = ("birdList", "sciBirdList", "memeList",
@@ -200,7 +213,7 @@ def _orders():
         logger.info(f"Done with {filename}")
     logger.info("Done with order lists!")
     return orders
-list()
+
 
 def _state_lists():
     filenames = ("birdList", "sciBirdList", "aliases",
@@ -239,6 +252,8 @@ def _all_birds():
         logger.info(f"Done with {list_names[lists.index(bird_list)]}")
     master_lists[1] += sci_screech_owls
     master_lists[1] += sciGoat
+    master_lists[0] += screech_owls
+    master_lists[0] += goatsuckers
     logger.info("Done with master lists!")
     return master_lists
 
