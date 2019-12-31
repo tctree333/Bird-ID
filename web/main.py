@@ -1,14 +1,15 @@
-import random
 import asyncio
-import flask
+import random
 import urllib.parse
 
-from sentry_sdk import capture_exception
+import flask
 from flask import jsonify, redirect
-from web.config import birdList, logger, app, FRONTEND_URL
+from sentry_sdk import capture_exception
+
+from web import practice, user
+from web.config import FRONTEND_URL, app, birdList, logger
 from web.functions import get_media, get_sciname
 
-from . import practice, user
 app.register_blueprint(practice.bp)
 app.register_blueprint(user.bp)
 
@@ -44,25 +45,30 @@ def bird_song(bird):
     path = asyncio.run(get_media(bird, "songs"))
     return flask.send_file(f"../{path[0]}")
 
+
 @app.errorhandler(403)
 def not_allowed(e):
     capture_exception(e)
     return jsonify(error=str(e)), 403
+
 
 @app.errorhandler(404)
 def not_found(e):
     capture_exception(e)
     return jsonify(error=str(e)), 404
 
+
 @app.errorhandler(406)
 def input_error(e):
     capture_exception(e)
     return jsonify(error=str(e)), 406
 
+
 @app.errorhandler(500)
 def other_internal_error(e):
     capture_exception(e)
     return jsonify(error=str(e)), 500
+
 
 @app.errorhandler(503)
 def internal_error(e):

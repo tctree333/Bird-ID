@@ -10,7 +10,7 @@ from flask import (Blueprint, abort, make_response, redirect, render_template,
 from sentry_sdk import capture_exception
 
 from web.config import (FRONTEND_URL, app, database, get_session_id, logger,
-                      update_web_user, verify_session)
+                        update_web_user, verify_session)
 
 bp = Blueprint('user', __name__, url_prefix='/user')
 oauth = OAuth(app)

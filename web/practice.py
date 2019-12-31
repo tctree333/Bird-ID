@@ -1,20 +1,24 @@
-import random
-import flask
 import asyncio
+import random
+
+import flask
+from flask import Blueprint, abort, request
 
 from data.data import get_wiki_url
-from flask import request, Blueprint, abort
-from web.config import get_session_id, logger, database, birdList, bird_setup, FRONTEND_URL
-from web.functions import send_bird, spellcheck, get_sciname
+from web.config import (FRONTEND_URL, bird_setup, birdList, database,
+                        get_session_id, logger)
+from web.functions import get_sciname, send_bird, spellcheck
 
 bp = Blueprint('practice', __name__, url_prefix='/practice')
 
-@bp.after_request # enable CORS
+
+@bp.after_request  # enable CORS
 def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = FRONTEND_URL
     header['Access-Control-Allow-Credentials'] = 'true'
     return response
+
 
 @bp.route('/get', methods=['GET'])
 def get_bird():
@@ -25,8 +29,8 @@ def get_bird():
     bw = bool(request.args.get("bw", 0, int))
     logger.info(f"args: media: {media_type}; addon: {addon}; bw: {bw};")
 
-    logger.info(
-        "bird: " + str(database.hget(f"web.session:{session_id}", "bird"))[2:-1])
+    logger.info("bird: " +
+                str(database.hget(f"web.session:{session_id}", "bird"))[2:-1])
 
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
     if tempScore >= 10:
@@ -48,17 +52,18 @@ def get_bird():
             currentBird = random.choice(birdList)
         database.hset(f"web.session:{session_id}", "prevB", str(currentBird))
         database.hset(f"web.session:{session_id}", "bird", str(currentBird))
-        database.hset(f"web.session:{session_id}",
-                      "media_type", str(media_type))
+        database.hset(f"web.session:{session_id}", "media_type",
+                      str(media_type))
         logger.info("currentBird: " + str(currentBird))
         database.hset(f"web.session:{session_id}", "answered", "0")
         file_object, ext = asyncio.run(
             send_bird(currentBird, media_type, addon, bw))
     else:  # if no, give the same bird
-        file_object, ext = asyncio.run(send_bird(
-            str(database.hget(f"web.session:{session_id}", "bird"))[2:-1],
-            str(database.hget(f"web.session:{session_id}", "media_type"))[
-                2:-1], addon, bw))
+        file_object, ext = asyncio.run(
+            send_bird(
+                str(database.hget(f"web.session:{session_id}", "bird"))[2:-1],
+                str(database.hget(f"web.session:{session_id}",
+                                  "media_type"))[2:-1], addon, bw))
 
     logger.info(f"file_object: {file_object}")
     logger.info(f"extension: {ext}")
@@ -73,8 +78,7 @@ def check_bird():
     session_id = get_session_id()
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
 
-    currentBird = str(database.hget(
-        f"web.session:{session_id}", "bird"))[2:-1]
+    currentBird = str(database.hget(f"web.session:{session_id}", "bird"))[2:-1]
     if currentBird == "":  # no bird
         logger.info("bird is blank")
         abort(406, "Bird is blank")
@@ -88,29 +92,42 @@ def check_bird():
 
         bird_setup(user_id, currentBird)
         sciBird = asyncio.run(get_sciname(currentBird))
-        if spellcheck(bird_guess, currentBird) is True or spellcheck(bird_guess, sciBird) is True:
+        if spellcheck(bird_guess, currentBird) is True or spellcheck(
+                bird_guess, sciBird) is True:
             logger.info("correct")
 
             database.hset(f"web.session:{session_id}", "bird", "")
             database.hset(f"web.session:{session_id}", "answered", "1")
 
-            tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
+            tempScore = int(
+                database.hget(f"web.session:{session_id}", "tempScore"))
             if user_id is not 0:
                 database.zincrby("users:global", 1, str(user_id))
                 database.zincrby("streak:global", 1, str(user_id))
                 # check if streak is greater than max, if so, increases max
-                if database.zscore("streak:global", str(user_id)) > database.zscore("streak.max:global", str(user_id)):
-                    database.zadd("streak.max:global", {str(user_id): database.zscore(
-                        "streak:global", str(user_id))})
+                if database.zscore("streak:global",
+                                   str(user_id)) > database.zscore(
+                                       "streak.max:global", str(user_id)):
+                    database.zadd(
+                        "streak.max:global", {
+                            str(user_id):
+                            database.zscore("streak:global", str(user_id))
+                        })
             elif tempScore >= 10:
                 logger.info("trial maxed")
                 abort(403, "Sign in to continue")
             else:
-                database.hset(f"web.session:{session_id}", "tempScore", str(tempScore+1))
+                database.hset(f"web.session:{session_id}", "tempScore",
+                              str(tempScore + 1))
 
             url = get_wiki_url(currentBird)
-            return {"guess": bird_guess, "answer": currentBird, "sciname": sciBird,
-                    "status": "correct", "wiki": url}
+            return {
+                "guess": bird_guess,
+                "answer": currentBird,
+                "sciname": sciBird,
+                "status": "correct",
+                "wiki": url
+            }
 
         else:
             logger.info("incorrect")
@@ -121,11 +138,17 @@ def check_bird():
 
             if user_id is not 0:
                 database.zadd("streak:global", {str(user_id): 0})
-                database.zincrby(f"incorrect.user:{str(user_id)}", 1, currentBird)
+                database.zincrby(f"incorrect.user:{str(user_id)}", 1,
+                                 currentBird)
 
             url = get_wiki_url(currentBird)
-            return {"guess": bird_guess, "answer": currentBird, "sciname": sciBird,
-                    "status": "incorrect", "wiki": url}
+            return {
+                "guess": bird_guess,
+                "answer": currentBird,
+                "sciname": sciBird,
+                "status": "incorrect",
+                "wiki": url
+            }
 
 
 @bp.route('/skip', methods=['GET'])

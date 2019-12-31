@@ -1,17 +1,17 @@
-import random
 import os
+import random
 import string
-import sentry_sdk
 
+import sentry_sdk
+from flask import Flask, session
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-from flask import Flask, session
-from data.data import database, logger, GenericError, birdList, screech_owls
 
-sentry_sdk.init(
-    dsn=str(os.getenv("SENTRY_API_DSN")),
-    integrations=[FlaskIntegration(), RedisIntegration()]
-)
+from data.data import GenericError, birdList, database, logger, screech_owls
+
+sentry_sdk.init(dsn=str(os.getenv("SENTRY_API_DSN")),
+                integrations=[FlaskIntegration(),
+                              RedisIntegration()])
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['SESSION_COOKIE_SAMESITE'] = "Strict"
@@ -46,7 +46,8 @@ def web_session_setup(session_id):
         logger.info("session data ok")
     else:
         database.hmset(
-            f"web.session:{session_id}", {
+            f"web.session:{session_id}",
+            {
                 "bird": "",
                 "media_type": "",
                 "answered": 1,  # true = 1, false = 0
@@ -54,8 +55,7 @@ def web_session_setup(session_id):
                 "prevJ": 20,
                 "tempScore": 0,  # not used = -1
                 "user_id": 0
-            }
-        )
+            })
         database.expire(f"web.session:{session_id}", 604800)
         logger.info("session set up")
 
@@ -69,11 +69,11 @@ def update_web_user(user_data):
     database.hmset(
         f"web.user:{user_id}", {
             "avatar_hash": str(user_data['avatar']),
-            "avatar_url": f"https://cdn.discordapp.com/avatars/{user_id}/{str(user_data['avatar'])}.png",
+            "avatar_url":
+            f"https://cdn.discordapp.com/avatars/{user_id}/{str(user_data['avatar'])}.png",
             "username": str(user_data['username']),
             "discriminator": str(user_data['discriminator'])
-        }
-    )
+        })
     user_setup(user_id)
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
     if tempScore not in (0, -1):
@@ -97,23 +97,26 @@ def user_setup(user_id):
         logger.info("user streak in already")
     else:
         database.zadd("streak:global", {str(user_id): 0})
-        database.zadd("streak.max:global",{str(user_id): 0})
+        database.zadd("streak.max:global", {str(user_id): 0})
         logger.info("added streak")
 
 
 # sets up new birds
 def bird_setup(user_id, bird):
     logger.info("checking bird data")
-    if database.zscore("incorrect:global", string.capwords(str(bird))) is not None:
+    if database.zscore("incorrect:global", string.capwords(
+            str(bird))) is not None:
         logger.info("bird global ok")
     else:
         database.zadd("incorrect:global", {string.capwords(str(bird)): 0})
         logger.info("bird global added")
 
-    if database.zscore(f"incorrect.user:{user_id}", string.capwords(str(bird))) is not None:
+    if database.zscore(f"incorrect.user:{user_id}", string.capwords(
+            str(bird))) is not None:
         logger.info("bird user ok")
     else:
-        database.zadd(f"incorrect.user:{user_id}", {string.capwords(str(bird)): 0})
+        database.zadd(f"incorrect.user:{user_id}",
+                      {string.capwords(str(bird)): 0})
         logger.info("bird user added")
 
 

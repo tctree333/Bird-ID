@@ -1,13 +1,16 @@
-import random
 import asyncio
-from sentry_sdk import capture_exception
-
-from flask import abort
+import random
 from functools import partial
 from io import BytesIO
+
+from flask import abort
 from PIL import Image
-from functions import get_sciname, get_files, valid_image_extensions, valid_audio_extensions, spellcheck
-from web.config import logger, GenericError, database, birdList, get_session_id, screech_owls
+from sentry_sdk import capture_exception
+
+from functions import (get_files, get_sciname, spellcheck,
+                       valid_audio_extensions, valid_image_extensions)
+from web.config import (GenericError, birdList, database, get_session_id,
+                        logger, screech_owls)
 
 
 def _black_and_white(input_image_path):
@@ -20,7 +23,10 @@ def _black_and_white(input_image_path):
     return final_buffer
 
 
-async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = False):
+async def send_bird(bird: str,
+                    media_type: str,
+                    addOn: str = "",
+                    bw: bool = False):
     if bird == "":
         logger.error("error - bird is blank")
         abort(406, "Bird is blank")
@@ -91,8 +97,8 @@ async def get_media(bird, media_type, addOn=""):  # images or songs
                 break
             elif y == prevJ:
                 j = (j + 1) % (len(media))
-                raise GenericError(
-                    f"No Valid {media_type.title()} Found", code=999)
+                raise GenericError(f"No Valid {media_type.title()} Found",
+                                   code=999)
 
         database.hset(database_key, "prevJ", str(j))
     else:
