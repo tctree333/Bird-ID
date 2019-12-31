@@ -18,23 +18,23 @@ import asyncio
 import contextlib
 import difflib
 import os
-import string
-import urllib.parse
+import pickle
 import random
+import string
+import time
+import urllib.parse
 from functools import partial
 from io import BytesIO
 from mimetypes import guess_all_extensions, guess_extension
-from sentry_sdk import capture_exception
 
-import time
 import aiohttp
 import discord
 import eyed3
 from PIL import Image
-import pickle
+from sentry_sdk import capture_exception
 
-from data.data import (GenericError, database, logger, sciBirdListMaster, 
-                       sciSongBirdsMaster, states, screech_owls)
+from data.data import (GenericError, database, logger, sciBirdListMaster,
+                       sciSongBirdsMaster, screech_owls, states)
 
 # Macaulay URL definitions
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"

@@ -19,6 +19,7 @@ from discord.ext import commands
 from data.data import database, logger
 from functions import channel_setup, user_setup
 
+
 class Hint(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

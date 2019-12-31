@@ -16,15 +16,15 @@
 
 import logging
 import logging.handlers
-import sentry_sdk
-from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 import os
 import string
 import sys
 
 import redis
+import sentry_sdk
 from discord.ext import commands
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 
 # define database for one connection
 database = redis.from_url(os.getenv("REDIS_URL"))

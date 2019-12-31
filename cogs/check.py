@@ -17,11 +17,10 @@
 import discord
 from discord.ext import commands
 
-from data.data import database, goatsuckers, logger, sciGoat, get_wiki_url
-from functions import (
-    bird_setup, channel_setup, get_sciname, incorrect_increment, score_increment, session_increment, spellcheck,
-    user_setup
-)
+from data.data import database, get_wiki_url, goatsuckers, logger, sciGoat
+from functions import (bird_setup, channel_setup, get_sciname,
+                       incorrect_increment, score_increment, session_increment,
+                       spellcheck, user_setup)
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]

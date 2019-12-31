@@ -15,8 +15,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from discord.ext import commands
-from data.data import database, logger, get_wiki_url
+
+from data.data import database, get_wiki_url, logger
 from functions import channel_setup, user_setup
+
 
 class Skip(commands.Cog):
     def __init__(self, bot):

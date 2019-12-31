@@ -16,12 +16,13 @@
 
 import datetime
 import time
-import discord
 
+import discord
 from discord.ext import commands
 
-from data.data import database, logger, states, orders
-from functions import channel_setup, user_setup, check_state_role
+from data.data import database, logger, orders, states
+from functions import channel_setup, check_state_role, user_setup
+
 
 class Sessions(commands.Cog):
     def __init__(self, bot):

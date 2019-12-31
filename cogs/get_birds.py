@@ -16,12 +16,14 @@
 
 import itertools
 import random
+
 from discord.ext import commands
-from data.data import birdList, database, goatsuckers, songBirds, logger, states, orders
-from functions import (
-    channel_setup, error_skip, error_skip_goat, error_skip_song, send_bird, send_birdsong, user_setup, check_state_role,
-    session_increment
-)
+
+from data.data import (birdList, database, goatsuckers, logger, orders,
+                       songBirds, states)
+from functions import (channel_setup, check_state_role, error_skip,
+                       error_skip_goat, error_skip_song, send_bird,
+                       send_birdsong, session_increment, user_setup)
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +

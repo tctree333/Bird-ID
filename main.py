@@ -15,23 +15,23 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
+import concurrent.futures
 import errno
 import os
 import shutil
 import sys
 import time
-import holidays
-import concurrent.futures
 
 import aiohttp
 import discord
+import holidays
 import redis
 import wikipedia
 from discord.ext import commands, tasks
-from sentry_sdk import configure_scope, capture_exception
+from sentry_sdk import capture_exception, configure_scope
 
-from data.data import database, logger, GenericError
-from functions import channel_setup, precache, backup_all, send_bird
+from data.data import GenericError, database, logger
+from functions import backup_all, channel_setup, precache, send_bird
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = 622547928946311188

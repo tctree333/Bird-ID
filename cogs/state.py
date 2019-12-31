@@ -22,6 +22,7 @@ from discord.ext import commands
 from data.data import logger, states
 from functions import channel_setup, user_setup
 
+
 class States(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

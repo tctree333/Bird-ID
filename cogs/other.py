@@ -15,15 +15,17 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import random
+import typing
 from difflib import get_close_matches
 
 import discord
 import wikipedia
-import typing
 from discord.ext import commands
 
-from data.data import (birdListMaster, database, logger, memeList, sciBirdListMaster, states, orders)
-from functions import (channel_setup, get_sciname, send_bird, send_birdsong, user_setup, owner_check)
+from data.data import (birdListMaster, database, logger, memeList, orders,
+                       sciBirdListMaster, states)
+from functions import (channel_setup, get_sciname, owner_check, send_bird,
+                       send_birdsong, user_setup)
 
 
 class Other(commands.Cog):
