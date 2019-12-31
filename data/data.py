@@ -30,6 +30,7 @@ from discord.ext import commands
 database = redis.from_url(os.getenv("REDIS_URL"))
 
 def before_sentry_send(event, hint):
+    """Fingerprint certain events before sending to Sentry."""
     if 'exc_info' in hint:
         error = hint['exc_info'][1]
         if isinstance(error, commands.CommandNotFound):
@@ -147,6 +148,18 @@ sys.excepthook = handle_exception
 
 
 class GenericError(commands.CommandError):
+    """A custom error class.
+
+    Error codes: (can add more if needed)\n
+        0 - no code
+        111 - Index Error
+        201 - HTTP Error
+        999 - Invalid
+        990 - Invalid Input
+        100 - Blank
+        842 - Banned User
+        666 - No output error
+    """
     def __init__(self, message=None, code=0):
         self.code = code
         super().__init__(message=message)
@@ -188,6 +201,7 @@ def get_wiki_url(bird):
 
 
 def _nats_lists():
+    """Converts txt files of national bird data into lists."""
     filenames = ("birdList", "sciBirdList", "memeList",
                  "songBirds", "sciSongBirds")
     # Converts txt file of data into lists
@@ -203,7 +217,7 @@ def _nats_lists():
 
 
 def _orders():
-    # Converts txt file of data into lists
+    """Converts txt files of order data into lists."""
     logger.info("Working on order lists")
     logger.info("Working on order master list")
     orders = {}
@@ -220,6 +234,7 @@ def _orders():
 
 
 def _state_lists():
+    """Converts txt files of state data into lists."""
     filenames = ("birdList", "sciBirdList", "aliases",
                  "songBirds", "sciSongBirds")
     states = {}
@@ -242,6 +257,7 @@ def _state_lists():
 
 
 def _all_birds():
+    """Combines all state and national lists."""
     lists = (birdList, sciBirdList, songBirds, sciSongBirds)
     list_names = ("birdList", "sciBirdList", "songBirds", "sciSongBirds")
     master_lists = []

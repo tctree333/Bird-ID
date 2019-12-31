@@ -33,12 +33,15 @@ from sentry_sdk import configure_scope, capture_exception
 from data.data import database, logger, GenericError
 from functions import channel_setup, precache, backup_all, send_bird
 
+# The channel id that the backups send to
 BACKUPS_CHANNEL = 622547928946311188
 
 def start_precache():
+    """Downloads all the images/songs before they're needed."""
     asyncio.run(precache())
 
 def start_backup():
+    """Backs up the database to a discord channel."""
     asyncio.run(backup_all())
 
 if __name__ == '__main__':
@@ -61,7 +64,7 @@ if __name__ == '__main__':
         refresh_cache.start()
         refresh_backup.start()
 
-    # Here we load our extensions(cogs) that are located in the cogs directory
+    # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
     initial_extensions = [
         'cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint', 'cogs.score', 
         'cogs.state', 'cogs.sessions', 'cogs.race', 'cogs.other'
@@ -78,23 +81,23 @@ if __name__ == '__main__':
     # Global Command Checks
     ######
 
-    # Global check to set sentry tag
     @bot.check
     def set_sentry_tag(ctx):
+        """Tags sentry errors with current command."""
         with configure_scope() as scope:
             scope.set_tag("command", ctx.command.name)
         return True
 
-    # Global check for dms - remove cooldowns
     @bot.check
     async def dm_cooldown(ctx):
+        """Clears the cooldown in DMs."""
         if ctx.command.is_on_cooldown(ctx) and ctx.guild is None:
             ctx.command.reset_cooldown(ctx)
         return True
 
-    # Global check for correct permissions
     @bot.check
     def bot_has_permissions(ctx):
+        """Checks if the bot has correct permissions."""
         # code copied from @commands.bot_has_permissions(send_messages=True, embed_links=True, attach_files=True)
         if ctx.guild is not None:
             perms = {"send_messages": True, "embed_links": True, "attach_files": True, "manage_roles": True}
@@ -111,9 +114,9 @@ if __name__ == '__main__':
         else:
             return True
 
-    # Global check for banned users
     @bot.check
     def user_banned(ctx):
+        """Disallows users that are banned from the bot."""
         if database.zscore("banned:global", str(ctx.author.id)) is None:
             return True
         else:
@@ -121,6 +124,10 @@ if __name__ == '__main__':
 
     @bot.check
     async def is_holiday(ctx):
+        """Sends a picture of a turkey on Thanksgiving.
+        
+        Can be extended to other holidays as well.
+        """
         now = time.time() - 28800
         us = holidays.US()
         if now in us:
@@ -135,6 +142,7 @@ if __name__ == '__main__':
     ######
     @bot.event
     async def on_command_error(ctx, error):
+        """Handles errors for all commands without local error handlers."""
         logger.info("Error: " + str(error))
 
         # don't handle errors with local handlers
@@ -247,6 +255,7 @@ if __name__ == '__main__':
 
     @tasks.loop(hours=24.0)
     async def refresh_cache():
+        """Re-downloads all the images/songs."""
         logger.info("clear cache")
         try:
             shutil.rmtree(r'cache/images/', ignore_errors=True)
@@ -265,6 +274,7 @@ if __name__ == '__main__':
 
     @tasks.loop(hours=6.0)
     async def refresh_backup():
+        """Sends a copy of the database to a discord channel (BACKUPS_CHANNEL)."""
         logger.info("Refreshing backup")
         try:
             os.remove('backups/dump.dump')

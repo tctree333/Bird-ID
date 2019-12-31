@@ -36,6 +36,7 @@ import pickle
 from data.data import (GenericError, database, logger, sciBirdListMaster, 
                        sciSongBirdsMaster, states, screech_owls)
 
+# Macaulay URL definitions
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 CATALOG_URL = (
     "https://search.macaulaylibrary.org/catalog.json?searchField=species" +
@@ -48,8 +49,11 @@ COUNT = 20  # set this to include a margin of error in case some urls throw erro
 valid_image_extensions = {"jpg", "png", "jpeg", "gif"}
 valid_audio_extensions = {"mp3", "wav"}
 
-# sets up new channel
 async def channel_setup(ctx):
+    """Sets up a new discord channel.
+    
+    `ctx` - Discord context object
+    """
     logger.info("checking channel setup")
     if database.exists(f"channel:{str(ctx.channel.id)}"):
         logger.info("channel data ok")
@@ -78,8 +82,11 @@ async def channel_setup(ctx):
         database.zadd("score:global", {str(ctx.channel.id): 0})
         logger.info("channel score added")
 
-# sets up new user
 async def user_setup(ctx):
+    """Sets up a new discord user for score tracking.
+    
+    `ctx` - Discord context object
+    """
     logger.info("checking user data")
     if database.zscore("users:global", str(ctx.author.id)) is not None:
         logger.info("user global ok")
@@ -113,8 +120,12 @@ async def user_setup(ctx):
     else:
         logger.info("dm context")
 
-# sets up new birds
-async def bird_setup(ctx, bird):
+async def bird_setup(ctx, bird: str):
+    """Sets up a new bird for incorrect tracking.
+    
+    `ctx` - Discord context object
+    `bird` - bird to setup
+    """
     logger.info("checking bird data")
     if database.zscore("incorrect:global", string.capwords(str(bird))) is not None:
         logger.info("bird global ok")
@@ -150,21 +161,37 @@ async def bird_setup(ctx, bird):
 
 # Function to run on error
 def error_skip(ctx):
+    """Skips the current bird.
+    
+    Passed to send_bird() as on_error to skip the bird when an error occurs to prevent error loops.
+    """
     logger.info("ok")
     database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
     database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
 
 def error_skip_song(ctx):
+    """Skips the current song.
+    
+    Passed to send_birdsong() as on_error to skip the bird when an error occurs to prevent error loops.
+    """
     logger.info("ok")
     database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
     database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
 
 def error_skip_goat(ctx):
+    """Skips the current goatsucker.
+    
+    Passed to send_bird() as on_error to skip the bird when an error occurs to prevent error loops.
+    """
     logger.info("ok")
     database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
     database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
 
-def check_state_role(ctx):
+def check_state_role(ctx) -> list:
+    """Returns a list of state roles a user has.
+    
+    `ctx` - Discord context object
+    """
     logger.info("checking roles")
     user_states = []
     if ctx.guild is not None:
@@ -179,8 +206,16 @@ def check_state_role(ctx):
     logger.info(f"user roles: {user_states}")
     return user_states
 
-# fetch scientific name from common name or taxon code
-async def get_sciname(bird, session=None):
+async def get_sciname(bird: str, session=None) -> str:
+    """Returns the scientific name of a bird.
+
+    Scientific names are found using the eBird API from the Cornell Lab of Ornithology,
+    using `SCINAME_URL` to fetch data.
+    Raises a `GenericError` if a scientific name is not found or an HTTP error occurs.
+
+    `bird` (str) - common/scientific name of the bird you want to look up\n
+    `session` (optional) - an aiohttp client session
+    """
     logger.info(f"getting sciname for {bird}")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
@@ -209,8 +244,17 @@ async def get_sciname(bird, session=None):
     logger.info(f"sciname: {sciname}")
     return sciname
 
-# fetch taxonomic code from common/scientific name
-async def get_taxon(bird, session=None):
+async def get_taxon(bird: str, session=None) -> str:
+    """Returns the taxonomic code of a bird.
+
+    Taxonomic codes are used by the Cornell Lab of Ornithology to identify species of birds.
+    This function uses the Macaulay Library's internal API to fetch the taxon code
+    from the common or scientific name, using `TAXON_CODE_URL`.
+    Raises a `GenericError` if a code is not found or if an HTTP error occurs.
+
+    `bird` (str) - common/scientific name of bird you want to look up\n
+    `session` (optional) - an aiohttp client session
+    """
     logger.info(f"getting taxon code for {bird}")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
@@ -243,7 +287,13 @@ async def get_taxon(bird, session=None):
     logger.info(f"taxon code: {taxon_code}")
     return taxon_code
 
-def _black_and_white(input_image_path):
+def _black_and_white(input_image_path) -> BytesIO:
+    """Returns a black and white version of an image.
+
+    Output type is a file object (BytesIO).
+
+    `input_image_path` - path to image (string) or file object
+    """
     logger.info("black and white")
     with Image.open(input_image_path) as color_image:
         bw = color_image.convert('L')
@@ -252,13 +302,26 @@ def _black_and_white(input_image_path):
     final_buffer.seek(0)
     return final_buffer
 
-def session_increment(ctx, item, amount):
+def session_increment(ctx, item: str, amount: int):
+    """Increments the value of a database hash field by `amount`.
+
+    `ctx` - Discord context object\n
+    `item` - hash field to increment (see data.py for details,
+    possible values include correct, incorrect, total)\n
+    `amount` (int) - amount to increment by, usually 1
+    """
     logger.info(f"incrementing {item} by {amount}")
     value = int(database.hget(f"session.data:{ctx.author.id}", item))
     value += int(amount)
     database.hset(f"session.data:{ctx.author.id}", item, str(value))
 
-def incorrect_increment(ctx, bird, amount):
+def incorrect_increment(ctx, bird: str, amount: int):
+    """Increments the value of an incorrect bird by `amount`.
+
+    `ctx` - Discord context object\n
+    `bird` - bird that was incorrect\n
+    `amount` (int) - amount to increment by, usually 1
+    """
     logger.info(f"incrementing incorrect {bird} by {amount}")
     database.zincrby("incorrect:global", amount, str(bird))
     database.zincrby(f"incorrect.user:{ctx.author.id}", amount, str(bird))
@@ -273,7 +336,12 @@ def incorrect_increment(ctx, bird, amount):
     else:
         logger.info("no session")
 
-def score_increment(ctx, amount):
+def score_increment(ctx, amount: int):
+    """Increments the score of a user by `amount`.
+
+    `ctx` - Discord context object\n
+    `amount` (int) - amount to increment by, usually 1
+    """
     logger.info(f"incrementing score by {amount}")
     database.zincrby("score:global", amount, str(ctx.channel.id))
     database.zincrby("users:global", amount, str(ctx.author.id))
@@ -286,18 +354,22 @@ def score_increment(ctx, amount):
         logger.info("race in session")
         database.zincrby(f"race.scores:{str(ctx.channel.id)}", amount, str(ctx.author.id))
 
-def owner_check(ctx):
+def owner_check(ctx) -> bool:
+    """Check to see if the user is the owner of the bot."""
     owners = set(str(os.getenv("ids")).split(","))
     return str(ctx.author.id) in owners
 
 
-# Gets a bird picture and sends it to user:
-# ctx - context for message (discord thing)
-# bird - bird picture to send (str)
-# on_error - function to run when an error occurs (function)
-# message - text message to send before bird picture (str)
-# addOn - string to append to search for female/juvenile birds (str)
-async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
+async def send_bird(ctx, bird: str, on_error=None, message=None, addOn="", bw=False):
+    """Gets a bird picture and sends it to the user.
+
+    `ctx` - Discord context object\n
+    `bird` (str) - bird picture to send\n
+    `on_error` (function)- function to run when an error occurs\n
+    `message` (str) - text message to send before bird picture\n
+    `addOn` (str) - string to append to search for female/juvenile birds\n
+    `bw` (bool) - whether the image should be black and white (converts with `_black_and_white()`)
+    """
     if bird == "":
         logger.error("error - bird is blank")
         await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
@@ -334,6 +406,7 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
         await ctx.send("**Oops! File too large :(**\n*Please try again.*")
     else:
         if bw:
+            # prevent the black and white conversion from blocking
             loop = asyncio.get_running_loop()
             fn = partial(_black_and_white, filename)
             file_stream = await loop.run_in_executor(None, fn)
@@ -348,12 +421,14 @@ async def send_bird(ctx, bird, on_error=None, message=None, addOn="", bw=False):
         await ctx.send(file=file_obj)
         await delete.delete()
 
-# Gets a bird sound and sends it to user:
-# ctx - context for message (discord thing)
-# bird - bird picture to send (str)
-# on_error - function to run when an error occurs (function)
-# message - text message to send before bird picture (str)
-async def send_birdsong(ctx, bird, on_error=None, message=None):
+async def send_birdsong(ctx, bird:str, on_error=None, message=None):
+    """Gets a bird sound and sends it to the user.
+
+    `ctx` - Discord context object\n
+    `bird` (str) - bird picture to send\n
+    `on_error` (function) - function to run when an error occurs\n
+    `message` (str) - text message to send before bird picture
+    """
     if bird == "":
         logger.error("error - bird is blank")
         await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
@@ -395,9 +470,19 @@ async def send_birdsong(ctx, bird, on_error=None, message=None):
             await ctx.send(file=discord.File(img, filename="bird." + extension))
             await delete.delete()
 
-# Function that gets bird images to run in pool (blocking prevention)
-# Chooses one image to send
 async def get_image(ctx, bird, addOn=None):
+    """Chooses an image from a list of images.
+
+    This function chooses a valid image to pass to send_bird().
+    Valid images are based on file extension and size. (8mb discord limit)
+
+    Returns a list containing the file path and extension type.
+
+    `ctx` - Discord context object\n
+    `bird` (str) - bird to get image of\n
+    `addOn` (str) - string to append to search for female/juvenile birds\n
+    """
+
     # fetch scientific names of birds
     try:
         sciBird = await get_sciname(bird)
@@ -432,9 +517,18 @@ async def get_image(ctx, bird, addOn=None):
 
     return [image_link, extension]
 
-# Function that gets bird sounds to run in pool (blocking prevention)
-# Chooses one sound to send
 async def get_song(ctx, bird):
+    """Chooses a song from a list of songs.
+
+    This function chooses a valid song to pass to send_birdsong().
+    Valid songs are based on file extension and size. (8mb discord limit)
+
+    Returns a list containing the file path and extension type.
+
+    `ctx` - Discord context object\n
+    `bird` (str) - bird to get song of
+    """
+
     # fetch scientific names of birds
     try:
         sciBird = await get_sciname(bird)
@@ -443,7 +537,6 @@ async def get_song(ctx, bird):
     songs = await get_files(sciBird, "songs")
     logger.info("songs: " + str(songs))
     prevK = int(str(database.hget(f"channel:{str(ctx.channel.id)}", "prevK"))[2:-1])
-    # Randomize start (choose beginning 4/5ths in case it fails checks)
     if songs:
         k = (prevK + 1) % len(songs)
         logger.debug("prevK: " + str(prevK))
@@ -468,8 +561,17 @@ async def get_song(ctx, bird):
 
     return [song_link, extension]
 
-# Manages cache
 async def get_files(sciBird, media_type, addOn=""):
+    """Returns a list of image/song filenames.
+
+    This function also does cache management,
+    looking for files in the cache for media and
+    downloading images to the cache if not found.
+
+    `sciBird` (str) - scientific name of bird\n
+    `media_type` (str) - type of media (images/songs)\n
+    `addOn` (str) - string to append to search for female/juvenile birds\n
+    """
     directory = f"cache/{media_type}/{sciBird}{addOn}/"
     try:
         logger.info("trying")
@@ -484,8 +586,17 @@ async def get_files(sciBird, media_type, addOn=""):
         logger.info("scibird: " + str(sciBird))
         return await download_media(sciBird, media_type, addOn, directory)
 
-# Manages downloads
 async def download_media(bird, media_type, addOn="", directory=None, session=None):
+    """Returns a list of filenames downloaded from Macaulay Library.
+    
+    This function manages the download helpers to fetch images from Macaulay.
+
+    `bird` (str) - scientific name of bird\n
+    `media_type` (str) - type of media (images/songs)\n
+    `addOn` (str) - string to append to search for female/juvenile birds\n
+    `directory` (str) - relative path to bird directory\n
+    `session` (aiohttp ClientSession)
+    """
     if directory is None:
         directory = f"cache/{media_type}/{bird}{addOn}/"
 
@@ -516,16 +627,21 @@ async def download_media(bird, media_type, addOn="", directory=None, session=Non
         logger.info(f"filenames: {filenames}")
         return filenames
 
-# Gets urls for downloading
 async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
-    """
-    bird can be either common name or scientific name
-    media_type is either p(for pictures), a(for audio) or v(for video)
-    sex is m,f or blank
-    age is a(for adult), j(for juvenile), i(for immature(may be very few pics)) or blank
-    sound_type is s(for song),c(for call) or blank
-    return is list of urls. some urls may return an error code of 476(because it is still being processed); 
-        if so, ignore that url.
+    """Returns a list of urls to Macaulay Library media.
+
+    The amount of urls returned is specified in `COUNT`. 
+    Media URLs are fetched using Macaulay Library's internal JSON API, 
+    with `CATALOG_URL`. Raises a `GenericError` if fails.\n
+    Some urls may return an error code of 476 (because it is still being processed), 
+    if so, ignore that url.
+
+    `session` (aiohttp ClientSession)\n
+    `bird` (str) - can be either common name or scientific name\n
+    `media_type` (str) - either `p` for pictures, `a` for audio, or `v` for video\n
+    `sex` (str) - `m`, `f`, or blank\n
+    `age` (str) - `a` for adult, `j` for juvenile, `i` for immature (may not have many), or blank\n
+    `sound_type` (str) - `s` for song, `c` for call, or blank\n
     """
     logger.info(f"getting file urls for {bird}")
     taxon_code = await get_taxon(bird, session)
@@ -542,8 +658,15 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
         urls = [data["mediaUrl"] for data in content]
         return urls
 
-# Actually downloads the file
 async def _download_helper(path, url, session):
+    """Downloads media from the given URL.
+
+    Returns the file path to the downloaded item.
+
+    `path` (str) - path with filename of location to download, no extension\n
+    `url` (str) - url to the item to be downloaded\n
+    `session` (aiohttp ClientSession)
+    """
     try:
         async with session.get(url) as response:
             # from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
@@ -585,6 +708,13 @@ async def _download_helper(path, url, session):
         raise
 
 async def precache():
+    """Downloads all images and songs.
+
+    This function downloads all images and songs in the bird lists,
+    including females and juveniles.
+
+    This function is run with a task every 24 hours.
+    """
     start = time.time()
     timeout = aiohttp.ClientTimeout(total=10 * 60)
     conn = aiohttp.TCPConnector(limit=100)
@@ -605,9 +735,18 @@ async def precache():
     logger.info(f"Images Cached in {end-start} sec.")
 
 def cleanup(string):
+    """Cleans up strings returned from the REDIS database."""
     return str(string)[2:-1]
 
 async def backup_all():
+    """Backs up the database to a file.
+    
+    This function serializes all data in the REDIS database
+    into a file in the `backups` directory.
+
+    This function is run with a task every 6 hours and sends the files
+    to a specified discord channel.
+    """
     logger.info("Starting Backup")
     logger.info("Creating Dump")
     keys = list(map(cleanup, database.keys()))
@@ -628,9 +767,13 @@ async def backup_all():
                 k.write(f"{keys[i]}\n")
     logger.info("Backup Finished")
 
-# spellcheck - allows one letter off/extra
-# cutoff - allows for difference of that amount
 def spellcheck(worda, wordb, cutoff=3):
+    """Checks if two words are close to each other.
+    
+    `worda` (str) - first word to compare
+    `wordb` (str) - second word to compare
+    `cutoff` (int) - allowed difference amount
+    """
     worda = worda.lower().replace("-", " ").replace("'", "")
     wordb = wordb.lower().replace("-", " ").replace("'", "")
     shorterword = min(worda, wordb, key=len)
