@@ -734,10 +734,6 @@ async def precache():
     end = time.time()
     logger.info(f"Images Cached in {end-start} sec.")
 
-def cleanup(string):
-    """Cleans up strings returned from the REDIS database."""
-    return str(string)[2:-1]
-
 async def backup_all():
     """Backs up the database to a file.
     
@@ -749,7 +745,7 @@ async def backup_all():
     """
     logger.info("Starting Backup")
     logger.info("Creating Dump")
-    keys = list(map(cleanup, database.keys()))
+    keys = [str(key)[2:-1] for key in database.keys()]
     dump = []
     for key in keys:
         dump.append(database.dump(key))

@@ -4,7 +4,7 @@ import asyncio
 
 from data.data import get_wiki_url
 from flask import request, Blueprint, abort
-from web.data import get_session_id, logger, database, birdList, bird_setup, FRONTEND_URL
+from web.config import get_session_id, logger, database, birdList, bird_setup, FRONTEND_URL
 from web.functions import send_bird, spellcheck, get_sciname
 
 bp = Blueprint('practice', __name__, url_prefix='/practice')

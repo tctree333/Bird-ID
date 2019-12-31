@@ -7,7 +7,7 @@ from functools import partial
 from io import BytesIO
 from PIL import Image
 from functions import get_sciname, get_files, valid_image_extensions, valid_audio_extensions, spellcheck
-from web.data import logger, GenericError, database, birdList, get_session_id, screech_owls
+from web.config import logger, GenericError, database, birdList, get_session_id, screech_owls
 
 
 def _black_and_white(input_image_path):

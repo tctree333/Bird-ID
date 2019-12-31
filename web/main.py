@@ -5,7 +5,7 @@ import urllib.parse
 
 from sentry_sdk import capture_exception
 from flask import jsonify, redirect
-from web.data import birdList, logger, app, FRONTEND_URL
+from web.config import birdList, logger, app, FRONTEND_URL
 from web.functions import get_media, get_sciname
 
 from . import practice, user
@@ -35,14 +35,14 @@ def bird_info():
 
 @app.route('/image/<string:bird>')
 def bird_image(bird):
-    path, ext = asyncio.run(get_media(bird, "images"))
-    return flask.send_file(f"../{path}")
+    path = asyncio.run(get_media(bird, "images"))
+    return flask.send_file(f"../{path[0]}")
 
 
 @app.route('/song/<string:bird>')
 def bird_song(bird):
-    path, ext = asyncio.run(get_media(bird, "songs"))
-    return flask.send_file(f"../{path}")
+    path = asyncio.run(get_media(bird, "songs"))
+    return flask.send_file(f"../{path[0]}")
 
 @app.errorhandler(403)
 def not_allowed(e):
