@@ -1,19 +1,21 @@
-import random
 import os
+import random
 import re
-import flask
-import authlib
 
-from sentry_sdk import capture_exception
+import authlib
+import flask
 from authlib.integrations.flask_client import OAuth
-from flask import Blueprint, request, url_for, render_template, redirect, session, abort, make_response
-from web.data import app, database, logger, update_web_user, get_session_id, verify_session, FRONTEND_URL
-from functions import cleanup
+from flask import (Blueprint, abort, make_response, redirect, render_template,
+                   request, session, url_for)
+from sentry_sdk import capture_exception
+
+from web.config import (FRONTEND_URL, app, database, get_session_id, logger,
+                      update_web_user, verify_session)
 
 bp = Blueprint('user', __name__, url_prefix='/user')
 oauth = OAuth(app)
 
-relative_url_regex = f"/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*"
+relative_url_regex = r"/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*"
 regex = re.compile(relative_url_regex)
 
 DISCORD_CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
@@ -26,16 +28,21 @@ oauth.register(
     authorize_url='https://discordapp.com/api/oauth2/authorize',
     authorize_params=None,
     api_base_url='https://discordapp.com/api/',
-    client_kwargs={'scope': 'identify', 'prompt': 'consent'},
+    client_kwargs={
+        'scope': 'identify',
+        'prompt': 'consent'
+    },
 )
 discord = oauth.discord
 
-@bp.after_request # enable CORS
+
+@bp.after_request  # enable CORS
 def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = FRONTEND_URL
     header['Access-Control-Allow-Credentials'] = 'true'
     return response
+
 
 @bp.route('/login', methods=["GET"])
 def login():
@@ -44,10 +51,15 @@ def login():
     resp = make_response(oauth.discord.authorize_redirect(redirect_uri))
     redirect_after = request.args.get("redirect", FRONTEND_URL, str)
     if regex.fullmatch(redirect_after) is not None:
-        resp.headers.add('Set-Cookie', 'redirect=' + redirect_after + '; Max-Age=180; SameSite=None; HttpOnly; Secure')
+        resp.headers.add(
+            'Set-Cookie', 'redirect=' + redirect_after +
+            '; Max-Age=180; SameSite=None; HttpOnly; Secure')
     else:
-        resp.headers.add('Set-Cookie', 'redirect=/; Max-Age=180; SameSite=None; HttpOnly; Secure')
+        resp.headers.add(
+            'Set-Cookie',
+            'redirect=/; Max-Age=180; SameSite=None; HttpOnly; Secure')
     return resp
+
 
 @bp.route('/logout', methods=["GET"])
 def logout():
@@ -70,17 +82,16 @@ def logout():
         session.clear()
     return redirect(redirect_url)
 
+
 @bp.route('/authorize')
 def authorize():
     logger.info("endpoint: authorize")
     redirect_uri = url_for('user.authorize', _external=True, _scheme='https')
-    token = oauth.discord.authorize_access_token(redirect_uri=redirect_uri)
+    oauth.discord.authorize_access_token(redirect_uri=redirect_uri)
     resp = oauth.discord.get('users/@me')
     profile = resp.json()
     # do something with the token and profile
     update_web_user(profile)
-    avatar_hash, avatar_url, username, discriminator = map(cleanup, database.hmget(f"web.user:{str(profile['id'])}",
-                                                                                   "avatar_hash", "avatar_url", "username", "discriminator"))
     redirect_cookie = str(request.cookies.get("redirect"))
     if regex.fullmatch(redirect_cookie) is not None:
         redirection = FRONTEND_URL + redirect_cookie
@@ -88,6 +99,7 @@ def authorize():
         redirection = FRONTEND_URL + "/"
     session.pop("redirect", None)
     return redirect(redirection)
+
 
 @bp.route('/profile')
 def profile():
@@ -97,9 +109,25 @@ def profile():
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
 
     if user_id is not 0:
-        avatar_hash, avatar_url, username, discriminator = map(cleanup, database.hmget(f"web.user:{str(user_id)}",
-                                                                                    "avatar_hash", "avatar_url", "username", "discriminator"))
-        return {"avatar_hash": avatar_hash, "avatar_url": avatar_url, "username": username, "discriminator": discriminator}
+        avatar_hash, avatar_url, username, discriminator = (
+            str(stat)[2:-1] for stat in database.hmget(
+                f"web.user:{str(user_id)}", "avatar_hash", "avatar_url",
+                "username", "discriminator"))
+        placings = int(database.zscore("users:global", str(user_id)))
+        max_streak = int(database.zscore('streak.max:global', str(user_id)))
+        missed_birds = [[
+            str(stats[0])[2:-1], int(stats[1])
+        ] for stats in database.zrevrangebyscore(
+            f"incorrect.user:{str(user_id)}", "+inf", "-inf", 0, 10, True)]
+        return {
+            "avatar_hash": avatar_hash,
+            "avatar_url": avatar_url,
+            "username": username,
+            "discriminator": discriminator,
+            "rank": placings,
+            "max_streak": max_streak,
+            "missed": missed_birds
+        }
     else:
         logger.info("not logged in")
         abort(403, "Sign in to continue")
