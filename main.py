@@ -144,27 +144,26 @@ if __name__ == '__main__':
     async def on_command_error(ctx, error):
         """Handles errors for all commands without local error handlers."""
         logger.info("Error: " + str(error))
-        capture_exception(error)
 
         # don't handle errors with local handlers
         if hasattr(ctx.command, 'on_error'):
+            capture_exception(error)
             return
 
         if isinstance(error, commands.CommandOnCooldown):  # send cooldown
             await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
 
         elif isinstance(error, commands.CommandNotFound):
+            capture_exception(error)
             await ctx.send("Sorry, the command was not found.")
 
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("This command requires an argument!")
 
         elif isinstance(error, commands.BadArgument):
-            logger.error("bad argument")
             await ctx.send("The argument passed was invalid. Please try again.")
 
         elif isinstance(error, commands.ArgumentParsingError):
-            logger.error("quote error")
             await ctx.send("An invalid character was detected. Please try again.")
 
         elif isinstance(error, commands.BotMissingPermissions):
@@ -175,6 +174,7 @@ if __name__ == '__main__':
             )
 
         elif isinstance(error, commands.NoPrivateMessage):
+            capture_exception(error)
             await ctx.send("**This command is unavaliable in DMs!**")
         
         elif isinstance(error, GenericError):
@@ -184,9 +184,11 @@ if __name__ == '__main__':
                     logger.info("GenericError 666")
                 elif error.code == 201:
                     logger.info("HTTP Error")
+                    capture_exception(error)
                     await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
                 else:
-                    logger.error("uncaught generic error")
+                    logger.info("uncaught generic error")
+                    capture_exception(error)
                     await ctx.send(
                     """**An uncaught generic error has occurred.**
 *Please log this message in #support in the support server below, or try again.*
@@ -196,6 +198,7 @@ if __name__ == '__main__':
                     raise error
 
         elif isinstance(error, commands.CommandInvokeError):
+            capture_exception(error.original)
             if isinstance(error.original, redis.exceptions.ResponseError):
                 if database.exists(f"channel:{str(ctx.channel.id)}"):
                     await ctx.send(
@@ -204,7 +207,6 @@ if __name__ == '__main__':
 **Error:** """ + str(error)
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
-                    logger.exception(error.original)
                 else:
                     await channel_setup(ctx)
                     await ctx.send("Please run that command again.")
@@ -226,12 +228,12 @@ if __name__ == '__main__':
 **Error:** """ + str(error)
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
-                    logger.exception(error.original)
                 else:
                     await ctx.send("**An error has occured with discord. :(**\n*Please try again.*")
 
             else:
-                logger.error("uncaught command error")
+                logger.info("uncaught command error")
+                capture_exception(error)
                 await ctx.send(
                     """**An uncaught command error has occurred.**
 *Please log this message in #support in the support server below, or try again.*
@@ -241,7 +243,8 @@ if __name__ == '__main__':
                 raise error
 
         else:
-            logger.error("uncaught non-command")
+            logger.info("uncaught non-command")
+            capture_exception(error)
             await ctx.send(
                 """**An uncaught non-command error has occurred.**
 *Please log this message in #support in the support server below, or try again.*

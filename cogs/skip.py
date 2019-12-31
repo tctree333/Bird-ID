@@ -14,9 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import wikipedia
 from discord.ext import commands
-from data.data import database, logger
+from data.data import database, logger, get_wiki_url
 from functions import channel_setup, user_setup
 
 class Skip(commands.Cog):
@@ -36,9 +35,9 @@ class Skip(commands.Cog):
         database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
         database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
         if currentBird != "":  # check if there is bird
-            birdPage = wikipedia.page(f"{currentBird} (bird)")
+            url = get_wiki_url(currentBird)
             await ctx.send(f"Ok, skipping {currentBird.lower()}")
-            await ctx.send(birdPage.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{birdPage.url}>")  # sends wiki page
+            await ctx.send(url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{url}>")  # sends wiki page
             database.zadd("streak:global", {str(ctx.author.id): 0})  # end streak
             if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
                         database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "image":
@@ -70,8 +69,8 @@ class Skip(commands.Cog):
         database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
         database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
         if currentBird != "":  # check if there is bird
-            birdPage = wikipedia.page(f"{currentBird} (bird)")
-            await ctx.send(f"Ok, skipping {currentBird.lower()}\n{birdPage.url}")  # sends wiki page
+            url = get_wiki_url(currentBird)
+            await ctx.send(f"Ok, skipping {currentBird.lower()}\n{url}")  # sends wiki page
             database.zadd("streak:global", {str(ctx.author.id): 0})
         else:
             await ctx.send("You need to ask for a bird first!")
@@ -89,9 +88,9 @@ class Skip(commands.Cog):
         database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
         database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
         if currentSongBird != "":  # check if there is bird
-            birdPage = wikipedia.page(f"{currentSongBird} (bird)")
+            url = get_wiki_url(currentSongBird)
             await ctx.send(f"Ok, skipping {currentSongBird.lower()}")
-            await ctx.send(birdPage.url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{birdPage.url}>")  # sends wiki page
+            await ctx.send(url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{url}>")  # sends wiki page
             database.zadd("streak:global", {str(ctx.author.id): 0})
             if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
                         database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "song":

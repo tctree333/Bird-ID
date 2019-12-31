@@ -3,7 +3,9 @@ import asyncio
 import flask
 import urllib.parse
 
-from web.data import birdList, logger, app
+from sentry_sdk import capture_exception
+from flask import jsonify, redirect
+from web.data import birdList, logger, app, FRONTEND_URL
 from web.functions import get_media, get_sciname
 
 from . import practice, user
@@ -42,6 +44,27 @@ def bird_song(bird):
     path, ext = asyncio.run(get_media(bird, "songs"))
     return flask.send_file(f"../{path}")
 
-@app.route('/debug-sentry')
-def trigger_error():
-    division_by_zero = 1 / 0
+@app.errorhandler(403)
+def not_allowed(e):
+    capture_exception(e)
+    return jsonify(error=str(e)), 403
+
+@app.errorhandler(404)
+def not_found(e):
+    capture_exception(e)
+    return jsonify(error=str(e)), 404
+
+@app.errorhandler(406)
+def input_error(e):
+    capture_exception(e)
+    return jsonify(error=str(e)), 406
+
+@app.errorhandler(500)
+def other_internal_error(e):
+    capture_exception(e)
+    return jsonify(error=str(e)), 500
+
+@app.errorhandler(503)
+def internal_error(e):
+    capture_exception(e)
+    return jsonify(error=str(e)), 503

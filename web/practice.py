@@ -1,8 +1,8 @@
 import random
 import flask
 import asyncio
-import wikipedia
 
+from data.data import get_wiki_url
 from flask import request, Blueprint, abort
 from web.data import get_session_id, logger, database, birdList, bird_setup, FRONTEND_URL
 from web.functions import send_bird, spellcheck, get_sciname
@@ -108,9 +108,9 @@ def check_bird():
             else:
                 database.hset(f"web.session:{session_id}", "tempScore", str(tempScore+1))
 
-            page = wikipedia.page(f"{currentBird} (bird)")
+            url = get_wiki_url(currentBird)
             return {"guess": bird_guess, "answer": currentBird, "sciname": sciBird,
-                    "status": "correct", "wiki": page.url}
+                    "status": "correct", "wiki": url}
 
         else:
             logger.info("incorrect")
@@ -123,9 +123,9 @@ def check_bird():
                 database.zadd("streak:global", {str(user_id): 0})
                 database.zincrby(f"incorrect.user:{str(user_id)}", 1, currentBird)
 
-            page = wikipedia.page(f"{currentBird} (bird)")
+            url = get_wiki_url(currentBird)
             return {"guess": bird_guess, "answer": currentBird, "sciname": sciBird,
-                    "status": "incorrect", "wiki": page.url}
+                    "status": "incorrect", "wiki": url}
 
 
 @bp.route('/skip', methods=['GET'])
@@ -142,11 +142,11 @@ def skip_bird():
             database.zadd("streak:global", {str(user_id): 0})  # end streak
 
         scibird = asyncio.run(get_sciname(currentBird))
-        page = wikipedia.page(f"{currentBird} (bird)")  # sends wiki page
+        url = get_wiki_url(currentBird)  # sends wiki page
     else:
         logger.info("bird is blank")
         abort(406, "Bird is blank")
-    return {"answer": currentBird, "sciname": scibird, "wiki": page.url}
+    return {"answer": currentBird, "sciname": scibird, "wiki": url}
 
 
 @bp.route('/hint', methods=['GET'])

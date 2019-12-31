@@ -1,5 +1,6 @@
 import random
 import asyncio
+from sentry_sdk import capture_exception
 
 from flask import abort
 from functools import partial
@@ -40,7 +41,8 @@ async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = Fals
     try:
         filename, ext = await get_media(bird, media_type, addOn)
     except GenericError as e:
-        logger.exception(e)
+        logger.info(e)
+        capture_exception(e)
         abort(503, str(e))
         return
 
