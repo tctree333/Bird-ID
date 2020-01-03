@@ -36,21 +36,22 @@ from functions import backup_all, channel_setup, precache, send_bird
 # The channel id that the backups send to
 BACKUPS_CHANNEL = 622547928946311188
 
+
 def start_precache():
     """Downloads all the images/songs before they're needed."""
     asyncio.run(precache())
+
 
 def start_backup():
     """Backs up the database to a discord channel."""
     asyncio.run(backup_all())
 
+
 if __name__ == '__main__':
     # Initialize bot
-    bot = commands.Bot(
-        command_prefix=['b!', 'b.', 'b#', 'B!', 'B.', 'B#', 'o>', 'O>'],
-        case_insensitive=True,
-        description="BirdID - Your Very Own Ornithologist"
-    )
+    bot = commands.Bot(command_prefix=['b!', 'b.', 'b#', 'B!', 'B.', 'B#', 'o>', 'O>'],
+                       case_insensitive=True,
+                       description="BirdID - Your Very Own Ornithologist")
 
     @bot.event
     async def on_ready():
@@ -66,8 +67,8 @@ if __name__ == '__main__':
 
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
     initial_extensions = [
-        'cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint', 'cogs.score', 
-        'cogs.state', 'cogs.sessions', 'cogs.race', 'cogs.other'
+        'cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.state', 'cogs.sessions',
+        'cogs.race', 'cogs.other'
     ]
     for extension in initial_extensions:
         try:
@@ -151,7 +152,8 @@ if __name__ == '__main__':
             return
 
         if isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
+            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.",
+                           delete_after=5.0)
 
         elif isinstance(error, commands.CommandNotFound):
             capture_exception(error)
@@ -167,45 +169,41 @@ if __name__ == '__main__':
             await ctx.send("An invalid character was detected. Please try again.")
 
         elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.send(
-                f"""**The bot does not have enough permissions to fully function.**
-**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
-*Please try again once the correct permissions are set.*"""
-            )
+            await ctx.send("**The bot does not have enough permissions to fully function.**\n" +
+                           f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n" +
+                           "*Please try again once the correct permissions are set.*")
 
         elif isinstance(error, commands.NoPrivateMessage):
             capture_exception(error)
             await ctx.send("**This command is unavaliable in DMs!**")
-        
+
         elif isinstance(error, GenericError):
-                if error.code == 842:
-                    await ctx.send("**Sorry, you cannot use this command.**")
-                elif error.code == 666:
-                    logger.info("GenericError 666")
-                elif error.code == 201:
-                    logger.info("HTTP Error")
-                    capture_exception(error)
-                    await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
-                else:
-                    logger.info("uncaught generic error")
-                    capture_exception(error)
-                    await ctx.send(
-                    """**An uncaught generic error has occurred.**
-*Please log this message in #support in the support server below, or try again.*
-**Error:**  """ + str(error)
-                    )
-                    await ctx.send("https://discord.gg/fXxYyDJ")
-                    raise error
+            if error.code == 842:
+                await ctx.send("**Sorry, you cannot use this command.**")
+            elif error.code == 666:
+                logger.info("GenericError 666")
+            elif error.code == 201:
+                logger.info("HTTP Error")
+                capture_exception(error)
+                await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
+            else:
+                logger.info("uncaught generic error")
+                capture_exception(error)
+                await ctx.send(
+                    "**An uncaught generic error has occurred.**\n" +
+                    "*Please log this message in #support in the support server below, or try again.*\n" +
+                    "**Error:** " + str(error))
+                await ctx.send("https://discord.gg/fXxYyDJ")
+                raise error
 
         elif isinstance(error, commands.CommandInvokeError):
-            capture_exception(error.original)
             if isinstance(error.original, redis.exceptions.ResponseError):
+                capture_exception(error.original)
                 if database.exists(f"channel:{str(ctx.channel.id)}"):
                     await ctx.send(
-                        """**An unexpected ResponseError has occurred.**
-*Please log this message in #support in the support server below, or try again.*
-**Error:** """ + str(error)
-                    )
+                        "**An unexpected ResponseError has occurred.**\n"
+                        "*Please log this message in #support in the support server below, or try again.*\n"
+                        "**Error:** " + str(error))
                     await ctx.send("https://discord.gg/fXxYyDJ")
                 else:
                     await channel_setup(ctx)
@@ -218,38 +216,47 @@ if __name__ == '__main__':
                 await ctx.send("Wikipedia page not found. (Page Error)")
 
             elif isinstance(error.original, wikipedia.exceptions.WikipediaException):
+                capture_exception(error.original)
                 await ctx.send("Wikipedia page unavaliable. Try again later.")
 
-            elif isinstance(error.original, aiohttp.ClientOSError):
-                if error.original.errno != errno.ECONNRESET:
-                    await ctx.send(
-                        """**An unexpected ClientOSError has occurred.**
-*Please log this message in #support in the support server below, or try again.*
-**Error:** """ + str(error)
-                    )
-                    await ctx.send("https://discord.gg/fXxYyDJ")
-                else:
+            elif isinstance(error.original, discord.HTTPException):
+                if error.original.status == 502:
                     await ctx.send("**An error has occured with discord. :(**\n*Please try again.*")
+                else:
+                    capture_exception(error.original)
+                    await ctx.send(
+                        "**An unexpected HTTPException has occurred.**\n" +
+                        "*Please log this message in #support in the support server below, or try again*\n" +
+                        "**Error:** " + str(error.original))
+                    await ctx.send("https://discord.gg/fXxYyDJ")
+
+            elif isinstance(error.original, aiohttp.ClientOSError):
+                if error.original.errno == errno.ECONNRESET:
+                    await ctx.send("**An error has occured with discord. :(**\n*Please try again.*")
+                else:
+                    capture_exception(error.original)
+                    await ctx.send(
+                        "**An unexpected ClientOSError has occurred.**\n" +
+                        "*Please log this message in #support in the support server below, or try again.*\n" +
+                        "**Error:** " + str(error.original))
+                    await ctx.send("https://discord.gg/fXxYyDJ")
 
             else:
                 logger.info("uncaught command error")
-                capture_exception(error)
+                capture_exception(error.original)
                 await ctx.send(
-                    """**An uncaught command error has occurred.**
-*Please log this message in #support in the support server below, or try again.*
-**Error:**  """ + str(error)
-                )
+                    "**An uncaught command error has occurred.**\n" +
+                    "*Please log this message in #support in the support server below, or try again.*\n" +
+                    "**Error:**  " + str(error))
                 await ctx.send("https://discord.gg/fXxYyDJ")
                 raise error
 
         else:
             logger.info("uncaught non-command")
             capture_exception(error)
-            await ctx.send(
-                """**An uncaught non-command error has occurred.**
-*Please log this message in #support in the support server below, or try again.*
-**Error:**  """ + str(error)
-            )
+            await ctx.send("**An uncaught non-command error has occurred.**\n" +
+                           "*Please log this message in #support in the support server below, or try again.*\n" +
+                           "**Error:** " + str(error))
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
 
