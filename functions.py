@@ -596,7 +596,7 @@ async def get_files(sciBird, media_type, addOn="", retries=0):
         # if not found, fetch images
         logger.info("scibird: " + str(sciBird))
         filenames = await download_media(sciBird, media_type, addOn, directory)
-        if filenames <= COUNT/2:
+        if len(filenames) <= COUNT/2:
             if retries < 3:
                 retries += 1
                 return await get_files(sciBird, media_type, addOn, retries)
