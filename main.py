@@ -85,6 +85,7 @@ if __name__ == '__main__':
     @bot.check
     def set_sentry_tag(ctx):
         """Tags sentry errors with current command."""
+        logger.info("global check: checking sentry tag")
         with configure_scope() as scope:
             scope.set_tag("command", ctx.command.name)
         return True
@@ -92,6 +93,7 @@ if __name__ == '__main__':
     @bot.check
     async def dm_cooldown(ctx):
         """Clears the cooldown in DMs."""
+        logger.info("global check: checking dm cooldown clear")
         if ctx.command.is_on_cooldown(ctx) and ctx.guild is None:
             ctx.command.reset_cooldown(ctx)
         return True
@@ -99,6 +101,7 @@ if __name__ == '__main__':
     @bot.check
     def bot_has_permissions(ctx):
         """Checks if the bot has correct permissions."""
+        logger.info("global check: checking permissions")
         # code copied from @commands.bot_has_permissions(send_messages=True, embed_links=True, attach_files=True)
         if ctx.guild is not None:
             perms = {"send_messages": True, "embed_links": True, "attach_files": True, "manage_roles": True}
@@ -118,6 +121,7 @@ if __name__ == '__main__':
     @bot.check
     def user_banned(ctx):
         """Disallows users that are banned from the bot."""
+        logger.info("global check: checking banned")
         if database.zscore("banned:global", str(ctx.author.id)) is None:
             return True
         else:
@@ -129,6 +133,7 @@ if __name__ == '__main__':
         
         Can be extended to other holidays as well.
         """
+        logger.info("global check: checking holiday")
         now = time.time() - 28800
         us = holidays.US()
         if now in us:
