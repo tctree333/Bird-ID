@@ -99,8 +99,8 @@ class Birds(commands.Cog):
             database.hset(f"channel:{str(ctx.channel.id)}", "prevB", str(currentBird))
             database.hset(f"channel:{str(ctx.channel.id)}", "bird", str(currentBird))
             logger.info("currentBird: " + str(currentBird))
-            await send_bird(ctx, currentBird, on_error=error_skip, message=message, addOn=add_on, bw=bw)
             database.hset(f"channel:{str(ctx.channel.id)}", "answered", "0")
+            await send_bird(ctx, currentBird, on_error=error_skip, message=message, addOn=add_on, bw=bw)
         else:  # if no, give the same bird
             await send_bird(
                 ctx,
@@ -141,8 +141,8 @@ class Birds(commands.Cog):
             database.hset(f"channel:{str(ctx.channel.id)}", "prevS", str(currentSongBird))
             database.hset(f"channel:{str(ctx.channel.id)}", "sBird", str(currentSongBird))
             logger.info("currentSongBird: " + str(currentSongBird))
-            await send_birdsong(ctx, currentSongBird, on_error=error_skip_song, message=SONG_MESSAGE)
             database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "0")
+            await send_birdsong(ctx, currentSongBird, on_error=error_skip_song, message=SONG_MESSAGE)
         else:
             await send_birdsong(
                 ctx,

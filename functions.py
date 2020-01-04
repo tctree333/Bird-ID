@@ -159,7 +159,6 @@ async def bird_setup(ctx, bird: str):
     else:
         logger.info("no session")
 
-# Function to run on error
 def error_skip(ctx):
     """Skips the current bird.
     
