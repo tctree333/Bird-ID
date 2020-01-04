@@ -505,21 +505,20 @@ async def get_image(ctx, bird, addOn=None):
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if images:
         j = (prevJ + 1) % len(images)
-        logger.debug("prevJ: " + str(prevJ))
-        logger.debug("j: " + str(j))
+        logger.info("prevJ: " + str(prevJ))
+        logger.info("j: " + str(j))
 
         for x in range(0, len(images)):  # check file type and size
             y = (x + j) % len(images)
             image_link = images[y]
             extension = image_link.split('.')[-1]
-            logger.debug("extension: " + str(extension))
+            logger.info("extension: " + str(extension))
             statInfo = os.stat(image_link)
-            logger.debug("size: " + str(statInfo.st_size))
+            logger.info("size: " + str(statInfo.st_size))
             if extension.lower() in valid_image_extensions and statInfo.st_size < 4000000:  # keep files less than 4mb
                 logger.info("found one!")
                 break
             elif y == prevJ:
-                j = (j + 1) % (len(images))
                 raise GenericError("No Valid Images Found", code=999)
 
         database.hset(f"channel:{str(ctx.channel.id)}", "prevJ", str(j))
@@ -550,20 +549,20 @@ async def get_song(ctx, bird):
     prevK = int(str(database.hget(f"channel:{str(ctx.channel.id)}", "prevK"))[2:-1])
     if songs:
         k = (prevK + 1) % len(songs)
-        logger.debug("prevK: " + str(prevK))
-        logger.debug("k: " + str(k))
+        logger.info("prevK: " + str(prevK))
+        logger.info("k: " + str(k))
 
-        for x in range(k, len(songs)):  # check file type and size
-            song_link = songs[x]
+        for x in range(0, len(songs)):  # check file type and size
+            y = (x + k) % len(songs)
+            song_link = songs[y]
             extension = song_link.split('.')[-1]
-            logger.debug("extension: " + str(extension))
+            logger.info("extension: " + str(extension))
             statInfo = os.stat(song_link)
-            logger.debug("size: " + str(statInfo.st_size))
+            logger.info("size: " + str(statInfo.st_size))
             if extension.lower() in valid_audio_extensions and statInfo.st_size < 4000000:  # keep files less than 4mb
                 logger.info("found one!")
                 break
-            elif x == len(songs) - 1:
-                k = (k + 1) % (len(songs))
+            elif y == prevK:
                 raise GenericError("No Valid Songs Found", code=999)
 
         database.hset(f"channel:{str(ctx.channel.id)}", "prevK", str(k))
@@ -572,7 +571,7 @@ async def get_song(ctx, bird):
 
     return [song_link, extension]
 
-async def get_files(sciBird, media_type, addOn=""):
+async def get_files(sciBird, media_type, addOn="", retries=0):
     """Returns a list of image/song filenames.
 
     This function also does cache management,
@@ -583,19 +582,25 @@ async def get_files(sciBird, media_type, addOn=""):
     `media_type` (str) - type of media (images/songs)\n
     `addOn` (str) - string to append to search for female/juvenile birds\n
     """
+    logger.info(f"get_files retries: {retries}")
     directory = f"cache/{media_type}/{sciBird}{addOn}/"
     try:
         logger.info("trying")
         files_dir = os.listdir(directory)
         logger.info(directory)
-        if not files_dir:
+        if len(files_dir) is 0:
             raise GenericError("No Files", code=100)
         return [f"{directory}{path}" for path in files_dir]
     except (FileNotFoundError, GenericError):
         logger.info("fetching files")
         # if not found, fetch images
         logger.info("scibird: " + str(sciBird))
-        return await download_media(sciBird, media_type, addOn, directory)
+        filenames = await download_media(sciBird, media_type, addOn, directory)
+        if filenames <= COUNT/2:
+            if retries < 3:
+                retries += 1
+                return await get_files(sciBird, media_type, addOn, retries)
+        return filenames
 
 async def download_media(bird, media_type, addOn="", directory=None, session=None):
     """Returns a list of filenames downloaded from Macaulay Library.
@@ -635,7 +640,8 @@ async def download_media(bird, media_type, addOn="", directory=None, session=Non
         paths = [f"{directory}{i}" for i in range(len(urls))]
         filenames = await asyncio.gather(*(_download_helper(path, url, session) for path, url in zip(paths, urls)))
         logger.info(f"downloaded {media_type} for {bird}")
-        logger.info(f"filenames: {filenames}")
+        logger.info(f"returned filename count: {len(filenames)}")
+        logger.info(f"actual filenames count: {len(os.listdir(directory))}")
         return filenames
 
 async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
