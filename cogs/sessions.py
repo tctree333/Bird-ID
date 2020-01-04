@@ -63,7 +63,7 @@ class Sessions(commands.Cog):
         embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title=preamble)
         embed.set_author(name="Bird ID - An Ornithology Bot")
 
-        if database.zcard(database_key) is not 0:
+        if database.zcard(database_key) != 0:
             leaderboard_list = database.zrevrangebyscore(
                 database_key, "+inf", "-inf", 0, 5, True)
             leaderboard = ""
@@ -176,7 +176,7 @@ class Sessions(commands.Cog):
             args = args_str.split(" ")
             logger.info(f"args: {args}")
             if "bw" in args:
-                if len(database.hget(f"session.data:{str(ctx.author.id)}", "bw")) is 0:
+                if len(database.hget(f"session.data:{str(ctx.author.id)}", "bw")) == 0:
                     logger.info("adding bw")
                     database.hset(f"session.data:{str(ctx.author.id)}", "bw", "bw")
                 else:
@@ -211,7 +211,7 @@ class Sessions(commands.Cog):
                 return
             elif female:
                 addon = "female"
-                if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) is 0:
+                if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) == 0:
                     logger.info("adding female")
                     database.hset(f"session.data:{str(ctx.author.id)}", "addon", addon)
                 else:
@@ -219,7 +219,7 @@ class Sessions(commands.Cog):
                     database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
             elif juvenile:
                 addon = "juvenile"
-                if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) is 0:
+                if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) == 0:
                     logger.info("adding juvenile")
                     database.hset(f"session.data:{str(ctx.author.id)}", "addon", addon)
                 else:

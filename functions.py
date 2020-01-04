@@ -198,7 +198,7 @@ def check_state_role(ctx) -> list:
         user_role_names = [role.name.lower() for role in ctx.author.roles]
         for state in list(states.keys()):
             # gets similarities
-            if len(set(user_role_names).intersection(set(states[state]["aliases"]))) is not 0:
+            if len(set(user_role_names).intersection(set(states[state]["aliases"]))) != 0:
                 user_states.append(state)
     else:
         logger.info("dm context")
@@ -588,7 +588,7 @@ async def get_files(sciBird, media_type, addOn="", retries=0):
         logger.info("trying")
         files_dir = os.listdir(directory)
         logger.info(directory)
-        if len(files_dir) is 0:
+        if len(files_dir) == 0:
             raise GenericError("No Files", code=100)
         return [f"{directory}{path}" for path in files_dir]
     except (FileNotFoundError, GenericError):

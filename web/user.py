@@ -108,7 +108,7 @@ def profile():
     session_id = get_session_id()
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
 
-    if user_id is not 0:
+    if user_id !=0:
         avatar_hash, avatar_url, username, discriminator = (
             str(stat)[2:-1] for stat in database.hmget(
                 f"web.user:{str(user_id)}", "avatar_hash", "avatar_url",

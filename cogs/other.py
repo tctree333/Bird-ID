@@ -138,7 +138,7 @@ class Other(commands.Cog):
         bird_list = list(birds_in_order.intersection(birds_in_state))
         song_bird_list = list(birds_in_order.intersection(song_birds_in_state))
 
-        if len(bird_list) is 0 and len(song_bird_list) is 0:
+        if len(bird_list) == 0 and len(song_bird_list) == 0:
             logger.info("no birds for order/state")
             await ctx.send(f"**Sorry, no birds could be found for the order/state combo.**\n*Please try again*")
             return

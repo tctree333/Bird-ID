@@ -86,7 +86,7 @@ class Birds(commands.Cog):
                 else:
                     birds = birdList
             
-            if len(birds) is 0:
+            if len(birds) == 0:
                 logger.info("no birds for order/state")
                 await ctx.send(f"**Sorry, no birds could be found for the order/state combo.**\n*Please try again*")
                 return
@@ -123,7 +123,7 @@ class Birds(commands.Cog):
                 roles = str(database.hget(f"session.data:{ctx.author.id}", "state"))[2:-1].split(" ")
                 if roles[0] == "":
                     roles = []
-                if len(roles) is 0:
+                if len(roles) == 0:
                     logger.info("no session lists")
                     roles = check_state_role(ctx)
                 logger.info(f"roles: {roles}")

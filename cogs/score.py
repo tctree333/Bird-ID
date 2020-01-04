@@ -119,7 +119,7 @@ class Score(commands.Cog):
         try:
             page = int(scope)
         except ValueError:
-            if scope is "":
+            if scope == "":
                 scope = "global"
             scope = scope.lower()
         else:
@@ -155,7 +155,7 @@ class Score(commands.Cog):
         user_amount = int(database.zcard(database_key))
         page = (page * 10) - 10
 
-        if user_amount is 0:
+        if user_amount == 0:
             logger.info(f"no users in {database_key}")
             await ctx.send("There are no users in the database.")
             return
@@ -191,10 +191,10 @@ class Score(commands.Cog):
             placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
             distance = (int(database.zrevrange(database_key, placement-2, placement-2, True)[0][1]) - 
                         int(database.zscore(database_key, str(ctx.author.id))))
-            if placement is 1:
+            if placement == 1:
                 embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
                                                    f"You are in first place.", inline=False)
-            elif distance is 0:
+            elif distance == 0:
                 embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
                                                    f"You are tied with #{str(placement-1)}", inline=False)
             else:
@@ -221,7 +221,7 @@ class Score(commands.Cog):
         try:
             page = int(scope)
         except ValueError:
-            if scope is "":
+            if scope == "":
                 scope = "global"
                 scope = scope.lower()
         else:
@@ -260,7 +260,7 @@ class Score(commands.Cog):
         user_amount = int(database.zcard(database_key))
         page = (page * 10) - 10
 
-        if user_amount is 0:
+        if user_amount == 0:
             logger.info(f"no users in {database_key}")
             await ctx.send("There are no birds in the database.")
             return

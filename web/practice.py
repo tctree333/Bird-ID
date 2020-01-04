@@ -101,7 +101,7 @@ def check_bird():
 
             tempScore = int(
                 database.hget(f"web.session:{session_id}", "tempScore"))
-            if user_id is not 0:
+            if user_id !=0:
                 database.zincrby("users:global", 1, str(user_id))
                 database.zincrby("streak:global", 1, str(user_id))
                 # check if streak is greater than max, if so, increases max
@@ -136,7 +136,7 @@ def check_bird():
             database.hset(f"web.session:{session_id}", "answered", "1")
             database.zincrby("incorrect:global", 1, currentBird)
 
-            if user_id is not 0:
+            if user_id !=0:
                 database.zadd("streak:global", {str(user_id): 0})
                 database.zincrby(f"incorrect.user:{str(user_id)}", 1,
                                  currentBird)
@@ -161,7 +161,7 @@ def skip_bird():
     if currentBird != "":  # check if there is bird
         database.hset(f"web.session:{session_id}", "bird", "")
         database.hset(f"web.session:{session_id}", "answered", "1")
-        if user_id is not 0:
+        if user_id !=0:
             database.zadd("streak:global", {str(user_id): 0})  # end streak
 
         scibird = asyncio.run(get_sciname(currentBird))

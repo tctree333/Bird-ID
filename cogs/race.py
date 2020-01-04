@@ -43,7 +43,7 @@ class Race(commands.Cog):
     async def _send_stats(self, ctx, preamble):
         placings = 5
         database_key = f"race.scores:{str(ctx.channel.id)}"
-        if database.zcard(database_key) is 0:
+        if database.zcard(database_key) == 0:
             logger.info(f"no users in {database_key}")
             await ctx.send("There are no users in the database.")
             return
@@ -207,7 +207,7 @@ class Race(commands.Cog):
                     ints.append(int(n))
                 except ValueError:
                     continue
-            if len(ints) is not 0:
+            if len(ints) != 0:
                 limit = int(ints[0])
             else:
                 limit = 10

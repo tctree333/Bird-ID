@@ -49,7 +49,7 @@ class States(commands.Cog):
                 )
 
             # gets similarities
-            elif len(set(roles).intersection(set(states[arg]["aliases"]))) is 0:
+            elif len(set(roles).intersection(set(states[arg]["aliases"]))) == 0:
                 # need to add roles (does not have role)
                 logger.info("add roles")
                 raw_roles = ctx.guild.roles
