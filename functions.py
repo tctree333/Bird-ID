@@ -206,7 +206,7 @@ def check_state_role(ctx) -> list:
     logger.info(f"user roles: {user_states}")
     return user_states
 
-async def get_sciname(bird: str, session=None) -> str:
+async def get_sciname(bird: str, session=None, retries=0) -> str:
     """Returns the scientific name of a bird.
 
     Scientific names are found using the eBird API from the Cornell Lab of Ornithology,
@@ -231,11 +231,18 @@ async def get_sciname(bird: str, session=None) -> str:
         sciname_url = SCINAME_URL.format(urllib.parse.quote(code))
         async with session.get(sciname_url) as sciname_response:
             if sciname_response.status != 200:
-                raise GenericError(
-                    f"An http error code of {sciname_response.status} occured" +
-                    f" while fetching {sciname_url} for {code}",
-                    code=201
-                )
+                if retries >= 3:
+                    logger.info("Retried more than 3 times. Aborting...")
+                    raise GenericError(
+                        f"An http error code of {sciname_response.status} occured" +
+                        f" while fetching {sciname_url} for {bird}",
+                        code=201
+                    )
+                else:
+                    logger.info(f"An HTTP error occurred; Retries: {retries}")
+                    retries += 1
+                    sciname = await get_sciname(bird, session, retries)
+                    return sciname
             sciname_data = await sciname_response.json()
             try:
                 sciname = sciname_data[0]["sciName"]
@@ -244,7 +251,7 @@ async def get_sciname(bird: str, session=None) -> str:
     logger.info(f"sciname: {sciname}")
     return sciname
 
-async def get_taxon(bird: str, session=None) -> str:
+async def get_taxon(bird: str, session=None, retries=0) -> str:
     """Returns the taxonomic code of a bird.
 
     Taxonomic codes are used by the Cornell Lab of Ornithology to identify species of birds.
@@ -262,11 +269,16 @@ async def get_taxon(bird: str, session=None) -> str:
         taxon_code_url = TAXON_CODE_URL.format(urllib.parse.quote(bird.replace("-", " ").replace("'s", "")))
         async with session.get(taxon_code_url) as taxon_code_response:
             if taxon_code_response.status != 200:
-                raise GenericError(
-                    f"An http error code of {taxon_code_response.status} occured" +
-                    f" while fetching {taxon_code_url} for {bird}",
-                    code=201
-                )
+                if retries >= 3:
+                    raise GenericError(
+                        f"An http error code of {taxon_code_response.status} occured" +
+                        f" while fetching {taxon_code_url} for {bird}",
+                        code=201
+                    )
+                else:
+                    retries += 1
+                    taxon_code = await get_taxon(bird, session, retries)
+                    return taxon_code
             taxon_code_data = await taxon_code_response.json()
             try:
                 logger.info(f"raw data: {taxon_code_data}")
