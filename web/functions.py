@@ -83,14 +83,14 @@ async def get_media(bird, media_type, addOn=""):  # images or songs
     prevJ = int(str(database.hget(database_key, "prevJ"))[2:-1])
     if media:
         j = (prevJ + 1) % len(media)
-        logger.debug("prevJ: " + str(prevJ))
-        logger.debug("j: " + str(j))
+        logger.info("prevJ: " + str(prevJ))
+        logger.info("j: " + str(j))
 
         for x in range(0, len(media)):  # check file type and size
             y = (x + j) % len(media)
             media_path = media[y]
             extension = media_path.split('.')[-1]
-            logger.debug("extension: " + str(extension))
+            logger.info("extension: " + str(extension))
             if (media_type == "images" and extension.lower() in valid_image_extensions) or \
                     (media_type == "songs" and extension.lower() in valid_audio_extensions):
                 logger.info("found one!")
