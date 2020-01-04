@@ -41,6 +41,7 @@ def before_sentry_send(event, hint):
 
 # add sentry logging
 sentry_sdk.init(
+    release=f"Heroku Release {str(os.getenv('HEROKU_RELEASE_VERSION'))}:{str(os.getenv('HEROKU_SLUG_DESCRIPTION'))}",
     dsn=str(os.getenv("SENTRY_DISCORD_DSN")),
     integrations=[RedisIntegration(), AioHttpIntegration()],
     before_send=before_sentry_send

@@ -9,9 +9,10 @@ from sentry_sdk.integrations.redis import RedisIntegration
 
 from data.data import GenericError, birdList, database, logger, screech_owls
 
-sentry_sdk.init(dsn=str(os.getenv("SENTRY_API_DSN")),
-                integrations=[FlaskIntegration(),
-                              RedisIntegration()])
+sentry_sdk.init(
+    release=f"Heroku Release {str(os.getenv('HEROKU_RELEASE_VERSION'))}:{str(os.getenv('HEROKU_SLUG_DESCRIPTION'))}",
+    dsn=str(os.getenv("SENTRY_API_DSN")),
+    integrations=[FlaskIntegration(), RedisIntegration()])
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['SESSION_COOKIE_SAMESITE'] = "Strict"
