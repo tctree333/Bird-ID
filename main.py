@@ -153,7 +153,6 @@ if __name__ == '__main__':
 
         # don't handle errors with local handlers
         if hasattr(ctx.command, 'on_error'):
-            capture_exception(error)
             return
 
         if isinstance(error, commands.CommandOnCooldown):  # send cooldown

@@ -18,6 +18,7 @@ import typing
 
 import discord
 from discord.ext import commands
+from sentry_sdk import capture_exception
 
 from data.data import database, logger
 from functions import channel_setup, user_setup
@@ -46,7 +47,7 @@ class Score(commands.Cog):
     @commands.command(
         brief="- How many correct answers given by a user",
         help="- Gives the amount of correct answers by a user.\n" +
-             "Mention someone to get their score,"+
+             "Mention someone to get their score," +
              "Don't mention anyone to get your score.",
         aliases=["us"]
     )
@@ -84,7 +85,7 @@ class Score(commands.Cog):
 
     # gives streak of a user
     @commands.command(
-        help = '- Gives your current/max streak',
+        help='- Gives your current/max streak',
         aliases=["streaks", "stk"]
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.user)
@@ -150,7 +151,7 @@ class Score(commands.Cog):
         else:
             database_key = "users:global"
             scope = "global"
-        
+
         user_amount = int(database.zcard(database_key))
         page = (page * 10) - 10
 
@@ -188,17 +189,17 @@ class Score(commands.Cog):
 
         if database.zscore(database_key, str(ctx.author.id)) is not None:
             placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
-            distance = int(database.zrevrange(database_key, placement-2, placement-2, True)[0
-                            ][1]) - int(database.zscore(database_key, str(ctx.author.id)))
+            distance = (int(database.zrevrange(database_key, placement-2, placement-2, True)[0][1]) - 
+                        int(database.zscore(database_key, str(ctx.author.id))))
             if placement is 1:
                 embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
-                f"You are in first place.", inline=False)
+                                                   f"You are in first place.", inline=False)
             elif distance is 0:
                 embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
-                f"You are tied with #{str(placement-1)}", inline=False)
+                                                   f"You are tied with #{str(placement-1)}", inline=False)
             else:
                 embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
-                f"You are {str(distance)} away from #{str(placement-1)}", inline=False)
+                                                   f"You are {str(distance)} away from #{str(placement-1)}", inline=False)
         else:
             embed.add_field(name="You:", value="You haven't answered any correctly.")
 
@@ -263,7 +264,7 @@ class Score(commands.Cog):
             logger.info(f"no users in {database_key}")
             await ctx.send("There are no birds in the database.")
             return
-        
+
         if page > user_amount:
             page = user_amount - (user_amount % 10)
 
@@ -274,7 +275,8 @@ class Score(commands.Cog):
 
         for i, stats in enumerate(leaderboard_list):
             leaderboard += f"{str(i+1+page)}. **{str(stats[0])[2:-1]}** - {str(int(stats[1]))}\n"
-        embed.add_field(name=f"Top Missed Birds ({scope})", value=leaderboard, inline=False)
+        embed.add_field(
+            name=f"Top Missed Birds ({scope})", value=leaderboard, inline=False)
 
         await ctx.send(embed=embed)
 
@@ -293,10 +295,11 @@ class Score(commands.Cog):
 *Please try again once the correct permissions are set.*"""
             )
         else:
+            capture_exception(error)
             await ctx.send(
-                """**An uncaught leaderboard error has occurred.**
-*Please log this message in #support in the support server below, or try again.* 
-**Error:** """ + str(error)
+                "**An uncaught leaderboard error has occurred.**\n" +
+                "*Please log this message in #support in the support server below, or try again.*\n" +
+                "**Error:** " + str(error)
             )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
@@ -310,18 +313,20 @@ class Score(commands.Cog):
             await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
-                f"""**The bot does not have enough permissions to fully function.**
-**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
-*Please try again once the correct permissions are set.*"""
+                "**The bot does not have enough permissions to fully function.**\n" +
+                f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n" +
+                "*Please try again once the correct permissions are set.*"
             )
         else:
+            capture_exception(error)
             await ctx.send(
-                """**An uncaught missed birds error has occurred.**
-*Please log this message in #support in the support server below, or try again.* 
-**Error:** """ + str(error)
+                "**An uncaught missed birds error has occurred.**\n"
+                "*Please log this message in #support in the support server below, or try again.*\n"
+                "**Error:** " + str(error)
             )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
+
 
 def setup(bot):
     bot.add_cog(Score(bot))

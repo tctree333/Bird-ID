@@ -18,6 +18,7 @@ import string
 
 import discord
 from discord.ext import commands
+from sentry_sdk import capture_exception
 
 from data.data import logger, states
 from functions import channel_setup, user_setup
@@ -47,7 +48,8 @@ class States(commands.Cog):
                     f"**Sorry, `{arg}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
                 )
 
-            elif len(set(roles).intersection(set(states[arg]["aliases"]))) is 0:  # gets similarities
+            # gets similarities
+            elif len(set(roles).intersection(set(states[arg]["aliases"]))) is 0:
                 # need to add roles (does not have role)
                 logger.info("add roles")
                 raw_roles = ctx.guild.roles
@@ -126,15 +128,16 @@ class States(commands.Cog):
             await ctx.send("**This command is unavaliable in DMs!**")
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
-                f"""**The bot does not have enough permissions to fully function.**
-**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
-*Please try again once the correct permissions are set.*"""
+                f"**The bot does not have enough permissions to fully function.**\n" +
+                f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n" +
+                "*Please try again once the correct permissions are set.*"
             )
         else:
+            capture_exception(error)
             await ctx.send(
-                """**An uncaught set error has occurred.**
-*Please log this message in #support in the support server below, or try again.* 
-**Error:** """ + str(error)
+                "**An uncaught set error has occurred.**\n" +
+                "*Please log this message in #support in the support server below, or try again.*\n" +
+                "**Error:** " + str(error)
             )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
@@ -150,18 +153,20 @@ class States(commands.Cog):
             await ctx.send("**This command is unavaliable in DMs!**")
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
-                f"""**The bot does not have enough permissions to fully function.**
-**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
-*Please try again once the correct permissions are set.*"""
+                "**The bot does not have enough permissions to fully function.**\n" +
+                f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n" +
+                "*Please try again once the correct permissions are set.*"
             )
         else:
+            capture_exception(error)
             await ctx.send(
-                """**An uncaught remove error has occurred.**
-*Please log this message in #support in the support server below, or try again.* 
-**Error:** """ + str(error)
+                "**An uncaught remove error has occurred.**\n" +
+                "*Please log this message in  #support in the support server below, or try again.*\n" +
+                "**Error: ** " + str(error)
             )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
+
 
 def setup(bot):
     bot.add_cog(States(bot))
