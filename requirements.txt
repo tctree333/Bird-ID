@@ -7,5 +7,5 @@ holidays==0.9.12
 Flask==1.1.1
 gunicorn==20.0.4
 Authlib==0.13
-sentry-sdk==0.13.5
+sentry-sdk==0.14.0
 blinker==1.4
