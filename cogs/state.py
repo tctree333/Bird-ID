@@ -1,5 +1,5 @@
 # state.py | commands for state specific birds
-# Copyright (C) 2019  EraserBird, person_v1.32
+# Copyright (C) 2019-2020  EraserBird, person_v1.32
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
