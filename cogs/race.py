@@ -29,18 +29,18 @@ class Race(commands.Cog):
 
     async def _get_options(self, ctx):
         bw, addon, state, media, limit = database.hmget(
-            f"race.data:{str(ctx.channel.id)}", ["bw", "addon", "state", "media", "limit"]
+            f"race.data:{ctx.channel.id}", ["bw", "addon", "state", "media", "limit"]
         )
         options = str(
-            f"**Age/Sex:** {str(addon)[2:-1] if addon else 'default'}\n" + f"**Black & White:** {bw==b'bw'}\n" +
-            f"**Special bird list:** {str(state)[2:-1] if state else 'None'}\n" +
-            f"**Media Type:** {str(media)[2:-1]}\n" + f"**Amount to Win:** {str(limit)[2:-1]}\n"
+            f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" + f"**Black & White:** {bw==b'bw'}\n" +
+            f"**Special bird list:** {state.decode('utf-8') if state else 'None'}\n" +
+            f"**Media Type:** {media.decode('utf-8')}\n" + f"**Amount to Win:** {limit.decode('utf-8')}\n"
         )
         return options
 
     async def _send_stats(self, ctx, preamble):
         placings = 5
-        database_key = f"race.scores:{str(ctx.channel.id)}"
+        database_key = f"race.scores:{ctx.channel.id}"
         if database.zcard(database_key) == 0:
             logger.info(f"no users in {database_key}")
             await ctx.send("There are no users in the database.")
@@ -67,11 +67,11 @@ class Race(commands.Cog):
                 else:
                     user = f"**{user.name}#{user.discriminator}**"
             else:
-                user = f"**{user.name}#{user.discriminator}** ({str(user.mention)})"
+                user = f"**{user.name}#{user.discriminator}** ({user.mention})"
 
-            leaderboard += f"{str(i+1)}. {user} - {str(int(stats[1]))}\n"
+            leaderboard += f"{i+1}. {user} - {int(stats[1])}\n"
 
-        start = int(database.hget(f"race.data:{str(ctx.channel.id)}", "start"))
+        start = int(database.hget(f"race.data:{ctx.channel.id}", "start"))
         elapsed = str(datetime.timedelta(seconds=round(time.time()) - start))
 
         embed.add_field(name="Options", value=await self._get_options(ctx), inline=False)
@@ -80,14 +80,14 @@ class Race(commands.Cog):
 
         if database.zscore(database_key, str(ctx.author.id)) is not None:
             placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
-            embed.add_field(name="You:", value=f"You are #{str(placement)}.", inline=False)
+            embed.add_field(name="You:", value=f"You are #{placement}.", inline=False)
         else:
             embed.add_field(name="You:", value="You haven't answered any correctly.")
 
         await ctx.send(embed=embed)
 
     async def stop_race_(self, ctx):
-        first = database.zrevrange(f"race.scores:{str(ctx.channel.id)}", 0, 0, True)[0]
+        first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]
         if ctx.guild is not None:
             user = ctx.guild.get_member(int(first[0]))
         else:
@@ -100,18 +100,18 @@ class Race(commands.Cog):
             else:
                 user = f"{user.name}#{user.discriminator}"
         else:
-            user = f"{user.name}#{user.discriminator} ({str(user.mention)})"
+            user = f"{user.name}#{user.discriminator} ({user.mention})"
 
         await ctx.send(
             f"**Congratulations, {user}!**\n" +
-            f"You have won the race by correctly identifying `{str(int(first[1]))}` birds. " + "*Way to go!*"
+            f"You have won the race by correctly identifying `{int(first[1])}` birds. " + "*Way to go!*"
         )
 
-        database.hset(f"race.data:{str(ctx.channel.id)}", "stop", round(time.time()))
+        database.hset(f"race.data:{ctx.channel.id}", "stop", round(time.time()))
 
         await self._send_stats(ctx, "**Race stopped.**")
-        database.delete(f"race.data:{str(ctx.channel.id)}")
-        database.delete(f"race.scores:{str(ctx.channel.id)}")
+        database.delete(f"race.data:{ctx.channel.id}")
+        database.delete(f"race.scores:{ctx.channel.id}")
 
     @commands.group(
         brief="- Base race command",
@@ -154,7 +154,7 @@ class Race(commands.Cog):
             )
             return
 
-        if database.exists(f"race.data:{str(ctx.channel.id)}"):
+        if database.exists(f"race.data:{ctx.channel.id}"):
             logger.info("already race")
             await ctx.send("**There is already a race in session.** *Change settings/view stats with `b!race view`*")
             return
@@ -214,7 +214,7 @@ class Race(commands.Cog):
             logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}; media: {media}; limit: {limit}")
 
             database.hmset(
-                f"race.data:{str(ctx.channel.id)}", {
+                f"race.data:{ctx.channel.id}", {
                     "start": round(time.time()),
                     "stop": 0,
                     "limit": limit,
@@ -225,16 +225,16 @@ class Race(commands.Cog):
                 }
             )
 
-            database.zadd(f"race.scores:{str(ctx.channel.id)}", {str(ctx.author.id): 0})
+            database.zadd(f"race.scores:{ctx.channel.id}", {str(ctx.author.id): 0})
             await ctx.send(f"**Race started with options:**\n{await self._get_options(ctx)}")
 
-            if str(database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "image":
+            if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "image":
                 logger.info("auto sending next bird image")
-                addon, bw = map(str, database.hmget(f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
+                addon, bw = map(str, database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw"]))
                 birds = self.bot.get_cog("Birds")
                 await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
 
-            if str(database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "song":
+            if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "song":
                 logger.info("auto sending next bird song")
                 birds = self.bot.get_cog("Birds")
                 await birds.send_song_(ctx)
@@ -250,7 +250,7 @@ class Race(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        if database.exists(f"race.data:{str(ctx.channel.id)}"):
+        if database.exists(f"race.data:{ctx.channel.id}"):
             await self._send_stats(ctx, f"**Race In Progress**")
         else:
             await ctx.send("**There is no race in session.** *You can start one with `b!race start`*")
@@ -263,7 +263,7 @@ class Race(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        if database.exists(f"race.data:{str(ctx.channel.id)}"):
+        if database.exists(f"race.data:{ctx.channel.id}"):
             await self.stop_race_(ctx)
         else:
             await ctx.send("**There is no race in session.** *You can start one with `b!race start`*")

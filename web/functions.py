@@ -7,26 +7,12 @@ from flask import abort
 from PIL import Image
 from sentry_sdk import capture_exception
 
-from functions import (get_files, get_sciname, spellcheck,
-                       valid_audio_extensions, valid_image_extensions)
-from web.config import (GenericError, birdList, database, get_session_id,
-                        logger, screech_owls)
+from functions import (
+    get_files, get_sciname, spellcheck, valid_audio_extensions, valid_image_extensions, _black_and_white
+)
+from web.config import (GenericError, birdList, database, get_session_id, logger, screech_owls)
 
-
-def _black_and_white(input_image_path):
-    logger.info("black and white")
-    with Image.open(input_image_path) as color_image:
-        bw = color_image.convert('L')
-        final_buffer = BytesIO()
-        bw.save(final_buffer, "png")
-    final_buffer.seek(0)
-    return final_buffer
-
-
-async def send_bird(bird: str,
-                    media_type: str,
-                    addOn: str = "",
-                    bw: bool = False):
+async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = False):
     if bird == "":
         logger.error("error - bird is blank")
         abort(406, "Bird is blank")
@@ -64,7 +50,6 @@ async def send_bird(bird: str,
 
     return file_stream, ext
 
-
 async def get_media(bird, media_type, addOn=""):  # images or songs
     if bird not in birdList:
         raise GenericError("Invalid Bird", code=990)
@@ -79,8 +64,8 @@ async def get_media(bird, media_type, addOn=""):  # images or songs
     database_key = f"web.session:{session_id}"
 
     media = await get_files(sciBird, media_type, addOn)
-    logger.info(f"fetched {media_type}: {str(media)}")
-    prevJ = int(str(database.hget(database_key, "prevJ"))[2:-1])
+    logger.info(f"fetched {media_type}: {media}")
+    prevJ = int(database.hget(database_key, "prevJ").decode("utf-8"))
     if media:
         j = (prevJ + 1) % len(media)
         logger.info("prevJ: " + str(prevJ))
@@ -97,8 +82,7 @@ async def get_media(bird, media_type, addOn=""):  # images or songs
                 break
             elif y == prevJ:
                 j = (j + 1) % (len(media))
-                raise GenericError(f"No Valid {media_type.title()} Found",
-                                   code=999)
+                raise GenericError(f"No Valid {media_type.title()} Found", code=999)
 
         database.hset(database_key, "prevJ", str(j))
     else:

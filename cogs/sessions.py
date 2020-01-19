@@ -23,25 +23,23 @@ from discord.ext import commands
 from data.data import database, logger, taxons, states
 from functions import channel_setup, check_state_role, user_setup
 
-
 class Sessions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, taxon = database.hmget(f"session.data:{str(ctx.author.id)}",
-                                                        ["bw", "addon", "state", "taxon"])
+        bw, addon, state, taxon = database.hmget(f"session.data:{ctx.author.id}", ["bw", "addon", "state", "taxon"])
         options = str(
-            f"**Age/Sex:** {str(addon)[2:-1] if addon else 'default'}\n" +
-            f"**Black & White:** {bw==b'bw'}\n" +
-            f"**State bird list:** {str(state)[2:-1] if state else 'None'}\n" +
-            f"**Bird taxon:** {str(taxon)[2:-1] if taxon else 'None'}\n"
+            f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" + f"**Black & White:** {bw==b'bw'}\n" +
+            f"**State bird list:** {state.decode('utf-8') if state else 'None'}\n" +
+            f"**Bird taxon:** {taxon.decode('utf-8') if taxon else 'None'}\n"
         )
         return options
 
     async def _get_stats(self, ctx):
         start, correct, incorrect, total = map(
-            int, database.hmget(f"session.data:{str(ctx.author.id)}", ["start", "correct", "incorrect", "total"]))
+            int, database.hmget(f"session.data:{ctx.author.id}", ["start", "correct", "incorrect", "total"])
+        )
         elapsed = str(datetime.timedelta(seconds=round(time.time()) - start))
         try:
             accuracy = round(100 * (correct / (correct + incorrect)), 2)
@@ -49,27 +47,23 @@ class Sessions(commands.Cog):
             accuracy = 0
 
         stats = str(
-            f"**Duration:** `{elapsed}`\n" +
-            f"**# Correct:** {correct}\n" +
-            f"**# Incorrect:** {incorrect}\n" +
-            f"**Total Birds:** {total}\n" +
-            f"**Accuracy:** {accuracy}%\n"
+            f"**Duration:** `{elapsed}`\n" + f"**# Correct:** {correct}\n" + f"**# Incorrect:** {incorrect}\n" +
+            f"**Total Birds:** {total}\n" + f"**Accuracy:** {accuracy}%\n"
         )
         return stats
 
     async def _send_stats(self, ctx, preamble):
-        database_key = f"session.incorrect:{str(ctx.author.id)}"
+        database_key = f"session.incorrect:{ctx.author.id}"
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title=preamble)
         embed.set_author(name="Bird ID - An Ornithology Bot")
 
         if database.zcard(database_key) != 0:
-            leaderboard_list = database.zrevrangebyscore(
-                database_key, "+inf", "-inf", 0, 5, True)
+            leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", 0, 5, True)
             leaderboard = ""
 
             for i, stats in enumerate(leaderboard_list):
-                leaderboard += f"{str(i+1)}. **{str(stats[0])[2:-1]}** - {str(int(stats[1]))}\n"
+                leaderboard += f"{i+1}. **{stats[0].decode('utf-8')}** - {int(stats[1])}\n"
         else:
             logger.info(f"no birds in {database_key}")
             leaderboard = "**There are no missed birds.**"
@@ -80,13 +74,13 @@ class Sessions(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.group(brief="- Base session command",
-                    help="- Base session command\n" +
-                         "Sessions will record your activity for an amount of time and " +
-                         "will give you stats on how your performance and " +
-                         "also set global variables such as black and white, " +
-                         "state specific bird lists, specific bird taxons, or bird age/sex. ",
-                    aliases=["ses", "sesh"])
+    @commands.group(
+        brief="- Base session command",
+        help="- Base session command\n" + "Sessions will record your activity for an amount of time and " +
+        "will give you stats on how your performance and " + "also set global variables such as black and white, " +
+        "state specific bird lists, specific bird taxons, or bird age/sex. ",
+        aliases=["ses", "sesh"]
+    )
     async def session(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send('**Invalid subcommand passed.**\n*Valid Subcommands:* `start, view, stop`')
@@ -108,7 +102,7 @@ class Sessions(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        if database.exists(f"session.data:{str(ctx.author.id)}"):
+        if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("already session")
             await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session edit`*")
             return
@@ -124,7 +118,7 @@ class Sessions(commands.Cog):
                 state = " ".join(states_args).strip()
             else:
                 state = " ".join(check_state_role(ctx))
-            taxon_args = set(taxons["taxons"]).intersection({arg.lower() for arg in args})
+            taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
             if taxon_args:
                 taxon = " ".join(taxon_args).strip()
             else:
@@ -143,7 +137,7 @@ class Sessions(commands.Cog):
             logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}")
 
             database.hmset(
-                f"session.data:{str(ctx.author.id)}", {
+                f"session.data:{ctx.author.id}", {
                     "start": round(time.time()),
                     "stop": 0,
                     "correct": 0,
@@ -156,6 +150,7 @@ class Sessions(commands.Cog):
                 }
             )
             await ctx.send(f"**Session started with options:**\n{await self._get_options(ctx)}")
+
     # views session
     @session.command(
         brief="- Views session",
@@ -172,38 +167,38 @@ class Sessions(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        if database.exists(f"session.data:{str(ctx.author.id)}"):
+        if database.exists(f"session.data:{ctx.author.id}"):
             args = args_str.split(" ")
             logger.info(f"args: {args}")
             if "bw" in args:
-                if len(database.hget(f"session.data:{str(ctx.author.id)}", "bw")) == 0:
+                if len(database.hget(f"session.data:{ctx.author.id}", "bw")) == 0:
                     logger.info("adding bw")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "bw", "bw")
+                    database.hset(f"session.data:{ctx.author.id}", "bw", "bw")
                 else:
                     logger.info("removing bw")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "bw", "")
+                    database.hset(f"session.data:{ctx.author.id}", "bw", "")
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
                 toggle_states = list(states_args)
-                current_states = str(database.hget(f"session.data:{str(ctx.author.id)}", "state"))[2:-1].split(" ")
+                current_states = database.hget(f"session.data:{ctx.author.id}", "state").decode("utf-8").split(" ")
                 add_states = []
                 logger.info(f"toggle states: {toggle_states}")
                 logger.info(f"current states: {current_states}")
                 for state in set(toggle_states).symmetric_difference(set(current_states)):
                     add_states.append(state)
                 logger.info(f"adding states: {add_states}")
-                database.hset(f"session.data:{str(ctx.author.id)}", "state", " ".join(add_states).strip())
-            taxon_args = set(taxons["taxons"]).intersection({arg.lower() for arg in args})
+                database.hset(f"session.data:{ctx.author.id}", "state", " ".join(add_states).strip())
+            taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
             if taxon_args:
                 toggle_taxon = list(taxon_args)
-                current_taxons = str(database.hget(f"session.data:{str(ctx.author.id)}", "taxon"))[2:-1].split(" ")
+                current_taxons = database.hget(f"session.data:{ctx.author.id}", "taxon").decode("utf-8").split(" ")
                 add_taxons = []
                 logger.info(f"toggle taxons: {toggle_taxon}")
                 logger.info(f"current taxons: {current_taxons}")
                 for o in set(toggle_taxon).symmetric_difference(set(current_taxons)):
                     add_taxons.append(o)
                 logger.info(f"adding taxons: {add_taxons}")
-                database.hset(f"session.data:{str(ctx.author.id)}", "taxon", " ".join(add_taxons).strip())
+                database.hset(f"session.data:{ctx.author.id}", "taxon", " ".join(add_taxons).strip())
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
             if female and juvenile:
@@ -211,20 +206,20 @@ class Sessions(commands.Cog):
                 return
             elif female:
                 addon = "female"
-                if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) == 0:
+                if len(database.hget(f"session.data:{ctx.author.id}", "addon")) == 0:
                     logger.info("adding female")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "addon", addon)
+                    database.hset(f"session.data:{ctx.author.id}", "addon", addon)
                 else:
                     logger.info("removing female")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
+                    database.hset(f"session.data:{ctx.author.id}", "addon", "")
             elif juvenile:
                 addon = "juvenile"
-                if len(database.hget(f"session.data:{str(ctx.author.id)}", "addon")) == 0:
+                if len(database.hget(f"session.data:{ctx.author.id}", "addon")) == 0:
                     logger.info("adding juvenile")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "addon", addon)
+                    database.hset(f"session.data:{ctx.author.id}", "addon", addon)
                 else:
                     logger.info("removing juvenile")
-                    database.hset(f"session.data:{str(ctx.author.id)}", "addon", "")
+                    database.hset(f"session.data:{ctx.author.id}", "addon", "")
             await self._send_stats(ctx, f"**Session started previously.**\n")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
@@ -238,12 +233,12 @@ class Sessions(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        if database.exists(f"session.data:{str(ctx.author.id)}"):
-            database.hset(f"session.data:{str(ctx.author.id)}", "stop", round(time.time()))
+        if database.exists(f"session.data:{ctx.author.id}"):
+            database.hset(f"session.data:{ctx.author.id}", "stop", round(time.time()))
 
             await self._send_stats(ctx, "**Session stopped.**\n")
-            database.delete(f"session.data:{str(ctx.author.id)}")
-            database.delete(f"session.incorrect:{str(ctx.author.id)}")
+            database.delete(f"session.data:{ctx.author.id}")
+            database.delete(f"session.incorrect:{ctx.author.id}")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
 

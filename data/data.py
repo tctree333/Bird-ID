@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import itertools
 import logging
 import logging.handlers
 import os
@@ -42,7 +43,7 @@ def before_sentry_send(event, hint):
 # add sentry logging
 """
 sentry_sdk.init(
-    release=f"Heroku Release {str(os.getenv('HEROKU_RELEASE_VERSION'))}:{str(os.getenv('HEROKU_SLUG_DESCRIPTION'))}",
+    release=f"Heroku Release {str(os.getenv('HEROKU_RELEASE_VERSION'))}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",
     dsn=str(os.getenv("SENTRY_DISCORD_DSN")),
     integrations=[RedisIntegration(), AioHttpIntegration()],
     before_send=before_sentry_send
@@ -214,14 +215,13 @@ def _taxons():
     logger.info("Working on taxon lists")
     logger.info("Working on taxon master list")
     taxons = {}
-    with open('data/taxons/taxons.txt', 'r') as f:
-        taxons["taxons"] = [line.strip().lower() for line in f]
     logger.info("Done with taxon master list")
-    for filename in taxons["taxons"]:
-        logger.info(f"Working on {filename}")
-        with open(f'data/taxons/{filename}.txt', 'r') as f:
-            taxons[filename] = [string.capwords(line.strip().replace("-", " ")) for line in f]
-        logger.info(f"Done with {filename}")
+    for directory in os.listdir("data/taxons"):
+        for filename in os.listdir(f"data/taxons/{directory}"):
+            logger.info(f"Working on {filename}")
+            with open(f"data/taxons/{directory}/{filename}", 'r') as f:
+                taxons[filename] = [string.capwords(line.strip().replace("-", " ")) for line in f]
+            logger.info(f"Done with {filename}")
     logger.info("Done with taxon lists!")
     return taxons
 

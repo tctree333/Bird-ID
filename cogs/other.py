@@ -61,7 +61,7 @@ class Other(commands.Cog):
 
         state = state.upper()
 
-        if state not in list(states.keys()):
+        if state not in states:
             logger.info("invalid state")
             await ctx.send(
                 f"**Sorry, `{state}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
@@ -71,7 +71,7 @@ class Other(commands.Cog):
         birdLists = []
         temp = ""
         for bird in states[state]['birdList']:
-            temp += f"{str(bird)}\n"
+            temp += f"{bird}\n"
             if len(temp) > 1950:
                 birdLists.append(temp)
                 temp = ""
@@ -80,7 +80,7 @@ class Other(commands.Cog):
         songLists = []
         temp = ""
         for bird in states[state]['songBirds']:
-            temp += f"{str(bird)}\n"
+            temp += f"{bird}\n"
             if len(temp) > 1950:
                 songLists.append(temp)
                 temp = ""
@@ -98,8 +98,8 @@ class Other(commands.Cog):
             await ctx.author.dm_channel.send(f"```{birds}```")
 
         await ctx.send(
-            f"The `{state}` bird list has **{str(len(states[state]['birdList']))}** birds.\n" +
-            f"The `{state}` bird list has **{str(len(states[state]['songBirds']))}** songs.\n" +
+            f"The `{state}` bird list has **{len(states[state]['birdList'])}** birds.\n" +
+            f"The `{state}` bird list has **{len(states[state]['songBirds'])}** songs.\n" +
             "*A full list of birds has been sent to you via DMs.*"
         )
 
@@ -115,14 +115,14 @@ class Other(commands.Cog):
         taxon = taxon.lower()
         state = state.upper()
 
-        if taxon not in list(taxons["taxons"]):
+        if taxon not in taxons:
             logger.info("invalid taxon")
             await ctx.send(
                 f"**Sorry, `{taxon}` is not a valid taxon.**\n*Valid taxons:* `{', '.join(map(str, list(taxons['taxons'])))}`"
             )
             return
 
-        if state not in list(states.keys()):
+        if state not in states:
             logger.info("invalid state")
             await ctx.send(
                 f"**Sorry, `{state}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
@@ -143,7 +143,7 @@ class Other(commands.Cog):
         birdLists = []
         temp = ""
         for bird in bird_list:
-            temp += f"{str(bird)}\n"
+            temp += f"{bird}\n"
             if len(temp) > 1950:
                 birdLists.append(temp)
                 temp = ""
@@ -152,7 +152,7 @@ class Other(commands.Cog):
         songLists = []
         temp = ""
         for bird in song_bird_list:
-            temp += f"{str(bird)}\n"
+            temp += f"{bird}\n"
             if len(temp) > 1950:
                 songLists.append(temp)
                 temp = ""
@@ -170,8 +170,8 @@ class Other(commands.Cog):
             await ctx.author.dm_channel.send(f"```{birds}```")
 
         await ctx.send(
-            f"The `{taxon}` in the `{state}` bird list has **{str(len(bird_list))}** birds.\n" +
-            f"The `{taxon}` in the `{state}` bird list has **{str(len(song_bird_list))}** songs.\n" +
+            f"The `{taxon}` in the `{state}` bird list has **{len(bird_list)}** birds.\n" +
+            f"The `{taxon}` in the `{state}` bird list has **{len(song_bird_list)}** songs.\n" +
             "*A full list of birds has been sent to you via DMs.*"
         )
 
@@ -234,7 +234,7 @@ class Other(commands.Cog):
             name="Stats",
             value=f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. " +
             f"There are {int(database.zcard('users:global'))} active users in {int(database.zcard('score:global'))} channels. "
-            + f"The WebSocket latency is {str(round((self.bot.latency*1000)))} ms.",
+            + f"The WebSocket latency is {round((self.bot.latency*1000))} ms.",
             inline=False
         )
         await ctx.send(embed=embed)

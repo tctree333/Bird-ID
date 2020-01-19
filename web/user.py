@@ -1,16 +1,12 @@
 import os
-import random
 import re
 
 import authlib
-import flask
 from authlib.integrations.flask_client import OAuth
-from flask import (Blueprint, abort, make_response, redirect, render_template,
-                   request, session, url_for)
+from flask import (Blueprint, abort, make_response, redirect, render_template, request, session, url_for)
 from sentry_sdk import capture_exception
 
-from web.config import (FRONTEND_URL, app, database, get_session_id, logger,
-                        update_web_user, verify_session)
+from web.config import (FRONTEND_URL, app, database, get_session_id, logger, update_web_user, verify_session)
 
 bp = Blueprint('user', __name__, url_prefix='/user')
 oauth = OAuth(app)
@@ -35,14 +31,12 @@ oauth.register(
 )
 discord = oauth.discord
 
-
 @bp.after_request  # enable CORS
 def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = FRONTEND_URL
     header['Access-Control-Allow-Credentials'] = 'true'
     return response
-
 
 @bp.route('/login', methods=["GET"])
 def login():
@@ -51,15 +45,10 @@ def login():
     resp = make_response(oauth.discord.authorize_redirect(redirect_uri))
     redirect_after = request.args.get("redirect", FRONTEND_URL, str)
     if regex.fullmatch(redirect_after) is not None:
-        resp.headers.add(
-            'Set-Cookie', 'redirect=' + redirect_after +
-            '; Max-Age=180; SameSite=None; HttpOnly; Secure')
+        resp.headers.add('Set-Cookie', 'redirect=' + redirect_after + '; Max-Age=180; SameSite=None; HttpOnly; Secure')
     else:
-        resp.headers.add(
-            'Set-Cookie',
-            'redirect=/; Max-Age=180; SameSite=None; HttpOnly; Secure')
+        resp.headers.add('Set-Cookie', 'redirect=/; Max-Age=180; SameSite=None; HttpOnly; Secure')
     return resp
-
 
 @bp.route('/logout', methods=["GET"])
 def logout():
@@ -72,7 +61,7 @@ def logout():
 
     session_id = get_session_id()
     user_id = verify_session(session_id)
-    if type(user_id) is int:
+    if isinstance(int, user_id):
         logger.info("deleting user data, session data")
         database.delete(f"web.user:{user_id}", f"web.session:{session_id}")
         session.clear()
@@ -81,7 +70,6 @@ def logout():
         database.delete(f"web.session:{session_id}")
         session.clear()
     return redirect(redirect_url)
-
 
 @bp.route('/authorize')
 def authorize():
@@ -100,7 +88,6 @@ def authorize():
     session.pop("redirect", None)
     return redirect(redirection)
 
-
 @bp.route('/profile')
 def profile():
     logger.info("endpoint: profile")
@@ -108,17 +95,17 @@ def profile():
     session_id = get_session_id()
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
 
-    if user_id !=0:
+    if user_id != 0:
         avatar_hash, avatar_url, username, discriminator = (
-            str(stat)[2:-1] for stat in database.hmget(
-                f"web.user:{str(user_id)}", "avatar_hash", "avatar_url",
-                "username", "discriminator"))
+            stat.decode("utf-8")
+            for stat in database.hmget(f"web.user:{user_id}", "avatar_hash", "avatar_url", "username", "discriminator")
+        )
         placings = int(database.zscore("users:global", str(user_id)))
         max_streak = int(database.zscore('streak.max:global', str(user_id)))
-        missed_birds = [[
-            str(stats[0])[2:-1], int(stats[1])
-        ] for stats in database.zrevrangebyscore(
-            f"incorrect.user:{str(user_id)}", "+inf", "-inf", 0, 10, True)]
+        missed_birds = [
+            [stats[0].decode("utf-8"), int(stats[1])]
+            for stats in database.zrevrangebyscore(f"incorrect.user:{user_id}", "+inf", "-inf", 0, 10, True)
+        ]
         return {
             "avatar_hash": avatar_hash,
             "avatar_url": avatar_url,
@@ -131,7 +118,6 @@ def profile():
     else:
         logger.info("not logged in")
         abort(403, "Sign in to continue")
-
 
 @app.errorhandler(authlib.common.errors.AuthlibBaseError)
 def handle_authlib_error(e):

@@ -18,9 +18,10 @@ import discord
 from discord.ext import commands
 
 from data.data import database, get_wiki_url, goatsuckers, logger, sciGoat
-from functions import (bird_setup, channel_setup, get_sciname,
-                       incorrect_increment, score_increment, session_increment,
-                       spellcheck, user_setup)
+from functions import (
+    bird_setup, channel_setup, get_sciname, incorrect_increment, score_increment, session_increment, spellcheck,
+    user_setup
+)
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
@@ -38,7 +39,7 @@ class Check(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "bird"))[2:-1]
+        currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
@@ -50,8 +51,8 @@ class Check(commands.Cog):
             if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
 
-                database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
-                database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
+                database.hset(f"channel:{ctx.channel.id}", "bird", "")
+                database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
@@ -59,13 +60,18 @@ class Check(commands.Cog):
 
                 database.zincrby("streak:global", 1, str(ctx.author.id))
                 # check if streak is greater than max, if so, increases max
-                if database.zscore("streak:global", str(ctx.author.id))> database.zscore("streak.max:global", str(ctx.author.id)):
-                    database.zadd("streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))})
+                if database.zscore("streak:global", str(ctx.author.id
+                                                       )) > database.zscore("streak.max:global", str(ctx.author.id)):
+                    database.zadd(
+                        "streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))}
+                    )
 
-                await ctx.send("Correct! Good job!" if not database.exists(f"race.data:{str(ctx.channel.id)}") 
-                                                    else f"**{str(ctx.author.mention)}**, you are correct!")
+                await ctx.send(
+                    "Correct! Good job!" if not database.exists(f"race.data:{ctx.channel.id}") else
+                    f"**{ctx.author.mention}**, you are correct!"
+                )
                 url = get_wiki_url(currentBird)
-                await ctx.send(url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{url}>")
+                await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")
                 score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
@@ -74,37 +80,38 @@ class Check(commands.Cog):
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
-                if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
-                        database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "image":
+                if database.exists(f"race.data:{ctx.channel.id}") and str(
+                    database.hget(f"race.data:{ctx.channel.id}", "media")
+                )[2:-1] == "image":
 
-                    limit = int(database.hget(f"race.data:{str(ctx.channel.id)}", "limit"))
-                    first = database.zrevrange(f"race.scores:{str(ctx.channel.id)}", 0, 0, True)[0]
+                    limit = int(database.hget(f"race.data:{ctx.channel.id}", "limit"))
+                    first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]
                     if int(first[1]) >= limit:
                         logger.info("race ending")
                         race = self.bot.get_cog("Race")
                         await race.stop_race_(ctx)
                     else:
                         logger.info("auto sending next bird image")
-                        addon, bw = map(str, database.hmget(f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
+                        addon, bw = map(str, database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw"]))
                         birds = self.bot.get_cog("Birds")
                         await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
 
             else:
                 logger.info("incorrect")
-                
+
                 database.zadd("streak:global", {str(ctx.author.id): 0})
-                
-                if database.exists(f"session.data:{str(ctx.author.id)}"):
+
+                if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
-                    
+
                 incorrect_increment(ctx, str(currentBird), 1)
 
-                if database.exists(f"race.data:{str(ctx.channel.id)}"):
+                if database.exists(f"race.data:{ctx.channel.id}"):
                     await ctx.send("Sorry, that wasn't the right answer.")
                 else:
-                    database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
-                    database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
+                    database.hset(f"channel:{ctx.channel.id}", "bird", "")
+                    database.hset(f"channel:{ctx.channel.id}", "answered", "1")
                     await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                     url = get_wiki_url(currentBird)
                     await ctx.send(url)
@@ -118,15 +125,15 @@ class Check(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "goatsucker"))[2:-1]
+        currentBird = database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode("utf-8")
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
             await bird_setup(ctx, currentBird)
             index = goatsuckers.index(currentBird)
             sciBird = sciGoat[index]
-            database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
-            database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
+            database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
+            database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
             if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
 
@@ -136,8 +143,11 @@ class Check(commands.Cog):
 
                 # increment streak and update max
                 database.zincrby("streak:global", 1, str(ctx.author.id))
-                if database.zscore("streak:global", str(ctx.author.id))> database.zscore("streak.max:global", str(ctx.author.id)):
-                    database.zadd("streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))})
+                if database.zscore("streak:global", str(ctx.author.id
+                                                       )) > database.zscore("streak.max:global", str(ctx.author.id)):
+                    database.zadd(
+                        "streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))}
+                    )
 
                 await ctx.send("Correct! Good job!")
                 url = get_wiki_url(currentBird)
@@ -152,9 +162,9 @@ class Check(commands.Cog):
 
             else:
                 logger.info("incorrect")
-                
+
                 database.zadd("streak:global", {str(ctx.author.id): 0})
-                
+
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
@@ -175,7 +185,7 @@ class Check(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        currentSongBird = str(database.hget(f"channel:{str(ctx.channel.id)}", "sBird"))[2:-1]
+        currentSongBird = database.hget(f"channel:{ctx.channel.id}", "sBird").decode("utf-8")
         if currentSongBird == "":  # no bird
             await ctx.send("You must ask for a bird call first!")
         else:  # if there is a bird, it checks answer
@@ -187,8 +197,8 @@ class Check(commands.Cog):
             if spellcheck(arg, currentSongBird) is True or spellcheck(arg, sciBird) is True:
                 logger.info("correct")
 
-                database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
-                database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
+                database.hset(f"channel:{ctx.channel.id}", "sBird", "")
+                database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
 
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
@@ -196,13 +206,18 @@ class Check(commands.Cog):
 
                 # increment streak and update max
                 database.zincrby("streak:global", 1, str(ctx.author.id))
-                if database.zscore("streak:global", str(ctx.author.id))> database.zscore("streak.max:global", str(ctx.author.id)):
-                    database.zadd("streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))})
+                if database.zscore("streak:global", str(ctx.author.id
+                                                       )) > database.zscore("streak.max:global", str(ctx.author.id)):
+                    database.zadd(
+                        "streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))}
+                    )
 
-                await ctx.send("Correct! Good job!" if not database.exists(f"race.data:{str(ctx.channel.id)}") 
-                                                    else f"**{str(ctx.author.mention)}**, you are correct!")
+                await ctx.send(
+                    "Correct! Good job!" if not database.exists(f"race.data:{ctx.channel.id}") else
+                    f"**{ctx.author.mention}**, you are correct!"
+                )
                 url = get_wiki_url(currentSongBird)
-                await ctx.send(url if not database.exists(f"race.data:{str(ctx.channel.id)}") else f"<{url}>")
+                await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")
                 score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
@@ -211,11 +226,12 @@ class Check(commands.Cog):
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
-                if database.exists(f"race.data:{str(ctx.channel.id)}") and str(
-                        database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "song":
+                if database.exists(f"race.data:{ctx.channel.id}") and str(
+                    database.hget(f"race.data:{ctx.channel.id}", "media")
+                )[2:-1] == "song":
 
-                    limit = int(database.hget(f"race.data:{str(ctx.channel.id)}", "limit"))
-                    first = database.zrevrange(f"race.scores:{str(ctx.channel.id)}", 0, 0, True)[0]
+                    limit = int(database.hget(f"race.data:{ctx.channel.id}", "limit"))
+                    first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]
                     if int(first[1]) >= limit:
                         logger.info("race ending")
                         race = self.bot.get_cog("Race")
@@ -227,19 +243,19 @@ class Check(commands.Cog):
 
             else:
                 logger.info("incorrect")
-                
+
                 database.zadd("streak:global", {str(ctx.author.id): 0})
-                
-                if database.exists(f"session.data:{str(ctx.author.id)}"):
+
+                if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
                     session_increment(ctx, "incorrect", 1)
 
                 incorrect_increment(ctx, str(currentSongBird), 1)
-                if database.exists(f"race.data:{str(ctx.channel.id)}"):
+                if database.exists(f"race.data:{ctx.channel.id}"):
                     await ctx.send("Sorry, that wasn't the right answer.")
                 else:
-                    database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
-                    database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
+                    database.hset(f"channel:{ctx.channel.id}", "sBird", "")
+                    database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
                     await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
                     url = get_wiki_url(currentSongBird)
                     await ctx.send(url)

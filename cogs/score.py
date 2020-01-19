@@ -23,7 +23,6 @@ from sentry_sdk import capture_exception
 from data.data import database, logger
 from functions import channel_setup, user_setup
 
-
 class Score(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -39,7 +38,7 @@ class Score(commands.Cog):
 
         totalCorrect = int(database.zscore("score:global", str(ctx.channel.id)))
         await ctx.send(
-            f"Wow, looks like a total of {str(totalCorrect)} birds have been answered correctly in this channel! " +
+            f"Wow, looks like a total of {totalCorrect} birds have been answered correctly in this channel! " +
             "Good job everyone!"
         )
 
@@ -47,8 +46,7 @@ class Score(commands.Cog):
     @commands.command(
         brief="- How many correct answers given by a user",
         help="- Gives the amount of correct answers by a user.\n" +
-             "Mention someone to get their score," +
-             "Don't mention anyone to get your score.",
+        "Mention someone to get their score, Don't mention anyone to get your score.",
         aliases=["us"]
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.user)
@@ -66,13 +64,13 @@ class Score(commands.Cog):
             logger.info(usera)
             if database.zscore("users:global", str(usera)) is not None:
                 times = str(int(database.zscore("users:global", str(usera))))
-                user = f"<@{str(usera)}>"
+                user = f"<@{usera}>"
             else:
                 await ctx.send("This user does not exist on our records!")
                 return
         else:
             if database.zscore("users:global", str(ctx.author.id)) is not None:
-                user = f"<@{str(ctx.author.id)}>"
+                user = f"<@{ctx.author.id}>"
                 times = str(int(database.zscore("users:global", str(ctx.author.id))))
             else:
                 await ctx.send("You haven't used this bot yet! (except for this)")
@@ -84,10 +82,7 @@ class Score(commands.Cog):
         await ctx.send(embed=embed)
 
     # gives streak of a user
-    @commands.command(
-        help='- Gives your current/max streak',
-        aliases=["streaks", "stk"]
-    )
+    @commands.command(help='- Gives your current/max streak', aliases=["streaks", "stk"])
     @commands.cooldown(1, 5.0, type=commands.BucketType.user)
     async def streak(self, ctx):
 
@@ -96,8 +91,8 @@ class Score(commands.Cog):
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title="**User Streaks**")
         embed.set_author(name="Bird ID - An Ornithology Bot")
-        current_streak = f"You have answered `{str(int(database.zscore('streak:global', str(ctx.author.id))))}` in a row!"
-        max_streak = f"Your max was `{str(int(database.zscore('streak.max:global', str(ctx.author.id))))}` in a row!"
+        current_streak = f"You have answered `{int(database.zscore('streak:global', str(ctx.author.id)))}` in a row!"
+        max_streak = f"Your max was `{int(database.zscore('streak.max:global', str(ctx.author.id)))}` in a row!"
         embed.add_field(name=f"**Current Streak**", value=current_streak, inline=False)
         embed.add_field(name=f"**Max Streak**", value=max_streak, inline=False)
 
@@ -105,9 +100,7 @@ class Score(commands.Cog):
 
     # leaderboard - returns top 1-10 users
     @commands.command(
-        brief="- Top scores",
-        help="- Top scores, scope is either global or server. (g, s)",
-        aliases=["lb"]
+        brief="- Top scores", help="- Top scores, scope is either global or server. (g, s)", aliases=["lb"]
     )
     @commands.cooldown(1, 5.0, type=commands.BucketType.user)
     async def leaderboard(self, ctx, scope="", page=1):
@@ -181,25 +174,37 @@ class Score(commands.Cog):
                 else:
                     user = f"**{user.name}#{user.discriminator}**"
             else:
-                user = f"**{user.name}#{user.discriminator}** ({str(user.mention)})"
+                user = f"**{user.name}#{user.discriminator}** ({user.mention})"
 
-            leaderboard += f"{str(i+1+page)}. {user} - {str(int(stats[1]))}\n"
+            leaderboard += f"{i+1+page}. {user} - {int(stats[1])}\n"
 
         embed.add_field(name=f"Leaderboard ({scope})", value=leaderboard, inline=False)
 
         if database.zscore(database_key, str(ctx.author.id)) is not None:
             placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
-            distance = (int(database.zrevrange(database_key, placement-2, placement-2, True)[0][1]) - 
-                        int(database.zscore(database_key, str(ctx.author.id))))
+            distance = (
+                int(database.zrevrange(database_key, placement - 2, placement - 2, True)[0][1]) -
+                int(database.zscore(database_key, str(ctx.author.id)))
+            )
             if placement == 1:
-                embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
-                                                   f"You are in first place.", inline=False)
+                embed.add_field(
+                    name="You:",
+                    value=f"You are #{placement} on the leaderboard.\n" + f"You are in first place.",
+                    inline=False
+                )
             elif distance == 0:
-                embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
-                                                   f"You are tied with #{str(placement-1)}", inline=False)
+                embed.add_field(
+                    name="You:",
+                    value=f"You are #{str(placement)} on the leaderboard.\n" + f"You are tied with #{placement-1}",
+                    inline=False
+                )
             else:
-                embed.add_field(name="You:", value=f"You are #{str(placement)} on the leaderboard.\n" +
-                                                   f"You are {str(distance)} away from #{str(placement-1)}", inline=False)
+                embed.add_field(
+                    name="You:",
+                    value=f"You are #{placement} on the leaderboard.\n" +
+                    f"You are {str(distance)} away from #{placement-1}",
+                    inline=False
+                )
         else:
             embed.add_field(name="You:", value="You haven't answered any correctly.")
 
@@ -274,9 +279,8 @@ class Score(commands.Cog):
         leaderboard = ""
 
         for i, stats in enumerate(leaderboard_list):
-            leaderboard += f"{str(i+1+page)}. **{str(stats[0])[2:-1]}** - {str(int(stats[1]))}\n"
-        embed.add_field(
-            name=f"Top Missed Birds ({scope})", value=leaderboard, inline=False)
+            leaderboard += f"{i+1+page}. **{stats[0].decode('utf-8')}** - {int(stats[1])}\n"
+        embed.add_field(name=f"Top Missed Birds ({scope})", value=leaderboard, inline=False)
 
         await ctx.send(embed=embed)
 
@@ -298,8 +302,8 @@ class Score(commands.Cog):
             capture_exception(error)
             await ctx.send(
                 "**An uncaught leaderboard error has occurred.**\n" +
-                "*Please log this message in #support in the support server below, or try again.*\n" +
-                "**Error:** " + str(error)
+                "*Please log this message in #support in the support server below, or try again.*\n" + "**Error:** " +
+                str(error)
             )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
@@ -326,7 +330,6 @@ class Score(commands.Cog):
             )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
-
 
 def setup(bot):
     bot.add_cog(Score(bot))
