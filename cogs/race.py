@@ -23,20 +23,18 @@ from discord.ext import commands
 from data.data import database, logger, states
 from functions import channel_setup, check_state_role, user_setup
 
-
 class Race(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, media, limit = database.hmget(f"race.data:{str(ctx.channel.id)}",
-                                                        ["bw", "addon", "state", "media", "limit"])
+        bw, addon, state, media, limit = database.hmget(
+            f"race.data:{str(ctx.channel.id)}", ["bw", "addon", "state", "media", "limit"]
+        )
         options = str(
-            f"**Age/Sex:** {str(addon)[2:-1] if addon else 'default'}\n" +
-            f"**Black & White:** {bw==b'bw'}\n" +
+            f"**Age/Sex:** {str(addon)[2:-1] if addon else 'default'}\n" + f"**Black & White:** {bw==b'bw'}\n" +
             f"**Special bird list:** {str(state)[2:-1] if state else 'None'}\n" +
-            f"**Media Type:** {str(media)[2:-1]}\n" +
-            f"**Amount to Win:** {str(limit)[2:-1]}\n"
+            f"**Media Type:** {str(media)[2:-1]}\n" + f"**Amount to Win:** {str(limit)[2:-1]}\n"
         )
         return options
 
@@ -51,10 +49,8 @@ class Race(commands.Cog):
         if placings > database.zcard(database_key):
             placings = database.zcard(database_key)
 
-        leaderboard_list = database.zrevrangebyscore(
-            database_key, "+inf", "-inf", 0, placings, True)
-        embed = discord.Embed(
-            type="rich", colour=discord.Color.blurple(), title=preamble)
+        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", 0, placings, True)
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title=preamble)
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
@@ -79,25 +75,21 @@ class Race(commands.Cog):
         elapsed = str(datetime.timedelta(seconds=round(time.time()) - start))
 
         embed.add_field(name="Options", value=await self._get_options(ctx), inline=False)
-        embed.add_field(
-            name="Stats", value=f"**Race Duration:** `{elapsed}`", inline=False)
+        embed.add_field(name="Stats", value=f"**Race Duration:** `{elapsed}`", inline=False)
         embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
         if database.zscore(database_key, str(ctx.author.id)) is not None:
-            placement = int(database.zrevrank(
-                database_key, str(ctx.author.id))) + 1
-            embed.add_field(
-                name="You:", value=f"You are #{str(placement)}.", inline=False)
+            placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
+            embed.add_field(name="You:", value=f"You are #{str(placement)}.", inline=False)
         else:
-            embed.add_field(
-                name="You:", value="You haven't answered any correctly.")
+            embed.add_field(name="You:", value="You haven't answered any correctly.")
 
         await ctx.send(embed=embed)
 
     async def stop_race_(self, ctx):
         first = database.zrevrange(f"race.scores:{str(ctx.channel.id)}", 0, 0, True)[0]
         if ctx.guild is not None:
-                user = ctx.guild.get_member(int(first[0]))
+            user = ctx.guild.get_member(int(first[0]))
         else:
             user = None
 
@@ -110,9 +102,10 @@ class Race(commands.Cog):
         else:
             user = f"{user.name}#{user.discriminator} ({str(user.mention)})"
 
-        await ctx.send(f"**Congratulations, {user}!**\n" +
-        f"You have won the race by correctly identifying `{str(int(first[1]))}` birds. " +
-        "*Way to go!*")
+        await ctx.send(
+            f"**Congratulations, {user}!**\n" +
+            f"You have won the race by correctly identifying `{str(int(first[1]))}` birds. " + "*Way to go!*"
+        )
 
         database.hset(f"race.data:{str(ctx.channel.id)}", "stop", round(time.time()))
 
@@ -120,13 +113,14 @@ class Race(commands.Cog):
         database.delete(f"race.data:{str(ctx.channel.id)}")
         database.delete(f"race.scores:{str(ctx.channel.id)}")
 
-    @commands.group(brief="- Base race command",
-                    help="- Base race command\n" +
-                          "Races allow you to compete with others to see who can ID a bird first. " +
-                          "Starting a race will keep all cooldowns the same, but automatically run " +
-                          "'b!bird' (or 'b!song') after every check. You will still need to use 'b!check' " +
-                          "to check your answer. Races are channel-specific, and anyone in that channel can play." +
-                          "Races end when a player is the first to correctly ID a set amount of birds. (default 10)")
+    @commands.group(
+        brief="- Base race command",
+        help="- Base race command\n" + "Races allow you to compete with others to see who can ID a bird first. " +
+        "Starting a race will keep all cooldowns the same, but automatically run " +
+        "'b!bird' (or 'b!song') after every check. You will still need to use 'b!check' " +
+        "to check your answer. Races are channel-specific, and anyone in that channel can play." +
+        "Races end when a player is the first to correctly ID a set amount of birds. (default 10)"
+    )
     async def race(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send('**Invalid subcommand passed.**\n*Valid Subcommands:* `start, view, stop`')
@@ -135,7 +129,7 @@ class Race(commands.Cog):
         brief="- Starts race",
         help="""- Starts race.
         Arguments passed will become the default arguments to 'b!bird', but can be manually overwritten during use.
-        Arguments can be passed in any order.
+        Arguments can be passed in any taxon.
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
         usage="[bw] [state] [female|juvenile] [amount to win (default 10)]"
@@ -154,8 +148,10 @@ class Race(commands.Cog):
 
         if not str(ctx.channel.name).startswith("racing"):
             logger.info("not race channel")
-            await ctx.send("**Sorry, racing is not availiable in this channel.**\n" +
-                           "*Set the channel name to start with `racing` to enable it.*")
+            await ctx.send(
+                "**Sorry, racing is not availiable in this channel.**\n" +
+                "*Set the channel name to start with `racing` to enable it.*"
+            )
             return
 
         if database.exists(f"race.data:{str(ctx.channel.id)}"):
@@ -170,8 +166,7 @@ class Race(commands.Cog):
             else:
                 bw = ""
 
-            states_args = set(states.keys()).intersection(
-                {arg.upper() for arg in args})
+            states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
                 state = " ".join(states_args).strip()
             else:
@@ -216,8 +211,7 @@ class Race(commands.Cog):
                 await ctx.send("**Sorry, the maximum amount to win is 1 million.**")
                 limit = 1000000
 
-            logger.info(
-                f"adding bw: {bw}; addon: {addon}; state: {state}; media: {media}; limit: {limit}")
+            logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}; media: {media}; limit: {limit}")
 
             database.hmset(
                 f"race.data:{str(ctx.channel.id)}", {
@@ -231,14 +225,12 @@ class Race(commands.Cog):
                 }
             )
 
-            database.zadd(f"race.scores:{str(ctx.channel.id)}", {
-                          str(ctx.author.id): 0})
+            database.zadd(f"race.scores:{str(ctx.channel.id)}", {str(ctx.author.id): 0})
             await ctx.send(f"**Race started with options:**\n{await self._get_options(ctx)}")
 
             if str(database.hget(f"race.data:{str(ctx.channel.id)}", "media"))[2:-1] == "image":
                 logger.info("auto sending next bird image")
-                addon, bw = map(str, database.hmget(
-                    f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
+                addon, bw = map(str, database.hmget(f"race.data:{str(ctx.channel.id)}", ["addon", "bw"]))
                 birds = self.bot.get_cog("Birds")
                 await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
 
@@ -275,7 +267,6 @@ class Race(commands.Cog):
             await self.stop_race_(ctx)
         else:
             await ctx.send("**There is no race in session.** *You can start one with `b!race start`*")
-
 
 def setup(bot):
     bot.add_cog(Race(bot))

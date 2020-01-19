@@ -20,7 +20,7 @@ import time
 import discord
 from discord.ext import commands
 
-from data.data import database, logger, orders, states
+from data.data import database, logger, taxons, states
 from functions import channel_setup, check_state_role, user_setup
 
 
@@ -29,13 +29,13 @@ class Sessions(commands.Cog):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, order = database.hmget(f"session.data:{str(ctx.author.id)}",
-                                                        ["bw", "addon", "state", "order"])
+        bw, addon, state, taxon = database.hmget(f"session.data:{str(ctx.author.id)}",
+                                                        ["bw", "addon", "state", "taxon"])
         options = str(
             f"**Age/Sex:** {str(addon)[2:-1] if addon else 'default'}\n" +
             f"**Black & White:** {bw==b'bw'}\n" +
             f"**State bird list:** {str(state)[2:-1] if state else 'None'}\n" +
-            f"**Bird Order:** {str(order)[2:-1] if order else 'None'}\n"
+            f"**Bird taxon:** {str(taxon)[2:-1] if taxon else 'None'}\n"
         )
         return options
 
@@ -85,7 +85,7 @@ class Sessions(commands.Cog):
                          "Sessions will record your activity for an amount of time and " +
                          "will give you stats on how your performance and " +
                          "also set global variables such as black and white, " +
-                         "state specific bird lists, specific bird orders, or bird age/sex. ",
+                         "state specific bird lists, specific bird taxons, or bird age/sex. ",
                     aliases=["ses", "sesh"])
     async def session(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -96,10 +96,10 @@ class Sessions(commands.Cog):
         brief="- Starts session",
         help="""- Starts session.
         Arguments passed will become the default arguments to 'b!bird', but can be manually overwritten during use. 
-        These settings can be changed at any time with 'b!session edit', and arguments can be passed in any order. 
+        These settings can be changed at any time with 'b!session edit', and arguments can be passed in any taxon. 
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
-        usage="[bw] [state] [female|juvenile] [order]"
+        usage="[bw] [state] [female|juvenile] [order/family]"
     )
     @commands.cooldown(1, 3.0, type=commands.BucketType.user)
     async def start(self, ctx, *, args_str: str = ""):
@@ -124,11 +124,11 @@ class Sessions(commands.Cog):
                 state = " ".join(states_args).strip()
             else:
                 state = " ".join(check_state_role(ctx))
-            order_args = set(orders["orders"]).intersection({arg.lower() for arg in args})
-            if order_args:
-                order = " ".join(order_args).strip()
+            taxon_args = set(taxons["taxons"]).intersection({arg.lower() for arg in args})
+            if taxon_args:
+                taxon = " ".join(taxon_args).strip()
             else:
-                order = ""
+                taxon = ""
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
             if female and juvenile:
@@ -152,7 +152,7 @@ class Sessions(commands.Cog):
                     "bw": bw,
                     "state": state,
                     "addon": addon,
-                    "order": order
+                    "taxon": taxon
                 }
             )
             await ctx.send(f"**Session started with options:**\n{await self._get_options(ctx)}")
@@ -161,7 +161,7 @@ class Sessions(commands.Cog):
         brief="- Views session",
         help="- Views session\nSessions will record your activity for an amount of time and " +
         "will give you stats on how your performance and also set global variables such as black and white, " +
-        "state specific bird lists, specific bird orders, or bird age/sex. ",
+        "state specific bird lists, specific bird taxons, or bird age/sex. ",
         aliases=["view"],
         usage="[bw] [state] [female|juvenile]"
     )
@@ -193,17 +193,17 @@ class Sessions(commands.Cog):
                     add_states.append(state)
                 logger.info(f"adding states: {add_states}")
                 database.hset(f"session.data:{str(ctx.author.id)}", "state", " ".join(add_states).strip())
-            order_args = set(orders["orders"]).intersection({arg.lower() for arg in args})
-            if order_args:
-                toggle_order = list(order_args)
-                current_orders = str(database.hget(f"session.data:{str(ctx.author.id)}", "order"))[2:-1].split(" ")
-                add_orders = []
-                logger.info(f"toggle orders: {toggle_order}")
-                logger.info(f"current orders: {current_orders}")
-                for o in set(toggle_order).symmetric_difference(set(current_orders)):
-                    add_orders.append(o)
-                logger.info(f"adding orders: {add_orders}")
-                database.hset(f"session.data:{str(ctx.author.id)}", "order", " ".join(add_orders).strip())
+            taxon_args = set(taxons["taxons"]).intersection({arg.lower() for arg in args})
+            if taxon_args:
+                toggle_taxon = list(taxon_args)
+                current_taxons = str(database.hget(f"session.data:{str(ctx.author.id)}", "taxon"))[2:-1].split(" ")
+                add_taxons = []
+                logger.info(f"toggle taxons: {toggle_taxon}")
+                logger.info(f"current taxons: {current_taxons}")
+                for o in set(toggle_taxon).symmetric_difference(set(current_taxons)):
+                    add_taxons.append(o)
+                logger.info(f"adding taxons: {add_taxons}")
+                database.hset(f"session.data:{str(ctx.author.id)}", "taxon", " ".join(add_taxons).strip())
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
             if female and juvenile:

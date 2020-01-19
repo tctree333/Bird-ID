@@ -22,11 +22,8 @@ import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import (birdListMaster, database, logger, memeList, orders,
-                       sciBirdListMaster, states)
-from functions import (channel_setup, get_sciname, owner_check, send_bird,
-                       send_birdsong, user_setup)
-
+from data.data import (birdListMaster, database, logger, memeList, taxons, sciBirdListMaster, states)
+from functions import (channel_setup, get_sciname, owner_check, send_bird, send_birdsong, user_setup)
 
 class Other(commands.Cog):
     def __init__(self, bot):
@@ -106,22 +103,22 @@ class Other(commands.Cog):
             "*A full list of birds has been sent to you via DMs.*"
         )
 
-    # Orders command - argument is state/bird list
-    @commands.command(help="- DMs the user with the appropriate bird list.", name="order", aliases=["orders"])
+    # taxons command - argument is state/bird list
+    @commands.command(help="- DMs the user with the appropriate bird list.", name="taxon", aliases=["taxons"])
     @commands.cooldown(1, 8.0, type=commands.BucketType.user)
-    async def bird_orders(self, ctx, order: str = "blank", state: str = "NATS"):
-        logger.info("command: orders")
+    async def bird_taxons(self, ctx, taxon: str = "blank", state: str = "NATS"):
+        logger.info("command: taxons")
 
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        order = order.lower()
+        taxon = taxon.lower()
         state = state.upper()
 
-        if order not in list(orders["orders"]):
-            logger.info("invalid order")
+        if taxon not in list(taxons["taxons"]):
+            logger.info("invalid taxon")
             await ctx.send(
-                f"**Sorry, `{order}` is not a valid order.**\n*Valid Orders:* `{', '.join(map(str, list(orders['orders'])))}`"
+                f"**Sorry, `{taxon}` is not a valid taxon.**\n*Valid taxons:* `{', '.join(map(str, list(taxons['taxons'])))}`"
             )
             return
 
@@ -132,15 +129,15 @@ class Other(commands.Cog):
             )
             return
 
-        birds_in_order = set(orders[order])
+        birds_in_taxon = set(taxons[taxon])
         birds_in_state = set(states[state]["birdList"])
         song_birds_in_state = set(states[state]["songBirds"])
-        bird_list = list(birds_in_order.intersection(birds_in_state))
-        song_bird_list = list(birds_in_order.intersection(song_birds_in_state))
+        bird_list = list(birds_in_taxon.intersection(birds_in_state))
+        song_bird_list = list(birds_in_taxon.intersection(song_birds_in_state))
 
         if len(bird_list) == 0 and len(song_bird_list) == 0:
-            logger.info("no birds for order/state")
-            await ctx.send(f"**Sorry, no birds could be found for the order/state combo.**\n*Please try again*")
+            logger.info("no birds for taxon/state")
+            await ctx.send(f"**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*")
             return
 
         birdLists = []
@@ -164,17 +161,17 @@ class Other(commands.Cog):
         if ctx.author.dm_channel is None:
             await ctx.author.create_dm()
 
-        await ctx.author.dm_channel.send(f"**The `{order}` in the `{state}` bird list:**")
+        await ctx.author.dm_channel.send(f"**The `{taxon}` in the `{state}` bird list:**")
         for birds in birdLists:
             await ctx.author.dm_channel.send(f"```{birds}```")
 
-        await ctx.author.dm_channel.send(f"**The `{order}` in the `{state}` bird songs:**")
+        await ctx.author.dm_channel.send(f"**The `{taxon}` in the `{state}` bird songs:**")
         for birds in songLists:
             await ctx.author.dm_channel.send(f"```{birds}```")
 
         await ctx.send(
-            f"The `{order}` in the `{state}` bird list has **{str(len(bird_list))}** birds.\n" +
-            f"The `{order}` in the `{state}` bird list has **{str(len(song_bird_list))}** songs.\n" +
+            f"The `{taxon}` in the `{state}` bird list has **{str(len(bird_list))}** birds.\n" +
+            f"The `{taxon}` in the `{state}` bird list has **{str(len(song_bird_list))}** songs.\n" +
             "*A full list of birds has been sent to you via DMs.*"
         )
 
@@ -222,7 +219,7 @@ class Other(commands.Cog):
             name="Bot Info",
             value="This bot was created by EraserBird and person_v1.32 " +
             "for helping people practice bird identification for Science Olympiad.\n" +
-            "**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.\n" + 
+            "**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.\n" +
             "<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>, " +
             "<https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>",
             inline=False
@@ -236,8 +233,8 @@ class Other(commands.Cog):
         embed.add_field(
             name="Stats",
             value=f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. " +
-            f"There are {int(database.zcard('users:global'))} active users in {int(database.zcard('score:global'))} channels. " +
-            f"The WebSocket latency is {str(round((self.bot.latency*1000)))} ms.",
+            f"There are {int(database.zcard('users:global'))} active users in {int(database.zcard('score:global'))} channels. "
+            + f"The WebSocket latency is {str(round((self.bot.latency*1000)))} ms.",
             inline=False
         )
         await ctx.send(embed=embed)
@@ -279,7 +276,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
         logger.info(f"user-id: {user.id}")
         database.zadd("banned:global", {str(user.id): 0})
         await ctx.send(f"Ok, {user.name} cannot use the bot anymore!")
-    
+
     # unban command - prevents certain users from using the bot
     @commands.command(help="- unban command", hidden=True)
     @commands.check(owner_check)
@@ -316,7 +313,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
     @commands.command(help="- test command", hidden=True)
     async def error(self, ctx):
         logger.info("command: error")
-        await ctx.send(1/0)
+        await ctx.send(1 / 0)
 
 def setup(bot):
     bot.add_cog(Other(bot))

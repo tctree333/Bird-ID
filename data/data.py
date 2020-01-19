@@ -40,12 +40,13 @@ def before_sentry_send(event, hint):
     return event
 
 # add sentry logging
+"""
 sentry_sdk.init(
     release=f"Heroku Release {str(os.getenv('HEROKU_RELEASE_VERSION'))}:{str(os.getenv('HEROKU_SLUG_DESCRIPTION'))}",
     dsn=str(os.getenv("SENTRY_DISCORD_DSN")),
     integrations=[RedisIntegration(), AioHttpIntegration()],
     before_send=before_sentry_send
-)
+)"""
 
 # Database Format Definitions
 
@@ -67,7 +68,7 @@ sentry_sdk.init(
 # session.incorrect:user_id : [bird name, # incorrect]
 
 # race format:
-# race.data:ctx.channel.id : { 
+# race.data:ctx.channel.id : {
 #                    "start": 0
 #                    "stop": 0,
 #                    "limit": 10,
@@ -113,24 +114,20 @@ sentry_sdk.init(
 
 # state birds are picked from state/[state]/birdList or songBirds
 # sci lists are only for new, state specific birds
-# either lists can be in any order
-
+# either lists can be in any taxon
 
 # setup logging
 logger = logging.getLogger("bird-id")
 logger.setLevel(logging.DEBUG)
 os.makedirs("logs", exist_ok=True)
 
-file_handler = logging.handlers.TimedRotatingFileHandler(
-    "logs/log.txt", backupCount=4, when="midnight")
+file_handler = logging.handlers.TimedRotatingFileHandler("logs/log.txt", backupCount=4, when="midnight")
 file_handler.setLevel(logging.DEBUG)
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.DEBUG)
 
-file_handler.setFormatter(logging.Formatter(
-    "{asctime} - {filename:10} -  {levelname:8} - {message}", style="{"))
-stream_handler.setFormatter(logging.Formatter(
-    "{filename:10} -  {levelname:8} - {message}", style="{"))
+file_handler.setFormatter(logging.Formatter("{asctime} - {filename:10} -  {levelname:8} - {message}", style="{"))
+stream_handler.setFormatter(logging.Formatter("{filename:10} -  {levelname:8} - {message}", style="{"))
 
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
@@ -141,12 +138,9 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
 
-    logger.critical("Uncaught exception", exc_info=(
-        exc_type, exc_value, exc_traceback))
-
+    logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 sys.excepthook = handle_exception
-
 
 class GenericError(commands.CommandError):
     """A custom error class.
@@ -175,14 +169,12 @@ class GenericError(commands.CommandError):
 # 842 - Banned User
 # 666 - No output error
 
-
 # Lists of birds, memes, and other info
 goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
 sciGoat = ["Nyctidromus albicollis", "Antrostomus carolinensis", "Antrostomus vociferus"]
 
 screech_owls = ["Whiskered Screech-Owl", "Western Screech-Owl", "Eastern Screech-Owl"]
 sci_screech_owls = ["Megascops trichopsis", "Megascops kennicottii", "Megascops asio"]
-
 
 def _wiki_urls():
     logger.info("Working on wiki urls")
@@ -195,49 +187,47 @@ def _wiki_urls():
     logger.info("Done with wiki urls")
     return urls
 
-
 def get_wiki_url(bird):
     bird = string.capwords(bird.replace("-", " "))
     return wikipedia_urls[bird]
 
-
 def _nats_lists():
     """Converts txt files of national bird data into lists."""
-    filenames = ("birdList", "sciBirdList", "memeList",
-                 "songBirds", "sciSongBirds")
+    filenames = ("birdList", "sciBirdList", "memeList", "songBirds", "sciSongBirds")
     # Converts txt file of data into lists
     lists = []
     for filename in filenames:
         logger.info(f"Working on {filename}")
         with open(f'data/{filename}.txt', 'r') as f:
-            lists.append([string.capwords(line.strip().replace("-", " ")) if filename is not "memeList"
-                          else line.strip() for line in f])
+            lists.append(
+                [
+                    string.capwords(line.strip().replace("-", " ")) if filename is not "memeList" else line.strip()
+                    for line in f
+                ]
+            )
         logger.info(f"Done with {filename}")
     logger.info("Done with nats list!")
     return lists
 
-
-def _orders():
-    """Converts txt files of order data into lists."""
-    logger.info("Working on order lists")
-    logger.info("Working on order master list")
-    orders = {}
-    with open('data/orders/orders.txt', 'r') as f:
-        orders["orders"] = [line.strip().lower() for line in f]
-    logger.info("Done with order master list")
-    for filename in orders["orders"]:
+def _taxons():
+    """Converts txt files of taxon data into lists."""
+    logger.info("Working on taxon lists")
+    logger.info("Working on taxon master list")
+    taxons = {}
+    with open('data/taxons/taxons.txt', 'r') as f:
+        taxons["taxons"] = [line.strip().lower() for line in f]
+    logger.info("Done with taxon master list")
+    for filename in taxons["taxons"]:
         logger.info(f"Working on {filename}")
-        with open(f'data/orders/{filename}.txt', 'r') as f:
-            orders[filename] = [string.capwords(line.strip().replace("-", " ")) for line in f]
+        with open(f'data/taxons/{filename}.txt', 'r') as f:
+            taxons[filename] = [string.capwords(line.strip().replace("-", " ")) for line in f]
         logger.info(f"Done with {filename}")
-    logger.info("Done with order lists!")
-    return orders
-
+    logger.info("Done with taxon lists!")
+    return taxons
 
 def _state_lists():
     """Converts txt files of state data into lists."""
-    filenames = ("birdList", "sciBirdList", "aliases",
-                 "songBirds", "sciSongBirds")
+    filenames = ("birdList", "sciBirdList", "aliases", "songBirds", "sciSongBirds")
     states = {}
     state_names = os.listdir("data/state")
     for state in state_names:
@@ -247,15 +237,13 @@ def _state_lists():
             logger.info(f"Working on {filename}")
             with open(f'data/state/{state}/{filename}.txt', 'r') as f:
                 states[state][filename] = [
-                    string.capwords(line.strip().replace(
-                        "-", " ")) if filename is not "aliases" else line.strip()
+                    string.capwords(line.strip().replace("-", " ")) if filename is not "aliases" else line.strip()
                     for line in f if line != "EMPTY"
                 ]
             logger.info(f"Done with {filename}")
         logger.info(f"Done with {state}")
     logger.info("Done with states list!")
     return states
-
 
 def _all_birds():
     """Combines all state and national lists."""
@@ -278,14 +266,12 @@ def _all_birds():
     logger.info("Done with master lists!")
     return master_lists
 
-
 birdList, sciBirdList, memeList, songBirds, sciSongBirds = _nats_lists()
 states = _state_lists()
 birdListMaster, sciBirdListMaster, songBirdsMaster, sciSongBirdsMaster = _all_birds()
-orders = _orders()
+taxons = _taxons()
 wikipedia_urls = _wiki_urls()
-logger.info(
-    f"National Lengths: {len(birdList)}, {len(sciBirdList)}, {len(songBirds)}, {len(sciSongBirds)}")
+logger.info(f"National Lengths: {len(birdList)}, {len(sciBirdList)}, {len(songBirds)}, {len(sciSongBirds)}")
 logger.info(
     f"Master Lengths: {len(birdListMaster)}, {len(sciBirdListMaster)}, {len(songBirdsMaster)}, {len(sciSongBirdsMaster)}"
 )
