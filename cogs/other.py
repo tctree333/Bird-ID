@@ -104,7 +104,11 @@ class Other(commands.Cog):
         )
 
     # taxons command - argument is state/bird list
-    @commands.command(help="- DMs the user with the appropriate bird list.", name="taxon", aliases=["taxons"])
+    @commands.command(
+        help="- DMs the user with the appropriate bird list.",
+        name="taxon",
+        aliases=["taxons", "orders", "families", "order", "family"]
+    )
     @commands.cooldown(1, 8.0, type=commands.BucketType.user)
     async def bird_taxons(self, ctx, taxon: str = "blank", state: str = "NATS"):
         logger.info("command: taxons")
@@ -176,9 +180,9 @@ class Other(commands.Cog):
         )
 
     # Wiki command - argument is the wiki page
-    @commands.command(help="- Fetch the wikipedia page for any given argument")
+    @commands.command(help="- Fetch the wikipedia page for any given argument", aliases=["wiki"])
     @commands.cooldown(1, 8.0, type=commands.BucketType.user)
-    async def wiki(self, ctx, *, arg):
+    async def wikipedia(self, ctx, *, arg):
         logger.info("command: wiki")
 
         await channel_setup(ctx)
