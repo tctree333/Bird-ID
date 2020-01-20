@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import itertools
 import logging
 import logging.handlers
 import os
@@ -214,16 +213,16 @@ def _taxons():
     """Converts txt files of taxon data into lists."""
     logger.info("Working on taxon lists")
     logger.info("Working on taxon master list")
-    taxons = {}
+    taxon_lists = {}
     logger.info("Done with taxon master list")
     for directory in os.listdir("data/taxons"):
         for filename in os.listdir(f"data/taxons/{directory}"):
             logger.info(f"Working on {filename}")
             with open(f"data/taxons/{directory}/{filename}", 'r') as f:
-                taxons[filename] = [string.capwords(line.strip().replace("-", " ")) for line in f]
+                taxon_lists[filename] = [string.capwords(line.strip().replace("-", " ")) for line in f]
             logger.info(f"Done with {filename}")
     logger.info("Done with taxon lists!")
-    return taxons
+    return taxon_lists
 
 def _state_lists():
     """Converts txt files of state data into lists."""

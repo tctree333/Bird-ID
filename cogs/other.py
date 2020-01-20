@@ -139,7 +139,7 @@ class Other(commands.Cog):
         bird_list = list(birds_in_taxon.intersection(birds_in_state))
         song_bird_list = list(birds_in_taxon.intersection(song_birds_in_state))
 
-        if len(bird_list) == 0 and len(song_bird_list) == 0:
+        if not bird_list and not song_bird_list:
             logger.info("no birds for taxon/state")
             await ctx.send(f"**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*")
             return

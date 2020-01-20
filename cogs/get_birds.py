@@ -45,15 +45,16 @@ class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def send_bird_(self, ctx, add_on: str = "", bw: bool = False, taxon: str = ""):
+    async def send_bird_(self, ctx, add_on: str = "", bw: bool = False, taxon_str: str = ""):
         if add_on == "":
             message = BIRD_MESSAGE.format(option="n image")
         else:
             message = BIRD_MESSAGE.format(option=f" {add_on}")
 
-        if taxon:
-            taxon = taxon.split(" ")
-
+        if taxon_str:
+            taxon = taxon_str.split(" ")
+        else:
+            taxon = []
         logger.info("bird: " + database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"))
 
         answered = int(database.hget(f"channel:{ctx.channel.id}", "answered"))
@@ -213,12 +214,12 @@ class Birds(commands.Cog):
         logger.info(f"args: bw: {bw}; addon: {add_on}; taxon: {taxon}")
         if int(database.hget(f"channel:{ctx.channel.id}", "answered")):
             await ctx.send(
-                f"**Recongnized arguments:** *Black & White*: `{bw}`, " +
+                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
                 f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`, " +
-                f"*taxons*: `{'None' if taxon == '' else taxon}`"
+                f"*Taxons*: `{'None' if taxon == '' else taxon}`"
             )
         else:
-            await ctx.send(f"**Recongnized arguments:** *Black & White*: `{bw}`")
+            await ctx.send(f"**Recognized arguments:** *Black & White*: `{bw}`")
 
         await self.send_bird_(ctx, add_on, bw, taxon)
 

@@ -171,7 +171,7 @@ class Sessions(commands.Cog):
             args = args_str.split(" ")
             logger.info(f"args: {args}")
             if "bw" in args:
-                if len(database.hget(f"session.data:{ctx.author.id}", "bw")) == 0:
+                if not database.hget(f"session.data:{ctx.author.id}", "bw"):
                     logger.info("adding bw")
                     database.hset(f"session.data:{ctx.author.id}", "bw", "bw")
                 else:
@@ -206,7 +206,7 @@ class Sessions(commands.Cog):
                 return
             elif female:
                 addon = "female"
-                if len(database.hget(f"session.data:{ctx.author.id}", "addon")) == 0:
+                if not database.hget(f"session.data:{ctx.author.id}", "addon"):
                     logger.info("adding female")
                     database.hset(f"session.data:{ctx.author.id}", "addon", addon)
                 else:
@@ -214,7 +214,7 @@ class Sessions(commands.Cog):
                     database.hset(f"session.data:{ctx.author.id}", "addon", "")
             elif juvenile:
                 addon = "juvenile"
-                if len(database.hget(f"session.data:{ctx.author.id}", "addon")) == 0:
+                if not database.hget(f"session.data:{ctx.author.id}", "addon"):
                     logger.info("adding juvenile")
                     database.hset(f"session.data:{ctx.author.id}", "addon", addon)
                 else:

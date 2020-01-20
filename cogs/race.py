@@ -202,7 +202,7 @@ class Race(commands.Cog):
                     ints.append(int(n))
                 except ValueError:
                     continue
-            if len(ints) != 0:
+            if ints:
                 limit = int(ints[0])
             else:
                 limit = 10
@@ -230,9 +230,9 @@ class Race(commands.Cog):
 
             if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "image":
                 logger.info("auto sending next bird image")
-                addon, bw = map(str, database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw"]))
+                addon, bw = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw"])
                 birds = self.bot.get_cog("Birds")
-                await birds.send_bird_(ctx, addon[2:-1], bw[2:-1])
+                await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"))
 
             if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "song":
                 logger.info("auto sending next bird song")

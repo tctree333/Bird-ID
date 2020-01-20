@@ -1,16 +1,15 @@
 import asyncio
 import random
 from functools import partial
-from io import BytesIO
 
 from flask import abort
-from PIL import Image
 from sentry_sdk import capture_exception
 
 from functions import (
     get_files, get_sciname, spellcheck, valid_audio_extensions, valid_image_extensions, _black_and_white
 )
-from web.config import (GenericError, birdList, database, get_session_id, logger, screech_owls)
+from web.config import get_session_id
+from data.data import (GenericError, birdList, database, logger, screech_owls)
 
 async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = False):
     if bird == "":
@@ -41,8 +40,7 @@ async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = Fals
     if media_type == "images":
         if bw:
             loop = asyncio.get_running_loop()
-            fn = partial(_black_and_white, filename)
-            file_stream = await loop.run_in_executor(None, fn)
+            file_stream = await loop.run_in_executor(None, partial(_black_and_white, filename))
         else:
             file_stream = f"../{filename}"
     elif media_type == "songs":

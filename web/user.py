@@ -3,7 +3,7 @@ import re
 
 import authlib
 from authlib.integrations.flask_client import OAuth
-from flask import (Blueprint, abort, make_response, redirect, render_template, request, session, url_for)
+from flask import (Blueprint, abort, make_response, redirect, request, session, url_for)
 from sentry_sdk import capture_exception
 
 from web.config import (FRONTEND_URL, app, database, get_session_id, logger, update_web_user, verify_session)
@@ -11,8 +11,7 @@ from web.config import (FRONTEND_URL, app, database, get_session_id, logger, upd
 bp = Blueprint('user', __name__, url_prefix='/user')
 oauth = OAuth(app)
 
-relative_url_regex = r"/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*"
-regex = re.compile(relative_url_regex)
+relative_url_regex = re.compile(r"/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*")
 
 DISCORD_CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 oauth.register(
@@ -44,7 +43,7 @@ def login():
     redirect_uri = url_for('user.authorize', _external=True, _scheme='https')
     resp = make_response(oauth.discord.authorize_redirect(redirect_uri))
     redirect_after = request.args.get("redirect", FRONTEND_URL, str)
-    if regex.fullmatch(redirect_after) is not None:
+    if relative_url_regex.fullmatch(redirect_after) is not None:
         resp.headers.add('Set-Cookie', 'redirect=' + redirect_after + '; Max-Age=180; SameSite=None; HttpOnly; Secure')
     else:
         resp.headers.add('Set-Cookie', 'redirect=/; Max-Age=180; SameSite=None; HttpOnly; Secure')
@@ -54,7 +53,7 @@ def login():
 def logout():
     logger.info("endpoint: logout")
     redirect_after = request.args.get("redirect", FRONTEND_URL, str)
-    if regex.fullmatch(redirect_after) is not None:
+    if relative_url_regex.fullmatch(redirect_after) is not None:
         redirect_url = redirect_after
     else:
         redirect_url = FRONTEND_URL
@@ -81,7 +80,7 @@ def authorize():
     # do something with the token and profile
     update_web_user(profile)
     redirect_cookie = str(request.cookies.get("redirect"))
-    if regex.fullmatch(redirect_cookie) is not None:
+    if relative_url_regex.fullmatch(redirect_cookie) is not None:
         redirection = FRONTEND_URL + redirect_cookie
     else:
         redirection = FRONTEND_URL + "/"
