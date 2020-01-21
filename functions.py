@@ -1,5 +1,5 @@
 # functions.py | function definitions
-# Copyright (C) 2019  EraserBird, person_v1.32, hmmm
+# Copyright (C) 2019-2020  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -268,6 +268,7 @@ async def get_taxon(bird: str, session=None, retries=0) -> str:
         async with session.get(taxon_code_url) as taxon_code_response:
             if taxon_code_response.status != 200:
                 if retries >= 3:
+                    logger.info("Retried more than 3 times. Aborting...")
                     raise GenericError(
                         f"An http error code of {taxon_code_response.status} occured" +
                         f" while fetching {taxon_code_url} for {bird}",
@@ -594,10 +595,12 @@ async def get_files(sciBird, media_type, addOn="", retries=0):
         # if not found, fetch images
         logger.info("scibird: " + str(sciBird))
         filenames = await download_media(sciBird, media_type, addOn, directory)
-        if len(filenames) <= COUNT / 2:
+        if len(filenames) < 1:
             if retries < 3:
                 retries += 1
                 return await get_files(sciBird, media_type, addOn, retries)
+            else:
+                logger.info("More than 3 retries")
         return filenames
 
 async def download_media(bird, media_type, addOn="", directory=None, session=None):
