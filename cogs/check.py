@@ -48,7 +48,7 @@ class Check(commands.Cog):
 
             await bird_setup(ctx, currentBird)
             sciBird = await get_sciname(currentBird)
-            if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
+            if spellcheck(arg, currentBird) or spellcheck(arg, sciBird):
                 logger.info("correct")
 
                 database.hset(f"channel:{ctx.channel.id}", "bird", "")
@@ -134,7 +134,7 @@ class Check(commands.Cog):
             sciBird = sciGoat[index]
             database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
             database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
-            if spellcheck(arg, currentBird) is True or spellcheck(arg, sciBird) is True:
+            if spellcheck(arg, currentBird) or spellcheck(arg, sciBird):
                 logger.info("correct")
 
                 if database.exists(f"session.data:{ctx.author.id}"):
@@ -194,7 +194,7 @@ class Check(commands.Cog):
 
             await bird_setup(ctx, currentSongBird)
             sciBird = await get_sciname(currentSongBird)
-            if spellcheck(arg, currentSongBird) is True or spellcheck(arg, sciBird) is True:
+            if spellcheck(arg, currentSongBird) or spellcheck(arg, sciBird):
                 logger.info("correct")
 
                 database.hset(f"channel:{ctx.channel.id}", "sBird", "")

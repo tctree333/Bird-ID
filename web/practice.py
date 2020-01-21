@@ -4,8 +4,8 @@ import random
 import flask
 from flask import Blueprint, abort, request
 
-from data.data import get_wiki_url
-from web.config import (FRONTEND_URL, bird_setup, birdList, database, get_session_id, logger)
+from data.data import get_wiki_url, birdList
+from web.config import (FRONTEND_URL, bird_setup, database, get_session_id, logger)
 from web.functions import get_sciname, send_bird, spellcheck
 
 bp = Blueprint('practice', __name__, url_prefix='/practice')
@@ -85,7 +85,7 @@ def check_bird():
 
         bird_setup(user_id, currentBird)
         sciBird = asyncio.run(get_sciname(currentBird))
-        if spellcheck(bird_guess, currentBird) is True or spellcheck(bird_guess, sciBird) is True:
+        if spellcheck(bird_guess, currentBird) or spellcheck(bird_guess, sciBird):
             logger.info("correct")
 
             database.hset(f"web.session:{session_id}", "bird", "")

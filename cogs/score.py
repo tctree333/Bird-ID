@@ -189,20 +189,19 @@ class Score(commands.Cog):
             if placement == 1:
                 embed.add_field(
                     name="You:",
-                    value=f"You are #{placement} on the leaderboard.\n" + f"You are in first place.",
+                    value=f"You are #{placement} on the leaderboard.\nYou are in first place.",
                     inline=False
                 )
             elif distance == 0:
                 embed.add_field(
                     name="You:",
-                    value=f"You are #{str(placement)} on the leaderboard.\n" + f"You are tied with #{placement-1}",
+                    value=f"You are #{placement} on the leaderboard.\nYou are tied with #{placement-1}",
                     inline=False
                 )
             else:
                 embed.add_field(
                     name="You:",
-                    value=f"You are #{placement} on the leaderboard.\n" +
-                    f"You are {str(distance)} away from #{placement-1}",
+                    value=f"You are #{placement} on the leaderboard.\nYou are {distance} away from #{placement-1}",
                     inline=False
                 )
         else:

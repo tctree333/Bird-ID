@@ -10,7 +10,7 @@ from sentry_sdk.integrations.redis import RedisIntegration
 from data.data import database, logger
 
 sentry_sdk.init(
-    release=f"Heroku Release {str(os.getenv('HEROKU_RELEASE_VERSION'))}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",
+    release=f"Heroku Release {os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",
     dsn=str(os.getenv("SENTRY_API_DSN")),
     integrations=[FlaskIntegration(), RedisIntegration()]
 )
@@ -119,7 +119,7 @@ def get_session_id():
     if "id" not in session:
         session["id"] = start_session()
         return str(session["id"])
-    elif verify_session(session["id"]) is False:
+    elif not verify_session(session["id"]):
         session["id"] = start_session()
         return str(session["id"])
     else:
