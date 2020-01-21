@@ -43,8 +43,8 @@ class Other(commands.Cog):
             bird = matches[0]
 
             delete = await ctx.send("Please wait a moment.")
-            await send_bird(ctx, str(bird), message="Here's the image!")
-            await send_birdsong(ctx, str(bird), message="Here's the call!")
+            await send_bird(ctx, bird, message="Here's the image!")
+            await send_birdsong(ctx, bird, message="Here's the call!")
             await delete.delete()
 
         else:

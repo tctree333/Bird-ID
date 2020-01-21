@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import csv
 import logging
 import logging.handlers
 import os
@@ -22,6 +23,7 @@ import sys
 
 import redis
 import sentry_sdk
+import wikipedia
 from discord.ext import commands
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
@@ -40,13 +42,13 @@ def before_sentry_send(event, hint):
     return event
 
 # add sentry logging
-"""
+
 sentry_sdk.init(
     release=f"Heroku Release {os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",
     dsn=str(os.getenv("SENTRY_DISCORD_DSN")),
     integrations=[RedisIntegration(), AioHttpIntegration()],
     before_send=before_sentry_send
-)"""
+)
 
 # Database Format Definitions
 
@@ -180,16 +182,20 @@ def _wiki_urls():
     logger.info("Working on wiki urls")
     urls = {}
     with open(f'data/wikipedia.txt', 'r') as f:
-        for line in f:
-            bird = string.capwords(line.strip().split(',')[0].replace("-", " "))
-            url = line.strip().split(',')[1]
-            urls[bird] = url
+        r = csv.reader(f)
+        for bird, url in r:
+            urls[string.capwords(bird.replace("-", " "))] = url
     logger.info("Done with wiki urls")
     return urls
 
 def get_wiki_url(bird):
-    bird = string.capwords(bird.replace("-", " "))
-    return wikipedia_urls[bird]
+    try:
+        bird = string.capwords(bird.replace("-", " "))
+        return wikipedia_urls[bird]
+    except IndexError:
+        logger.info(f"{bird} not found in wikipedia url cache, falling back")
+        page = wikipedia.page(bird)
+    return page.url
 
 def _nats_lists():
     """Converts txt files of national bird data into lists."""
