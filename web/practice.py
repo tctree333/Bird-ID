@@ -44,7 +44,7 @@ def get_bird():
     if answered:  # if yes, give a new bird
         currentBird = random.choice(birdList)
         prevB = database.hget(f"web.session:{session_id}", "prevB").decode("utf-8")
-        while currentBird == prevB:
+        while currentBird == prevB and len(birdList) > 1:
             currentBird = random.choice(birdList)
         database.hset(f"web.session:{session_id}", "prevB", str(currentBird))
         database.hset(f"web.session:{session_id}", "bird", str(currentBird))

@@ -94,7 +94,7 @@ class Birds(commands.Cog):
 
             currentBird = random.choice(birds)
             prevB = database.hget(f"channel:{ctx.channel.id}", "prevB").decode("utf-8")
-            while currentBird == prevB:
+            while currentBird == prevB and len(birds) > 1:
                 currentBird = random.choice(birds)
             database.hset(f"channel:{ctx.channel.id}", "prevB", str(currentBird))
             database.hset(f"channel:{ctx.channel.id}", "bird", str(currentBird))
@@ -136,7 +136,7 @@ class Birds(commands.Cog):
 
             currentSongBird = random.choice(birds)
             prevS = database.hget(f"channel:{ctx.channel.id}", "prevS").decode("utf-8")
-            while currentSongBird == prevS:
+            while currentSongBird == prevS and len(birds) > 1:
                 currentSongBird = random.choice(birds)
             database.hset(f"channel:{ctx.channel.id}", "prevS", str(currentSongBird))
             database.hset(f"channel:{ctx.channel.id}", "sBird", str(currentSongBird))
