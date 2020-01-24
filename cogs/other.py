@@ -122,7 +122,7 @@ class Other(commands.Cog):
         if taxon not in taxons:
             logger.info("invalid taxon")
             await ctx.send(
-                f"**Sorry, `{taxon}` is not a valid taxon.**\n*Valid taxons:* `{', '.join(map(str, list(taxon.keys())))}`"
+                f"**Sorry, `{taxon}` is not a valid taxon.**\n*Valid taxons:* `{', '.join(map(str, list(taxons.keys())))}`"
             )
             return
 
