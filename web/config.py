@@ -19,6 +19,7 @@ app.config['SESSION_COOKIE_SAMESITE'] = "Strict"
 app.config['SESSION_COOKIE_SECURE'] = True
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
+DATABASE_SESSION_EXPIRE = 172800 # 2 days
 
 # Web Database Keys
 
@@ -57,7 +58,7 @@ def web_session_setup(session_id):
                 "tempScore": 0,  # not used = -1
                 "user_id": 0
             })
-        database.expire(f"web.session:{session_id}", 604800)
+        database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)
         logger.info("session set up")
 
 
@@ -66,7 +67,7 @@ def update_web_user(user_data):
     session_id = get_session_id()
     user_id = str(user_data['id'])
     database.hset(f"web.session:{session_id}", "user_id", user_id)
-    database.expire(f"web.session:{session_id}", 604800)
+    database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)
     database.hmset(
         f"web.user:{user_id}", {
             "avatar_hash": str(user_data['avatar']),
