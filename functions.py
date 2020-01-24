@@ -275,6 +275,7 @@ async def get_taxon(bird: str, session=None, retries=0) -> str:
                         code=201
                     )
                 else:
+                    logger.info(f"An HTTP error occurred; Retries: {retries}")
                     retries += 1
                     taxon_code = await get_taxon(bird, session, retries)
                     return taxon_code
@@ -645,7 +646,7 @@ async def download_media(bird, media_type, addOn="", directory=None, session=Non
         logger.info(f"actual filenames count: {len(os.listdir(directory))}")
         return filenames
 
-async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
+async def _get_urls(session, bird, media_type, sex="", age="", sound_type="", retries=0):
     """Returns a list of urls to Macaulay Library media.
 
     The amount of urls returned is specified in `COUNT`. 
@@ -666,11 +667,18 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type=""):
     catalog_url = CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type)
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
-            raise GenericError(
-                f"An http error code of {catalog_response.status} occured " +
-                f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}",
-                code=201
-            )
+            if retries >= 3:
+                logger.info("Retried more than 3 times. Aborting...")
+                raise GenericError(
+                    f"An http error code of {catalog_response.status} occured " +
+                    f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}",
+                    code=201
+                )
+            else:
+                retries += 1
+                logger.info(f"An HTTP error occurred; Retries: {retries}")
+                urls = await _get_urls(session, bird, media_type, sex, age, sound_type, retries)
+                return urls
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
         urls = [data["mediaUrl"] for data in content]
