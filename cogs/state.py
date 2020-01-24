@@ -23,7 +23,6 @@ from sentry_sdk import capture_exception
 from data.data import logger, states
 from functions import channel_setup, user_setup
 
-
 class States(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -42,14 +41,14 @@ class States(commands.Cog):
         args = args.upper().split(" ")
 
         for arg in args:
-            if arg not in list(states.keys()):
+            if arg not in states:
                 logger.info("invalid state")
                 await ctx.send(
                     f"**Sorry, `{arg}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
                 )
 
             # gets similarities
-            elif len(set(roles).intersection(set(states[arg]["aliases"]))) == 0:
+            elif not set(roles).intersection(set(states[arg]["aliases"])):
                 # need to add roles (does not have role)
                 logger.info("add roles")
                 raw_roles = ctx.guild.roles
@@ -96,7 +95,7 @@ class States(commands.Cog):
         args = args.upper().split(" ")
 
         for arg in args:
-            if arg not in list(states.keys()):
+            if arg not in states:
                 logger.info("invalid state")
                 await ctx.send(
                     f"**Sorry, `{arg}` is not a valid state.**\n*Valid States:* `{', '.join(map(str, list(states.keys())))}`"
@@ -136,8 +135,8 @@ class States(commands.Cog):
             capture_exception(error)
             await ctx.send(
                 "**An uncaught set error has occurred.**\n" +
-                "*Please log this message in #support in the support server below, or try again.*\n" +
-                "**Error:** " + str(error)
+                "*Please log this message in #support in the support server below, or try again.*\n" + "**Error:** " +
+                str(error)
             )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
@@ -161,12 +160,11 @@ class States(commands.Cog):
             capture_exception(error)
             await ctx.send(
                 "**An uncaught remove error has occurred.**\n" +
-                "*Please log this message in  #support in the support server below, or try again.*\n" +
-                "**Error: ** " + str(error)
+                "*Please log this message in  #support in the support server below, or try again.*\n" + "**Error: ** " +
+                str(error)
             )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
-
 
 def setup(bot):
     bot.add_cog(States(bot))

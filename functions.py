@@ -33,8 +33,7 @@ import eyed3
 from PIL import Image
 from sentry_sdk import capture_exception
 
-from data.data import (GenericError, database, logger, sciBirdListMaster,
-                       sciSongBirdsMaster, screech_owls, states)
+from data.data import (GenericError, database, logger, sciBirdListMaster, sciSongBirdsMaster, screech_owls, states)
 
 # Macaulay URL definitions
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
@@ -55,11 +54,11 @@ async def channel_setup(ctx):
     `ctx` - Discord context object
     """
     logger.info("checking channel setup")
-    if database.exists(f"channel:{str(ctx.channel.id)}"):
+    if database.exists(f"channel:{ctx.channel.id}"):
         logger.info("channel data ok")
     else:
         database.hmset(
-            f"channel:{str(ctx.channel.id)}", {
+            f"channel:{ctx.channel.id}", {
                 "bird": "",
                 "answered": 1,
                 "sBird": "",
@@ -96,12 +95,12 @@ async def user_setup(ctx):
         await ctx.send("Welcome <@" + str(ctx.author.id) + ">!")
 
     #Add streak
-    if (database.zscore("streak:global", str(ctx.author.id)) is not None) and (
-            database.zscore("streak.max:global", str(ctx.author.id)) is not None):
+    if (database.zscore("streak:global", str(ctx.author.id)) is
+        not None) and (database.zscore("streak.max:global", str(ctx.author.id)) is not None):
         logger.info("user streak in already")
     else:
         database.zadd("streak:global", {str(ctx.author.id): 0})
-        database.zadd("streak.max:global",{str(ctx.author.id): 0})
+        database.zadd("streak.max:global", {str(ctx.author.id): 0})
         logger.info("added streak")
 
     if ctx.guild is not None:
@@ -149,7 +148,7 @@ async def bird_setup(ctx, bird: str):
     else:
         logger.info("dm context")
 
-    if database.exists(f"session.data:{str(ctx.author.id)}"):
+    if database.exists(f"session.data:{ctx.author.id}"):
         logger.info("session in session")
         if database.zscore(f"session.incorrect:{ctx.author.id}", string.capwords(str(bird))) is not None:
             logger.info("bird session ok")
@@ -165,8 +164,8 @@ def error_skip(ctx):
     Passed to send_bird() as on_error to skip the bird when an error occurs to prevent error loops.
     """
     logger.info("ok")
-    database.hset(f"channel:{str(ctx.channel.id)}", "bird", "")
-    database.hset(f"channel:{str(ctx.channel.id)}", "answered", "1")
+    database.hset(f"channel:{ctx.channel.id}", "bird", "")
+    database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
 def error_skip_song(ctx):
     """Skips the current song.
@@ -174,8 +173,8 @@ def error_skip_song(ctx):
     Passed to send_birdsong() as on_error to skip the bird when an error occurs to prevent error loops.
     """
     logger.info("ok")
-    database.hset(f"channel:{str(ctx.channel.id)}", "sBird", "")
-    database.hset(f"channel:{str(ctx.channel.id)}", "sAnswered", "1")
+    database.hset(f"channel:{ctx.channel.id}", "sBird", "")
+    database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
 
 def error_skip_goat(ctx):
     """Skips the current goatsucker.
@@ -183,8 +182,8 @@ def error_skip_goat(ctx):
     Passed to send_bird() as on_error to skip the bird when an error occurs to prevent error loops.
     """
     logger.info("ok")
-    database.hset(f"channel:{str(ctx.channel.id)}", "goatsucker", "")
-    database.hset(f"channel:{str(ctx.channel.id)}", "gsAnswered", "1")
+    database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
+    database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
 
 def check_state_role(ctx) -> list:
     """Returns a list of state roles a user has.
@@ -196,9 +195,9 @@ def check_state_role(ctx) -> list:
     if ctx.guild is not None:
         logger.info("server context")
         user_role_names = [role.name.lower() for role in ctx.author.roles]
-        for state in list(states.keys()):
+        for state in states:
             # gets similarities
-            if len(set(user_role_names).intersection(set(states[state]["aliases"]))) != 0:
+            if set(user_role_names).intersection(set(states[state]["aliases"])):
                 user_states.append(state)
     else:
         logger.info("dm context")
@@ -342,7 +341,7 @@ def incorrect_increment(ctx, bird: str, amount: int):
         database.zincrby(f"incorrect.server:{ctx.guild.id}", amount, str(bird))
     else:
         logger.info("dm context")
-    if database.exists(f"session.data:{str(ctx.author.id)}"):
+    if database.exists(f"session.data:{ctx.author.id}"):
         logger.info("session in session")
         database.zincrby(f"session.incorrect:{ctx.author.id}", amount, str(bird))
     else:
@@ -362,15 +361,14 @@ def score_increment(ctx, amount: int):
         database.zincrby(f"users.server:{ctx.guild.id}", amount, str(ctx.author.id))
     else:
         logger.info("dm context")
-    if database.exists(f"race.data:{str(ctx.channel.id)}"):
+    if database.exists(f"race.data:{ctx.channel.id}"):
         logger.info("race in session")
-        database.zincrby(f"race.scores:{str(ctx.channel.id)}", amount, str(ctx.author.id))
+        database.zincrby(f"race.scores:{ctx.channel.id}", amount, str(ctx.author.id))
 
 def owner_check(ctx) -> bool:
     """Check to see if the user is the owner of the bot."""
     owners = set(str(os.getenv("ids")).split(","))
     return str(ctx.author.id) in owners
-
 
 async def send_bird(ctx, bird: str, on_error=None, message=None, addOn="", bw=False):
     """Gets a bird picture and sends it to the user.
@@ -404,7 +402,7 @@ async def send_bird(ctx, bird: str, on_error=None, message=None, addOn="", bw=Fa
         response = await get_image(ctx, bird, addOn)
     except GenericError as e:
         await delete.delete()
-        await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {str(e)}")
+        await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {e}")
         logger.exception(e)
         if on_error is not None:
             on_error(ctx)
@@ -433,7 +431,7 @@ async def send_bird(ctx, bird: str, on_error=None, message=None, addOn="", bw=Fa
         await ctx.send(file=file_obj)
         await delete.delete()
 
-async def send_birdsong(ctx, bird:str, on_error=None, message=None):
+async def send_birdsong(ctx, bird: str, on_error=None, message=None):
     """Gets a bird sound and sends it to the user.
 
     `ctx` - Discord context object\n
@@ -456,7 +454,7 @@ async def send_birdsong(ctx, bird:str, on_error=None, message=None):
         response = await get_song(ctx, bird)
     except GenericError as e:
         await delete.delete()
-        await ctx.send(f"**An error has occurred while fetching songs.**\n*Please try again.*\n**Reason:** {str(e)}")
+        await ctx.send(f"**An error has occurred while fetching songs.**\n*Please try again.*\n**Reason:** {e}")
         logger.exception(e)
         if on_error is not None:
             on_error(ctx)
@@ -502,7 +500,7 @@ async def get_image(ctx, bird, addOn=None):
         sciBird = bird
     images = await get_files(sciBird, "images", addOn)
     logger.info("images: " + str(images))
-    prevJ = int(str(database.hget(f"channel:{str(ctx.channel.id)}", "prevJ"))[2:-1])
+    prevJ = int(str(database.hget(f"channel:{ctx.channel.id}", "prevJ"))[2:-1])
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if images:
         j = (prevJ + 1) % len(images)
@@ -522,7 +520,7 @@ async def get_image(ctx, bird, addOn=None):
             elif y == prevJ:
                 raise GenericError("No Valid Images Found", code=999)
 
-        database.hset(f"channel:{str(ctx.channel.id)}", "prevJ", str(j))
+        database.hset(f"channel:{ctx.channel.id}", "prevJ", str(j))
     else:
         raise GenericError("No Images Found", code=100)
 
@@ -547,7 +545,7 @@ async def get_song(ctx, bird):
         sciBird = bird
     songs = await get_files(sciBird, "songs")
     logger.info("songs: " + str(songs))
-    prevK = int(str(database.hget(f"channel:{str(ctx.channel.id)}", "prevK"))[2:-1])
+    prevK = int(str(database.hget(f"channel:{ctx.channel.id}", "prevK"))[2:-1])
     if songs:
         k = (prevK + 1) % len(songs)
         logger.info("prevK: " + str(prevK))
@@ -566,7 +564,7 @@ async def get_song(ctx, bird):
             elif y == prevK:
                 raise GenericError("No Valid Songs Found", code=999)
 
-        database.hset(f"channel:{str(ctx.channel.id)}", "prevK", str(k))
+        database.hset(f"channel:{ctx.channel.id}", "prevK", str(k))
     else:
         raise GenericError("No Songs Found", code=100)
 
@@ -589,7 +587,7 @@ async def get_files(sciBird, media_type, addOn="", retries=0):
         logger.info("trying")
         files_dir = os.listdir(directory)
         logger.info(directory)
-        if len(files_dir) == 0:
+        if not files_dir:
             raise GenericError("No Files", code=100)
         return [f"{directory}{path}" for path in files_dir]
     except (FileNotFoundError, GenericError):
@@ -597,7 +595,7 @@ async def get_files(sciBird, media_type, addOn="", retries=0):
         # if not found, fetch images
         logger.info("scibird: " + str(sciBird))
         filenames = await download_media(sciBird, media_type, addOn, directory)
-        if len(filenames) < 1:
+        if not filenames:
             if retries < 3:
                 retries += 1
                 return await get_files(sciBird, media_type, addOn, retries)
@@ -765,10 +763,8 @@ async def backup_all():
     """
     logger.info("Starting Backup")
     logger.info("Creating Dump")
-    keys = [str(key)[2:-1] for key in database.keys()]
-    dump = []
-    for key in keys:
-        dump.append(database.dump(key))
+    keys = [key.decode("utf-8") for key in database.keys()]
+    dump = map(database.dump, keys)
     logger.info("Finished Dump")
     logger.info("Writing To File")
     try:
@@ -778,9 +774,9 @@ async def backup_all():
         logger.info("Backups directory exists")
     with open("backups/dump.dump", 'wb') as f:
         with open("backups/keys.txt", 'w') as k:
-            for i, item in enumerate(dump):
+            for item, key in zip(dump, keys):
                 pickle.dump(item, f)
-                k.write(f"{keys[i]}\n")
+                k.write(f"{key}\n")
     logger.info("Backup Finished")
 
 def spellcheck(worda, wordb, cutoff=3):
