@@ -237,12 +237,20 @@ class Race(commands.Cog):
             await ctx.send(f"**Race started with options:**\n{await self._get_options(ctx)}")
 
             if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "image":
+                logger.info("clearing previous bird")
+                database.hset(f"channel:{ctx.channel.id}", "bird", "")
+                database.hset(f"channel:{ctx.channel.id}", "answered", "1")
+
                 logger.info("auto sending next bird image")
                 addon, bw, taxon = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon"])
                 birds = self.bot.get_cog("Birds")
                 await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"), taxon.decode("utf-8"))
 
             if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "song":
+                logger.info("clearing previous bird")
+                database.hset(f"channel:{ctx.channel.id}", "sBird", "")
+                database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
+
                 logger.info("auto sending next bird song")
                 birds = self.bot.get_cog("Birds")
                 await birds.send_song_(ctx)
