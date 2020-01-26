@@ -56,7 +56,7 @@ def web_session_setup(session_id):
                 "prevB": "",
                 "prevJ": 20,
                 "tempScore": 0,  # not used = -1
-
+                "user_id": 0 # not set = 0
             }
         )
         database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)
