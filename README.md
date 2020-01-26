@@ -1,6 +1,6 @@
 # Bird-ID
 
-[![Discord Invite](https://discordapp.com/api/guilds/601913706288381952/embed.png)](https://discord.gg/tNyGDve) [![Maintainability](https://api.codeclimate.com/v1/badges/6731bd218230bbc9e088/maintainability)](https://codeclimate.com/github/tctree333/Bird-ID/maintainability)
+[![Discord Invite](https://discordapp.com/api/guilds/601913706288381952/embed.png)](https://discord.gg/tNyGDve) [![Maintainability](https://api.codeclimate.com/v1/badges/6731bd218230bbc9e088/maintainability)](https://codeclimate.com/github/tctree333/Bird-ID/maintainability) [![Build Status](https://travis-ci.org/tctree333/Bird-ID.svg?branch=master)](https://travis-ci.org/tctree333/Bird-ID)
 
 A discord bot for young ornithologists. This bot is designed to help people practice the identification portion of the Science Olympiad Ornithology event.
 
