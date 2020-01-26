@@ -71,7 +71,8 @@ class Skip(commands.Cog):
         database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
         if currentBird != "":  # check if there is bird
             url = get_wiki_url(currentBird)
-            await ctx.send(f"Ok, skipping {currentBird.lower()}\n{url}")  # sends wiki page
+            await ctx.send(f"Ok, skipping {currentBird.lower()}")  
+            await ctx.send(url) # sends wiki page
             database.zadd("streak:global", {str(ctx.author.id): 0})
         else:
             await ctx.send("You need to ask for a bird first!")
