@@ -20,7 +20,7 @@ import time
 import discord
 from discord.ext import commands
 
-from data.data import database, logger, states
+from data.data import database, logger, states, taxons
 from functions import channel_setup, check_state_role, user_setup
 
 class Race(commands.Cog):
@@ -132,7 +132,7 @@ class Race(commands.Cog):
         Arguments can be passed in any taxon.
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
-        usage="[bw] [state] [female|juvenile] [amount to win (default 10)]"
+        usage="[bw] [state] [female|juvenile] [taxon] [amount to win (default 10)]"
     )
     @commands.cooldown(1, 3.0, type=commands.BucketType.channel)
     async def start(self, ctx, *, args_str: str = ""):
@@ -165,6 +165,12 @@ class Race(commands.Cog):
                 bw = "bw"
             else:
                 bw = ""
+
+            taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
+            if taxon_args:
+                taxon = " ".join(taxon_args).strip()
+            else:
+                taxon = ""
 
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
@@ -221,7 +227,8 @@ class Race(commands.Cog):
                     "bw": bw,
                     "state": state,
                     "addon": addon,
-                    "media": media
+                    "media": media,
+                    "taxon": taxon
                 }
             )
 
@@ -230,9 +237,9 @@ class Race(commands.Cog):
 
             if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "image":
                 logger.info("auto sending next bird image")
-                addon, bw = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw"])
+                addon, bw, taxon = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon"])
                 birds = self.bot.get_cog("Birds")
-                await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"))
+                await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"), taxon.decode("utf-8"))
 
             if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "song":
                 logger.info("auto sending next bird song")
