@@ -20,9 +20,11 @@ class TestCheck:
         database.zrem("users:global", str(self.ctx.author.id))
         database.zrem("streak:global", str(self.ctx.author.id))
         database.zrem("streak.max:global", str(self.ctx.author.id))
+        database.delete(f"incorrect.user:{self.ctx.author.id}")
 
         if self.ctx.guild is not None:
             database.delete(f"users.server:{self.ctx.guild.id}")
+            database.delete(f"incorrect.server:{self.ctx.guild.id}")
 
     def setup(self, guild=False):
         self.bot = mock.Bot()
@@ -50,7 +52,7 @@ class TestCheck:
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[2].content == "You must ask for a bird first!"
 
-    def test_check_bird_dm(self):
+    def test_check_bird_dm_1(self):
         test_word = "Canada Goose"
 
         self.setup(guild=True)
@@ -58,6 +60,9 @@ class TestCheck:
         coroutine = self.cog.check.callback(self.cog, self.ctx, arg=test_word) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[1].content == "Correct! Good job!"
+
+    def test_check_bird_dm_2(self):
+        test_word = "Canada Goose"
 
         self.setup(guild=True)
         database.hset(f"channel:{self.ctx.channel.id}", "bird", test_word)
@@ -71,7 +76,7 @@ class TestCheck:
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[2].content == "You must ask for a bird call first!"
 
-    def test_check_song_dm(self):
+    def test_check_song_dm_1(self):
         test_word = "Northern Cardinal"
 
         self.setup(guild=True)
@@ -79,6 +84,9 @@ class TestCheck:
         coroutine = self.cog.checksong.callback(self.cog, self.ctx, arg=test_word) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[1].content == "Correct! Good job!"
+
+    def test_check_song_dm_2(self):
+        test_word = "Northern Cardinal"
 
         self.setup(guild=True)
         database.hset(f"channel:{self.ctx.channel.id}", "sBird", test_word)
@@ -92,7 +100,7 @@ class TestCheck:
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[2].content == "You must ask for a bird first!"
 
-    def test_check_goat_dm(self):
+    def test_check_goat_dm_1(self):
         test_word = "Common Pauraque"
 
         self.setup(guild=True)
@@ -100,6 +108,9 @@ class TestCheck:
         coroutine = self.cog.checkgoat.callback(self.cog, self.ctx, arg=test_word) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[1].content == "Correct! Good job!"
+
+    def test_check_goat_dm_2(self):
+        test_word = "Common Pauraque"
 
         self.setup(guild=True)
         database.hset(f"channel:{self.ctx.channel.id}", "goatsucker", test_word)

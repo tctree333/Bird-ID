@@ -5,12 +5,12 @@ import sys
 import pytest
 
 sys.path.append(os.getcwd())
-from cogs import hint
+from cogs import skip
 from data.data import database
 import discord_mock as mock
 
 
-class TestHint:
+class TestSkip:
     @pytest.yield_fixture(autouse=True)
     def test_suite_cleanup_thing(self):
         yield
@@ -20,13 +20,15 @@ class TestHint:
         database.zrem("users:global", str(self.ctx.author.id))
         database.zrem("streak:global", str(self.ctx.author.id))
         database.zrem("streak.max:global", str(self.ctx.author.id))
+        database.delete(f"incorrect.user:{self.ctx.author.id}")
 
         if self.ctx.guild is not None:
             database.delete(f"users.server:{self.ctx.guild.id}")
+            database.delete(f"incorrect.server:{self.ctx.guild.id}")
 
     def setup(self, guild=False):
         self.bot = mock.Bot()
-        self.cog = hint.Hint(self.bot)
+        self.cog = skip.Skip(self.bot)
         self.ctx = mock.Context()
 
         if guild:
@@ -42,52 +44,52 @@ class TestHint:
         if self.ctx.guild is not None:
             database.delete(f"users.server:{self.ctx.guild.id}")
 
-    ### Hint Command Tests
-    def test_hint_nobird_dm(self):
+    ### Skip Command Tests
+    def test_skip_nobird_dm(self):
         self.setup(guild=True)
-        coroutine = self.cog.hint.callback(self.cog, self.ctx) # pylint: disable=no-member
+        coroutine = self.cog.skip.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[2].content == "You need to ask for a bird first!"
 
-    def test_hint_bird_dm(self):
-        test_word = "banana_test"
+    def test_skip_bird_dm(self):
+        test_word = "Canada Goose"
 
         self.setup(guild=True)
         database.hset(f"channel:{self.ctx.channel.id}", "bird", test_word)
-        coroutine = self.cog.hint.callback(self.cog, self.ctx) # pylint: disable=no-member
+        coroutine = self.cog.skip.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == f"The first letter is {test_word[0]}"
+        assert self.ctx.messages[1].content == f"Ok, skipping {test_word.lower()}"
 
 
-    ### Hintgoat Command Tests
-    def test_hintgoat_nobird_dm(self):
+    ### Skipgoat Command Tests
+    def test_skipgoat_nobird_dm(self):
         self.setup(guild=True)
-        coroutine = self.cog.hintgoat.callback(self.cog, self.ctx) # pylint: disable=no-member
+        coroutine = self.cog.skipgoat.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[2].content == "You need to ask for a bird first!"
 
-    def test_hintgoat_bird_dm(self):
-        test_word = "banana_test"
+    def test_skipgoat_bird_dm(self):
+        test_word = "Common Pauraque"
 
         self.setup(guild=True)
         database.hset(f"channel:{self.ctx.channel.id}", "goatsucker", test_word)
-        coroutine = self.cog.hintgoat.callback(self.cog, self.ctx) # pylint: disable=no-member
+        coroutine = self.cog.skipgoat.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == f"The first letter is {test_word[0]}"
+        assert self.ctx.messages[1].content == f"Ok, skipping {test_word.lower()}"
 
 
-    ### Hintsong Command Tests
-    def test_hintsong_nobird_dm(self):
+    ### Skipsong Command Tests
+    def test_skipsong_nobird_dm(self):
         self.setup(guild=True)
-        coroutine = self.cog.hintsong.callback(self.cog, self.ctx) # pylint: disable=no-member
+        coroutine = self.cog.skipsong.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[2].content == "You need to ask for a bird first!"
 
-    def test_hintsong_bird_dm(self):
-        test_word = "banana_test"
+    def test_skipsong_bird_dm(self):
+        test_word = "Northern Cardinal"
 
         self.setup(guild=True)
         database.hset(f"channel:{self.ctx.channel.id}", "sBird", test_word)
-        coroutine = self.cog.hintsong.callback(self.cog, self.ctx) # pylint: disable=no-member
+        coroutine = self.cog.skipsong.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == f"The first letter is {test_word[0]}"
+        assert self.ctx.messages[1].content == f"Ok, skipping {test_word.lower()}"

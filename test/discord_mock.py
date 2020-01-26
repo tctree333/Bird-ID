@@ -1,3 +1,4 @@
+import random
 class Channel:
     def __init__(self, channel_id=None):
         self.id = channel_id
@@ -52,13 +53,13 @@ class Message:
 class Context:
     def __init__(self):
         self.guild = None
-        self.channel = Channel(999999999999999990)
-        self.author = Author(999999999999999991)
+        self.channel = Channel(random.randint(999999999999990000, 999999999999999999))
+        self.author = Author(random.randint(999999999999990000, 999999999999999999))
         self.last_message = Message()
         self.messages = []
 
     def set_guild(self):
-        self.guild = Guild(999999999999999992)
+        self.guild = Guild(random.randint(999999999999990000, 999999999999999999))
 
     async def send(
         self,
