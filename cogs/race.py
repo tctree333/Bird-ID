@@ -34,7 +34,7 @@ class Race(commands.Cog):
         options = str(
             f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" + f"**Black & White:** {bw==b'bw'}\n" +
             f"**Special bird list:** {state.decode('utf-8') if state else 'None'}\n" +
-            f"**Taxons:** {taxon.decode('utf-8') if taxon else 'None'}" +
+            f"**Taxons:** {taxon.decode('utf-8') if taxon else 'None'}\n" +
             f"**Media Type:** {media.decode('utf-8')}\n" + f"**Amount to Win:** {limit.decode('utf-8')}\n"
         )
         return options
