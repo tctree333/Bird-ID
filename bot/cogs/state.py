@@ -20,8 +20,8 @@ import discord
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
-from data.data import logger, states
-from functions import channel_setup, user_setup
+from bot.data import logger, states
+from bot.functions import channel_setup, user_setup
 
 class States(commands.Cog):
     def __init__(self, bot):

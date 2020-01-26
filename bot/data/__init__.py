@@ -181,7 +181,7 @@ sci_screech_owls = ["Megascops trichopsis", "Megascops kennicottii", "Megascops 
 def _wiki_urls():
     logger.info("Working on wiki urls")
     urls = {}
-    with open(f'data/wikipedia.txt', 'r') as f:
+    with open(f'bot/data/wikipedia.txt', 'r') as f:
         r = csv.reader(f)
         for bird, url in r:
             urls[string.capwords(bird.replace("-", " "))] = url
@@ -204,7 +204,7 @@ def _nats_lists():
     lists = []
     for filename in filenames:
         logger.info(f"Working on {filename}")
-        with open(f'data/{filename}.txt', 'r') as f:
+        with open(f'bot/data/{filename}.txt', 'r') as f:
             lists.append(
                 [
                     string.capwords(line.strip().replace("-", " ")) if filename is not "memeList" else line.strip()
@@ -221,10 +221,10 @@ def _taxons():
     logger.info("Working on taxon master list")
     taxon_lists = {}
     logger.info("Done with taxon master list")
-    for directory in os.listdir("data/taxons"):
-        for filename in os.listdir(f"data/taxons/{directory}"):
+    for directory in os.listdir("bot/data/taxons"):
+        for filename in os.listdir(f"bot/data/taxons/{directory}"):
             logger.info(f"Working on {filename}")
-            with open(f"data/taxons/{directory}/{filename}", 'r') as f:
+            with open(f"bot/data/taxons/{directory}/{filename}", 'r') as f:
                 taxon_lists[filename[:filename.rfind(".")]] = [
                     string.capwords(line.strip().replace("-", " ")) for line in f
                 ]
@@ -236,13 +236,13 @@ def _state_lists():
     """Converts txt files of state data into lists."""
     filenames = ("birdList", "sciBirdList", "aliases", "songBirds", "sciSongBirds")
     states = {}
-    state_names = os.listdir("data/state")
+    state_names = os.listdir("bot/data/state")
     for state in state_names:
         states[state] = {}
         logger.info(f"Working on {state}")
         for filename in filenames:
             logger.info(f"Working on {filename}")
-            with open(f'data/state/{state}/{filename}.txt', 'r') as f:
+            with open(f'bot/data/state/{state}/{filename}.txt', 'r') as f:
                 states[state][filename] = [
                     string.capwords(line.strip().replace("-", " ")) if filename is not "aliases" else line.strip()
                     for line in f if line != "EMPTY"

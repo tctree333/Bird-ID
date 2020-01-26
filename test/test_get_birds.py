@@ -4,9 +4,8 @@ import sys
 
 import pytest
 
-sys.path.append(os.getcwd())
-from cogs import get_birds
-from data.data import database
+from bot.cogs import get_birds
+from bot.data import database
 import discord_mock as mock
 
 

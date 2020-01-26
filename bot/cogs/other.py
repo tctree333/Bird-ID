@@ -22,8 +22,8 @@ import discord
 import wikipedia
 from discord.ext import commands
 
-from data.data import (birdListMaster, database, logger, memeList, taxons, sciBirdListMaster, states)
-from functions import (channel_setup, get_sciname, owner_check, send_bird, send_birdsong, user_setup)
+from bot.data import (birdListMaster, database, logger, memeList, taxons, sciBirdListMaster, states)
+from bot.functions import (channel_setup, get_sciname, owner_check, send_bird, send_birdsong, user_setup)
 
 class Other(commands.Cog):
     def __init__(self, bot):

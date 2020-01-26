@@ -9,7 +9,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
-  - coverage run -m pytest
+  - coverage run --source=bot/ -m pytest
 after_script:
   - coverage xml
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

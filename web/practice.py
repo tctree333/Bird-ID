@@ -4,7 +4,7 @@ import random
 import flask
 from flask import Blueprint, abort, request
 
-from data.data import get_wiki_url, birdList
+from bot.data import get_wiki_url, birdList
 from web.config import (FRONTEND_URL, bird_setup, database, get_session_id, logger)
 from web.functions import get_sciname, send_bird, spellcheck
 

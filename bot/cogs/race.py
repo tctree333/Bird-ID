@@ -20,8 +20,8 @@ import time
 import discord
 from discord.ext import commands
 
-from data.data import database, logger, states, taxons
-from functions import channel_setup, check_state_role, user_setup
+from bot.data import database, logger, states, taxons
+from bot.functions import channel_setup, check_state_role, user_setup
 
 class Race(commands.Cog):
     def __init__(self, bot):

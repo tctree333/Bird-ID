@@ -16,8 +16,8 @@
 
 from discord.ext import commands
 
-from data.data import database, get_wiki_url, logger
-from functions import channel_setup, user_setup
+from bot.data import database, get_wiki_url, logger
+from bot.functions import channel_setup, user_setup
 
 class Skip(commands.Cog):
     def __init__(self, bot):

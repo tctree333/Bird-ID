@@ -6,7 +6,7 @@ import flask
 from flask import jsonify, redirect
 from sentry_sdk import capture_exception
 
-from data.data import birdList
+from bot.data import birdList
 from web import practice, user
 from web.config import FRONTEND_URL, app, logger
 from web.functions import get_media, get_sciname
