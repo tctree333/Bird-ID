@@ -28,12 +28,13 @@ class Race(commands.Cog):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, media, limit = database.hmget(
-            f"race.data:{ctx.channel.id}", ["bw", "addon", "state", "media", "limit"]
+        bw, addon, state, media, limit, taxon = database.hmget(
+            f"race.data:{ctx.channel.id}", ["bw", "addon", "state", "media", "limit", "taxon"]
         )
         options = str(
             f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" + f"**Black & White:** {bw==b'bw'}\n" +
             f"**Special bird list:** {state.decode('utf-8') if state else 'None'}\n" +
+            f"**Taxons:** {taxon.decode('utf-8') if taxon else 'None'}" +
             f"**Media Type:** {media.decode('utf-8')}\n" + f"**Amount to Win:** {limit.decode('utf-8')}\n"
         )
         return options
