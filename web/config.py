@@ -7,7 +7,7 @@ from flask import Flask, session
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-from data.data import database, logger
+from bot.data import database, logger
 
 sentry_sdk.init(
     release=f"Heroku Release {os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",

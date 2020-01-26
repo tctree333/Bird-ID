@@ -9,7 +9,7 @@ from functions import (
     get_files, get_sciname, spellcheck, valid_audio_extensions, valid_image_extensions, _black_and_white
 )
 from web.config import get_session_id
-from data.data import (GenericError, birdList, database, logger, screech_owls)
+from bot.data import (GenericError, birdList, database, logger, screech_owls)
 
 async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = False):
     if bird == "":

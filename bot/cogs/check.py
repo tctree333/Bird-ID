@@ -17,8 +17,8 @@
 import discord
 from discord.ext import commands
 
-from data.data import database, get_wiki_url, goatsuckers, logger, sciGoat
-from functions import (
+from bot.data import database, get_wiki_url, goatsuckers, logger, sciGoat
+from bot.functions import (
     bird_setup, channel_setup, get_sciname, incorrect_increment, score_increment, session_increment, spellcheck,
     user_setup
 )
@@ -76,7 +76,7 @@ class Check(commands.Cog):
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
                     await ctx.send(f"Wow! You have answered {number} birds correctly!")
-                    filename = 'achievements/' + number + ".PNG"
+                    filename = f"bot/achievements/{number}.PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
@@ -156,7 +156,7 @@ class Check(commands.Cog):
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
                     await ctx.send(f"Wow! You have answered {number} birds correctly!")
-                    filename = 'achievements/' + number + ".PNG"
+                    filename = f"bot/achievements/{number}.PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
@@ -222,7 +222,7 @@ class Check(commands.Cog):
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
                     await ctx.send(f"Wow! You have answered {number} birds correctly!")
-                    filename = f"achievements/{number}.PNG"
+                    filename = f"bot/achievements/{number}.PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 

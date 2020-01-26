@@ -19,8 +19,8 @@ import random
 
 from discord.ext import commands
 
-from data.data import (birdList, database, goatsuckers, logger, taxons, songBirds, states)
-from functions import (
+from bot.data import (birdList, database, goatsuckers, logger, taxons, songBirds, states)
+from bot.functions import (
     channel_setup, check_state_role, error_skip, error_skip_goat, error_skip_song, send_bird, send_birdsong,
     session_increment, user_setup
 )

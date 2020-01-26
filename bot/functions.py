@@ -33,7 +33,7 @@ import eyed3
 from PIL import Image
 from sentry_sdk import capture_exception
 
-from data.data import (GenericError, database, logger, sciBirdListMaster, sciSongBirdsMaster, screech_owls, states)
+from bot.data import (GenericError, database, logger, sciBirdListMaster, sciSongBirdsMaster, screech_owls, states)
 
 # Macaulay URL definitions
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"

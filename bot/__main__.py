@@ -30,8 +30,8 @@ import wikipedia
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception, configure_scope
 
-from data.data import GenericError, database, logger
-from functions import backup_all, channel_setup, precache, send_bird
+from bot.data import GenericError, database, logger
+from bot.functions import backup_all, channel_setup, precache, send_bird
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = 622547928946311188
@@ -67,8 +67,8 @@ if __name__ == '__main__':
 
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
     initial_extensions = [
-        'cogs.get_birds', 'cogs.check', 'cogs.skip', 'cogs.hint', 'cogs.score', 'cogs.state', 'cogs.sessions',
-        'cogs.race', 'cogs.other'
+        'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', 
+        'bot.cogs.state', 'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.other'
     ]
     for extension in initial_extensions:
         try:
