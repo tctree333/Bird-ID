@@ -1,13 +1,11 @@
 import asyncio
 import os
-import sys
 
 import pytest
 
 from bot.cogs import get_birds
 from bot.data import database
 import discord_mock as mock
-
 
 class TestBirds:
     @pytest.yield_fixture(autouse=True)
@@ -46,28 +44,44 @@ class TestBirds:
     ### Bird Command Tests
     def test_bird_dm_1(self):
         self.setup(guild=True)
-        coroutine = self.cog.bird.callback(self.cog, self.ctx) # pylint: disable=no-member
+        coroutine = self.cog.bird.callback(self.cog, self.ctx)  # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[2].content == "**Recognized arguments:** *Black & White*: `False`, *Female/Juvenile*: `None`, *Taxons*: `None`"
-        assert self.ctx.messages[4].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is an image.*"
+        assert self.ctx.messages[
+            2
+        ].content == "**Recognized arguments:** *Black & White*: `False`, *Female/Juvenile*: `None`, *Taxons*: `None`"
+        assert self.ctx.messages[
+            4
+        ].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is an image.*"
 
     def test_bird_dm_2(self):
         self.setup(guild=True)
-        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="bw female") # pylint: disable=no-member
+        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="bw female")  # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[2].content == "**Recognized arguments:** *Black & White*: `True`, *Female/Juvenile*: `female`, *Taxons*: `None`"
-        assert self.ctx.messages[4].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is a female.*"
+        assert self.ctx.messages[
+            2
+        ].content == "**Recognized arguments:** *Black & White*: `True`, *Female/Juvenile*: `female`, *Taxons*: `None`"
+        assert self.ctx.messages[
+            4
+        ].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is a female.*"
 
     def test_bird_dm_3(self):
         self.setup(guild=True)
-        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="passeriformes yolo bw juvenile") # pylint: disable=no-member
+        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="passeriformes yolo bw juvenile")  # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[2].content == "**Recognized arguments:** *Black & White*: `True`, *Female/Juvenile*: `juvenile`, *Taxons*: `passeriformes`"
-        assert self.ctx.messages[4].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is a juvenile.*"
+        assert self.ctx.messages[
+            2
+        ].content == "**Recognized arguments:** *Black & White*: `True`, *Female/Juvenile*: `juvenile`, *Taxons*: `passeriformes`"
+        assert self.ctx.messages[
+            4
+        ].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is a juvenile.*"
 
     def test_bird_dm_4(self):
         self.setup(guild=True)
-        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="13435 troglodytidae f") # pylint: disable=no-member
+        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="13435 troglodytidae f")  # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[2].content == "**Recognized arguments:** *Black & White*: `False`, *Female/Juvenile*: `female`, *Taxons*: `troglodytidae`"
-        assert self.ctx.messages[4].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is a female.*"
+        assert self.ctx.messages[
+            2
+        ].content == "**Recognized arguments:** *Black & White*: `False`, *Female/Juvenile*: `female`, *Taxons*: `troglodytidae`"
+        assert self.ctx.messages[
+            4
+        ].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is a female.*"

@@ -1,4 +1,4 @@
-# data.py | import data from lists
+# data/__init__.py | import data from lists
 # Copyright (C) 2019-2020  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
@@ -42,13 +42,13 @@ def before_sentry_send(event, hint):
     return event
 
 # add sentry logging
-
-sentry_sdk.init(
-    release=f"Heroku Release {os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",
-    dsn=str(os.getenv("SENTRY_DISCORD_DSN")),
-    integrations=[RedisIntegration(), AioHttpIntegration()],
-    before_send=before_sentry_send
-)
+if os.getenv("NO_SENTRY") != "true":
+    sentry_sdk.init(
+        release=f"Heroku Release {os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",
+        dsn=os.getenv("SENTRY_DISCORD_DSN"),
+        integrations=[RedisIntegration(), AioHttpIntegration()],
+        before_send=before_sentry_send
+    )
 
 # Database Format Definitions
 
@@ -129,7 +129,7 @@ stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.DEBUG)
 
 file_handler.setFormatter(logging.Formatter("{asctime} - {filename:10} -  {levelname:8} - {message}", style="{"))
-stream_handler.setFormatter(logging.Formatter("{filename:10} -  {levelname:8} - {message}", style="{"))
+stream_handler.setFormatter(logging.Formatter("{filename:12} -  {levelname:8} - {message}", style="{"))
 
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
