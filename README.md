@@ -35,17 +35,7 @@ CHANGE: database = redis.from_url(os.getenv("REDIS_URL"))
 TO: database = redis.Redis(host='localhost', port=6379, db=0)
 ```
 
-4. Optionally, you can create a [sentry.io](https://sentry.io/) account, which we use for error monitoring. Update `setup.sh` to your Sentry DSN. If you don't do this, remove lines 41-46 of `data/data.py`.
-
-```python
-REMOVE:
-# add sentry logging
-sentry_sdk.init(
-    dsn=str(os.getenv("SENTRY_DISCORD_DSN")),
-    integrations=[RedisIntegration(), AioHttpIntegration()],
-    before_send=before_sentry_send
-)
-```
+4. Optionally, you can create a [sentry.io](https://sentry.io/) account, which we use for error monitoring. Update `setup.sh` to your Sentry DSN. If you don't do this, set the `NO_SENTRY` environment variable to `true` before running the bot.
 
 5. Register a bot account on the [Discord Developers Portal](https://discordapp.com/developers/applications/). To do so, create a new application. Name your application, then navigate to the `Bot` section, and add a bot. Change your application name if necessary. Update `setup.sh` with your bot token (`Bot` section), client secret (`General Information` section), and Discord user id.
 6. Install any necessary packages with `pip install -r requirements.txt`. You may also want to setup a python virtual environment to avoid package conflicts before installing packages.

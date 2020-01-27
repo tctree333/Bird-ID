@@ -244,7 +244,12 @@ class Race(commands.Cog):
                 logger.info("auto sending next bird image")
                 addon, bw, taxon = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon"])
                 birds = self.bot.get_cog("Birds")
-                await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"), taxon.decode("utf-8"))
+                await birds.send_bird_(
+                    ctx,
+                    addon.decode("utf-8"),  # type: ignore
+                    bw.decode("utf-8"),
+                    taxon.decode("utf-8")
+                )
 
             if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "song":
                 logger.info("clearing previous bird")
