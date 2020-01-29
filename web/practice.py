@@ -4,9 +4,11 @@ import random
 import flask
 from flask import Blueprint, abort, request
 
-from bot.data import get_wiki_url, birdList
-from web.config import (FRONTEND_URL, bird_setup, database, get_session_id, logger)
-from web.functions import get_sciname, send_bird, spellcheck
+from bot.data import birdList, get_wiki_url
+from bot.functions import spellcheck
+from web.config import (FRONTEND_URL, bird_setup, database, get_session_id,
+                        logger)
+from web.functions import get_sciname, send_bird
 
 bp = Blueprint('practice', __name__, url_prefix='/practice')
 

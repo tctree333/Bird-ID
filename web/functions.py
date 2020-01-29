@@ -5,11 +5,11 @@ from functools import partial
 from flask import abort
 from sentry_sdk import capture_exception
 
-from bot.functions import (
-    get_files, get_sciname, spellcheck, valid_audio_extensions, valid_image_extensions, _black_and_white
-)
+from bot.data import GenericError, birdList, database, logger, screech_owls
+from bot.functions import (_black_and_white, get_files, get_sciname,
+                           valid_audio_extensions, valid_image_extensions)
 from web.config import get_session_id
-from bot.data import (GenericError, birdList, database, logger, screech_owls)
+
 
 async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = False):
     if bird == "":
@@ -79,7 +79,6 @@ async def get_media(bird, media_type, addOn=""):  # images or songs
                 logger.info("found one!")
                 break
             elif y == prevJ:
-                j = (j + 1) % (len(media))
                 raise GenericError(f"No Valid {media_type.title()} Found", code=999)
 
         database.hset(database_key, "prevJ", str(j))
