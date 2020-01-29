@@ -247,8 +247,8 @@ class Race(commands.Cog):
                 await birds.send_bird_(
                     ctx,
                     addon.decode("utf-8"),  # type: ignore
-                    bw.decode("utf-8"),
-                    taxon.decode("utf-8")
+                    bw.decode("utf-8"),  # type: ignore
+                    taxon.decode("utf-8")  # type: ignore
                 )
 
             if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "song":
