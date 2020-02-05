@@ -27,14 +27,8 @@ If you find an issue with the bot, please report it in the support server instea
 To run the bot locally, you'll need to install some software first.
 
 1. Clone the repo locally with `git clone https://github.com/tctree333/Bird-ID.git`.
-2. Install a local Redis server by following the instructions [here.](https://redis.io/topics/quickstart) Start your Redis server with `redis-server`.
-3. `cd` into this cloned repository. Modify line 30 of `data/data.py`.
-
-```python
-CHANGE: database = redis.from_url(os.getenv("REDIS_URL"))
-TO: database = redis.Redis(host='localhost', port=6379, db=0)
-```
-
+2. Install a local Redis server by running `chmod +x install-redis.sh && ./install-redis.sh`. [Source](https://redis.io/topics/quickstart) Start your Redis server with `redis-server`.
+3. Tell the code to use your local Redis server by setting the environment variable `LOCAL_REDIS` to `true` with `export LOCAL_REDIS="true"`.
 4. Optionally, you can create a [sentry.io](https://sentry.io/) account, which we use for error monitoring. Update `setup.sh` to your Sentry DSN. If you don't do this, remove lines 41-46 of `data/data.py`.
 
 ```python
