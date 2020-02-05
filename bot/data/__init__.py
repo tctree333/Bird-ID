@@ -29,7 +29,10 @@ from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
 # define database for one connection
-database = redis.from_url(os.getenv("REDIS_URL"))
+if os.getenv("LOCAL_REDIS") == "true":
+    database = redis.Redis(host='localhost', port=6379, db=0)
+else:
+    database = redis.from_url(os.getenv("REDIS_URL"))
 
 def before_sentry_send(event, hint):
     """Fingerprint certain events before sending to Sentry."""
