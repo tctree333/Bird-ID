@@ -11,7 +11,7 @@ from bot.data import database, logger
 
 sentry_sdk.init(
     release=f"Heroku Release {os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",
-    dsn=str(os.getenv("SENTRY_API_DSN")),
+    dsn=os.getenv("SENTRY_API_DSN"),
     integrations=[FlaskIntegration(), RedisIntegration()]
 )
 app = Flask(__name__)
@@ -20,7 +20,7 @@ app.config['SESSION_COOKIE_SAMESITE'] = "Strict"
 app.config['SESSION_COOKIE_SECURE'] = True
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
-DATABASE_SESSION_EXPIRE = 172800 # 2 days
+DATABASE_SESSION_EXPIRE = 172800  # 2 days
 
 # Web Database Keys
 
@@ -56,7 +56,7 @@ def web_session_setup(session_id):
                 "prevB": "",
                 "prevJ": 20,
                 "tempScore": 0,  # not used = -1
-                "user_id": 0 # not set = 0
+                "user_id": 0  # not set = 0
             }
         )
         database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)

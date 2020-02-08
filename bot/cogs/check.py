@@ -26,6 +26,12 @@ from bot.functions import (
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
 
+def racing_check(ctx):
+    """clears cooldown in racing"""
+    if ctx.command.is_on_cooldown(ctx) and str(ctx.channel.name).startswith("racing"):
+        ctx.command.reset_cooldown(ctx)
+    return True
+
 class Check(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -33,6 +39,7 @@ class Check(commands.Cog):
     # Check command - argument is the guess
     @commands.command(help='- Checks your answer.', usage="guess", aliases=["guess", "c"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.user)
+    @commands.check(racing_check)
     async def check(self, ctx, *, arg):
         logger.info("command: check")
 

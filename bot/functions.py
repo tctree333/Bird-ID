@@ -714,7 +714,7 @@ async def _download_helper(path, url, session):
                     raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
 
             else:
-                ext = guess_extension(content_type)  # type: ignore
+                ext = guess_extension(content_type)
                 if ext is None:
                     raise GenericError(f"No extensions found.")
 
