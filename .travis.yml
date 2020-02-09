@@ -10,7 +10,7 @@ before_script:
   - ./cc-test-reporter before-build
   - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then source ./travis_pr_script.sh; fi'
 script:
-  - coverage run --source=bot/ -m pytest
+  - coverage run --source=bot/ -m pytest -x
 after_script:
   - coverage xml
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
