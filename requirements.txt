@@ -6,6 +6,6 @@ Pillow==7.0.0
 holidays==0.10.1
 Flask==1.1.1
 gunicorn==20.0.4
-Authlib==0.13
+Authlib==0.14.1
 sentry-sdk==0.14.1
 blinker==1.4
