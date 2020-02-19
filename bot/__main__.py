@@ -225,6 +225,17 @@ if __name__ == '__main__':
                 capture_exception(error.original)
                 await ctx.send("Wikipedia page unavaliable. Try again later.")
 
+            elif isinstance(error.original, discord.Forbidden):
+                if error.original.code == 50007:
+                    await ctx.send("I was unable to DM you. Check if I was blocked and try again.")
+                else:
+                    capture_exception(error)
+                    await ctx.send(
+                        "**An unexpected Forbidden error has occurred.**\n"
+                        "*Please log this message in #support in the support server below, or try again.*\n"
+                        "**Error:** " + str(error)
+                    )
+
             elif isinstance(error.original, discord.HTTPException):
                 if error.original.status == 502:
                     await ctx.send("**An error has occured with discord. :(**\n*Please try again.*")
