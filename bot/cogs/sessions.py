@@ -15,12 +15,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import datetime
+import textwrap
 import time
 
 import discord
 from discord.ext import commands
 
-from bot.data import database, logger, taxons, states
+from bot.data import database, logger, states, taxons
 from bot.functions import channel_setup, check_state_role, user_setup
 
 class Sessions(commands.Cog):
@@ -29,10 +30,13 @@ class Sessions(commands.Cog):
 
     async def _get_options(self, ctx):
         bw, addon, state, taxon = database.hmget(f"session.data:{ctx.author.id}", ["bw", "addon", "state", "taxon"])
-        options = str(
-            f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" + f"**Black & White:** {bw==b'bw'}\n" +
-            f"**State bird list:** {state.decode('utf-8') if state else 'None'}\n" +
-            f"**Bird taxon:** {taxon.decode('utf-8') if taxon else 'None'}\n"
+        options = textwrap.dedent(
+            f"""
+			**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}
+			**Black & White:** {bw==b'bw'}
+            **State bird list:** {state.decode('utf-8') if state else 'None'}
+            **Bird taxon:** {taxon.decode('utf-8') if taxon else 'None'}
+			"""
         )
         return options
 
@@ -40,15 +44,19 @@ class Sessions(commands.Cog):
         start, correct, incorrect, total = map(
             int, database.hmget(f"session.data:{ctx.author.id}", ["start", "correct", "incorrect", "total"])
         )
-        elapsed = str(datetime.timedelta(seconds=round(time.time()) - start))
+        elapsed = datetime.timedelta(seconds=round(time.time()) - start)
         try:
             accuracy = round(100 * (correct / (correct + incorrect)), 2)
         except ZeroDivisionError:
             accuracy = 0
 
-        stats = str(
-            f"**Duration:** `{elapsed}`\n" + f"**# Correct:** {correct}\n" + f"**# Incorrect:** {incorrect}\n" +
-            f"**Total Birds:** {total}\n" + f"**Accuracy:** {accuracy}%\n"
+        stats = textwrap.dedent(
+            f"""**Duration:** `{elapsed}`
+			**# Correct:** {correct}
+			**# Incorrect:** {incorrect}
+            **Total Birds:** {total}
+			**Accuracy:** {accuracy}%
+			"""
         )
         return stats
 
