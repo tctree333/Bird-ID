@@ -205,11 +205,30 @@ class Birds(commands.Cog):
                 add_on = session_add_on
             elif add_on == session_add_on:
                 add_on = ""
+            elif session_add_on == "":
+                add_on = add_on
             else:
                 await ctx.send("**Juvenile females are not yet supported.**\n*Overriding session options...*")
 
             if database.hget(f"session.data:{ctx.author.id}", "bw").decode("utf-8"):
                 bw = not bw
+
+        if database.exists(f"race.data:{ctx.channel.id}"):
+            logger.info("race parameters")
+
+            race_add_on = database.hget(f"race.data:{ctx.channel.id}", "addon").decode("utf-8")
+            if add_on == "":
+                add_on = race_add_on
+            elif add_on == race_add_on:
+                add_on = ""
+            elif race_add_on == "":
+                add_on = add_on
+            else:
+                await ctx.send("**Juvenile females are not yet supported.**\n*Overriding race options...*")
+
+            if database.hget(f"race.data:{ctx.channel.id}", "bw").decode("utf-8"):
+                bw = not bw
+
 
         logger.info(f"args: bw: {bw}; addon: {add_on}; taxon: {taxon}")
         if int(database.hget(f"channel:{ctx.channel.id}", "answered")):
@@ -219,7 +238,10 @@ class Birds(commands.Cog):
                 f"*Taxons*: `{'None' if taxon == '' else taxon}`"
             )
         else:
-            await ctx.send(f"**Recognized arguments:** *Black & White*: `{bw}`")
+            await ctx.send(
+                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
+                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`"
+            )
 
         await self.send_bird_(ctx, add_on, bw, taxon)
 
