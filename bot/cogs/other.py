@@ -91,11 +91,11 @@ class Other(commands.Cog):
 
         await ctx.author.dm_channel.send(f"**The {state} bird list:**")
         for birds in birdLists:
-            await ctx.author.dm_channel.send(f"```{birds}```")
+            await ctx.author.dm_channel.send(f"```\n{birds}```")
 
         await ctx.author.dm_channel.send(f"**The {state} bird songs:**")
         for birds in songLists:
-            await ctx.author.dm_channel.send(f"```{birds}```")
+            await ctx.author.dm_channel.send(f"```\n{birds}```")
 
         await ctx.send(
             f"The `{state}` bird list has **{len(states[state]['birdList'])}** birds.\n" +
@@ -167,11 +167,11 @@ class Other(commands.Cog):
 
         await ctx.author.dm_channel.send(f"**The `{taxon}` in the `{state}` bird list:**")
         for birds in birdLists:
-            await ctx.author.dm_channel.send(f"```{birds}```")
+            await ctx.author.dm_channel.send(f"```\n{birds}```")
 
         await ctx.author.dm_channel.send(f"**The `{taxon}` in the `{state}` bird songs:**")
         for birds in songLists:
-            await ctx.author.dm_channel.send(f"```{birds}```")
+            await ctx.author.dm_channel.send(f"```\n{birds}```")
 
         await ctx.send(
             f"The `{taxon}` in the `{state}` bird list has **{len(bird_list)}** birds.\n" +
