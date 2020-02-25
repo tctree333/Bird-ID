@@ -225,7 +225,7 @@ class Sessions(commands.Cog):
             await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
 
     # stops session
-    @session.command(help="- Stops session", aliases=["stp"])
+    @session.command(help="- Stops session", aliases=["stp", "end"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.user)
     async def stop(self, ctx):
         logger.info("command: stop session")
