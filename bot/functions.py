@@ -126,34 +126,34 @@ async def bird_setup(ctx, bird: str):
     `bird` - bird to setup
     """
     logger.info("checking bird data")
-    if database.zscore("incorrect:global", string.capwords(str(bird))) is not None:
+    if database.zscore("incorrect:global", string.capwords(bird)) is not None:
         logger.info("bird global ok")
     else:
-        database.zadd("incorrect:global", {string.capwords(str(bird)): 0})
+        database.zadd("incorrect:global", {string.capwords(bird): 0})
         logger.info("bird global added")
 
-    if database.zscore(f"incorrect.user:{ctx.author.id}", string.capwords(str(bird))) is not None:
+    if database.zscore(f"incorrect.user:{ctx.author.id}", string.capwords(bird)) is not None:
         logger.info("bird user ok")
     else:
-        database.zadd(f"incorrect.user:{ctx.author.id}", {string.capwords(str(bird)): 0})
+        database.zadd(f"incorrect.user:{ctx.author.id}", {string.capwords(bird): 0})
         logger.info("bird user added")
 
     if ctx.guild is not None:
         logger.info("no dm")
-        if database.zscore(f"incorrect.server:{ctx.guild.id}", string.capwords(str(bird))) is not None:
+        if database.zscore(f"incorrect.server:{ctx.guild.id}", string.capwords(bird)) is not None:
             logger.info("bird server ok")
         else:
-            database.zadd(f"incorrect.server:{ctx.guild.id}", {string.capwords(str(bird)): 0})
+            database.zadd(f"incorrect.server:{ctx.guild.id}", {string.capwords(bird): 0})
             logger.info("bird server added")
     else:
         logger.info("dm context")
 
     if database.exists(f"session.data:{ctx.author.id}"):
         logger.info("session in session")
-        if database.zscore(f"session.incorrect:{ctx.author.id}", string.capwords(str(bird))) is not None:
+        if database.zscore(f"session.incorrect:{ctx.author.id}", string.capwords(bird)) is not None:
             logger.info("bird session ok")
         else:
-            database.zadd(f"session.incorrect:{ctx.author.id}", {string.capwords(str(bird)): 0})
+            database.zadd(f"session.incorrect:{ctx.author.id}", {string.capwords(bird): 0})
             logger.info("bird session added")
     else:
         logger.info("no session")
@@ -335,16 +335,16 @@ def incorrect_increment(ctx, bird: str, amount: int):
     `amount` (int) - amount to increment by, usually 1
     """
     logger.info(f"incrementing incorrect {bird} by {amount}")
-    database.zincrby("incorrect:global", amount, str(bird))
-    database.zincrby(f"incorrect.user:{ctx.author.id}", amount, str(bird))
+    database.zincrby("incorrect:global", amount, string.capwords(str(bird)))
+    database.zincrby(f"incorrect.user:{ctx.author.id}", amount, string.capwords(str(bird)))
     if ctx.guild is not None:
         logger.info("no dm")
-        database.zincrby(f"incorrect.server:{ctx.guild.id}", amount, str(bird))
+        database.zincrby(f"incorrect.server:{ctx.guild.id}", amount, string.capwords(str(bird)))
     else:
         logger.info("dm context")
     if database.exists(f"session.data:{ctx.author.id}"):
         logger.info("session in session")
-        database.zincrby(f"session.incorrect:{ctx.author.id}", amount, str(bird))
+        database.zincrby(f"session.incorrect:{ctx.author.id}", amount, string.capwords(str(bird)))
     else:
         logger.info("no session")
 
