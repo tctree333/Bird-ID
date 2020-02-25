@@ -90,7 +90,7 @@ class Sessions(commands.Cog):
         brief="- Starts session",
         help="""- Starts session.
         Arguments passed will become the default arguments to 'b!bird', but can be manually overwritten during use. 
-        These settings can be changed at any time with 'b!session edit', and arguments can be passed in any taxon. 
+        These settings can be changed at any time with 'b!session edit', and arguments can be passed in any order. 
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
         usage="[bw] [state] [female|juvenile] [order/family]"
