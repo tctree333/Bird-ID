@@ -98,7 +98,7 @@ class Sessions(commands.Cog):
         brief="- Starts session",
         help="""- Starts session.
         Arguments passed will become the default arguments to 'b!bird', but can be manually overwritten during use. 
-        These settings can be changed at any time with 'b!session edit', and arguments can be passed in any taxon. 
+        These settings can be changed at any time with 'b!session edit', and arguments can be passed in any order. 
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
         usage="[bw] [state] [female|juvenile] [order/family]"
@@ -233,7 +233,7 @@ class Sessions(commands.Cog):
             await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
 
     # stops session
-    @session.command(help="- Stops session", aliases=["stp"])
+    @session.command(help="- Stops session", aliases=["stp", "end"])
     @commands.cooldown(1, 3.0, type=commands.BucketType.user)
     async def stop(self, ctx):
         logger.info("command: stop session")
