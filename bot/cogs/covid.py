@@ -191,6 +191,13 @@ class COVID(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
         await ctx.trigger_typing()
+        
+        if amt > 10:
+            await ctx.send("**Invalid amount!** Defaulting to 10.")
+            amt = 10
+        if amt < 1:
+            await ctx.send("**Invalid amount!** Defaulting to 1.")
+            amt = 1
 
         if ranking in ("confirmed", "confirm", "cases", "c"):
             ranking = "confirmed"
