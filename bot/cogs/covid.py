@@ -161,7 +161,6 @@ class COVID(commands.Cog):
                     await ctx.send(embed=embed)
                     return
 
-            print(self.covid_location_ids.keys())
             location_matches = difflib.get_close_matches(
                 location, self.covid_location_ids.keys(), n=1, cutoff=0.4
             )
