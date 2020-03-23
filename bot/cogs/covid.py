@@ -37,7 +37,11 @@ class COVID(commands.Cog):
 
     def getLocations(self, rank_by: str = None, rank_amount: int = None):
         data = None
-        world = [item for item in self._request("/v2/locations", {"source": "jhu"})["locations"] if item["country_code"] != "US"]
+        world = [
+            item
+            for item in self._request("/v2/locations", {"source": "jhu"})["locations"]
+            if not (item["country_code"] == "US" and "," in set(item["province"]))
+        ]
         usa = self._request("/v2/locations", {"source": "csbs"})["locations"]
         for item in usa:
             item["province"] = f"{item['county']} County, {item['state']}"
@@ -61,15 +65,21 @@ class COVID(commands.Cog):
 
     def getCountryCode(self, country_code):
         if country_code == "US":
-            data = self._request("/v2/locations", {"source": "csbs", "country_code": country_code})
+            data = self._request(
+                "/v2/locations", {"source": "csbs", "country_code": country_code}
+            )
         else:
-            data = self._request("/v2/locations", {"source": "jhu", "country_code": country_code})
+            data = self._request(
+                "/v2/locations", {"source": "jhu", "country_code": country_code}
+            )
         if not data["locations"]:
             return None
         return data
 
-    def getLocationById(self, country_id: int, US:bool = False):
-        data = self._request("/v2/locations/" + str(country_id), {"source": ("csbs" if US else "jhu")})
+    def getLocationById(self, country_id: int, US: bool = False):
+        data = self._request(
+            "/v2/locations/" + str(country_id), {"source": ("csbs" if US else "jhu")}
+        )
         return data["location"]
 
     def update_covid(self):
@@ -151,8 +161,9 @@ class COVID(commands.Cog):
                     await ctx.send(embed=embed)
                     return
 
+            print(self.covid_location_ids.keys())
             location_matches = difflib.get_close_matches(
-                location, self.covid_location_ids.keys(), n=1, cutoff=0.5
+                location, self.covid_location_ids.keys(), n=1, cutoff=0.4
             )
             if location_matches:
                 await ctx.send(f"Fetching data for location `{location_matches[0]}`.")
@@ -166,7 +177,6 @@ class COVID(commands.Cog):
                 await ctx.send(f"No location `{location}` found.")
                 return
 
-
     # top countries
     @covid.command(
         brief="- Gets locations with the most cases",
@@ -176,7 +186,7 @@ class COVID(commands.Cog):
         + "More info: (https://github.com/ExpDev07/coronavirus-tracker-api)",
         aliases=["leaderboard"],
     )
-    async def top(self, ctx, ranking:str = "confirmed", amt:int = 3):
+    async def top(self, ctx, ranking: str = "confirmed", amt: int = 3):
         logger.info("command: covid top")
 
         await channel_setup(ctx)
