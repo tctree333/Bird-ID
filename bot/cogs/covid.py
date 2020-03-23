@@ -191,6 +191,7 @@ class COVID(commands.Cog):
             ranking = "recovered"
         else:
             await ctx.send("Invalid argument!")
+            return
 
         data = self.getLocations(ranking, amt)
         embed = self.format_leaderboard(data, ranking)
