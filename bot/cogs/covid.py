@@ -77,7 +77,6 @@ class COVID(commands.Cog):
             f'{x["province"]}, {x["country_code"]}': x["id"]
             for x in self.getLocations()
         }
-        print(list(self.covid_location_ids.keys()))
 
     def format_data(self, confirmed: int, died: int, recovered: int, location="Global"):
         embed = discord.Embed(
@@ -170,8 +169,8 @@ class COVID(commands.Cog):
 
     # top countries
     @covid.command(
-        brief="- Updates data.",
-        help="- Updates data. "
+        brief="- Gets locations with the most cases",
+        help="- Gets locations with the most cases. "
         + "This fetches data from ExpDev07's Coronavirus tracker API, "
         + "which fetches data from Johns Hopkins, with county data from CSBS. "
         + "More info: (https://github.com/ExpDev07/coronavirus-tracker-api)",
