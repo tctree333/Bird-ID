@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
     initial_extensions = [
         'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', 'bot.cogs.state',
-        'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.other'
+        'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.other', 'bot.cogs.covid'
     ]
     for extension in initial_extensions:
         try:
