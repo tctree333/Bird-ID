@@ -152,7 +152,7 @@ class COVID(commands.Cog):
                     return
 
             location_matches = difflib.get_close_matches(
-                location, self.covid_location_ids.keys(), n=1, cutoff=0.3
+                location, self.covid_location_ids.keys(), n=1, cutoff=0.5
             )
             if location_matches:
                 await ctx.send(f"Fetching data for location `{location_matches[0]}`.")
