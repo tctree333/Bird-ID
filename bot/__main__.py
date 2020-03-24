@@ -65,15 +65,24 @@ if __name__ == '__main__':
         refresh_backup.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
-    initial_extensions = [
+    core_extensions = [
         'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', 'bot.cogs.state',
-        'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.other', 'bot.cogs.covid'
+        'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.other'
     ]
-    for extension in initial_extensions:
+    extra_extensions = [
+        'bot.cogs.covid'
+    ]
+    for extension in core_extensions + extra_extensions:
         try:
             bot.load_extension(extension)
-        except (discord.ClientException, ModuleNotFoundError):
-            logger.exception(f'Failed to load extension {extension}.')
+        except (discord.ClientException, commands.ExtensionNotFound, commands.ExtensionFailed) as e:
+            if extension in core_extensions:
+                logger.exception(f'Failed to load extension {extension}.', e)
+                capture_exception(e)
+                raise e
+            else:
+                logger.error(f'Failed to load extension {extension}.', e)
+
     if sys.platform == 'win32':
         asyncio.set_event_loop(asyncio.ProactorEventLoop())
 
