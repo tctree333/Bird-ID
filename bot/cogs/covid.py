@@ -44,7 +44,7 @@ class COVID(commands.Cog):
         ]
         usa = self._request("/v2/locations", {"source": "csbs"})["locations"]
         for item in usa:
-            item["province"] = f"{item['county']} County, {item['state']}"
+            item["province"] = f"{item['county']} County, {item['province']}"
         data = world + usa
         ranking_criteria = ["confirmed", "deaths", "recovered"]
         if rank_by is not None:
