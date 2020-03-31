@@ -83,7 +83,7 @@ class Check(commands.Cog):
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
                     await ctx.send(f"Wow! You have answered {number} birds correctly!")
-                    filename = f"bot/achievements/{number}.PNG"
+                    filename = f"bot/media/achievements/{number}.PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
@@ -163,7 +163,7 @@ class Check(commands.Cog):
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
                     await ctx.send(f"Wow! You have answered {number} birds correctly!")
-                    filename = f"bot/achievements/{number}.PNG"
+                    filename = f"bot/media/achievements/{number}.PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
@@ -229,7 +229,7 @@ class Check(commands.Cog):
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
                     number = str(int(database.zscore("users:global", str(ctx.author.id))))
                     await ctx.send(f"Wow! You have answered {number} birds correctly!")
-                    filename = f"bot/achievements/{number}.PNG"
+                    filename = f"bot/media/achievements/{number}.PNG"
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
