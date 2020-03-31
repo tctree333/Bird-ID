@@ -20,7 +20,7 @@ import errno
 import os
 import shutil
 import sys
-import time
+from datetime import date
 
 import aiohttp
 import discord
@@ -31,7 +31,7 @@ from discord.ext import commands, tasks
 from sentry_sdk import capture_exception, configure_scope
 
 from bot.data import GenericError, database, logger
-from bot.functions import backup_all, channel_setup, precache, send_bird
+from bot.functions import backup_all, channel_setup, precache, send_bird, drone_attack
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = 622547928946311188
@@ -49,7 +49,8 @@ if __name__ == '__main__':
     bot = commands.Bot(
         command_prefix=['b!', 'b.', 'b#', 'B!', 'B.', 'B#', 'o>', 'O>'],
         case_insensitive=True,
-        description="BirdID - Your Very Own Ornithologist"
+        description="BirdID - Your Very Own Ornithologist",
+        help_command=commands.DefaultHelpCommand(verify_checks=False)
     )
 
     @bot.event
@@ -142,13 +143,15 @@ if __name__ == '__main__':
         Can be extended to other holidays as well.
         """
         logger.info("global check: checking holiday")
-        now = time.time() - 28800
+        now = date.today()
         us = holidays.US()
         if now in us:
             if us.get(now) == "Thanksgiving":
                 await send_bird(ctx, "Wild Turkey")
                 await ctx.send("**It's Thanksgiving!**\nGo celebrate with your family.")
                 raise GenericError(code=666)
+        elif now == date(now.year, 4, 1):
+            return await drone_attack(ctx)
         return True
 
     ######

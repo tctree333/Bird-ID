@@ -33,7 +33,9 @@ import eyed3
 from PIL import Image
 from sentry_sdk import capture_exception
 
-from bot.data import (GenericError, database, logger, sciBirdListMaster, sciSongBirdsMaster, screech_owls, states)
+from bot.data import (GenericError, birdListMaster, database, logger,
+                      sciBirdListMaster, sciSongBirdsMaster, screech_owls,
+                      states, get_wiki_url)
 
 # Macaulay URL definitions
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
@@ -732,6 +734,75 @@ async def _download_helper(path, url, session):
         logger.info(f"Client Error with url {url} and path {path}")
         capture_exception(e)
         raise
+
+
+async def drone_attack(ctx):
+    if str(ctx.command) in ("help", "covid", "botinfo", "invite",
+                            "list", "meme", "taxon", "wikipedia"
+                            "leaderboard", "missed", "score",
+                            "streak", "userscore", "remove", "set"):
+        return True
+
+    elif str(ctx.command) in ("bird", "song", "goatsucker"):
+        images = os.listdir("bot/media/images/drone")
+        path = f"bot/media/images/drone/{images[random.randint(0,len(images)-1)]}"
+        BASE_MESSAGE = (
+            "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +
+            "or `b!{skip_cmd}` to get a new bird. Use `b!{check_cmd} guess` to check your answer. " +
+            "Use `b!{hint_cmd}` for a hint.**"
+        )
+
+        if str(ctx.command) == "bird":
+            await ctx.send(
+                BASE_MESSAGE.format(
+                    media="image", new_cmd="bird", skip_cmd="skip", check_cmd="check", hint_cmd="hint"
+                ) +
+                "\n*This is an image.*"
+            )
+        elif str(ctx.command) == "goatsucker":
+            await ctx.send(
+                BASE_MESSAGE.format(
+                    media="image", new_cmd="gs", skip_cmd="skipgoat", check_cmd="checkgoat", hint_cmd="hintgoat"
+                )
+            )
+        elif str(ctx.command) == "bird":
+            await ctx.send(
+                BASE_MESSAGE.format(
+                    media="song", new_cmd="song", skip_cmd="skipsong", check_cmd="checksong", hint_cmd="hintsong"
+                )
+            )
+
+        file_obj = discord.File(path, filename=f"bird.jpg")
+        await ctx.send(file=file_obj)
+
+    elif str(ctx.command) in ("check", "checkgoat", "checksong"):
+        args = ctx.message.content.split(" ")[1:]
+        matches = difflib.get_close_matches(" ".join(args), birdListMaster + sciBirdListMaster, n=1)
+        if "drone" in args:
+            await ctx.send("SHHHHHH! Birds are **NOT** government drones! You'll blow our cover, and we'll need to get rid of you.")
+        elif matches:
+            await ctx.send("Correct! Good job!")
+            url = get_wiki_url(matches[0])
+            await ctx.send(url)
+        else:
+            await ctx.send("Sorry, the bird was actually **definitely a real bird.**")
+            await ctx.send(("https://en.wikipedia.org/wiki/Bird" if random.randint(0,1) == 0 else "https://youtu.be/Fg_JcKSHUtQ"))
+
+    elif str(ctx.command) in ("skip", "skipgoat", "skipsong"):
+        await ctx.send("Ok, skipping **definitely a real bird.**")
+        await ctx.send(("https://en.wikipedia.org/wiki/Bird" if random.randint(0,1) == 0 else "https://youtu.be/Fg_JcKSHUtQ"))
+
+    elif str(ctx.command) in ("hint", "hintgoat", "hintsong"):
+        await ctx.send("This is definitely a real bird, **NOT** a government drone.")
+
+    elif str(ctx.command) in ("info"):
+        await ctx.send("Birds are real. Don't believe what others may say. **BIRDS ARE VERY REAL!**")
+
+    elif str(ctx.command) in ("race", "session"):
+        await ctx.send("Races and sessions have been disabled today. We apologize for any inconvenience.")
+
+    raise GenericError(code=666)
+
 
 async def precache():
     """Downloads all images and songs.
