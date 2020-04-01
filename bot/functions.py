@@ -740,11 +740,11 @@ async def drone_attack(ctx):
     logger.info(f"holiday check: invoked command: {str(ctx.command)}")
     def video_embed():
         if random.randint(0,1) == 1:
-            embed = discord.Embed(title="YouTube", type="rich", colour=discord.Colour(0xd0021b), url="https://youtu.be/dQw4w9WgXcQ")
+            embed = discord.Embed(title="YouTube", type="rich", colour=discord.Colour(0xd0021b), url="https://bit.ly/are-birds-real")
             embed.set_image(url="http://i3.ytimg.com/vi/Fg_JcKSHUtQ/hqdefault.jpg")
-            embed.add_field(name="TED", value="[A robot that flies like a bird | Markus Fischer](https://youtu.be/dQw4w9WgXcQ)")
+            embed.add_field(name="TED", value="[A robot that flies like a bird | Markus Fischer](https://bit.ly/are-birds-real)")
         else:
-            embed = discord.Embed(title="Are Birds Real?", type="rich", colour=discord.Colour.default(), url="https://youtu.be/dQw4w9WgXcQ")
+            embed = discord.Embed(title="Are Birds Real?", type="rich", colour=discord.Colour.default(), url="https://bit.ly/are-birds-real")
             embed.set_image(url="https://www.sciencenews.org/sites/default/files/main/articles/feature_drones_opener.jpg")
             embed.add_field(name="Wikipedia", value="In 1947 the C.I.A. was founded, its sole responsibility to watch and survey tens of thousands of Americans suspected of doing communist things. In 1953 Allen Dulles was made the first civilian director of the Central Intelligence Agency (C.I.A.) and made it his mission to ramp up the surveillance program. Dulles and his team hated birds with a passion, as they would often poop on their cars in the parking lot of the C.I.A. headquarters. This was one of the driving forces that led Dulles to not only implement robots into the sky, but actually replace birds in the process...")
 
