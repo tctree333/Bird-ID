@@ -319,7 +319,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
             role_id = int(args.split(' ')[1])
             guild = self.bot.get_guild(guild_id)
             role = guild.get_role(role_id)
-            await ctx.author.add_roles(role)
+            await guild.get_member(ctx.author.id).add_roles(role)
             await ctx.send("Ok, done!")
         except Exception as e:
             capture_exception(e)
