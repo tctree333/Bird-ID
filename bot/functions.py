@@ -740,8 +740,7 @@ async def drone_attack(ctx):
     logger.info(f"holiday check: invoked command: {str(ctx.command)}")
     if str(ctx.command) in ("help", "covid", "botinfo", "invite",
                             "list", "meme", "taxon", "wikipedia",
-                            "leaderboard", "missed", "score",
-                            "streak", "userscore", "remove", "set",
+                            "remove", "set",
                             "test", "error", "ban", "unban", "send_as_bot"):
         logger.info("Passthrough Command")
         return True
@@ -803,6 +802,12 @@ async def drone_attack(ctx):
 
     elif str(ctx.command) in ("race", "session"):
         await ctx.send("Races and sessions have been disabled today. We apologize for any inconvenience.")
+
+    elif str(ctx.command) in ("leaderboard", "missed", "score", "streak", "userscore"):
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title=f"**{str(ctx.command).title()}**")
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        embed.add_field(name=f"**{str(ctx.command).title()}**", value="User scores and data have been cleared. We apologize for the inconvenience.", inline=False)
+        await ctx.send(embed=embed)
 
     raise GenericError(code=666)
 
