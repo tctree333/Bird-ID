@@ -774,7 +774,7 @@ async def drone_attack(ctx):
                 )
             )
 
-        file_obj = discord.File(path, filename=f"bird.jpg")
+        file_obj = discord.File(path, filename=f"bird.{path.split('.')[-1]}")
         await ctx.send(file=file_obj)
 
     elif str(ctx.command) in ("check", "checkgoat", "checksong"):
