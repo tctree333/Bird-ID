@@ -20,7 +20,7 @@ import discord
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
-from bot.data import logger, states
+from bot.data import logger, states, GenericError
 from bot.functions import channel_setup, user_setup
 
 class States(commands.Cog):

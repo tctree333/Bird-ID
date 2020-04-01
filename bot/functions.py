@@ -737,11 +737,12 @@ async def _download_helper(path, url, session):
 
 
 async def drone_attack(ctx):
-    logger.info(ctx.command)
+    logger.info(f"holiday check: invoked command: {str(ctx.command)}")
     if str(ctx.command) in ("help", "covid", "botinfo", "invite",
-                            "list", "meme", "taxon", "wikipedia"
+                            "list", "meme", "taxon", "wikipedia",
                             "leaderboard", "missed", "score",
                             "streak", "userscore", "remove", "set"):
+        logger.info("Passthrough Command")
         return True
 
     elif str(ctx.command) in ("bird", "song", "goatsucker"):
