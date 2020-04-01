@@ -738,6 +738,18 @@ async def _download_helper(path, url, session):
 
 async def drone_attack(ctx):
     logger.info(f"holiday check: invoked command: {str(ctx.command)}")
+    def video_embed():
+        if random.randint(0,1) == 1:
+            embed = discord.Embed(title="YouTube", type="rich", colour=discord.Colour(0xd0021b), url="https://youtu.be/dQw4w9WgXcQ")
+            embed.set_image(url="http://i3.ytimg.com/vi/Fg_JcKSHUtQ/hqdefault.jpg")
+            embed.add_field(name="TED", value="[A robot that flies like a bird | Markus Fischer](https://youtu.be/dQw4w9WgXcQ)")
+        else:
+            embed = discord.Embed(title="Are Birds Real?", type="rich", colour=discord.Colour.default(), url="https://youtu.be/dQw4w9WgXcQ")
+            embed.set_image(url="https://www.sciencenews.org/sites/default/files/main/articles/feature_drones_opener.jpg")
+            embed.add_field(name="Wikipedia", value="In 1947 the C.I.A. was founded, its sole responsibility to watch and survey tens of thousands of Americans suspected of doing communist things. In 1953 Allen Dulles was made the first civilian director of the Central Intelligence Agency (C.I.A.) and made it his mission to ramp up the surveillance program. Dulles and his team hated birds with a passion, as they would often poop on their cars in the parking lot of the C.I.A. headquarters. This was one of the driving forces that led Dulles to not only implement robots into the sky, but actually replace birds in the process...")
+
+        return embed
+
     if str(ctx.command) in ("help", "covid", "botinfo", "invite",
                             "list", "meme", "taxon", "wikipedia",
                             "remove", "set", "give_role", "remove_role",
@@ -784,15 +796,14 @@ async def drone_attack(ctx):
             await ctx.send("SHHHHHH! Birds are **NOT** government drones! You'll blow our cover, and we'll need to get rid of you.")
         elif matches:
             await ctx.send("Correct! Good job!")
-            url = get_wiki_url(matches[0])
-            await ctx.send(url)
+            await ctx.send(embed=video_embed())
         else:
             await ctx.send("Sorry, the bird was actually **definitely a real bird.**")
-            await ctx.send(("https://en.wikipedia.org/wiki/Bird" if random.randint(0,1) == 0 else "https://youtu.be/Fg_JcKSHUtQ"))
+            await ctx.send(embed=video_embed())
 
     elif str(ctx.command) in ("skip", "skipgoat", "skipsong"):
         await ctx.send("Ok, skipping **definitely a real bird.**")
-        await ctx.send(("https://en.wikipedia.org/wiki/Bird" if random.randint(0,1) == 0 else "https://youtu.be/Fg_JcKSHUtQ"))
+        await ctx.send(embed=video_embed())
 
     elif str(ctx.command) in ("hint", "hintgoat", "hintsong"):
         await ctx.send("This is definitely a real bird, **NOT** a government drone.")
