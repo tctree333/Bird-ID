@@ -20,7 +20,7 @@ import errno
 import os
 import shutil
 import sys
-from datetime import date
+from datetime import datetime, date, timezone, timedelta
 
 import aiohttp
 import discord
@@ -143,7 +143,8 @@ if __name__ == '__main__':
         Can be extended to other holidays as well.
         """
         logger.info("global check: checking holiday")
-        now = date.today()
+        now = datetime.now(tz=timezone(-timedelta(hours=4)))
+        now = date(now.year, now.month, now.day)
         us = holidays.US()
         if now in us:
             if us.get(now) == "Thanksgiving":
