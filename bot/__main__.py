@@ -20,7 +20,6 @@ import errno
 import os
 import shutil
 import sys
-from pathlib import Path
 from datetime import datetime, date, timezone, timedelta
 
 from dotenv import load_dotenv, find_dotenv
@@ -78,8 +77,8 @@ if __name__ == '__main__':
         'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.other'
     ]
     
-    if "SCIOLY_ID_BOT_EXTRA_COGS" in os.environ:
-        extra_extensions = os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].split(',')
+    if "SCIOLY_ID_BOT_EXTRA_COGS" in os.environ and len(os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip()) > 0:
+        extra_extensions = os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip().split(',')
     else:
         extra_extensions = []
 
