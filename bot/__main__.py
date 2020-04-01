@@ -77,9 +77,12 @@ if __name__ == '__main__':
         'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', 'bot.cogs.state',
         'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.other'
     ]
-    extra_extensions = [
-        'bot.cogs.covid'
-    ]
+    
+    if "SCIOLY_ID_BOT_EXTRA_COGS" in os.environ:
+        extra_extensions = os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].split(',')
+    else:
+        extra_extensions = []
+
     for extension in core_extensions + extra_extensions:
         try:
             bot.load_extension(extension)
