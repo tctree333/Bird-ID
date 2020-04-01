@@ -740,7 +740,7 @@ async def drone_attack(ctx):
     logger.info(f"holiday check: invoked command: {str(ctx.command)}")
     if str(ctx.command) in ("help", "covid", "botinfo", "invite",
                             "list", "meme", "taxon", "wikipedia",
-                            "remove", "set",
+                            "remove", "set", "give_role",
                             "test", "error", "ban", "unban", "send_as_bot"):
         logger.info("Passthrough Command")
         return True

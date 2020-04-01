@@ -21,6 +21,7 @@ from difflib import get_close_matches
 import discord
 import wikipedia
 from discord.ext import commands
+from sentry_sdk import capture_exception
 
 from bot.data import (birdListMaster, database, logger, memeList, taxons, sciBirdListMaster, states)
 from bot.functions import (channel_setup, get_sciname, owner_check, send_bird, send_birdsong, user_setup)
@@ -305,6 +306,25 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
         channel = self.bot.get_channel(channel_id)
         await channel.send(message)
         await ctx.send("Ok, sent!")
+
+
+    # Role command - for testing purposes only
+    @commands.command(help="- role command", hidden=True, aliases=["giverole"])
+    @commands.check(owner_check)
+    async def give_role(self, ctx, *, args):
+        logger.info("command: give role")
+        logger.info(f"args: {args}")
+        try:
+            guild_id = int(args.split(' ')[0])
+            role_id = int(args.split(' ')[1])
+            guild = self.bot.get_guild(guild_id)
+            role = guild.get_role(role_id)
+            await ctx.author.add_roles(role)
+            await ctx.send("Ok, done!")
+        except Exception as e:
+            capture_exception(e)
+            logger.exception(e)
+            await ctx.send(f"Error: {e}")
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
