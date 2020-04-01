@@ -20,8 +20,10 @@ import errno
 import os
 import shutil
 import sys
+from pathlib import Path
 from datetime import datetime, date, timezone, timedelta
 
+from dotenv import load_dotenv, find_dotenv
 import aiohttp
 import discord
 import holidays
@@ -30,11 +32,13 @@ import wikipedia
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception, configure_scope
 
+load_dotenv(find_dotenv(), verbose=True)
+
 from bot.data import GenericError, database, logger
 from bot.functions import backup_all, channel_setup, precache, send_bird, drone_attack
 
 # The channel id that the backups send to
-BACKUPS_CHANNEL = 622547928946311188
+BACKUPS_CHANNEL = os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"]
 
 def start_precache():
     """Downloads all the images/songs before they're needed."""
@@ -62,8 +66,11 @@ if __name__ == '__main__':
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
-        refresh_cache.start()
-        refresh_backup.start()
+        if os.environ["SCIOLY_ID_BOT_ENABLE_PRECACHE"] == "true":
+            refresh_cache.start()
+        
+        if os.environ["SCIOLY_ID_BOT_ENABLE_BACKUPS"] == "true":
+            refresh_backup.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
     core_extensions = [
@@ -342,5 +349,5 @@ if __name__ == '__main__':
         logger.info("Backup Files Sent!")
 
     # Actually run the bot
-    token = os.getenv("token")
+    token = os.environ["SCIOLY_ID_BOT_TOKEN"]
     bot.run(token)

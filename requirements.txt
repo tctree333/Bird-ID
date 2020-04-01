@@ -9,3 +9,4 @@ gunicorn==20.0.4
 Authlib==0.13
 sentry-sdk==0.14.2
 blinker==1.4
+python-dotenv==0.12.0
