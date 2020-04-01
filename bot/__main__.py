@@ -76,7 +76,7 @@ if __name__ == '__main__':
     for extension in core_extensions + extra_extensions:
         try:
             bot.load_extension(extension)
-        except (discord.ClientException, commands.ExtensionNotFound, commands.ExtensionFailed) as e:
+        except (discord.errors.ClientException, commands.errors.ExtensionNotFound, commands.errors.ExtensionFailed) as e:
             if extension in core_extensions:
                 logger.exception(f'Failed to load extension {extension}.', e)
                 capture_exception(e)
