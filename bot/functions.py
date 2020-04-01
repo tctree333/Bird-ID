@@ -737,6 +737,7 @@ async def _download_helper(path, url, session):
 
 
 async def drone_attack(ctx):
+    logger.info(ctx.command)
     if str(ctx.command) in ("help", "covid", "botinfo", "invite",
                             "list", "meme", "taxon", "wikipedia"
                             "leaderboard", "missed", "score",
