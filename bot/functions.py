@@ -741,7 +741,8 @@ async def drone_attack(ctx):
     if str(ctx.command) in ("help", "covid", "botinfo", "invite",
                             "list", "meme", "taxon", "wikipedia",
                             "leaderboard", "missed", "score",
-                            "streak", "userscore", "remove", "set"):
+                            "streak", "userscore", "remove", "set",
+                            "test", "error", "ban", "unban", "send_as_bot"):
         logger.info("Passthrough Command")
         return True
 
