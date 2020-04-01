@@ -326,6 +326,24 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
             logger.exception(e)
             await ctx.send(f"Error: {e}")
 
+    # Un role command - for testing purposes only
+    @commands.command(help="- role command", hidden=True, aliases=["rmrole"])
+    @commands.check(owner_check)
+    async def remove_role(self, ctx, *, args):
+        logger.info("command: remove role")
+        logger.info(f"args: {args}")
+        try:
+            guild_id = int(args.split(' ')[0])
+            role_id = int(args.split(' ')[1])
+            guild = self.bot.get_guild(guild_id)
+            role = guild.get_role(role_id)
+            await guild.get_member(ctx.author.id).remove_roles(role)
+            await ctx.send("Ok, done!")
+        except Exception as e:
+            capture_exception(e)
+            logger.exception(e)
+            await ctx.send(f"Error: {e}")
+
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
     async def test(self, ctx, *, bird):
