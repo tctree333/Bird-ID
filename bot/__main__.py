@@ -22,6 +22,7 @@ import shutil
 import sys
 from datetime import datetime, date, timezone, timedelta
 
+from dotenv import load_dotenv, find_dotenv
 import aiohttp
 import discord
 import holidays
@@ -30,11 +31,13 @@ import wikipedia
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception, configure_scope
 
+load_dotenv(find_dotenv(), verbose=True)
+
 from bot.data import GenericError, database, logger
 from bot.functions import backup_all, channel_setup, precache, send_bird, drone_attack
 
 # The channel id that the backups send to
-BACKUPS_CHANNEL = 622547928946311188
+BACKUPS_CHANNEL = os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"]
 
 def start_precache():
     """Downloads all the images/songs before they're needed."""
@@ -62,17 +65,23 @@ if __name__ == '__main__':
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
-        refresh_cache.start()
-        refresh_backup.start()
+        if os.environ["SCIOLY_ID_BOT_ENABLE_PRECACHE"] == "true":
+            refresh_cache.start()
+        
+        if os.environ["SCIOLY_ID_BOT_ENABLE_BACKUPS"] == "true":
+            refresh_backup.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
     core_extensions = [
         'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', 'bot.cogs.state',
         'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.other'
     ]
-    extra_extensions = [
-        'bot.cogs.covid'
-    ]
+    
+    if "SCIOLY_ID_BOT_EXTRA_COGS" in os.environ and len(os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip()) > 0:
+        extra_extensions = os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip().split(',')
+    else:
+        extra_extensions = []
+
     for extension in core_extensions + extra_extensions:
         try:
             bot.load_extension(extension)
@@ -342,5 +351,5 @@ if __name__ == '__main__':
         logger.info("Backup Files Sent!")
 
     # Actually run the bot
-    token = os.getenv("token")
+    token = os.environ["SCIOLY_ID_BOT_TOKEN"]
     bot.run(token)

@@ -370,7 +370,7 @@ def score_increment(ctx, amount: int):
 
 def owner_check(ctx) -> bool:
     """Check to see if the user is the owner of the bot."""
-    owners = set(str(os.getenv("ids")).split(","))
+    owners = set(str(os.environ["SCIOLY_ID_BOT_OWNER_IDS"]).split(","))
     return str(ctx.author.id) in owners
 
 async def send_bird(ctx, bird: str, on_error=None, message=None, addOn="", bw=False):
