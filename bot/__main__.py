@@ -65,10 +65,10 @@ if __name__ == '__main__':
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
-        if os.getenv("SCIOLY_ID_BOT_ENABLE_PRECACHE") == "true":
+        if os.getenv("SCIOLY_ID_BOT_ENABLE_PRECACHE") != "false":
             refresh_cache.start()
-        
-        if os.getenv("SCIOLY_ID_BOT_ENABLE_BACKUPS") == "true":
+
+        if os.getenv("SCIOLY_ID_BOT_ENABLE_BACKUPS") != "false":
             refresh_backup.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
