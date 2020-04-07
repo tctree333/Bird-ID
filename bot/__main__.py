@@ -37,7 +37,7 @@ from bot.data import GenericError, database, logger
 from bot.functions import backup_all, channel_setup, precache, send_bird, drone_attack
 
 # The channel id that the backups send to
-BACKUPS_CHANNEL = os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"]
+BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])
 
 def start_precache():
     """Downloads all the images/songs before they're needed."""
@@ -343,7 +343,7 @@ if __name__ == '__main__':
             await event_loop.run_in_executor(executor, start_backup)
 
         logger.info("Sending backup files")
-        channel = bot.get_channel(BACKUPS_CHANNEL)
+        channel = bot.get_channel(int(BACKUPS_CHANNEL))
         with open("backups/dump.dump", 'rb') as f:
             await channel.send(file=discord.File(f, filename="dump"))
         with open("backups/keys.txt", 'r') as f:
