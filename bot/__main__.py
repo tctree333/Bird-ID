@@ -250,6 +250,8 @@ if __name__ == '__main__':
             elif isinstance(error.original, discord.Forbidden):
                 if error.original.code == 50007:
                     await ctx.send("I was unable to DM you. Check if I was blocked and try again.")
+                elif error.original.code == 50013:
+                    await ctx.send("There was an error with permissions. Check the bot has proper permissions and try again.")
                 else:
                     capture_exception(error)
                     await ctx.send(
