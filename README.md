@@ -6,7 +6,7 @@ A discord bot for young ornithologists. This bot is designed to help people prac
 
 ## Usage
 
-The prefix for this bot is `b!`. Use `b!help` to get a list of commands, and `b!help [command]` for help with a specific command.
+The prefix for this bot is `b!`. Use `b!help` to get a list of commands, and `b!help [command]` for help with a specific command. A demo of the bot is avaliable [here](example.mp4).
 
 ## Server
 
