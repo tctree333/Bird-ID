@@ -224,9 +224,10 @@ class Other(commands.Cog):
             name="Bot Info",
             value="This bot was created by EraserBird and person_v1.32 " +
             "for helping people practice bird identification for Science Olympiad.\n" +
-            "**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.\n" +
-            "<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>, " +
-            "<https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>",
+            "**By adding this bot to a server, you are agreeing to our " +
+            "[Privacy Policy](<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>) and " +
+            "[Terms of Service](<https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>)**.\n" +
+            "Bird-ID is licensed under the [GNU GPL v3.0](<https://github.com/tctree333/Bird-ID/blob/master/LICENSE>).",
             inline=False
         )
         embed.add_field(
