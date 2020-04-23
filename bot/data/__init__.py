@@ -30,7 +30,10 @@ from sentry_sdk.integrations.redis import RedisIntegration
 
 # define database for one connection
 if os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS") == "true":
-    database = redis.Redis(host='localhost', port=6379, db=0)
+    host = os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS_HOST")
+    if host == None:
+        host = "localhost"
+    database = redis.Redis(host=host, port=6379, db=0)
 else:
     database = redis.from_url(os.environ["REDIS_URL"])
 
