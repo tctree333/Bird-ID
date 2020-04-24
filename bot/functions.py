@@ -698,7 +698,7 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type="", re
 async def _check_media_url(session, media_url):
     async with session.head(media_url) as header_check:
         media_size = header_check.headers.get("content-length")
-        if header_check.status == 200 and media_size != None and int(media_size) < 4000000000:
+        if header_check.status == 200 and media_size != None and int(media_size) < 4000000:
             return media_url
     return None
 
