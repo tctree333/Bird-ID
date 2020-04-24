@@ -686,19 +686,21 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type="", re
         content = catalog_data["results"]["content"]
 
         logger.info("checking filesizes")
-        urls = []
-        fails = 0
-        for data in content:
-            media_url = data["mediaUrl"]
-            async with session.head(media_url) as header_check:
-                media_size = header_check.headers.get("content-length")
-                if header_check.status == 200 and media_size != None and int(media_size) < 4000000000:
-                    urls.append(media_url)
-                    continue
-                fails += 1
+        urls = await asyncio.gather(*(_check_media_url(session, data["mediaUrl"]) for data in content))
+        fails = urls.count(None)
+        if None in urls:
+            urls = set(urls)
+            urls.remove(None)
+            urls = list(urls)
         logger.info(f"filesize check fails: {fails}")
-        logger.info(f"total urls: {len(urls)}")
         return urls
+
+async def _check_media_url(session, media_url):
+    async with session.head(media_url) as header_check:
+        media_size = header_check.headers.get("content-length")
+        if header_check.status == 200 and media_size != None and int(media_size) < 4000000000:
+            return media_url
+    return None
 
 async def _download_helper(path, url, session):
     """Downloads media from the given URL.
@@ -865,20 +867,20 @@ async def precache():
     async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
         logger.info("Starting cache")
         await asyncio.gather(*(download_media(bird, "images", session=session) for bird in sciBirdListMaster))
-        output["plain"] = time.time() - output["start"]
+        output["plain"] = (time.time() - output["start"])
         logger.info("Starting females")
         await asyncio.gather(
             *(download_media(bird, "images", addOn="female", session=session) for bird in sciBirdListMaster)
         )
-        output["female"] = time.time() - output["plain"]
+        output["female"] = (time.time() - output["start"]) - output["plain"]
         logger.info("Starting juveniles")
         await asyncio.gather(
             *(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster)
         )
-        output["juvenile"] = time.time() - output["female"]
+        output["juvenile"] = (time.time() - output["start"]) - output["female"]
         logger.info("Starting songs")
         await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
-        output["songs"] = time.time() - output["juvenile"]
+        output["songs"] = (time.time() - output["start"]) - output["juvenile"]
     output["end"] = time.time()
     output["total"] = output['end'] - output['start']
     logger.info(f"Images Cached in {output['total']} sec.")
