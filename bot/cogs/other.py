@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import random
+import time
 import typing
 from difflib import get_close_matches
 
@@ -23,8 +24,11 @@ import wikipedia
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
-from bot.data import (birdListMaster, database, logger, memeList, taxons, sciBirdListMaster, states)
-from bot.functions import (channel_setup, get_sciname, owner_check, send_bird, send_birdsong, user_setup)
+from bot.data import (birdListMaster, database, logger, memeList,
+                      sciBirdListMaster, states, taxons)
+from bot.functions import (channel_setup, get_sciname, owner_check, precache,
+                           send_bird, send_birdsong, user_setup)
+
 
 class Other(commands.Cog):
     def __init__(self, bot):
@@ -344,6 +348,16 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
             capture_exception(e)
             logger.exception(e)
             await ctx.send(f"Error: {e}")
+
+    # Test command - for testing purposes only
+    @commands.command(help="- test command", hidden=True, aliases=["getall", "precache"])
+    @commands.check(owner_check)
+    async def get_all(self, ctx):
+        logger.info("command: get_all")
+        await ctx.send(f"Caching all images.")
+        stats = await precache()
+        await ctx.send(f"Finished Cache in approx. {stats['total']} seconds. {ctx.author.mention}")
+        await ctx.send(f"```python\n{stats}```")
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)

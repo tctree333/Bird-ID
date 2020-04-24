@@ -18,7 +18,6 @@ import asyncio
 import concurrent.futures
 import errno
 import os
-import shutil
 import sys
 from datetime import datetime, date, timezone, timedelta
 
@@ -309,18 +308,6 @@ if __name__ == '__main__':
     @tasks.loop(hours=24.0)
     async def refresh_cache():
         """Re-downloads all the images/songs."""
-        logger.info("clear cache")
-        try:
-            shutil.rmtree(r'cache/images/', ignore_errors=True)
-            logger.info("Cleared image cache.")
-        except FileNotFoundError:
-            logger.info("Already cleared image cache.")
-
-        try:
-            shutil.rmtree(r'cache/songs/', ignore_errors=True)
-            logger.info("Cleared songs cache.")
-        except FileNotFoundError:
-            logger.info("Already cleared songs cache.")
         event_loop = asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, start_precache)

@@ -20,6 +20,7 @@ import difflib
 import os
 import pickle
 import random
+import shutil
 import string
 import time
 import urllib.parse
@@ -33,9 +34,9 @@ import eyed3
 from PIL import Image
 from sentry_sdk import capture_exception
 
-from bot.data import (GenericError, birdListMaster, database, logger,
-                      sciBirdListMaster, sciSongBirdsMaster, screech_owls,
-                      states, get_wiki_url)
+from bot.data import (GenericError, birdListMaster, database, get_wiki_url,
+                      logger, sciBirdListMaster, sciSongBirdsMaster,
+                      screech_owls, states)
 
 # Macaulay URL definitions
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
@@ -683,7 +684,20 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type="", re
                 return urls
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
-        urls = [data["mediaUrl"] for data in content]
+
+        logger.info("checking filesizes")
+        urls = []
+        fails = 0
+        for data in content:
+            media_url = data["mediaUrl"]
+            async with session.head(media_url) as header_check:
+                media_size = header_check.headers.get("content-length")
+                if header_check.status == 200 and media_size != None and int(media_size) < 4000000000:
+                    urls.append(media_url)
+                    continue
+                fails += 1
+        logger.info(f"filesize check fails: {fails}")
+        logger.info(f"total urls: {len(urls)}")
         return urls
 
 async def _download_helper(path, url, session):
@@ -831,24 +845,45 @@ async def precache():
 
     This function is run with a task every 24 hours.
     """
-    start = time.time()
+    logger.info("clear cache")
+    try:
+        shutil.rmtree(r'cache/images/', ignore_errors=True)
+        logger.info("Cleared image cache.")
+    except FileNotFoundError:
+        logger.info("Already cleared image cache.")
+
+    try:
+        shutil.rmtree(r'cache/songs/', ignore_errors=True)
+        logger.info("Cleared songs cache.")
+    except FileNotFoundError:
+        logger.info("Already cleared songs cache.")
+
+    output = dict()
+    output["start"] = time.time()
     timeout = aiohttp.ClientTimeout(total=10 * 60)
     conn = aiohttp.TCPConnector(limit=100)
     async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
         logger.info("Starting cache")
         await asyncio.gather(*(download_media(bird, "images", session=session) for bird in sciBirdListMaster))
+        output["plain"] = time.time() - output["start"]
         logger.info("Starting females")
         await asyncio.gather(
             *(download_media(bird, "images", addOn="female", session=session) for bird in sciBirdListMaster)
         )
+        output["female"] = time.time() - output["plain"]
         logger.info("Starting juveniles")
         await asyncio.gather(
             *(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster)
         )
+        output["juvenile"] = time.time() - output["female"]
         logger.info("Starting songs")
         await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
-    end = time.time()
-    logger.info(f"Images Cached in {end-start} sec.")
+        output["songs"] = time.time() - output["juvenile"]
+    output["end"] = time.time()
+    output["total"] = output['end'] - output['start']
+    logger.info(f"Images Cached in {output['total']} sec.")
+    logger.info(f"Cache Timing Output: {output}")
+    return output
 
 async def backup_all():
     """Backs up the database to a file.
