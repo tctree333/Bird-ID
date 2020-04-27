@@ -26,8 +26,8 @@ from sentry_sdk import capture_exception
 
 from bot.data import (birdListMaster, database, logger, memeList,
                       sciBirdListMaster, states, taxons)
-from bot.functions import (channel_setup, get_sciname, owner_check, precache,
-                           send_bird, send_birdsong, user_setup)
+from bot.functions import (channel_setup, get_sciname, get_taxon, owner_check,
+                           precache, send_bird, send_birdsong, user_setup)
 
 
 class Other(commands.Cog):
@@ -361,13 +361,16 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
-    async def test(self, ctx, *, bird):
-        logger.info("command: test")
-        sciname = await get_sciname(bird)
-        await ctx.send(sciname)
+    @commands.check(owner_check)
+    async def cache(self, ctx):
+        logger.info("command: cache stats")
+        stats = {"sciname_cache": get_sciname.cache_info(),
+                 "taxon_cache": get_taxon.cache_info()}
+        await ctx.send(f"```python\n{stats}```")
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
+    @commands.check(owner_check)
     async def error(self, ctx):
         logger.info("command: error")
         await ctx.send(1 / 0)

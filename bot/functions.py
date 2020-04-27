@@ -33,6 +33,7 @@ import discord
 import eyed3
 from PIL import Image
 from sentry_sdk import capture_exception
+from async_lru import alru_cache
 
 from bot.data import (GenericError, birdListMaster, database, get_wiki_url,
                       logger, sciBirdListMaster, sciSongBirdsMaster,
@@ -207,6 +208,7 @@ def check_state_role(ctx) -> list:
     logger.info(f"user roles: {user_states}")
     return user_states
 
+@alru_cache(maxsize=None)
 async def get_sciname(bird: str, session=None, retries=0) -> str:
     """Returns the scientific name of a bird.
 
@@ -252,6 +254,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
     logger.info(f"sciname: {sciname}")
     return sciname
 
+@alru_cache(maxsize=None)
 async def get_taxon(bird: str, session=None, retries=0) -> str:
     """Returns the taxonomic code of a bird.
 
@@ -883,6 +886,8 @@ async def precache():
         output["songs"] = (time.time() - output["start"]) - output["juvenile"]
     output["end"] = time.time()
     output["total"] = output['end'] - output['start']
+    output["sciname_cache"] = get_sciname.cache_info()
+    output["taxon_cache"] = get_taxon.cache_info()
     logger.info(f"Images Cached in {output['total']} sec.")
     logger.info(f"Cache Timing Output: {output}")
     return output
