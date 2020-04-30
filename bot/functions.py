@@ -24,7 +24,7 @@ import shutil
 import string
 import time
 import urllib.parse
-from functools import partial
+import functools
 from io import BytesIO
 from mimetypes import guess_all_extensions, guess_extension
 
@@ -33,7 +33,6 @@ import discord
 import eyed3
 from PIL import Image
 from sentry_sdk import capture_exception
-from async_lru import alru_cache
 
 from bot.data import (GenericError, birdListMaster, database, get_wiki_url,
                       logger, sciBirdListMaster, sciSongBirdsMaster,
@@ -208,7 +207,49 @@ def check_state_role(ctx) -> list:
     logger.info(f"user roles: {user_states}")
     return user_states
 
-@alru_cache(maxsize=None)
+def cache(func=None):
+    """Cache decorator based on functools.lru_cache.
+
+    This does not have a max_size and does not evict items.
+    In addition, results are only cached by the first provided argument.
+    """
+    def wrapper(func):
+        sentinel = object()
+
+        cache = {}
+        hits = misses = 0
+        cache_get = cache.get
+        cache_len = cache.__len__
+
+        async def wrapped(*args, **kwds):
+            # Simple caching without ordering or size limit
+            logger.info("checking cache")
+            nonlocal hits, misses
+            key = hash(args[0])
+            result = cache_get(key, sentinel)
+            if result is not sentinel:
+                logger.info(f"{args[0]} found in cache!")
+                hits += 1
+                return result
+            logger.info(f"did not find {args[0]} in cache")
+            misses += 1
+            result = await func(*args, **kwds)
+            cache[key] = result
+            return result
+
+        def cache_info():
+            """Report cache statistics"""
+            return functools._CacheInfo(hits, misses, None, cache_len())
+
+        wrapped.cache_info = cache_info
+        return functools.update_wrapper(wrapped, func)
+
+    if func:
+        return wrapper(func)
+    else:
+        return wrapper
+
+@cache()
 async def get_sciname(bird: str, session=None, retries=0) -> str:
     """Returns the scientific name of a bird.
 
@@ -254,7 +295,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
     logger.info(f"sciname: {sciname}")
     return sciname
 
-@alru_cache(maxsize=None)
+@cache()
 async def get_taxon(bird: str, session=None, retries=0) -> str:
     """Returns the taxonomic code of a bird.
 
@@ -425,7 +466,7 @@ async def send_bird(ctx, bird: str, on_error=None, message=None, addOn="", bw=Fa
         if bw:
             # prevent the black and white conversion from blocking
             loop = asyncio.get_running_loop()
-            fn = partial(_black_and_white, filename)
+            fn = functools.partial(_black_and_white, filename)
             file_stream = await loop.run_in_executor(None, fn)
         else:
             file_stream = filename
