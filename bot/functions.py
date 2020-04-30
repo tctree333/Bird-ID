@@ -905,27 +905,27 @@ async def precache():
         logger.info("Already cleared songs cache.")
 
     output = dict()
-    output["start"] = time.time()
+    output["start"] = time.perf_counter()
     timeout = aiohttp.ClientTimeout(total=10 * 60)
     conn = aiohttp.TCPConnector(limit=100)
     async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
         logger.info("Starting cache")
         await asyncio.gather(*(download_media(bird, "images", session=session) for bird in sciBirdListMaster))
-        output["plain"] = (time.time() - output["start"])
+        output["plain"] = (time.perf_counter() - output["start"])
         logger.info("Starting females")
         await asyncio.gather(
             *(download_media(bird, "images", addOn="female", session=session) for bird in sciBirdListMaster)
         )
-        output["female"] = (time.time() - output["start"]) - output["plain"]
+        output["female"] = (time.perf_counter() - output["start"]) - output["plain"]
         logger.info("Starting juveniles")
         await asyncio.gather(
             *(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster)
         )
-        output["juvenile"] = (time.time() - output["start"]) - output["female"]
+        output["juvenile"] = (time.perf_counter()- output["start"]) - output["female"]
         logger.info("Starting songs")
         await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
-        output["songs"] = (time.time() - output["start"]) - output["juvenile"]
-    output["end"] = time.time()
+        output["songs"] = (time.perf_counter() - output["start"]) - output["juvenile"]
+    output["end"] = time.perf_counter()
     output["total"] = output['end'] - output['start']
     output["sciname_cache"] = get_sciname.cache_info()
     output["taxon_cache"] = get_taxon.cache_info()
