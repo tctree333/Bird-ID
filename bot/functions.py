@@ -413,11 +413,6 @@ def score_increment(ctx, amount: int):
         logger.info("race in session")
         database.zincrby(f"race.scores:{ctx.channel.id}", amount, str(ctx.author.id))
 
-def owner_check(ctx) -> bool:
-    """Check to see if the user is the owner of the bot."""
-    owners = set(str(os.environ["SCIOLY_ID_BOT_OWNER_IDS"]).split(","))
-    return str(ctx.author.id) in owners
-
 async def send_bird(ctx, bird: str, on_error=None, message=None, addOn="", bw=False):
     """Gets a bird picture and sends it to the user.
 

@@ -26,8 +26,8 @@ from sentry_sdk import capture_exception
 
 from bot.data import (birdListMaster, database, logger, memeList,
                       sciBirdListMaster, states, taxons)
-from bot.functions import (channel_setup, get_sciname, get_taxon, owner_check,
-                           precache, send_bird, send_birdsong, user_setup)
+from bot.functions import (channel_setup, get_sciname, get_taxon, precache,
+                           send_bird, send_birdsong, user_setup)
 
 
 class Other(commands.Cog):
@@ -276,7 +276,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # ban command - prevents certain users from using the bot
     @commands.command(help="- ban command", hidden=True)
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def ban(self, ctx, *, user: discord.Member = None):
         logger.info("command: ban")
         if user is None:
@@ -289,7 +289,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # unban command - prevents certain users from using the bot
     @commands.command(help="- unban command", hidden=True)
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def unban(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
         logger.info("command: unban")
         if user is None:
@@ -302,7 +302,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # Send command - for testing purposes only
     @commands.command(help="- send command", hidden=True, aliases=["sendas"])
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def send_as_bot(self, ctx, *, args):
         logger.info("command: send")
         logger.info(f"args: {args}")
@@ -315,7 +315,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # Role command - for testing purposes only
     @commands.command(help="- role command", hidden=True, aliases=["giverole"])
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def give_role(self, ctx, *, args):
         logger.info("command: give role")
         logger.info(f"args: {args}")
@@ -333,7 +333,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # Un role command - for testing purposes only
     @commands.command(help="- role command", hidden=True, aliases=["rmrole"])
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def remove_role(self, ctx, *, args):
         logger.info("command: remove role")
         logger.info(f"args: {args}")
@@ -351,7 +351,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True, aliases=["getall", "precache"])
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def get_all(self, ctx):
         logger.info("command: get_all")
         await ctx.send(f"Caching all images.")
@@ -361,7 +361,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def cache(self, ctx):
         logger.info("command: cache stats")
         stats = {"sciname_cache": get_sciname.cache_info(),
@@ -370,10 +370,17 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def error(self, ctx):
         logger.info("command: error")
         await ctx.send(1 / 0)
+
+    # Test command - for testing purposes only
+    @commands.command(help="- test command", hidden=True)
+    @commands.is_owner()
+    async def test(self, ctx):
+        logger.info("command: test")
+        await ctx.send("test")
 
 def setup(bot):
     bot.add_cog(Other(bot))
