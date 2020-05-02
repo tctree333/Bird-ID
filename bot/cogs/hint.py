@@ -17,7 +17,7 @@
 from discord.ext import commands
 
 from bot.data import database, logger
-from bot.functions import channel_setup, user_setup, DmCooldown
+from bot.functions import channel_setup, user_setup, CustomCooldown
 
 class Hint(commands.Cog):
     def __init__(self, bot):
@@ -25,7 +25,7 @@ class Hint(commands.Cog):
 
     # give hint
     @commands.command(help="- Gives first letter of current bird", aliases=["h"])
-    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def hint(self, ctx):
         logger.info("command: hint")
 
@@ -40,7 +40,7 @@ class Hint(commands.Cog):
 
     # give hint for goat
     @commands.command(help="- Gives first letter of current goatsucker", aliases=["goathint", "hg", "gh"])
-    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def hintgoat(self, ctx):
         logger.info("command: hintgoat")
 
@@ -55,7 +55,7 @@ class Hint(commands.Cog):
 
     # give hint for song
     @commands.command(help="- Gives first letter of current bird call", aliases=["songhint", "hs", "sh"])
-    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def hintsong(self, ctx):
         logger.info("command: hintsong")
 

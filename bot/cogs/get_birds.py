@@ -22,7 +22,7 @@ from discord.ext import commands
 from bot.data import (birdList, database, goatsuckers, logger, taxons, songBirds, states)
 from bot.functions import (
     channel_setup, check_state_role, error_skip, error_skip_goat, error_skip_song, send_bird, send_birdsong,
-    session_increment, user_setup, DmCooldown
+    session_increment, user_setup, CustomCooldown
 )
 
 BASE_MESSAGE = (
@@ -157,7 +157,7 @@ class Birds(commands.Cog):
         help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile] [bw] [order/family]"
     )
     # 5 second cooldown
-    @commands.check(DmCooldown(5.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def bird(self, ctx, *, args_str: str = ""):
         logger.info("command: bird")
 
@@ -248,7 +248,7 @@ class Birds(commands.Cog):
     # goatsucker command - no args
     # just for fun, no real purpose
     @commands.command(help='- Sends a random goatsucker to ID', aliases=["gs"])
-    @commands.check(DmCooldown(5.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def goatsucker(self, ctx):
         logger.info("command: goatsucker")
 
@@ -277,7 +277,7 @@ class Birds(commands.Cog):
 
     # picks a random bird call to send
     @commands.command(help="- Sends a bird call to ID", aliases=["s"])
-    @commands.check(DmCooldown(5.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def song(self, ctx):
         logger.info("command: song")
 

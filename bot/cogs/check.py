@@ -20,17 +20,11 @@ from discord.ext import commands
 from bot.data import database, get_wiki_url, goatsuckers, logger, sciGoat
 from bot.functions import (
     bird_setup, channel_setup, get_sciname, incorrect_increment, score_increment, session_increment, spellcheck,
-    user_setup, DmCooldown
+    user_setup, CustomCooldown
 )
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
-
-def racing_check(ctx):
-    """clears cooldown in racing"""
-    if ctx.command.is_on_cooldown(ctx) and str(ctx.channel.name).startswith("racing"):
-        ctx.command.reset_cooldown(ctx)
-    return True
 
 class Check(commands.Cog):
     def __init__(self, bot):
@@ -38,8 +32,7 @@ class Check(commands.Cog):
 
     # Check command - argument is the guess
     @commands.command(help='- Checks your answer.', usage="guess", aliases=["guess", "c"])
-    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.user))
-    @commands.check(racing_check)
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def check(self, ctx, *, arg):
         logger.info("command: check")
 
@@ -125,7 +118,7 @@ class Check(commands.Cog):
 
     # Check command - argument is the guess
     @commands.command(help='- Checks your goatsucker.', usage="guess", aliases=["cg"])
-    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.user))
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def checkgoat(self, ctx, *, arg):
         logger.info("command: checkgoat")
 
@@ -185,7 +178,7 @@ class Check(commands.Cog):
 
     # Check command - argument is the guess
     @commands.command(help='- Checks the song', aliases=["songcheck", "cs", "sc"])
-    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.user))
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def checksong(self, ctx, *, arg):
         logger.info("command: checksong")
 

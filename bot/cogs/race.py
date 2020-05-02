@@ -21,7 +21,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger, states, taxons
-from bot.functions import channel_setup, check_state_role, user_setup, DmCooldown
+from bot.functions import channel_setup, check_state_role, user_setup, CustomCooldown
 
 class Race(commands.Cog):
     def __init__(self, bot):
@@ -135,7 +135,7 @@ class Race(commands.Cog):
         aliases=["st"],
         usage="[bw] [state] [female|juvenile] [taxon] [amount to win (default 10)]"
     )
-    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def start(self, ctx, *, args_str: str = ""):
         logger.info("command: start race")
 
@@ -264,7 +264,7 @@ class Race(commands.Cog):
         brief="- Views race",
         help="- Views race.\nRaces allow you to compete with your friends to ID a certain bird first."
     )
-    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def view(self, ctx):
         logger.info("command: view race")
 
@@ -277,7 +277,7 @@ class Race(commands.Cog):
             await ctx.send("**There is no race in session.** *You can start one with `b!race start`*")
 
     @race.command(help="- Stops race", aliases=["stp", "end"])
-    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def stop(self, ctx):
         logger.info("command: stop race")
 

@@ -971,7 +971,7 @@ def spellcheck(worda, wordb, cutoff=3):
             return False
     return True
 
-class DmCooldown:
+class CustomCooldown:
         """Halve cooldown times in DM channels."""
         # Code adapted from discord.py example
         def __init__(self, per: float, disable: bool = False, bucket: commands.BucketType = commands.BucketType.channel):
@@ -981,14 +981,22 @@ class DmCooldown:
             `bucket` (commands.BucketType) - cooldown scope, defaults to channel
             """
             rate = 1
-            alter_per = per/2
+            dm_per = per/2
+            race_per = 0.5
             self.disable = disable
             self.default_mapping = commands.CooldownMapping.from_cooldown(rate, per, bucket)
-            self.dm_mapping = commands.CooldownMapping.from_cooldown(rate, alter_per, bucket)
+            self.dm_mapping = commands.CooldownMapping.from_cooldown(rate, dm_per, bucket)
+            self.race_mapping = commands.CooldownMapping.from_cooldown(rate, race_per, bucket)
 
         def __call__(self, ctx: commands.Context):
             if not self.disable and ctx.guild is None:
+                # halve cooldown in DMs
                 bucket = self.dm_mapping.get_bucket(ctx.message)
+
+            elif ctx.command.name.startswith("check") and ctx.channel.name.startswith("racing"):
+                # tiny check cooldown in racing channels
+                bucket = self.race_mapping.get_bucket(ctx.message)
+
             else:
                 bucket = self.default_mapping.get_bucket(ctx.message)
 

@@ -17,7 +17,7 @@
 from discord.ext import commands
 
 from bot.data import database, get_wiki_url, logger
-from bot.functions import channel_setup, user_setup, DmCooldown
+from bot.functions import channel_setup, user_setup, CustomCooldown
 
 class Skip(commands.Cog):
     def __init__(self, bot):
@@ -25,7 +25,7 @@ class Skip(commands.Cog):
 
     # Skip command - no args
     @commands.command(help="- Skip the current bird to get a new one", aliases=["sk"])
-    @commands.check(DmCooldown(5.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def skip(self, ctx):
         logger.info("command: skip")
 
@@ -59,7 +59,7 @@ class Skip(commands.Cog):
 
     # Skip command - no args
     @commands.command(help="- Skip the current goatsucker to get a new one", aliases=["goatskip", "sg"])
-    @commands.check(DmCooldown(5.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def skipgoat(self, ctx):
         logger.info("command: skipgoat")
 
@@ -79,7 +79,7 @@ class Skip(commands.Cog):
 
     # Skip song command - no args
     @commands.command(help="- Skip the current bird call to get a new one", aliases=["songskip", "ss"])
-    @commands.check(DmCooldown(10.0, bucket=commands.BucketType.channel))
+    @commands.check(CustomCooldown(10.0, bucket=commands.BucketType.channel))
     async def skipsong(self, ctx):
         logger.info("command: skipsong")
 
