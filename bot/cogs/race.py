@@ -220,8 +220,9 @@ class Race(commands.Cog):
 
             logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}; media: {media}; limit: {limit}")
 
-            database.hmset(
-                f"race.data:{ctx.channel.id}", {
+            database.hset(
+                f"race.data:{ctx.channel.id}",
+                mapping={
                     "start": round(time.time()),
                     "stop": 0,
                     "limit": limit,

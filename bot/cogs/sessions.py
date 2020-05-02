@@ -136,8 +136,9 @@ class Sessions(commands.Cog):
                 addon = ""
             logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}")
 
-            database.hmset(
-                f"session.data:{ctx.author.id}", {
+            database.hset(
+                f"session.data:{ctx.author.id}",
+                mapping={
                     "start": round(time.time()),
                     "stop": 0,
                     "correct": 0,

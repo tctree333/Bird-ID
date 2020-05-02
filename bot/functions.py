@@ -61,8 +61,9 @@ async def channel_setup(ctx):
     if database.exists(f"channel:{ctx.channel.id}"):
         logger.info("channel data ok")
     else:
-        database.hmset(
-            f"channel:{ctx.channel.id}", {
+        database.hset(
+            f"channel:{ctx.channel.id}",
+            mapping={
                 "bird": "",
                 "answered": 1,
                 "sBird": "",
