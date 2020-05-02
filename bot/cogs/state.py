@@ -21,7 +21,7 @@ from discord.ext import commands
 from sentry_sdk import capture_exception
 
 from bot.data import logger, states, GenericError
-from bot.functions import channel_setup, user_setup
+from bot.functions import channel_setup, user_setup, DmCooldown
 
 class States(commands.Cog):
     def __init__(self, bot):
@@ -29,7 +29,7 @@ class States(commands.Cog):
 
     # set state role
     @commands.command(help="- Sets your state", name="set", aliases=["state"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(5.0, bucket=commands.BucketType.user))
     @commands.guild_only()
     async def state(self, ctx, *, args):
         logger.info("command: state set")
@@ -81,7 +81,7 @@ class States(commands.Cog):
 
     # removes state role
     @commands.command(help="- Removes your state", aliases=["rm"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(5.0, bucket=commands.BucketType.user))
     @commands.guild_only()
     async def remove(self, ctx, *, args):
         logger.info("command: remove")

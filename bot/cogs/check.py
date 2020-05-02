@@ -20,7 +20,7 @@ from discord.ext import commands
 from bot.data import database, get_wiki_url, goatsuckers, logger, sciGoat
 from bot.functions import (
     bird_setup, channel_setup, get_sciname, incorrect_increment, score_increment, session_increment, spellcheck,
-    user_setup
+    user_setup, DmCooldown
 )
 
 # achievement values
@@ -38,7 +38,7 @@ class Check(commands.Cog):
 
     # Check command - argument is the guess
     @commands.command(help='- Checks your answer.', usage="guess", aliases=["guess", "c"])
-    @commands.cooldown(1, 3.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.user))
     @commands.check(racing_check)
     async def check(self, ctx, *, arg):
         logger.info("command: check")
@@ -125,7 +125,7 @@ class Check(commands.Cog):
 
     # Check command - argument is the guess
     @commands.command(help='- Checks your goatsucker.', usage="guess", aliases=["cg"])
-    @commands.cooldown(1, 3.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.user))
     async def checkgoat(self, ctx, *, arg):
         logger.info("command: checkgoat")
 
@@ -185,7 +185,7 @@ class Check(commands.Cog):
 
     # Check command - argument is the guess
     @commands.command(help='- Checks the song', aliases=["songcheck", "cs", "sc"])
-    @commands.cooldown(1, 3.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.user))
     async def checksong(self, ctx, *, arg):
         logger.info("command: checksong")
 

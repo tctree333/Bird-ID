@@ -108,14 +108,6 @@ if __name__ == '__main__':
         return True
 
     @bot.check
-    async def dm_cooldown(ctx):
-        """Clears the cooldown in DMs."""
-        logger.info("global check: checking dm cooldown clear")
-        if ctx.command.is_on_cooldown(ctx) and ctx.guild is None:
-            ctx.command.reset_cooldown(ctx)
-        return True
-
-    @bot.check
     def bot_has_permissions(ctx):
         """Checks if the bot has correct permissions."""
         logger.info("global check: checking permissions")

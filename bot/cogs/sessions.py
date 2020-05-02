@@ -21,7 +21,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger, taxons, states
-from bot.functions import channel_setup, check_state_role, user_setup
+from bot.functions import channel_setup, check_state_role, user_setup, DmCooldown
 
 class Sessions(commands.Cog):
     def __init__(self, bot):
@@ -95,7 +95,7 @@ class Sessions(commands.Cog):
         aliases=["st"],
         usage="[bw] [state] [female|juvenile] [order/family]"
     )
-    @commands.cooldown(1, 3.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.user))
     async def start(self, ctx, *, args_str: str = ""):
         logger.info("command: start session")
 
@@ -160,7 +160,7 @@ class Sessions(commands.Cog):
         aliases=["view"],
         usage="[bw] [state] [female|juvenile]"
     )
-    @commands.cooldown(1, 3.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.user))
     async def edit(self, ctx, *, args_str: str = ""):
         logger.info("command: view session")
 
@@ -226,7 +226,7 @@ class Sessions(commands.Cog):
 
     # stops session
     @session.command(help="- Stops session", aliases=["stp", "end"])
-    @commands.cooldown(1, 3.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(3.0, bucket=commands.BucketType.user))
     async def stop(self, ctx):
         logger.info("command: stop session")
 

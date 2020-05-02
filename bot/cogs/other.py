@@ -26,8 +26,8 @@ from sentry_sdk import capture_exception
 
 from bot.data import (birdListMaster, database, logger, memeList,
                       sciBirdListMaster, states, taxons)
-from bot.functions import (channel_setup, get_sciname, get_taxon, precache,
-                           send_bird, send_birdsong, user_setup)
+from bot.functions import (DmCooldown, channel_setup, get_sciname, get_taxon,
+                           precache, send_bird, send_birdsong, user_setup)
 
 
 class Other(commands.Cog):
@@ -36,7 +36,7 @@ class Other(commands.Cog):
 
     # Info - Gives call+image of 1 bird
     @commands.command(help="- Gives an image and call of a bird", aliases=['i'])
-    @commands.cooldown(1, 10.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(10.0, bucket=commands.BucketType.user))
     async def info(self, ctx, *, arg):
         logger.info("command: info")
 
@@ -57,7 +57,7 @@ class Other(commands.Cog):
 
     # List command - argument is state/bird list
     @commands.command(help="- DMs the user with the appropriate bird list.", name="list")
-    @commands.cooldown(1, 8.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(8.0, bucket=commands.BucketType.user))
     async def list_of_birds(self, ctx, state: str = "blank"):
         logger.info("command: list")
 
@@ -114,7 +114,7 @@ class Other(commands.Cog):
         name="taxon",
         aliases=["taxons", "orders", "families", "order", "family"]
     )
-    @commands.cooldown(1, 8.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(8.0, bucket=commands.BucketType.user))
     async def bird_taxons(self, ctx, taxon: str = "blank", state: str = "NATS"):
         logger.info("command: taxons")
 
@@ -186,7 +186,7 @@ class Other(commands.Cog):
 
     # Wiki command - argument is the wiki page
     @commands.command(help="- Fetch the wikipedia page for any given argument", aliases=["wiki"])
-    @commands.cooldown(1, 8.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(8.0, bucket=commands.BucketType.user))
     async def wikipedia(self, ctx, *, arg):
         logger.info("command: wiki")
 
@@ -203,7 +203,7 @@ class Other(commands.Cog):
 
     # meme command - sends a random bird video/gif
     @commands.command(help="- Sends a funny bird video!")
-    @commands.cooldown(1, 300.0, type=commands.BucketType.user)
+    @commands.check(DmCooldown(300.0, bucket=commands.BucketType.user))
     async def meme(self, ctx):
         logger.info("command: meme")
 
@@ -215,7 +215,7 @@ class Other(commands.Cog):
     @commands.command(
         help="- Gives info on bot, support server invite, stats", aliases=["bot_info", "support", "stats"]
     )
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.check(DmCooldown(5.0, bucket=commands.BucketType.channel))
     async def botinfo(self, ctx):
         logger.info("command: botinfo")
 
@@ -252,7 +252,7 @@ class Other(commands.Cog):
 
     # invite command - sends invite link
     @commands.command(help="- Get the invite link for this bot")
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.check(DmCooldown(5.0, bucket=commands.BucketType.channel))
     async def invite(self, ctx):
         logger.info("command: invite")
 
@@ -377,6 +377,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
+    @commands.check(DmCooldown(10.0))
     @commands.is_owner()
     async def test(self, ctx):
         logger.info("command: test")

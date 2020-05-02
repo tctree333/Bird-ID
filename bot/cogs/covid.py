@@ -21,7 +21,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger
-from bot.functions import channel_setup, user_setup
+from bot.functions import channel_setup, user_setup, DmCooldown
 
 
 class COVID(commands.Cog):
@@ -132,7 +132,7 @@ class COVID(commands.Cog):
         + "More info: (https://github.com/ExpDev07/coronavirus-tracker-api)",
         aliases=["corona", "coronavirus", "covid19"],
     )
-    @commands.cooldown(1, 5.0, type=commands.BucketType.default)
+    @commands.check(DmCooldown(5.0, bucket=commands.BucketType.default))
     async def covid(self, ctx):
         if ctx.invoked_subcommand is None:
             logger.info("command: covid")
@@ -222,7 +222,7 @@ class COVID(commands.Cog):
         + "which fetches data from Johns Hopkins, with county data from CSBS. "
         + "More info: (https://github.com/ExpDev07/coronavirus-tracker-api)",
     )
-    @commands.cooldown(1, 3600.0, type=commands.BucketType.default)
+    @commands.check(DmCooldown(3600.0, bucket=commands.BucketType.default))
     async def update(self, ctx):
         logger.info("command: update_covid")
 
