@@ -74,6 +74,13 @@ class Birds(commands.Cog):
                     roles = check_state_role(ctx)
                 logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
 
+            await ctx.send(
+                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
+                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`, " +
+                f"*Taxons*: `{'None' if taxon == [] else ' '.join(taxon)}`, " +
+                f"*Detected State*: `{'None' if roles == [] else ' '.join(roles)}`"
+            )
+
             if taxon:
                 birds_in_taxon = set(itertools.chain.from_iterable(taxons[o] for o in taxon))
                 if roles:
@@ -102,6 +109,10 @@ class Birds(commands.Cog):
             database.hset(f"channel:{ctx.channel.id}", "answered", "0")
             await send_bird(ctx, currentBird, on_error=error_skip, message=message, addOn=add_on, bw=bw)
         else:  # if no, give the same bird
+            await ctx.send(
+                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
+                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`"
+            )
             await send_bird(
                 ctx,
                 database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"),
@@ -229,19 +240,7 @@ class Birds(commands.Cog):
             if database.hget(f"race.data:{ctx.channel.id}", "bw").decode("utf-8"):
                 bw = not bw
 
-
         logger.info(f"args: bw: {bw}; addon: {add_on}; taxon: {taxon}")
-        if int(database.hget(f"channel:{ctx.channel.id}", "answered")):
-            await ctx.send(
-                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
-                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`, " +
-                f"*Taxons*: `{'None' if taxon == '' else taxon}`"
-            )
-        else:
-            await ctx.send(
-                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
-                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`"
-            )
 
         await self.send_bird_(ctx, add_on, bw, taxon)
 
