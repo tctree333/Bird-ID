@@ -55,6 +55,10 @@ class Birds(commands.Cog):
             taxon = taxon_str.split(" ")
         else:
             taxon = []
+
+        if not isinstance(bw, bool):
+            bw = bw == "bw"
+
         logger.info("bird: " + database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"))
 
         answered = int(database.hget(f"channel:{ctx.channel.id}", "answered"))
@@ -72,7 +76,7 @@ class Birds(commands.Cog):
                 if not roles:
                     logger.info("no session lists")
                     roles = check_state_role(ctx)
-                logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
+            logger.info(f"addon: {add_on}; bw: {bw}; taxon: {taxon}; roles: {roles}")
 
             await ctx.send(
                 f"**Recognized arguments:** *Black & White*: `{bw}`, " +
