@@ -941,8 +941,8 @@ async def backup_all():
     """
     logger.info("Starting Backup")
     logger.info("Creating Dump")
-    keys = [key.decode("utf-8") for key in database.keys()]
-    dump = map(database.dump, keys)
+    keys = (key.decode("utf-8") for key in database.keys())
+    dump = ((database.dump(key),key) for key in keys)
     logger.info("Finished Dump")
     logger.info("Writing To File")
     try:
@@ -952,7 +952,7 @@ async def backup_all():
         logger.info("Backups directory exists")
     with open("backups/dump.dump", 'wb') as f:
         with open("backups/keys.txt", 'w') as k:
-            for item, key in zip(dump, keys):
+            for item, key in dump:
                 pickle.dump(item, f)
                 k.write(f"{key}\n")
     logger.info("Backup Finished")
