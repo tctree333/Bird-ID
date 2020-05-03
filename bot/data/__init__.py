@@ -50,7 +50,12 @@ def before_sentry_send(event, hint):
 # add sentry logging
 if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
     sentry_sdk.init(
-        release=f"Heroku Release {os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",
+        release=f"{os.getenv('CURRENT_PLATFORM')} Release "
+        + (
+            f"{os.getenv('GIT_REV')[:8]}"
+            if os.getenv("CURRENT_PLATFORM") != "Heroku"
+            else f"{os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}"
+        ),
         dsn=os.environ["SCIOLY_ID_BOT_SENTRY_DISCORD_DSN"],
         integrations=[RedisIntegration(), AioHttpIntegration()],
         before_send=before_sentry_send
