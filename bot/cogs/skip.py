@@ -106,9 +106,8 @@ class Skip(commands.Cog):
                     await race.stop_race_(ctx)
                 else:
                     logger.info("auto sending next bird song")
-                    addon, bw, taxon = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon"])
                     birds = self.bot.get_cog("Birds")
-                    await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"), taxon.decode("utf-8"))
+                    await birds.send_song_(ctx)
         else:
             await ctx.send("You need to ask for a bird first!")
 
