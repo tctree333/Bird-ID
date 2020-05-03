@@ -18,10 +18,10 @@ import asyncio
 import concurrent.futures
 import errno
 import os
-import shutil
 import sys
-import time
+from datetime import datetime, date, timezone, timedelta
 
+from dotenv import load_dotenv, find_dotenv
 import aiohttp
 import discord
 import holidays
@@ -30,11 +30,13 @@ import wikipedia
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception, configure_scope
 
+load_dotenv(find_dotenv(), verbose=True)
+
 from bot.data import GenericError, database, logger
-from bot.functions import backup_all, channel_setup, precache, send_bird
+from bot.functions import backup_all, channel_setup, precache, send_bird, drone_attack
 
 # The channel id that the backups send to
-BACKUPS_CHANNEL = 622547928946311188
+BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])
 
 def start_precache():
     """Downloads all the images/songs before they're needed."""
@@ -49,7 +51,8 @@ if __name__ == '__main__':
     bot = commands.Bot(
         command_prefix=['b!', 'b.', 'b#', 'B!', 'B.', 'B#', 'o>', 'O>'],
         case_insensitive=True,
-        description="BirdID - Your Very Own Ornithologist"
+        description="BirdID - Your Very Own Ornithologist",
+        help_command=commands.DefaultHelpCommand(verify_checks=False)
     )
 
     @bot.event
@@ -61,19 +64,34 @@ if __name__ == '__main__':
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
 
-        refresh_cache.start()
-        refresh_backup.start()
+        if os.getenv("SCIOLY_ID_BOT_ENABLE_PRECACHE") != "false":
+            refresh_cache.start()
+
+        if os.getenv("SCIOLY_ID_BOT_ENABLE_BACKUPS") != "false":
+            refresh_backup.start()
 
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
-    initial_extensions = [
+    core_extensions = [
         'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', 'bot.cogs.state',
         'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.other'
     ]
-    for extension in initial_extensions:
+    
+    if "SCIOLY_ID_BOT_EXTRA_COGS" in os.environ and len(os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip()) > 0:
+        extra_extensions = os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip().split(',')
+    else:
+        extra_extensions = []
+
+    for extension in core_extensions + extra_extensions:
         try:
             bot.load_extension(extension)
-        except (discord.ClientException, ModuleNotFoundError):
-            logger.exception(f'Failed to load extension {extension}.')
+        except (discord.errors.ClientException, commands.errors.ExtensionNotFound, commands.errors.ExtensionFailed) as e:
+            if extension in core_extensions:
+                logger.exception(f'Failed to load extension {extension}.', e)
+                capture_exception(e)
+                raise e
+            else:
+                logger.error(f'Failed to load extension {extension}.', e)
+
     if sys.platform == 'win32':
         asyncio.set_event_loop(asyncio.ProactorEventLoop())
 
@@ -87,14 +105,6 @@ if __name__ == '__main__':
         logger.info("global check: checking sentry tag")
         with configure_scope() as scope:
             scope.set_tag("command", ctx.command.name)
-        return True
-
-    @bot.check
-    async def dm_cooldown(ctx):
-        """Clears the cooldown in DMs."""
-        logger.info("global check: checking dm cooldown clear")
-        if ctx.command.is_on_cooldown(ctx) and ctx.guild is None:
-            ctx.command.reset_cooldown(ctx)
         return True
 
     @bot.check
@@ -133,13 +143,16 @@ if __name__ == '__main__':
         Can be extended to other holidays as well.
         """
         logger.info("global check: checking holiday")
-        now = time.time() - 28800
+        now = datetime.now(tz=timezone(-timedelta(hours=4)))
+        now = date(now.year, now.month, now.day)
         us = holidays.US()
         if now in us:
             if us.get(now) == "Thanksgiving":
                 await send_bird(ctx, "Wild Turkey")
                 await ctx.send("**It's Thanksgiving!**\nGo celebrate with your family.")
                 raise GenericError(code=666)
+        elif now == date(now.year, 4, 1):
+            return await drone_attack(ctx)
         return True
 
     ######
@@ -228,6 +241,8 @@ if __name__ == '__main__':
             elif isinstance(error.original, discord.Forbidden):
                 if error.original.code == 50007:
                     await ctx.send("I was unable to DM you. Check if I was blocked and try again.")
+                elif error.original.code == 50013:
+                    await ctx.send("There was an error with permissions. Check the bot has proper permissions and try again.")
                 else:
                     capture_exception(error)
                     await ctx.send(
@@ -285,18 +300,6 @@ if __name__ == '__main__':
     @tasks.loop(hours=24.0)
     async def refresh_cache():
         """Re-downloads all the images/songs."""
-        logger.info("clear cache")
-        try:
-            shutil.rmtree(r'cache/images/', ignore_errors=True)
-            logger.info("Cleared image cache.")
-        except FileNotFoundError:
-            logger.info("Already cleared image cache.")
-
-        try:
-            shutil.rmtree(r'cache/songs/', ignore_errors=True)
-            logger.info("Cleared songs cache.")
-        except FileNotFoundError:
-            logger.info("Already cleared songs cache.")
         event_loop = asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, start_precache)
@@ -321,7 +324,7 @@ if __name__ == '__main__':
             await event_loop.run_in_executor(executor, start_backup)
 
         logger.info("Sending backup files")
-        channel = bot.get_channel(BACKUPS_CHANNEL)
+        channel = bot.get_channel(int(BACKUPS_CHANNEL))
         with open("backups/dump.dump", 'rb') as f:
             await channel.send(file=discord.File(f, filename="dump"))
         with open("backups/keys.txt", 'r') as f:
@@ -329,5 +332,5 @@ if __name__ == '__main__':
         logger.info("Backup Files Sent!")
 
     # Actually run the bot
-    token = os.getenv("token")
+    token = os.environ["SCIOLY_ID_BOT_TOKEN"]
     bot.run(token)

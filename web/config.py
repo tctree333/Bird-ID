@@ -47,9 +47,9 @@ def web_session_setup(session_id):
     if database.exists(f"web.session:{session_id}"):
         logger.info("session data ok")
     else:
-        database.hmset(
+        database.hset(
             f"web.session:{session_id}",
-            {
+            mapping={
                 "bird": "",
                 "media_type": "",
                 "answered": 1,  # true = 1, false = 0
@@ -68,8 +68,9 @@ def update_web_user(user_data):
     user_id = str(user_data['id'])
     database.hset(f"web.session:{session_id}", "user_id", user_id)
     database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)
-    database.hmset(
-        f"web.user:{user_id}", {
+    database.hset(
+        f"web.user:{user_id}",
+        mapping={
             "avatar_hash": str(user_data['avatar']),
             "avatar_url": f"https://cdn.discordapp.com/avatars/{user_id}/{user_data['avatar']}.png",
             "username": str(user_data['username']),

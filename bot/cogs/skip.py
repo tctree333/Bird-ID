@@ -17,7 +17,7 @@
 from discord.ext import commands
 
 from bot.data import database, get_wiki_url, logger
-from bot.functions import channel_setup, user_setup
+from bot.functions import channel_setup, user_setup, CustomCooldown
 
 class Skip(commands.Cog):
     def __init__(self, bot):
@@ -25,7 +25,7 @@ class Skip(commands.Cog):
 
     # Skip command - no args
     @commands.command(help="- Skip the current bird to get a new one", aliases=["sk"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def skip(self, ctx):
         logger.info("command: skip")
 
@@ -59,7 +59,7 @@ class Skip(commands.Cog):
 
     # Skip command - no args
     @commands.command(help="- Skip the current goatsucker to get a new one", aliases=["goatskip", "sg"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def skipgoat(self, ctx):
         logger.info("command: skipgoat")
 
@@ -79,7 +79,7 @@ class Skip(commands.Cog):
 
     # Skip song command - no args
     @commands.command(help="- Skip the current bird call to get a new one", aliases=["songskip", "ss"])
-    @commands.cooldown(1, 10.0, type=commands.BucketType.channel)
+    @commands.check(CustomCooldown(10.0, bucket=commands.BucketType.channel))
     async def skipsong(self, ctx):
         logger.info("command: skipsong")
 
@@ -106,9 +106,8 @@ class Skip(commands.Cog):
                     await race.stop_race_(ctx)
                 else:
                     logger.info("auto sending next bird song")
-                    addon, bw, taxon = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon"])
                     birds = self.bot.get_cog("Birds")
-                    await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"), taxon.decode("utf-8"))
+                    await birds.send_song_(ctx)
         else:
             await ctx.send("You need to ask for a bird first!")
 

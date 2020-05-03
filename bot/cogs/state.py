@@ -20,8 +20,8 @@ import discord
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
-from bot.data import logger, states
-from bot.functions import channel_setup, user_setup
+from bot.data import logger, states, GenericError
+from bot.functions import channel_setup, user_setup, CustomCooldown
 
 class States(commands.Cog):
     def __init__(self, bot):
@@ -29,7 +29,7 @@ class States(commands.Cog):
 
     # set state role
     @commands.command(help="- Sets your state", name="set", aliases=["state"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     @commands.guild_only()
     async def state(self, ctx, *, args):
         logger.info("command: state set")
@@ -81,7 +81,7 @@ class States(commands.Cog):
 
     # removes state role
     @commands.command(help="- Removes your state", aliases=["rm"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     @commands.guild_only()
     async def remove(self, ctx, *, args):
         logger.info("command: remove")
@@ -131,6 +131,25 @@ class States(commands.Cog):
                 f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n" +
                 "*Please try again once the correct permissions are set.*"
             )
+        elif isinstance(error, GenericError):
+            if error.code == 842:
+                await ctx.send("**Sorry, you cannot use this command.**")
+            elif error.code == 666:
+                logger.info("GenericError 666")
+            elif error.code == 201:
+                logger.info("HTTP Error")
+                capture_exception(error)
+                await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
+            else:
+                logger.info("uncaught generic error")
+                capture_exception(error)
+                await ctx.send(
+                    "**An uncaught generic error has occurred.**\n" +
+                    "*Please log this message in #support in the support server below, or try again.*\n" +
+                    "**Error:** " + str(error)
+                )
+                await ctx.send("https://discord.gg/fXxYyDJ")
+                raise error
         else:
             capture_exception(error)
             await ctx.send(
@@ -156,6 +175,25 @@ class States(commands.Cog):
                 f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n" +
                 "*Please try again once the correct permissions are set.*"
             )
+        elif isinstance(error, GenericError):
+            if error.code == 842:
+                await ctx.send("**Sorry, you cannot use this command.**")
+            elif error.code == 666:
+                logger.info("GenericError 666")
+            elif error.code == 201:
+                logger.info("HTTP Error")
+                capture_exception(error)
+                await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
+            else:
+                logger.info("uncaught generic error")
+                capture_exception(error)
+                await ctx.send(
+                    "**An uncaught generic error has occurred.**\n" +
+                    "*Please log this message in #support in the support server below, or try again.*\n" +
+                    "**Error:** " + str(error)
+                )
+                await ctx.send("https://discord.gg/fXxYyDJ")
+                raise error
         else:
             capture_exception(error)
             await ctx.send(

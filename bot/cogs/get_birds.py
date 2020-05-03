@@ -22,7 +22,7 @@ from discord.ext import commands
 from bot.data import (birdList, database, goatsuckers, logger, taxons, songBirds, states)
 from bot.functions import (
     channel_setup, check_state_role, error_skip, error_skip_goat, error_skip_song, send_bird, send_birdsong,
-    session_increment, user_setup
+    session_increment, user_setup, CustomCooldown
 )
 
 BASE_MESSAGE = (
@@ -55,6 +55,10 @@ class Birds(commands.Cog):
             taxon = taxon_str.split(" ")
         else:
             taxon = []
+
+        if not isinstance(bw, bool):
+            bw = bw == "bw"
+
         logger.info("bird: " + database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"))
 
         answered = int(database.hget(f"channel:{ctx.channel.id}", "answered"))
@@ -72,7 +76,14 @@ class Birds(commands.Cog):
                 if not roles:
                     logger.info("no session lists")
                     roles = check_state_role(ctx)
-                logger.info(f"addon: {add_on}; bw: {bw}; roles: {roles}")
+            logger.info(f"addon: {add_on}; bw: {bw}; taxon: {taxon}; roles: {roles}")
+
+            await ctx.send(
+                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
+                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`, " +
+                f"*Taxons*: `{'None' if taxon == [] else ' '.join(taxon)}`, " +
+                f"*Detected State*: `{'None' if roles == [] else ' '.join(roles)}`"
+            )
 
             if taxon:
                 birds_in_taxon = set(itertools.chain.from_iterable(taxons[o] for o in taxon))
@@ -102,6 +113,10 @@ class Birds(commands.Cog):
             database.hset(f"channel:{ctx.channel.id}", "answered", "0")
             await send_bird(ctx, currentBird, on_error=error_skip, message=message, addOn=add_on, bw=bw)
         else:  # if no, give the same bird
+            await ctx.send(
+                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
+                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`"
+            )
             await send_bird(
                 ctx,
                 database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"),
@@ -157,7 +172,7 @@ class Birds(commands.Cog):
         help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile] [bw] [order/family]"
     )
     # 5 second cooldown
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def bird(self, ctx, *, args_str: str = ""):
         logger.info("command: bird")
 
@@ -229,26 +244,14 @@ class Birds(commands.Cog):
             if database.hget(f"race.data:{ctx.channel.id}", "bw").decode("utf-8"):
                 bw = not bw
 
-
         logger.info(f"args: bw: {bw}; addon: {add_on}; taxon: {taxon}")
-        if int(database.hget(f"channel:{ctx.channel.id}", "answered")):
-            await ctx.send(
-                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
-                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`, " +
-                f"*Taxons*: `{'None' if taxon == '' else taxon}`"
-            )
-        else:
-            await ctx.send(
-                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
-                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`"
-            )
 
         await self.send_bird_(ctx, add_on, bw, taxon)
 
     # goatsucker command - no args
     # just for fun, no real purpose
     @commands.command(help='- Sends a random goatsucker to ID', aliases=["gs"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def goatsucker(self, ctx):
         logger.info("command: goatsucker")
 
@@ -277,7 +280,7 @@ class Birds(commands.Cog):
 
     # picks a random bird call to send
     @commands.command(help="- Sends a bird call to ID", aliases=["s"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def song(self, ctx):
         logger.info("command: song")
 

@@ -20,20 +20,24 @@ import difflib
 import os
 import pickle
 import random
+import shutil
 import string
 import time
 import urllib.parse
-from functools import partial
+import functools
 from io import BytesIO
 from mimetypes import guess_all_extensions, guess_extension
 
 import aiohttp
 import discord
+from discord.ext import commands
 import eyed3
 from PIL import Image
 from sentry_sdk import capture_exception
 
-from bot.data import (GenericError, database, logger, sciBirdListMaster, sciSongBirdsMaster, screech_owls, states)
+from bot.data import (GenericError, birdListMaster, database, get_wiki_url,
+                      logger, sciBirdListMaster, sciSongBirdsMaster,
+                      screech_owls, states)
 
 # Macaulay URL definitions
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
@@ -57,8 +61,9 @@ async def channel_setup(ctx):
     if database.exists(f"channel:{ctx.channel.id}"):
         logger.info("channel data ok")
     else:
-        database.hmset(
-            f"channel:{ctx.channel.id}", {
+        database.hset(
+            f"channel:{ctx.channel.id}",
+            mapping={
                 "bird": "",
                 "answered": 1,
                 "sBird": "",
@@ -204,6 +209,49 @@ def check_state_role(ctx) -> list:
     logger.info(f"user roles: {user_states}")
     return user_states
 
+def cache(func=None):
+    """Cache decorator based on functools.lru_cache.
+
+    This does not have a max_size and does not evict items.
+    In addition, results are only cached by the first provided argument.
+    """
+    def wrapper(func):
+        sentinel = object()
+
+        cache = {}
+        hits = misses = 0
+        cache_get = cache.get
+        cache_len = cache.__len__
+
+        async def wrapped(*args, **kwds):
+            # Simple caching without ordering or size limit
+            logger.info("checking cache")
+            nonlocal hits, misses
+            key = hash(args[0])
+            result = cache_get(key, sentinel)
+            if result is not sentinel:
+                logger.info(f"{args[0]} found in cache!")
+                hits += 1
+                return result
+            logger.info(f"did not find {args[0]} in cache")
+            misses += 1
+            result = await func(*args, **kwds)
+            cache[key] = result
+            return result
+
+        def cache_info():
+            """Report cache statistics"""
+            return functools._CacheInfo(hits, misses, None, cache_len())
+
+        wrapped.cache_info = cache_info
+        return functools.update_wrapper(wrapped, func)
+
+    if func:
+        return wrapper(func)
+    else:
+        return wrapper
+
+@cache()
 async def get_sciname(bird: str, session=None, retries=0) -> str:
     """Returns the scientific name of a bird.
 
@@ -249,6 +297,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
     logger.info(f"sciname: {sciname}")
     return sciname
 
+@cache()
 async def get_taxon(bird: str, session=None, retries=0) -> str:
     """Returns the taxonomic code of a bird.
 
@@ -366,11 +415,6 @@ def score_increment(ctx, amount: int):
         logger.info("race in session")
         database.zincrby(f"race.scores:{ctx.channel.id}", amount, str(ctx.author.id))
 
-def owner_check(ctx) -> bool:
-    """Check to see if the user is the owner of the bot."""
-    owners = set(str(os.getenv("ids")).split(","))
-    return str(ctx.author.id) in owners
-
 async def send_bird(ctx, bird: str, on_error=None, message=None, addOn="", bw=False):
     """Gets a bird picture and sends it to the user.
 
@@ -419,7 +463,7 @@ async def send_bird(ctx, bird: str, on_error=None, message=None, addOn="", bw=Fa
         if bw:
             # prevent the black and white conversion from blocking
             loop = asyncio.get_running_loop()
-            fn = partial(_black_and_white, filename)
+            fn = functools.partial(_black_and_white, filename)
             file_stream = await loop.run_in_executor(None, fn)
         else:
             file_stream = filename
@@ -681,8 +725,23 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type="", re
                 return urls
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
-        urls = [data["mediaUrl"] for data in content]
+
+        logger.info("checking filesizes")
+        urls = await asyncio.gather(*(_check_media_url(session, data["mediaUrl"]) for data in content))
+        fails = urls.count(None)
+        if None in urls:
+            urls = set(urls)
+            urls.remove(None)
+            urls = list(urls)
+        logger.info(f"filesize check fails: {fails}")
         return urls
+
+async def _check_media_url(session, media_url):
+    async with session.head(media_url) as header_check:
+        media_size = header_check.headers.get("content-length")
+        if header_check.status == 200 and media_size != None and int(media_size) < 4000000:
+            return media_url
+    return None
 
 async def _download_helper(path, url, session):
     """Downloads media from the given URL.
@@ -733,6 +792,94 @@ async def _download_helper(path, url, session):
         capture_exception(e)
         raise
 
+
+async def drone_attack(ctx):
+    logger.info(f"holiday check: invoked command: {str(ctx.command)}")
+    def video_embed():
+        if random.randint(0,1) == 1:
+            embed = discord.Embed(title="YouTube", type="rich", colour=discord.Colour(0xd0021b), url="https://bit.ly/are-birds-real")
+            embed.set_image(url="http://i3.ytimg.com/vi/Fg_JcKSHUtQ/hqdefault.jpg")
+            embed.add_field(name="TED", value="[A robot that flies like a bird | Markus Fischer](https://bit.ly/are-birds-real)")
+        else:
+            embed = discord.Embed(title="Are Birds Real?", type="rich", colour=discord.Colour.default(), url="https://bit.ly/are-birds-real")
+            embed.set_image(url="https://www.sciencenews.org/sites/default/files/main/articles/feature_drones_opener.jpg")
+            embed.add_field(name="Wikipedia", value="In 1947 the C.I.A. was founded, its sole responsibility to watch and survey tens of thousands of Americans suspected of doing communist things. In 1953 Allen Dulles was made the first civilian director of the Central Intelligence Agency (C.I.A.) and made it his mission to ramp up the surveillance program. Dulles and his team hated birds with a passion, as they would often poop on their cars in the parking lot of the C.I.A. headquarters. This was one of the driving forces that led Dulles to not only implement robots into the sky, but actually replace birds in the process...")
+
+        return embed
+
+    if str(ctx.command) in ("help", "covid", "botinfo", "invite",
+                            "list", "meme", "taxon", "wikipedia",
+                            "remove", "set", "give_role", "remove_role",
+                            "test", "error", "ban", "unban", "send_as_bot"):
+        logger.info("Passthrough Command")
+        return True
+
+    elif str(ctx.command) in ("bird", "song", "goatsucker"):
+        images = os.listdir("bot/media/images/drone")
+        path = f"bot/media/images/drone/{images[random.randint(0,len(images)-1)]}"
+        BASE_MESSAGE = (
+            "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +
+            "or `b!{skip_cmd}` to get a new bird. Use `b!{check_cmd} guess` to check your answer. " +
+            "Use `b!{hint_cmd}` for a hint.**"
+        )
+
+        if str(ctx.command) == "bird":
+            await ctx.send(
+                BASE_MESSAGE.format(
+                    media="image", new_cmd="bird", skip_cmd="skip", check_cmd="check", hint_cmd="hint"
+                ) +
+                "\n*This is an image.*"
+            )
+        elif str(ctx.command) == "goatsucker":
+            await ctx.send(
+                BASE_MESSAGE.format(
+                    media="image", new_cmd="gs", skip_cmd="skipgoat", check_cmd="checkgoat", hint_cmd="hintgoat"
+                )
+            )
+        elif str(ctx.command) == "bird":
+            await ctx.send(
+                BASE_MESSAGE.format(
+                    media="song", new_cmd="song", skip_cmd="skipsong", check_cmd="checksong", hint_cmd="hintsong"
+                )
+            )
+
+        file_obj = discord.File(path, filename=f"bird.{path.split('.')[-1]}")
+        await ctx.send(file=file_obj)
+
+    elif str(ctx.command) in ("check", "checkgoat", "checksong"):
+        args = ctx.message.content.split(" ")[1:]
+        matches = difflib.get_close_matches(" ".join(args), birdListMaster + sciBirdListMaster, n=1)
+        if "drone" in args:
+            await ctx.send("SHHHHHH! Birds are **NOT** government drones! You'll blow our cover, and we'll need to get rid of you.")
+        elif matches:
+            await ctx.send("Correct! Good job!")
+            await ctx.send(embed=video_embed())
+        else:
+            await ctx.send("Sorry, the bird was actually **definitely a real bird.**")
+            await ctx.send(embed=video_embed())
+
+    elif str(ctx.command) in ("skip", "skipgoat", "skipsong"):
+        await ctx.send("Ok, skipping **definitely a real bird.**")
+        await ctx.send(embed=video_embed())
+
+    elif str(ctx.command) in ("hint", "hintgoat", "hintsong"):
+        await ctx.send("This is definitely a real bird, **NOT** a government drone.")
+
+    elif str(ctx.command) in ("info"):
+        await ctx.send("Birds are real. Don't believe what others may say. **BIRDS ARE VERY REAL!**")
+
+    elif str(ctx.command) in ("race", "session"):
+        await ctx.send("Races and sessions have been disabled today. We apologize for any inconvenience.")
+
+    elif str(ctx.command) in ("leaderboard", "missed", "score", "streak", "userscore"):
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title=f"**{str(ctx.command).title()}**")
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        embed.add_field(name=f"**{str(ctx.command).title()}**", value="User scores and data have been cleared. We apologize for the inconvenience.", inline=False)
+        await ctx.send(embed=embed)
+
+    raise GenericError(code=666)
+
+
 async def precache():
     """Downloads all images and songs.
 
@@ -741,24 +888,47 @@ async def precache():
 
     This function is run with a task every 24 hours.
     """
-    start = time.time()
+    logger.info("clear cache")
+    try:
+        shutil.rmtree(r'cache/images/', ignore_errors=True)
+        logger.info("Cleared image cache.")
+    except FileNotFoundError:
+        logger.info("Already cleared image cache.")
+
+    try:
+        shutil.rmtree(r'cache/songs/', ignore_errors=True)
+        logger.info("Cleared songs cache.")
+    except FileNotFoundError:
+        logger.info("Already cleared songs cache.")
+
+    output = dict()
+    output["start"] = time.perf_counter()
     timeout = aiohttp.ClientTimeout(total=10 * 60)
     conn = aiohttp.TCPConnector(limit=100)
     async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
         logger.info("Starting cache")
         await asyncio.gather(*(download_media(bird, "images", session=session) for bird in sciBirdListMaster))
+        output["plain"] = (time.perf_counter() - output["start"])
         logger.info("Starting females")
         await asyncio.gather(
             *(download_media(bird, "images", addOn="female", session=session) for bird in sciBirdListMaster)
         )
+        output["female"] = (time.perf_counter() - output["start"]) - output["plain"]
         logger.info("Starting juveniles")
         await asyncio.gather(
             *(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster)
         )
+        output["juvenile"] = (time.perf_counter()- output["start"]) - output["female"]
         logger.info("Starting songs")
         await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
-    end = time.time()
-    logger.info(f"Images Cached in {end-start} sec.")
+        output["songs"] = (time.perf_counter() - output["start"]) - output["juvenile"]
+    output["end"] = time.perf_counter()
+    output["total"] = output['end'] - output['start']
+    output["sciname_cache"] = get_sciname.cache_info()
+    output["taxon_cache"] = get_taxon.cache_info()
+    logger.info(f"Images Cached in {output['total']} sec.")
+    logger.info(f"Cache Timing Output: {output}")
+    return output
 
 async def backup_all():
     """Backs up the database to a file.
@@ -801,3 +971,37 @@ def spellcheck(worda, wordb, cutoff=3):
         if len(list(difflib.Differ().compare(worda, wordb))) - len(shorterword) >= cutoff:
             return False
     return True
+
+class CustomCooldown:
+        """Halve cooldown times in DM channels."""
+        # Code adapted from discord.py example
+        def __init__(self, per: float, disable: bool = False, bucket: commands.BucketType = commands.BucketType.channel):
+            """Initialize a custom cooldown.
+
+            `per` (float) - Cooldown default duration, halves in DM channels
+            `bucket` (commands.BucketType) - cooldown scope, defaults to channel
+            """
+            rate = 1
+            dm_per = per/2
+            race_per = 0.5
+            self.disable = disable
+            self.default_mapping = commands.CooldownMapping.from_cooldown(rate, per, bucket)
+            self.dm_mapping = commands.CooldownMapping.from_cooldown(rate, dm_per, bucket)
+            self.race_mapping = commands.CooldownMapping.from_cooldown(rate, race_per, bucket)
+
+        def __call__(self, ctx: commands.Context):
+            if not self.disable and ctx.guild is None:
+                # halve cooldown in DMs
+                bucket = self.dm_mapping.get_bucket(ctx.message)
+
+            elif ctx.command.name.startswith("check") and ctx.channel.name.startswith("racing"):
+                # tiny check cooldown in racing channels
+                bucket = self.race_mapping.get_bucket(ctx.message)
+
+            else:
+                bucket = self.default_mapping.get_bucket(ctx.message)
+
+            retry_after = bucket.update_rate_limit()
+            if retry_after:
+                raise commands.CommandOnCooldown(bucket, retry_after)
+            return True

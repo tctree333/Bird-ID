@@ -15,15 +15,20 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import random
+import time
 import typing
 from difflib import get_close_matches
 
 import discord
 import wikipedia
 from discord.ext import commands
+from sentry_sdk import capture_exception
 
-from bot.data import (birdListMaster, database, logger, memeList, taxons, sciBirdListMaster, states)
-from bot.functions import (channel_setup, get_sciname, owner_check, send_bird, send_birdsong, user_setup)
+from bot.data import (birdListMaster, database, logger, memeList,
+                      sciBirdListMaster, states, taxons)
+from bot.functions import (CustomCooldown, channel_setup, get_sciname, get_taxon,
+                           precache, send_bird, send_birdsong, user_setup)
+
 
 class Other(commands.Cog):
     def __init__(self, bot):
@@ -31,7 +36,7 @@ class Other(commands.Cog):
 
     # Info - Gives call+image of 1 bird
     @commands.command(help="- Gives an image and call of a bird", aliases=['i'])
-    @commands.cooldown(1, 10.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(10.0, bucket=commands.BucketType.user))
     async def info(self, ctx, *, arg):
         logger.info("command: info")
 
@@ -52,7 +57,7 @@ class Other(commands.Cog):
 
     # List command - argument is state/bird list
     @commands.command(help="- DMs the user with the appropriate bird list.", name="list")
-    @commands.cooldown(1, 8.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
     async def list_of_birds(self, ctx, state: str = "blank"):
         logger.info("command: list")
 
@@ -109,7 +114,7 @@ class Other(commands.Cog):
         name="taxon",
         aliases=["taxons", "orders", "families", "order", "family"]
     )
-    @commands.cooldown(1, 8.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
     async def bird_taxons(self, ctx, taxon: str = "blank", state: str = "NATS"):
         logger.info("command: taxons")
 
@@ -181,7 +186,7 @@ class Other(commands.Cog):
 
     # Wiki command - argument is the wiki page
     @commands.command(help="- Fetch the wikipedia page for any given argument", aliases=["wiki"])
-    @commands.cooldown(1, 8.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
     async def wikipedia(self, ctx, *, arg):
         logger.info("command: wiki")
 
@@ -198,7 +203,7 @@ class Other(commands.Cog):
 
     # meme command - sends a random bird video/gif
     @commands.command(help="- Sends a funny bird video!")
-    @commands.cooldown(1, 300.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(300.0, bucket=commands.BucketType.user))
     async def meme(self, ctx):
         logger.info("command: meme")
 
@@ -210,7 +215,7 @@ class Other(commands.Cog):
     @commands.command(
         help="- Gives info on bot, support server invite, stats", aliases=["bot_info", "support", "stats"]
     )
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def botinfo(self, ctx):
         logger.info("command: botinfo")
 
@@ -223,9 +228,10 @@ class Other(commands.Cog):
             name="Bot Info",
             value="This bot was created by EraserBird and person_v1.32 " +
             "for helping people practice bird identification for Science Olympiad.\n" +
-            "**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.\n" +
-            "<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>, " +
-            "<https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>",
+            "**By adding this bot to a server, you are agreeing to our " +
+            "[Privacy Policy](<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>) and " +
+            "[Terms of Service](<https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>)**.\n" +
+            "Bird-ID is licensed under the [GNU GPL v3.0](<https://github.com/tctree333/Bird-ID/blob/master/LICENSE>).",
             inline=False
         )
         embed.add_field(
@@ -246,7 +252,7 @@ class Other(commands.Cog):
 
     # invite command - sends invite link
     @commands.command(help="- Get the invite link for this bot")
-    @commands.cooldown(1, 5.0, type=commands.BucketType.channel)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def invite(self, ctx):
         logger.info("command: invite")
 
@@ -270,7 +276,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # ban command - prevents certain users from using the bot
     @commands.command(help="- ban command", hidden=True)
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def ban(self, ctx, *, user: discord.Member = None):
         logger.info("command: ban")
         if user is None:
@@ -283,7 +289,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # unban command - prevents certain users from using the bot
     @commands.command(help="- unban command", hidden=True)
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def unban(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
         logger.info("command: unban")
         if user is None:
@@ -296,7 +302,7 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
 
     # Send command - for testing purposes only
     @commands.command(help="- send command", hidden=True, aliases=["sendas"])
-    @commands.check(owner_check)
+    @commands.is_owner()
     async def send_as_bot(self, ctx, *, args):
         logger.info("command: send")
         logger.info(f"args: {args}")
@@ -306,18 +312,76 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
         await channel.send(message)
         await ctx.send("Ok, sent!")
 
+
+    # Role command - for testing purposes only
+    @commands.command(help="- role command", hidden=True, aliases=["giverole"])
+    @commands.is_owner()
+    async def give_role(self, ctx, *, args):
+        logger.info("command: give role")
+        logger.info(f"args: {args}")
+        try:
+            guild_id = int(args.split(' ')[0])
+            role_id = int(args.split(' ')[1])
+            guild = self.bot.get_guild(guild_id)
+            role = guild.get_role(role_id)
+            await guild.get_member(ctx.author.id).add_roles(role)
+            await ctx.send("Ok, done!")
+        except Exception as e:
+            capture_exception(e)
+            logger.exception(e)
+            await ctx.send(f"Error: {e}")
+
+    # Un role command - for testing purposes only
+    @commands.command(help="- role command", hidden=True, aliases=["rmrole"])
+    @commands.is_owner()
+    async def remove_role(self, ctx, *, args):
+        logger.info("command: remove role")
+        logger.info(f"args: {args}")
+        try:
+            guild_id = int(args.split(' ')[0])
+            role_id = int(args.split(' ')[1])
+            guild = self.bot.get_guild(guild_id)
+            role = guild.get_role(role_id)
+            await guild.get_member(ctx.author.id).remove_roles(role)
+            await ctx.send("Ok, done!")
+        except Exception as e:
+            capture_exception(e)
+            logger.exception(e)
+            await ctx.send(f"Error: {e}")
+
     # Test command - for testing purposes only
-    @commands.command(help="- test command", hidden=True)
-    async def test(self, ctx, *, bird):
-        logger.info("command: test")
-        sciname = await get_sciname(bird)
-        await ctx.send(sciname)
+    @commands.command(help="- test command", hidden=True, aliases=["getall", "precache"])
+    @commands.is_owner()
+    async def get_all(self, ctx):
+        logger.info("command: get_all")
+        await ctx.send(f"Caching all images.")
+        stats = await precache()
+        await ctx.send(f"Finished Cache in approx. {stats['total']} seconds. {ctx.author.mention}")
+        await ctx.send(f"```python\n{stats}```")
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
+    @commands.is_owner()
+    async def cache(self, ctx):
+        logger.info("command: cache stats")
+        stats = {"sciname_cache": get_sciname.cache_info(),
+                 "taxon_cache": get_taxon.cache_info()}
+        await ctx.send(f"```python\n{stats}```")
+
+    # Test command - for testing purposes only
+    @commands.command(help="- test command", hidden=True)
+    @commands.is_owner()
     async def error(self, ctx):
         logger.info("command: error")
         await ctx.send(1 / 0)
+
+    # Test command - for testing purposes only
+    @commands.command(help="- test command", hidden=True)
+    @commands.check(CustomCooldown(10.0))
+    @commands.is_owner()
+    async def test(self, ctx):
+        logger.info("command: test")
+        await ctx.send("test")
 
 def setup(bot):
     bot.add_cog(Other(bot))

@@ -62,7 +62,7 @@ def logout():
 
     session_id = get_session_id()
     user_id = verify_session(session_id)
-    if isinstance(int, user_id):
+    if isinstance(user_id, int):
         logger.info("deleting user data, session data")
         database.delete(f"web.user:{user_id}", f"web.session:{session_id}")
         session.clear()

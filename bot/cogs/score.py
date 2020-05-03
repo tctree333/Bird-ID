@@ -20,8 +20,8 @@ import discord
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
-from bot.data import database, logger
-from bot.functions import channel_setup, user_setup
+from bot.data import database, logger, GenericError
+from bot.functions import channel_setup, user_setup, CustomCooldown
 
 class Score(commands.Cog):
     def __init__(self, bot):
@@ -29,7 +29,7 @@ class Score(commands.Cog):
 
     # returns total number of correct answers so far
     @commands.command(help="- Total correct answers in a channel")
-    @commands.cooldown(1, 8.0, type=commands.BucketType.channel)
+    @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.channel))
     async def score(self, ctx):
         logger.info("command: score")
 
@@ -49,7 +49,7 @@ class Score(commands.Cog):
         "Mention someone to get their score, Don't mention anyone to get your score.",
         aliases=["us"]
     )
-    @commands.cooldown(1, 5.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def userscore(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
         logger.info("command: userscore")
 
@@ -83,7 +83,7 @@ class Score(commands.Cog):
 
     # gives streak of a user
     @commands.command(help='- Gives your current/max streak', aliases=["streaks", "stk"])
-    @commands.cooldown(1, 5.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def streak(self, ctx):
 
         await channel_setup(ctx)
@@ -102,7 +102,7 @@ class Score(commands.Cog):
     @commands.command(
         brief="- Top scores", help="- Top scores, scope is either global or server. (g, s)", aliases=["lb"]
     )
-    @commands.cooldown(1, 5.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def leaderboard(self, ctx, scope="", page=1):
         logger.info("command: leaderboard")
 
@@ -215,7 +215,7 @@ class Score(commands.Cog):
         help="- Top incorrect birds, scope is either global, server, or me. (g, s, m)",
         aliases=["m"]
     )
-    @commands.cooldown(1, 5.0, type=commands.BucketType.user)
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def missed(self, ctx, scope="", page=1):
         logger.info("command: missed")
 
@@ -297,6 +297,25 @@ class Score(commands.Cog):
 **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
 *Please try again once the correct permissions are set.*"""
             )
+        elif isinstance(error, GenericError):
+            if error.code == 842:
+                await ctx.send("**Sorry, you cannot use this command.**")
+            elif error.code == 666:
+                logger.info("GenericError 666")
+            elif error.code == 201:
+                logger.info("HTTP Error")
+                capture_exception(error)
+                await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
+            else:
+                logger.info("uncaught generic error")
+                capture_exception(error)
+                await ctx.send(
+                    "**An uncaught generic error has occurred.**\n" +
+                    "*Please log this message in #support in the support server below, or try again.*\n" +
+                    "**Error:** " + str(error)
+                )
+                await ctx.send("https://discord.gg/fXxYyDJ")
+                raise error
         else:
             capture_exception(error)
             await ctx.send(
@@ -320,6 +339,25 @@ class Score(commands.Cog):
                 f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n" +
                 "*Please try again once the correct permissions are set.*"
             )
+        elif isinstance(error, GenericError):
+            if error.code == 842:
+                await ctx.send("**Sorry, you cannot use this command.**")
+            elif error.code == 666:
+                logger.info("GenericError 666")
+            elif error.code == 201:
+                logger.info("HTTP Error")
+                capture_exception(error)
+                await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
+            else:
+                logger.info("uncaught generic error")
+                capture_exception(error)
+                await ctx.send(
+                    "**An uncaught generic error has occurred.**\n" +
+                    "*Please log this message in #support in the support server below, or try again.*\n" +
+                    "**Error:** " + str(error)
+                )
+                await ctx.send("https://discord.gg/fXxYyDJ")
+                raise error
         else:
             capture_exception(error)
             await ctx.send(

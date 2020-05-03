@@ -29,10 +29,13 @@ from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
 # define database for one connection
-if os.getenv("LOCAL_REDIS") == "true":
-    database = redis.Redis(host='localhost', port=6379, db=0)
+if os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS") == "true":
+    host = os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS_HOST")
+    if host == None:
+        host = "localhost"
+    database = redis.Redis(host=host, port=6379, db=0)
 else:
-    database = redis.from_url(os.getenv("REDIS_URL"))
+    database = redis.from_url(os.environ["REDIS_URL"])
 
 def before_sentry_send(event, hint):
     """Fingerprint certain events before sending to Sentry."""
@@ -45,10 +48,10 @@ def before_sentry_send(event, hint):
     return event
 
 # add sentry logging
-if os.getenv("NO_SENTRY") != "true":
+if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
     sentry_sdk.init(
         release=f"Heroku Release {os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",
-        dsn=os.getenv("SENTRY_DISCORD_DSN"),
+        dsn=os.environ["SCIOLY_ID_BOT_SENTRY_DISCORD_DSN"],
         integrations=[RedisIntegration(), AioHttpIntegration()],
         before_send=before_sentry_send
     )
