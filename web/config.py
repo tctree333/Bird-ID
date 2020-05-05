@@ -10,7 +10,12 @@ from sentry_sdk.integrations.redis import RedisIntegration
 from bot.data import database, logger
 
 sentry_sdk.init(
-    release=f"Heroku Release {os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}",
+    release=f"{os.getenv('CURRENT_PLATFORM')} Release "
+    + (
+        f"{os.getenv('GIT_REV')[:8]}"
+        if os.getenv("CURRENT_PLATFORM") != "Heroku"
+        else f"{os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}"
+    ),
     dsn=os.getenv("SENTRY_API_DSN"),
     integrations=[FlaskIntegration(), RedisIntegration()]
 )
