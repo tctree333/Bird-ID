@@ -21,7 +21,6 @@ import os
 import sys
 from datetime import datetime, date, timezone, timedelta
 
-from dotenv import load_dotenv, find_dotenv
 import aiohttp
 import discord
 import holidays
@@ -29,8 +28,6 @@ import redis
 import wikipedia
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception, configure_scope
-
-load_dotenv(find_dotenv(), verbose=True)
 
 from bot.data import GenericError, database, logger
 from bot.functions import backup_all, channel_setup, precache, send_bird, drone_attack

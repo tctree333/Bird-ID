@@ -21,12 +21,15 @@ import os
 import string
 import sys
 
+from dotenv import load_dotenv, find_dotenv
 import redis
 import sentry_sdk
 import wikipedia
 from discord.ext import commands
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
+
+load_dotenv(find_dotenv(), verbose=True)
 
 # define database for one connection
 if os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS") == "true":
