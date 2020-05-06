@@ -2,6 +2,7 @@ import asyncio
 import random
 from functools import partial
 
+import eyed3
 from flask import abort
 from sentry_sdk import capture_exception
 
@@ -44,12 +45,17 @@ async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = Fals
         else:
             file_stream = f"../{filename}"
     elif media_type == "songs":
+        # remove spoilers in tag metadata
+        audioFile = eyed3.load(filename)
+        if audioFile is not None and audioFile.tag is not None:
+            audioFile.tag.remove(filename)
+
         file_stream = f"../{filename}"
 
     return file_stream, ext
 
 async def get_media(bird, media_type, addOn=""):  # images or songs
-    if bird not in birdList:
+    if bird not in birdList + screech_owls:
         raise GenericError("Invalid Bird", code=990)
 
     # fetch scientific names of birds

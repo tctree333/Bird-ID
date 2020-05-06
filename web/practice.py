@@ -4,7 +4,7 @@ import random
 import flask
 from flask import Blueprint, abort, request
 
-from bot.data import birdList, get_wiki_url
+from bot.data import birdList, songBirds, get_wiki_url
 from bot.functions import spellcheck
 from web.config import (FRONTEND_URL, bird_setup, database, get_session_id,
                         logger)
@@ -44,10 +44,11 @@ def get_bird():
     logger.info(f"answered: {answered}")
     # check to see if previous bird was answered
     if answered:  # if yes, give a new bird
-        currentBird = random.choice(birdList)
+        id_list = (songBirds if media_type == "songs" else birdList)
+        currentBird = random.choice(id_list)
         prevB = database.hget(f"web.session:{session_id}", "prevB").decode("utf-8")
-        while currentBird == prevB and len(birdList) > 1:
-            currentBird = random.choice(birdList)
+        while currentBird == prevB and len(id_list) > 1:
+            currentBird = random.choice(id_list)
         database.hset(f"web.session:{session_id}", "prevB", str(currentBird))
         database.hset(f"web.session:{session_id}", "bird", str(currentBird))
         database.hset(f"web.session:{session_id}", "media_type", str(media_type))
