@@ -232,8 +232,8 @@ if __name__ == '__main__':
                 capture_exception(error.original)
                 if database.exists(f"channel:{ctx.channel.id}"):
                     await ctx.send(
-                        "**An unexpected ResponseError has occurred.**\n"
-                        "*Please log this message in #support in the support server below, or try again.*\n"
+                        "**An unexpected ResponseError has occurred.**\n" +
+                        "*Please log this message in #support in the support server below, or try again.*\n" +
                         "**Error:** " + str(error)
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
@@ -263,6 +263,7 @@ if __name__ == '__main__':
                         "*Please log this message in #support in the support server below, or try again.*\n"
                         "**Error:** " + str(error)
                     )
+                    await ctx.send("https://discord.gg/fXxYyDJ")
 
             elif isinstance(error.original, discord.HTTPException):
                 if error.original.status == 502:
