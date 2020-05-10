@@ -211,95 +211,6 @@ class Other(commands.Cog):
         await user_setup(ctx)
         await ctx.send(random.choice(memeList))
 
-    # bot info command - gives info on bot
-    @commands.command(
-        help="- Gives info on bot, support server invite, stats", aliases=["bot_info", "support", "stats"]
-    )
-    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def botinfo(self, ctx):
-        logger.info("command: botinfo")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
-        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
-        embed.set_author(name="Bird ID - An Ornithology Bot")
-        embed.add_field(
-            name="Bot Info",
-            value="This bot was created by EraserBird and person_v1.32 " +
-            "for helping people practice bird identification for Science Olympiad.\n" +
-            "**By adding this bot to a server, you are agreeing to our " +
-            "[Privacy Policy](<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>) and " +
-            "[Terms of Service](<https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>)**.\n" +
-            "Bird-ID is licensed under the [GNU GPL v3.0](<https://github.com/tctree333/Bird-ID/blob/master/LICENSE>).",
-            inline=False
-        )
-        embed.add_field(
-            name="Support",
-            value="If you are experiencing any issues, have feature requests, " +
-            "or want to get updates on bot status, join our support server below.",
-            inline=False
-        )
-        embed.add_field(
-            name="Stats",
-            value=f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. " +
-            f"There are {int(database.zcard('users:global'))} active users in {int(database.zcard('score:global'))} channels. "
-            + f"The WebSocket latency is {round((self.bot.latency*1000))} ms.",
-            inline=False
-        )
-        await ctx.send(embed=embed)
-        await ctx.send("https://discord.gg/fXxYyDJ")
-
-    # invite command - sends invite link
-    @commands.command(help="- Get the invite link for this bot")
-    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def invite(self, ctx):
-        logger.info("command: invite")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
-        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
-        embed.set_author(name="Bird ID - An Ornithology Bot")
-        embed.add_field(
-            name="Invite",
-            value="""To invite this bot to your own server, use the following invite links.
-**Bird-ID:** https://discordapp.com/api/oauth2/authorize?client_id=601917808137338900&permissions=268486656&scope=bot
-**Orni-Bot:** https://discordapp.com/api/oauth2/authorize?client_id=601755752410906644&permissions=268486656&scope=bot\n
-**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.
-<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>, <https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>\n
-Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our support server below.""",
-            inline=False
-        )
-        await ctx.send(embed=embed)
-        await ctx.send("https://discord.gg/fXxYyDJ")
-
-    # ban command - prevents certain users from using the bot
-    @commands.command(help="- ban command", hidden=True)
-    @commands.is_owner()
-    async def ban(self, ctx, *, user: discord.Member = None):
-        logger.info("command: ban")
-        if user is None:
-            logger.info("no args")
-            await ctx.send("Invalid User!")
-            return
-        logger.info(f"user-id: {user.id}")
-        database.zadd("banned:global", {str(user.id): 0})
-        await ctx.send(f"Ok, {user.name} cannot use the bot anymore!")
-
-    # unban command - prevents certain users from using the bot
-    @commands.command(help="- unban command", hidden=True)
-    @commands.is_owner()
-    async def unban(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
-        logger.info("command: unban")
-        if user is None:
-            logger.info("no args")
-            await ctx.send("Invalid User!")
-            return
-        logger.info(f"user-id: {user.id}")
-        database.zrem("banned:global", str(user.id))
-        await ctx.send(f"Ok, {user.name} can use the bot!")
-
     # Send command - for testing purposes only
     @commands.command(help="- send command", hidden=True, aliases=["sendas"])
     @commands.is_owner()
@@ -311,7 +222,6 @@ Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our
         channel = self.bot.get_channel(channel_id)
         await channel.send(message)
         await ctx.send("Ok, sent!")
-
 
     # Role command - for testing purposes only
     @commands.command(help="- role command", hidden=True, aliases=["giverole"])

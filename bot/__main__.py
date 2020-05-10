@@ -21,7 +21,6 @@ import os
 import sys
 from datetime import datetime, date, timezone, timedelta
 
-from dotenv import load_dotenv, find_dotenv
 import aiohttp
 import discord
 import holidays
@@ -29,8 +28,6 @@ import redis
 import wikipedia
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception, configure_scope
-
-load_dotenv(find_dotenv(), verbose=True)
 
 from bot.data import GenericError, database, logger
 from bot.functions import backup_all, channel_setup, precache, send_bird, drone_attack
@@ -73,7 +70,7 @@ if __name__ == '__main__':
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
     core_extensions = [
         'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', 'bot.cogs.state',
-        'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.other'
+        'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.meta', 'bot.cogs.other'
     ]
     
     if "SCIOLY_ID_BOT_EXTRA_COGS" in os.environ and len(os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip()) > 0:
@@ -102,10 +99,26 @@ if __name__ == '__main__':
     @bot.check
     def set_sentry_tag(ctx):
         """Tags sentry errors with current command."""
-        logger.info("global check: checking sentry tag")
+        logger.info("global check: setting sentry tag")
         with configure_scope() as scope:
             scope.set_tag("command", ctx.command.name)
         return True
+
+    @bot.check
+    def moderation_check(ctx):
+        """Checks different moderation checks.
+
+        Disallows:
+        - Users that are banned from the bot,
+        - Channels that are ignored
+        """
+        logger.info("global check: checking banned")
+        if database.zscore("ignore:global", str(ctx.channel.id)) is not None:
+            raise GenericError(code=192)
+        elif database.zscore("banned:global", str(ctx.author.id)) is not None:
+            raise GenericError(code=842)
+        else:
+            return True
 
     @bot.check
     def bot_has_permissions(ctx):
@@ -126,15 +139,6 @@ if __name__ == '__main__':
             raise commands.BotMissingPermissions(missing)
         else:
             return True
-
-    @bot.check
-    def user_banned(ctx):
-        """Disallows users that are banned from the bot."""
-        logger.info("global check: checking banned")
-        if database.zscore("banned:global", str(ctx.author.id)) is None:
-            return True
-        else:
-            raise GenericError(code=842)
 
     @bot.check
     async def is_holiday(ctx):
@@ -190,12 +194,21 @@ if __name__ == '__main__':
                 "*Please try again once the correct permissions are set.*"
             )
 
+        elif isinstance(error, commands.MissingPermissions):
+            await ctx.send(
+                "You do not have the required permissions to use this command.\n" +
+                f"**Required Perms:** `{'`, `'.join(error.missing_perms)}`"
+            )
+
         elif isinstance(error, commands.NoPrivateMessage):
             capture_exception(error)
             await ctx.send("**This command is unavaliable in DMs!**")
 
         elif isinstance(error, GenericError):
-            if error.code == 842:
+            if error.code == 192:
+                #channel is ignored
+                return
+            elif error.code == 842:
                 await ctx.send("**Sorry, you cannot use this command.**")
             elif error.code == 666:
                 logger.info("GenericError 666")

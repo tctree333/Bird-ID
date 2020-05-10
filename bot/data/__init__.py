@@ -21,12 +21,15 @@ import os
 import string
 import sys
 
+from dotenv import load_dotenv, find_dotenv
 import redis
 import sentry_sdk
 import wikipedia
 from discord.ext import commands
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
+
+load_dotenv(find_dotenv(), verbose=True)
 
 # define database for one connection
 if os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS") == "true":
@@ -115,6 +118,12 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # ban format:
 #   banned:global : [user id, 0]
 
+# ignore format:
+#   ignore:global : [channel id, guild id]
+
+# leave confirm format:
+#   leave:guild_id : 0
+
 #  states = { state name:
 #               {
 #               aliases: [alias1, alias2...],
@@ -166,6 +175,7 @@ class GenericError(commands.CommandError):
         990 - Invalid Input
         100 - Blank
         842 - Banned User
+        192 - Ignored Channel
         666 - No output error
     """
     def __init__(self, message=None, code=0):
