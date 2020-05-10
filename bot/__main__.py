@@ -194,6 +194,12 @@ if __name__ == '__main__':
                 "*Please try again once the correct permissions are set.*"
             )
 
+        elif isinstance(error, commands.MissingPermissions):
+            await ctx.send(
+                "You do not have the required permissions to use this command.\n" +
+                f"**Required Perms:** `{'`, `'.join(error.missing_perms)}`"
+            )
+
         elif isinstance(error, commands.NoPrivateMessage):
             capture_exception(error)
             await ctx.send("**This command is unavaliable in DMs!**")
