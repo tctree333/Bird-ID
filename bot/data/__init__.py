@@ -118,6 +118,12 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # ban format:
 #   banned:global : [user id, 0]
 
+# ignore format:
+#   ignore:global : [channel id, 0]
+
+# leave confirm format:
+#   leave:guild_id : 0
+
 #  states = { state name:
 #               {
 #               aliases: [alias1, alias2...],
@@ -169,6 +175,7 @@ class GenericError(commands.CommandError):
         990 - Invalid Input
         100 - Blank
         842 - Banned User
+        192 - Ignored Channel
         666 - No output error
     """
     def __init__(self, message=None, code=0):
