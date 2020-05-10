@@ -122,6 +122,7 @@ class Race(commands.Cog):
         "to check your answer. Races are channel-specific, and anyone in that channel can play." +
         "Races end when a player is the first to correctly ID a set amount of birds. (default 10)"
     )
+    @commands.guild_only()
     async def race(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send('**Invalid subcommand passed.**\n*Valid Subcommands:* `start, view, stop`')
@@ -141,11 +142,6 @@ class Race(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
-
-        if ctx.guild is None:
-            logger.info("dm context")
-            await ctx.send("**Sorry, racing is not avaliable in DMs.**")
-            return
 
         if not str(ctx.channel.name).startswith("racing"):
             logger.info("not race channel")
