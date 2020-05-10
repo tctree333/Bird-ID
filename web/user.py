@@ -20,11 +20,11 @@ oauth.register(
     name='discord',
     client_id=601917808137338900,
     client_secret=DISCORD_CLIENT_SECRET,
-    access_token_url='https://discordapp.com/api/oauth2/token',
+    access_token_url='https://discord.com/api/oauth2/token',
     access_token_params=None,
-    authorize_url='https://discordapp.com/api/oauth2/authorize',
+    authorize_url='https://discord.com/api/oauth2/authorize',
     authorize_params=None,
-    api_base_url='https://discordapp.com/api/',
+    api_base_url='https://discord.com/api/',
     client_kwargs={
         'scope': 'identify',
         'prompt': 'consent'

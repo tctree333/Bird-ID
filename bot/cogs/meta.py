@@ -81,8 +81,8 @@ class Meta(commands.Cog):
         embed.add_field(
             name="Invite",
             value="To invite this bot to your own server, use the following invite links.\n"
-            + "**Bird-ID:** https://discordapp.com/api/oauth2/authorize?client_id=601917808137338900&permissions=268486656&scope=bot\n"
-            + "**Orni-Bot:** https://discordapp.com/api/oauth2/authorize?client_id=601755752410906644&permissions=268486656&scope=bot\n\n"
+            + "**Bird-ID:** https://discord.com/api/oauth2/authorize?client_id=601917808137338900&permissions=268486656&scope=bot\n"
+            + "**Orni-Bot:** https://discord.com/api/oauth2/authorize?client_id=601755752410906644&permissions=268486656&scope=bot\n\n"
             + "**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.\n"
             + "<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>, <https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>\n\n"
             + "Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our support server below.",
