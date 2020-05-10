@@ -123,7 +123,17 @@ class Meta(commands.Cog):
                 removed += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
                 database.zrem("ignore:global", str(channel.id))
 
-        ignored = ''.join([f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n" for channel in map(lambda c: ctx.guild.get_channel(int(c)), database.zrangebyscore("ignore:global", ctx.guild.id-0.1, ctx.guild.id+0.1))])
+        ignored = "".join(
+            [
+                f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
+                for channel in map(
+                    lambda c: ctx.guild.get_channel(int(c)),
+                    database.zrangebyscore(
+                        "ignore:global", ctx.guild.id - 0.1, ctx.guild.id + 0.1
+                    ),
+                )
+            ]
+        )
 
         await ctx.send(
             (f"**Ignoring:**\n{added}" if added else "")
