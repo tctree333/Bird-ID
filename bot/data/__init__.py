@@ -119,7 +119,7 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #   banned:global : [user id, 0]
 
 # ignore format:
-#   ignore:global : [channel id, 0]
+#   ignore:global : [channel id, guild id]
 
 # leave confirm format:
 #   leave:guild_id : 0

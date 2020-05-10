@@ -116,15 +116,19 @@ class Meta(commands.Cog):
         added = ""
         removed = ""
         for channel in channels:
-            if database.zscore("ignore:global", str(channel.id)) != 0:
+            if database.zscore("ignore:global", str(channel.id)) is None:
                 added += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
-                database.zadd("ignore:global", {str(channel.id): 0})
+                database.zadd("ignore:global", {str(channel.id): ctx.guild.id})
             else:
                 removed += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
                 database.zrem("ignore:global", str(channel.id))
+
+        ignored = ''.join([f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n" for channel in map(lambda c: ctx.guild.get_channel(int(c)), database.zrangebyscore("ignore:global", ctx.guild.id-0.1, ctx.guild.id+0.1))])
+
         await ctx.send(
             (f"**Ignoring:**\n{added}" if added else "")
             + (f"**Stopped ignoring:**\n{removed}" if removed else "")
+            + (f"**Ignored Channels:**\n{ignored}" if ignored else "")
         )
 
     # leave command - removes itself from guild
