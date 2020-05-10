@@ -298,7 +298,10 @@ class Score(commands.Cog):
 *Please try again once the correct permissions are set.*"""
             )
         elif isinstance(error, GenericError):
-            if error.code == 842:
+            if error.code == 192:
+                #channel is ignored
+                return
+            elif error.code == 842:
                 await ctx.send("**Sorry, you cannot use this command.**")
             elif error.code == 666:
                 logger.info("GenericError 666")
@@ -340,7 +343,10 @@ class Score(commands.Cog):
                 "*Please try again once the correct permissions are set.*"
             )
         elif isinstance(error, GenericError):
-            if error.code == 842:
+            if error.code == 192:
+                #channel is ignored
+                return
+            elif error.code == 842:
                 await ctx.send("**Sorry, you cannot use this command.**")
             elif error.code == 666:
                 logger.info("GenericError 666")
