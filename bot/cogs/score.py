@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import typing
+import textwrap
 
 import discord
 from discord.ext import commands
@@ -293,9 +294,13 @@ class Score(commands.Cog):
             await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
-                f"""**The bot does not have enough permissions to fully function.**
-**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
-*Please try again once the correct permissions are set.*"""
+                textwrap.dedent(
+                    f"""\
+                    **The bot does not have enough permissions to fully function.**
+                    **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
+                    *Please try again once the correct permissions are set.*
+                    """
+                )
             )
         elif isinstance(error, GenericError):
             if error.code == 192:
