@@ -70,7 +70,7 @@ class Check(commands.Cog):
                     "Correct! Good job!" if not database.exists(f"race.data:{ctx.channel.id}") else
                     f"**{ctx.author.mention}**, you are correct!"
                 )
-                url = get_wiki_url(currentBird)
+                url = get_wiki_url(ctx, currentBird)
                 await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")
                 score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
@@ -113,7 +113,7 @@ class Check(commands.Cog):
                     database.hset(f"channel:{ctx.channel.id}", "bird", "")
                     database.hset(f"channel:{ctx.channel.id}", "answered", "1")
                     await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
-                    url = get_wiki_url(currentBird)
+                    url = get_wiki_url(ctx, currentBird)
                     await ctx.send(url)
 
     # Check command - argument is the guess
@@ -150,7 +150,7 @@ class Check(commands.Cog):
                     )
 
                 await ctx.send("Correct! Good job!")
-                url = get_wiki_url(currentBird)
+                url = get_wiki_url(ctx, currentBird)
                 await ctx.send(url)
                 score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
@@ -171,7 +171,7 @@ class Check(commands.Cog):
 
                 incorrect_increment(ctx, str(currentBird), 1)
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
-                url = get_wiki_url(currentBird)
+                url = get_wiki_url(ctx, currentBird)
                 await ctx.send(url)
             logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
             logger.info("args: " + str(arg.lower().replace("-", " ")))
@@ -216,7 +216,7 @@ class Check(commands.Cog):
                     "Correct! Good job!" if not database.exists(f"race.data:{ctx.channel.id}") else
                     f"**{ctx.author.mention}**, you are correct!"
                 )
-                url = get_wiki_url(currentSongBird)
+                url = get_wiki_url(ctx, currentSongBird)
                 await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")
                 score_increment(ctx, 1)
                 if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
@@ -257,7 +257,7 @@ class Check(commands.Cog):
                     database.hset(f"channel:{ctx.channel.id}", "sBird", "")
                     database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
                     await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
-                    url = get_wiki_url(currentSongBird)
+                    url = get_wiki_url(ctx, currentSongBird)
                     await ctx.send(url)
 
 def setup(bot):

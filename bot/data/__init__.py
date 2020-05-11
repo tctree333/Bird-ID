@@ -209,14 +209,24 @@ def _wiki_urls():
     logger.info("Done with wiki urls")
     return urls
 
-def get_wiki_url(bird):
+def get_wiki_url(ctx, bird=None):
+    if bird is None:
+        bird = ctx
+        user_id = 0
+    else:
+        user_id = ctx.author.id
     try:
         bird = string.capwords(bird.replace("-", " "))
+        if database.hget(f"session.data:{user_id}", "wiki") == b"":
+            return f"<{wikipedia_urls[bird]}>"
         return wikipedia_urls[bird]
     except IndexError:
+        sentry_sdk.capture_message(f"{bird} not found in wikipedia urls file")
         logger.info(f"{bird} not found in wikipedia url cache, falling back")
         page = wikipedia.page(bird)
-    return page.url
+        if database.hget(f"session.data:{user_id}", "wiki") == b"":
+            return f"<{page.url}>"
+        return page.url
 
 def _nats_lists():
     """Converts txt files of national bird data into lists."""

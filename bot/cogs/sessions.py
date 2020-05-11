@@ -29,14 +29,15 @@ class Sessions(commands.Cog):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, taxon = database.hmget(f"session.data:{ctx.author.id}", ["bw", "addon", "state", "taxon"])
+        bw, addon, state, taxon, wiki = database.hmget(f"session.data:{ctx.author.id}", ["bw", "addon", "state", "taxon", "wiki"])
         options = textwrap.dedent(
-            f"""
-			**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}
-			**Black & White:** {bw==b'bw'}
+            f"""\
+            **Age/Sex:** {addon.decode('utf-8') if addon else 'default'}
+            **Black & White:** {bw==b'bw'}
             **State bird list:** {state.decode('utf-8') if state else 'None'}
             **Bird taxon:** {taxon.decode('utf-8') if taxon else 'None'}
-			"""
+            **Wiki Embeds**: {wiki==b'wiki'}
+            """
         )
         return options
 
@@ -51,12 +52,13 @@ class Sessions(commands.Cog):
             accuracy = 0
 
         stats = textwrap.dedent(
-            f"""**Duration:** `{elapsed}`
-			**# Correct:** {correct}
-			**# Incorrect:** {incorrect}
+            f"""\
+            **Duration:** `{elapsed}`
+            **# Correct:** {correct}
+            **# Incorrect:** {incorrect}
             **Total Birds:** {total}
-			**Accuracy:** {accuracy}%
-			"""
+            **Accuracy:** {accuracy}%
+            """
         )
         return stats
 
@@ -115,22 +117,31 @@ class Sessions(commands.Cog):
             await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session edit`*")
             return
         else:
-            args = args_str.split(" ")
+            args = args_str.lower().split(" ")
             logger.info(f"args: {args}")
+
             if "bw" in args:
                 bw = "bw"
             else:
                 bw = ""
+
+            if "wiki" in args:
+                wiki = ""
+            else:
+                wiki = "wiki"
+
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
                 state = " ".join(states_args).strip()
             else:
                 state = " ".join(check_state_role(ctx))
+
             taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
             if taxon_args:
                 taxon = " ".join(taxon_args).strip()
             else:
                 taxon = ""
+
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
             if female and juvenile:
@@ -142,6 +153,7 @@ class Sessions(commands.Cog):
                 addon = "juvenile"
             else:
                 addon = ""
+
             logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}")
 
             database.hset(
@@ -155,7 +167,8 @@ class Sessions(commands.Cog):
                     "bw": bw,
                     "state": state,
                     "addon": addon,
-                    "taxon": taxon
+                    "taxon": taxon,
+                    "wiki": wiki,
                 }
             )
             await ctx.send(f"**Session started with options:**\n{await self._get_options(ctx)}")
@@ -177,8 +190,9 @@ class Sessions(commands.Cog):
         await user_setup(ctx)
 
         if database.exists(f"session.data:{ctx.author.id}"):
-            args = args_str.split(" ")
+            args = args_str.lower().split(" ")
             logger.info(f"args: {args}")
+
             if "bw" in args:
                 if not database.hget(f"session.data:{ctx.author.id}", "bw"):
                     logger.info("adding bw")
@@ -186,6 +200,15 @@ class Sessions(commands.Cog):
                 else:
                     logger.info("removing bw")
                     database.hset(f"session.data:{ctx.author.id}", "bw", "")
+
+            if "wiki" in args:
+                if database.hget(f"session.data:{ctx.author.id}", "wiki"):
+                    logger.info("enabling wiki embeds")
+                    database.hset(f"session.data:{ctx.author.id}", "wiki", "")
+                else:
+                    logger.info("disabling wiki embeds")
+                    database.hset(f"session.data:{ctx.author.id}", "wiki", "wiki")
+
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
                 toggle_states = list(states_args)
@@ -197,6 +220,7 @@ class Sessions(commands.Cog):
                     add_states.append(state)
                 logger.info(f"adding states: {add_states}")
                 database.hset(f"session.data:{ctx.author.id}", "state", " ".join(add_states).strip())
+
             taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
             if taxon_args:
                 toggle_taxon = list(taxon_args)
@@ -208,6 +232,7 @@ class Sessions(commands.Cog):
                     add_taxons.append(o)
                 logger.info(f"adding taxons: {add_taxons}")
                 database.hset(f"session.data:{ctx.author.id}", "taxon", " ".join(add_taxons).strip())
+
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
             if female and juvenile:
@@ -229,6 +254,7 @@ class Sessions(commands.Cog):
                 else:
                     logger.info("removing juvenile")
                     database.hset(f"session.data:{ctx.author.id}", "addon", "")
+
             await self._send_stats(ctx, f"**Session started previously.**\n")
         else:
             await ctx.send("**There is no session running.** *You can start one with `b!session start`*")

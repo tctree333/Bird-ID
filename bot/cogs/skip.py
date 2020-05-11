@@ -36,7 +36,7 @@ class Skip(commands.Cog):
         database.hset(f"channel:{ctx.channel.id}", "bird", "")
         database.hset(f"channel:{ctx.channel.id}", "answered", "1")
         if currentBird != "":  # check if there is bird
-            url = get_wiki_url(currentBird)
+            url = get_wiki_url(ctx, currentBird)
             await ctx.send(f"Ok, skipping {currentBird.lower()}")
             await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")  # sends wiki page
             database.zadd("streak:global", {str(ctx.author.id): 0})  # end streak
@@ -70,7 +70,7 @@ class Skip(commands.Cog):
         database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
         database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
         if currentBird != "":  # check if there is bird
-            url = get_wiki_url(currentBird)
+            url = get_wiki_url(ctx, currentBird)
             await ctx.send(f"Ok, skipping {currentBird.lower()}")  
             await ctx.send(url) # sends wiki page
             database.zadd("streak:global", {str(ctx.author.id): 0})
@@ -90,7 +90,7 @@ class Skip(commands.Cog):
         database.hset(f"channel:{ctx.channel.id}", "sBird", "")
         database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
         if currentSongBird != "":  # check if there is bird
-            url = get_wiki_url(currentSongBird)
+            url = get_wiki_url(ctx, currentSongBird)
             await ctx.send(f"Ok, skipping {currentSongBird.lower()}")
             await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")  # sends wiki page
             database.zadd("streak:global", {str(ctx.author.id): 0})
