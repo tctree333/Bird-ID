@@ -1,0 +1,2180 @@
+2020-05-06 07:33:10,367 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:33:10,368 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:33:10,368 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:33:10,368 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:33:10,368 - __init__.py -  INFO     - Working on memeList
+2020-05-06 07:33:10,368 - __init__.py -  INFO     - Done with memeList
+2020-05-06 07:33:10,368 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:33:10,369 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:33:10,369 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:33:10,369 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:33:10,369 - __init__.py -  INFO     - Done with nats list!
+2020-05-06 07:33:10,369 - __init__.py -  INFO     - Working on NY
+2020-05-06 07:33:10,369 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:33:10,369 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Done with NY
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Working on OLD
+2020-05-06 07:33:10,370 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:33:10,371 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:33:10,371 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:33:10,371 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:33:10,371 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:33:10,371 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:33:10,371 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:33:10,371 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:33:10,371 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:33:10,372 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:33:10,372 - __init__.py -  INFO     - Done with OLD
+2020-05-06 07:33:10,372 - __init__.py -  INFO     - Working on NC-S
+2020-05-06 07:33:10,372 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:33:10,372 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:33:10,372 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:33:10,372 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:33:10,372 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:33:10,372 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:33:10,372 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Done with NC-S
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Working on NC-R
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:33:10,373 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:33:10,374 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:33:10,374 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:33:10,374 - __init__.py -  INFO     - Done with NC-R
+2020-05-06 07:33:10,374 - __init__.py -  INFO     - Working on SCA
+2020-05-06 07:33:10,374 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:33:10,374 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:33:10,374 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:33:10,374 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:33:10,374 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:33:10,375 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:33:10,375 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:33:10,375 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:33:10,375 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:33:10,375 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:33:10,375 - __init__.py -  INFO     - Done with SCA
+2020-05-06 07:33:10,375 - __init__.py -  INFO     - Working on MN
+2020-05-06 07:33:10,375 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Done with MN
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Working on NATS
+2020-05-06 07:33:10,376 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:33:10,377 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:33:10,377 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:33:10,377 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:33:10,377 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:33:10,377 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:33:10,377 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:33:10,378 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:33:10,378 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:33:10,378 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:33:10,378 - __init__.py -  INFO     - Done with NATS
+2020-05-06 07:33:10,378 - __init__.py -  INFO     - Working on IN
+2020-05-06 07:33:10,378 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:33:10,378 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:33:10,378 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:33:10,378 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:33:10,378 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Done with IN
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Done with states list!
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:33:10,379 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Done with master lists!
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Working on taxon lists
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Working on taxon master list
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Done with taxon master list
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Working on strigiformes.txt
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Done with strigiformes.txt
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Working on anseriformes.txt
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Done with anseriformes.txt
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Working on charadriiformes.txt
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Done with charadriiformes.txt
+2020-05-06 07:33:10,380 - __init__.py -  INFO     - Working on pelecaniformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Done with pelecaniformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Working on piciformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Done with piciformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Working on cathartiformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Done with cathartiformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Working on passeriformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Done with passeriformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Working on coraciiformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Done with coraciiformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Working on caprimulgiformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Done with caprimulgiformes.txt
+2020-05-06 07:33:10,381 - __init__.py -  INFO     - Working on columbiformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Done with columbiformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Working on gruiformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Done with gruiformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Working on trogoniformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Done with trogoniformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Working on accipitriformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Done with accipitriformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Working on ciconiiformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Done with ciconiiformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Working on cuculiformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Done with cuculiformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Working on galliformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Done with galliformes.txt
+2020-05-06 07:33:10,382 - __init__.py -  INFO     - Working on suliformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Done with suliformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Working on podicipediformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Done with podicipediformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Working on apodiformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Done with apodiformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Working on procellariiformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Done with procellariiformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Working on gaviiformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Done with gaviiformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Working on falconiformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Done with falconiformes.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Working on passerellidae.txt
+2020-05-06 07:33:10,383 - __init__.py -  INFO     - Done with passerellidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Working on calcariidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Done with calcariidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Working on polioptilidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Done with polioptilidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Working on sturnidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Done with sturnidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Working on laniidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Done with laniidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Working on troglodytidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Done with troglodytidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Working on passeridae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Done with passeridae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Working on fringillidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Done with fringillidae.txt
+2020-05-06 07:33:10,384 - __init__.py -  INFO     - Working on paridae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Done with paridae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Working on regulidae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Done with regulidae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Working on cinclidae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Done with cinclidae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Working on turdidae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Done with turdidae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Working on cardinalidae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Done with cardinalidae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Working on icteridae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Done with icteridae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Working on parulidae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Done with parulidae.txt
+2020-05-06 07:33:10,385 - __init__.py -  INFO     - Working on hirundinidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Done with hirundinidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Working on certhiidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Done with certhiidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Working on vireonidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Done with vireonidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Working on sittidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Done with sittidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Working on tyrannidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Done with tyrannidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Working on alaudidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Done with alaudidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Working on mimidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Done with mimidae.txt
+2020-05-06 07:33:10,386 - __init__.py -  INFO     - Working on corvidae.txt
+2020-05-06 07:33:10,387 - __init__.py -  INFO     - Done with corvidae.txt
+2020-05-06 07:33:10,387 - __init__.py -  INFO     - Working on bombycillidae.txt
+2020-05-06 07:33:10,387 - __init__.py -  INFO     - Done with bombycillidae.txt
+2020-05-06 07:33:10,387 - __init__.py -  INFO     - Done with taxon lists!
+2020-05-06 07:33:10,387 - __init__.py -  INFO     - Working on wiki urls
+2020-05-06 07:33:10,388 - __init__.py -  INFO     - Done with wiki urls
+2020-05-06 07:33:10,388 - __init__.py -  INFO     - National Lengths: 159, 159, 36, 36
+2020-05-06 07:33:10,388 - __init__.py -  INFO     - Master Lengths: 224, 221, 63, 61
+2020-05-06 07:33:10,388 - __init__.py -  INFO     - Done importing data!
+2020-05-06 07:33:10,476 - check.py   -  INFO     - command: check
+2020-05-06 07:33:10,476 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:10,476 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:10,476 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:10,477 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:10,477 - functions.py -  INFO     - user global added
+2020-05-06 07:33:10,477 - functions.py -  INFO     - added streak
+2020-05-06 07:33:10,477 - functions.py -  INFO     - no dm
+2020-05-06 07:33:10,478 - functions.py -  INFO     - user server added
+2020-05-06 07:33:10,482 - check.py   -  INFO     - command: check
+2020-05-06 07:33:10,482 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:10,482 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:10,482 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:10,482 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:10,483 - functions.py -  INFO     - user global added
+2020-05-06 07:33:10,483 - functions.py -  INFO     - added streak
+2020-05-06 07:33:10,483 - functions.py -  INFO     - no dm
+2020-05-06 07:33:10,483 - functions.py -  INFO     - user server added
+2020-05-06 07:33:10,484 - check.py   -  INFO     - currentBird: canada goose
+2020-05-06 07:33:10,484 - check.py   -  INFO     - args: canada goose
+2020-05-06 07:33:10,484 - functions.py -  INFO     - checking bird data
+2020-05-06 07:33:10,484 - functions.py -  INFO     - bird global added
+2020-05-06 07:33:10,484 - functions.py -  INFO     - bird user added
+2020-05-06 07:33:10,484 - functions.py -  INFO     - no dm
+2020-05-06 07:33:10,485 - functions.py -  INFO     - bird server added
+2020-05-06 07:33:10,485 - functions.py -  INFO     - no session
+2020-05-06 07:33:10,485 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:10,485 - functions.py -  INFO     - did not find Canada Goose in cache
+2020-05-06 07:33:10,485 - functions.py -  INFO     - getting sciname for Canada Goose
+2020-05-06 07:33:10,485 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:10,485 - functions.py -  INFO     - did not find Canada Goose in cache
+2020-05-06 07:33:10,485 - functions.py -  INFO     - getting taxon code for Canada Goose
+2020-05-06 07:33:10,732 - functions.py -  INFO     - raw data: [{'name': 'Canada Goose - Branta canadensis', 'code': 'cangoo'}, {'name': 'Canada Goose (moffitti/maxima) - Branta canadensis moffitti/maxima', 'code': 'cangoo4'}, {'name': 'Canada Goose (occidentalis/fulva) - Branta canadensis occidentalis/fulva', 'code': 'cangoo3'}, {'name': 'Canada Goose (canadensis Group) - Branta canadensis [canadensis Group]', 'code': 'cangoo1'}, {'name': 'Bar-headed x Canada Goose (hybrid) - Anser indicus x Branta canadensis', 'code': 'x00908'}, {'name': 'Swan Goose (Domestic type) x Canada Goose (hybrid) - Anser cygnoides (Domestic type) x Branta canadensis', 'code': 'swagoo3'}, {'name': 'Pink-footed x Canada Goose (hybrid) - Anser brachyrhynchus x Branta canadensis', 'code': 'x00650'}, {'name': 'Greater White-fronted x Canada Goose (hybrid) - Anser albifrons x Branta canadensis', 'code': 'x00415'}, {'name': 'Graylag x Canada Goose (hybrid) - Anser anser x Branta canadensis', 'code': 'x00758'}, {'name': 'Graylag Goose (Domestic type) x Canada Goose (hybrid) - Anser anser (Domestic type) x Branta canadensis', 'code': 'gragoo4'}, {'name': 'Domestic goose sp. (Domestic type) x Canada Goose (hybrid) - Anser sp. (Domestic type) x Branta canadensis', 'code': 'x00759'}, {'name': 'Snow x Canada Goose (hybrid) - Anser caerulescens x Branta canadensis', 'code': 'x00197'}, {'name': "Ross's x Canada Goose (hybrid) - Anser rossii x Branta canadensis", 'code': 'x00693'}, {'name': 'Barnacle x Canada Goose (hybrid) - Branta leucopsis x canadensis', 'code': 'x00417'}, {'name': 'Cackling/Canada Goose - Branta hutchinsii/canadensis', 'code': 'y00470'}, {'name': "Snow/Ross's x Cackling/Canada Goose (hybrid) - Anser caerulescens/rossii x Branta hutchinsii/canadensis", 'code': 'y00765'}]
+2020-05-06 07:33:10,732 - functions.py -  INFO     - first item: {'name': 'Canada Goose - Branta canadensis', 'code': 'cangoo'}
+2020-05-06 07:33:10,732 - functions.py -  INFO     - entering check
+2020-05-06 07:33:10,732 - functions.py -  INFO     - checking: {'name': 'Canada Goose - Branta canadensis', 'code': 'cangoo'}
+2020-05-06 07:33:10,732 - functions.py -  INFO     - ok
+2020-05-06 07:33:10,732 - functions.py -  INFO     - taxon code: cangoo
+2020-05-06 07:33:10,962 - functions.py -  INFO     - sciname: Branta canadensis
+2020-05-06 07:33:10,962 - check.py   -  INFO     - correct
+2020-05-06 07:33:10,963 - functions.py -  INFO     - incrementing score by 1
+2020-05-06 07:33:10,963 - functions.py -  INFO     - no dm
+2020-05-06 07:33:10,969 - check.py   -  INFO     - command: check
+2020-05-06 07:33:10,969 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:10,969 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:10,969 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:10,969 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:10,970 - functions.py -  INFO     - user global added
+2020-05-06 07:33:10,970 - functions.py -  INFO     - added streak
+2020-05-06 07:33:10,970 - functions.py -  INFO     - no dm
+2020-05-06 07:33:10,970 - functions.py -  INFO     - user server added
+2020-05-06 07:33:10,971 - check.py   -  INFO     - currentBird: canada goose
+2020-05-06 07:33:10,971 - check.py   -  INFO     - args: canada goosecanada goose
+2020-05-06 07:33:10,971 - functions.py -  INFO     - checking bird data
+2020-05-06 07:33:10,971 - functions.py -  INFO     - bird global ok
+2020-05-06 07:33:10,971 - functions.py -  INFO     - bird user added
+2020-05-06 07:33:10,971 - functions.py -  INFO     - no dm
+2020-05-06 07:33:10,972 - functions.py -  INFO     - bird server added
+2020-05-06 07:33:10,972 - functions.py -  INFO     - no session
+2020-05-06 07:33:10,972 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:10,972 - functions.py -  INFO     - Canada Goose found in cache!
+2020-05-06 07:33:10,972 - check.py   -  INFO     - incorrect
+2020-05-06 07:33:10,973 - functions.py -  INFO     - incrementing incorrect Canada Goose by 1
+2020-05-06 07:33:10,973 - functions.py -  INFO     - no dm
+2020-05-06 07:33:10,973 - functions.py -  INFO     - no session
+2020-05-06 07:33:11,049 - check.py   -  INFO     - command: checksong
+2020-05-06 07:33:11,049 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:11,050 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:11,050 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:11,050 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:11,050 - functions.py -  INFO     - user global added
+2020-05-06 07:33:11,051 - functions.py -  INFO     - added streak
+2020-05-06 07:33:11,051 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,051 - functions.py -  INFO     - user server added
+2020-05-06 07:33:11,055 - check.py   -  INFO     - command: checksong
+2020-05-06 07:33:11,055 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:11,055 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:11,056 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:11,056 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:11,056 - functions.py -  INFO     - user global added
+2020-05-06 07:33:11,056 - functions.py -  INFO     - added streak
+2020-05-06 07:33:11,056 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,057 - functions.py -  INFO     - user server added
+2020-05-06 07:33:11,057 - check.py   -  INFO     - currentBird: northern cardinal
+2020-05-06 07:33:11,057 - check.py   -  INFO     - args: northern cardinal
+2020-05-06 07:33:11,057 - functions.py -  INFO     - checking bird data
+2020-05-06 07:33:11,057 - functions.py -  INFO     - bird global added
+2020-05-06 07:33:11,058 - functions.py -  INFO     - bird user added
+2020-05-06 07:33:11,058 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,058 - functions.py -  INFO     - bird server added
+2020-05-06 07:33:11,058 - functions.py -  INFO     - no session
+2020-05-06 07:33:11,058 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:11,058 - functions.py -  INFO     - did not find Northern Cardinal in cache
+2020-05-06 07:33:11,058 - functions.py -  INFO     - getting sciname for Northern Cardinal
+2020-05-06 07:33:11,058 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:11,058 - functions.py -  INFO     - did not find Northern Cardinal in cache
+2020-05-06 07:33:11,059 - functions.py -  INFO     - getting taxon code for Northern Cardinal
+2020-05-06 07:33:11,219 - functions.py -  INFO     - raw data: [{'name': 'Northern Cardinal - Cardinalis cardinalis', 'code': 'norcar'}, {'name': 'Northern Cardinal (Common) - Cardinalis cardinalis [cardinalis Group]', 'code': 'norcar1'}, {'name': 'Northern Cardinal (Long-crested) - Cardinalis cardinalis carneus', 'code': 'norcar2'}, {'name': 'Northern Cardinal x Pyrrhuloxia (hybrid) - Cardinalis cardinalis x sinuatus', 'code': 'x00774'}, {'name': 'Northern Cardinal/Pyrrhuloxia - Cardinalis cardinalis/sinuatus', 'code': 'y00647'}]
+2020-05-06 07:33:11,219 - functions.py -  INFO     - first item: {'name': 'Northern Cardinal - Cardinalis cardinalis', 'code': 'norcar'}
+2020-05-06 07:33:11,219 - functions.py -  INFO     - entering check
+2020-05-06 07:33:11,219 - functions.py -  INFO     - checking: {'name': 'Northern Cardinal - Cardinalis cardinalis', 'code': 'norcar'}
+2020-05-06 07:33:11,219 - functions.py -  INFO     - ok
+2020-05-06 07:33:11,219 - functions.py -  INFO     - taxon code: norcar
+2020-05-06 07:33:11,386 - functions.py -  INFO     - sciname: Cardinalis cardinalis
+2020-05-06 07:33:11,386 - check.py   -  INFO     - correct
+2020-05-06 07:33:11,387 - functions.py -  INFO     - incrementing score by 1
+2020-05-06 07:33:11,387 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,393 - check.py   -  INFO     - command: checksong
+2020-05-06 07:33:11,393 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:11,393 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:11,393 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:11,393 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:11,393 - functions.py -  INFO     - user global added
+2020-05-06 07:33:11,394 - functions.py -  INFO     - added streak
+2020-05-06 07:33:11,394 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,394 - functions.py -  INFO     - user server added
+2020-05-06 07:33:11,394 - check.py   -  INFO     - currentBird: northern cardinal
+2020-05-06 07:33:11,394 - check.py   -  INFO     - args: northern cardinalnorthern cardinal
+2020-05-06 07:33:11,395 - functions.py -  INFO     - checking bird data
+2020-05-06 07:33:11,395 - functions.py -  INFO     - bird global ok
+2020-05-06 07:33:11,395 - functions.py -  INFO     - bird user added
+2020-05-06 07:33:11,395 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,395 - functions.py -  INFO     - bird server added
+2020-05-06 07:33:11,395 - functions.py -  INFO     - no session
+2020-05-06 07:33:11,396 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:11,396 - functions.py -  INFO     - Northern Cardinal found in cache!
+2020-05-06 07:33:11,396 - check.py   -  INFO     - incorrect
+2020-05-06 07:33:11,396 - functions.py -  INFO     - incrementing incorrect Northern Cardinal by 1
+2020-05-06 07:33:11,397 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,397 - functions.py -  INFO     - no session
+2020-05-06 07:33:11,401 - check.py   -  INFO     - command: checkgoat
+2020-05-06 07:33:11,401 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:11,402 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:11,402 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:11,402 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:11,402 - functions.py -  INFO     - user global added
+2020-05-06 07:33:11,403 - functions.py -  INFO     - added streak
+2020-05-06 07:33:11,403 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,403 - functions.py -  INFO     - user server added
+2020-05-06 07:33:11,407 - check.py   -  INFO     - command: checkgoat
+2020-05-06 07:33:11,407 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:11,407 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:11,408 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:11,408 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:11,408 - functions.py -  INFO     - user global added
+2020-05-06 07:33:11,408 - functions.py -  INFO     - added streak
+2020-05-06 07:33:11,408 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,409 - functions.py -  INFO     - user server added
+2020-05-06 07:33:11,409 - functions.py -  INFO     - checking bird data
+2020-05-06 07:33:11,409 - functions.py -  INFO     - bird global added
+2020-05-06 07:33:11,409 - functions.py -  INFO     - bird user added
+2020-05-06 07:33:11,409 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,410 - functions.py -  INFO     - bird server added
+2020-05-06 07:33:11,410 - functions.py -  INFO     - no session
+2020-05-06 07:33:11,410 - check.py   -  INFO     - correct
+2020-05-06 07:33:11,411 - functions.py -  INFO     - incrementing score by 1
+2020-05-06 07:33:11,411 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,411 - check.py   -  INFO     - currentBird: common pauraque
+2020-05-06 07:33:11,411 - check.py   -  INFO     - args: common pauraque
+2020-05-06 07:33:11,416 - check.py   -  INFO     - command: checkgoat
+2020-05-06 07:33:11,416 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:11,416 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:11,416 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:11,416 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:11,416 - functions.py -  INFO     - user global added
+2020-05-06 07:33:11,417 - functions.py -  INFO     - added streak
+2020-05-06 07:33:11,417 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,417 - functions.py -  INFO     - user server added
+2020-05-06 07:33:11,417 - functions.py -  INFO     - checking bird data
+2020-05-06 07:33:11,417 - functions.py -  INFO     - bird global ok
+2020-05-06 07:33:11,418 - functions.py -  INFO     - bird user added
+2020-05-06 07:33:11,418 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,418 - functions.py -  INFO     - bird server added
+2020-05-06 07:33:11,418 - functions.py -  INFO     - no session
+2020-05-06 07:33:11,419 - check.py   -  INFO     - incorrect
+2020-05-06 07:33:11,419 - functions.py -  INFO     - incrementing incorrect Common Pauraque by 1
+2020-05-06 07:33:11,420 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,420 - functions.py -  INFO     - no session
+2020-05-06 07:33:11,420 - check.py   -  INFO     - currentBird: common pauraque
+2020-05-06 07:33:11,420 - check.py   -  INFO     - args: common pauraquecommon pauraque
+2020-05-06 07:33:11,425 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:33:11,425 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:11,425 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:11,426 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:11,426 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:11,426 - functions.py -  INFO     - user global added
+2020-05-06 07:33:11,426 - functions.py -  INFO     - added streak
+2020-05-06 07:33:11,426 - functions.py -  INFO     - no dm
+2020-05-06 07:33:11,427 - functions.py -  INFO     - user server added
+2020-05-06 07:33:11,427 - get_birds.py -  INFO     - args: ['']
+2020-05-06 07:33:11,427 - get_birds.py -  INFO     - args: bw: False; addon: ; taxon: 
+2020-05-06 07:33:11,427 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:33:11,427 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:33:11,427 - functions.py -  INFO     - checking roles
+2020-05-06 07:33:11,427 - functions.py -  INFO     - server context
+2020-05-06 07:33:11,427 - functions.py -  INFO     - user roles: []
+2020-05-06 07:33:11,428 - get_birds.py -  INFO     - addon: ; bw: False; taxon: []; roles: []
+2020-05-06 07:33:11,428 - get_birds.py -  INFO     - number of birds: 159
+2020-05-06 07:33:11,428 - get_birds.py -  INFO     - currentBird: Brown Headed Cowbird
+2020-05-06 07:33:11,428 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:11,428 - functions.py -  INFO     - did not find Brown Headed Cowbird in cache
+2020-05-06 07:33:11,428 - functions.py -  INFO     - getting sciname for Brown Headed Cowbird
+2020-05-06 07:33:11,429 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:11,429 - functions.py -  INFO     - did not find Brown Headed Cowbird in cache
+2020-05-06 07:33:11,429 - functions.py -  INFO     - getting taxon code for Brown Headed Cowbird
+2020-05-06 07:33:11,585 - functions.py -  INFO     - raw data: [{'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}, {'name': 'Shiny/Brown-headed Cowbird - Molothrus bonariensis/ater', 'code': 'y00336'}, {'name': 'Bronzed/Brown-headed Cowbird - Molothrus aeneus/ater', 'code': 'y00337'}]
+2020-05-06 07:33:11,585 - functions.py -  INFO     - first item: {'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}
+2020-05-06 07:33:11,585 - functions.py -  INFO     - entering check
+2020-05-06 07:33:11,585 - functions.py -  INFO     - checking: {'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}
+2020-05-06 07:33:11,585 - functions.py -  INFO     - ok
+2020-05-06 07:33:11,585 - functions.py -  INFO     - taxon code: bnhcow
+2020-05-06 07:33:11,785 - functions.py -  INFO     - sciname: Molothrus ater
+2020-05-06 07:33:11,785 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:33:11,785 - functions.py -  INFO     - trying
+2020-05-06 07:33:11,785 - functions.py -  INFO     - fetching files
+2020-05-06 07:33:11,785 - functions.py -  INFO     - scibird: Molothrus ater
+2020-05-06 07:33:11,786 - functions.py -  INFO     - getting file urls for Molothrus ater
+2020-05-06 07:33:11,786 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:11,786 - functions.py -  INFO     - did not find Molothrus ater in cache
+2020-05-06 07:33:11,786 - functions.py -  INFO     - getting taxon code for Molothrus ater
+2020-05-06 07:33:11,939 - functions.py -  INFO     - raw data: [{'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}, {'name': 'Shiny/Brown-headed Cowbird - Molothrus bonariensis/ater', 'code': 'y00336'}, {'name': 'Bronzed/Brown-headed Cowbird - Molothrus aeneus/ater', 'code': 'y00337'}]
+2020-05-06 07:33:11,939 - functions.py -  INFO     - first item: {'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}
+2020-05-06 07:33:11,939 - functions.py -  INFO     - entering check
+2020-05-06 07:33:11,939 - functions.py -  INFO     - checking: {'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}
+2020-05-06 07:33:11,940 - functions.py -  INFO     - ok
+2020-05-06 07:33:11,940 - functions.py -  INFO     - taxon code: bnhcow
+2020-05-06 07:33:12,695 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:33:13,133 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:33:13,512 - functions.py -  INFO     - downloaded images for Molothrus ater
+2020-05-06 07:33:13,512 - functions.py -  INFO     - returned filename count: 20
+2020-05-06 07:33:13,513 - functions.py -  INFO     - actual filenames count: 20
+2020-05-06 07:33:13,513 - functions.py -  INFO     - images: ['cache/images/Molothrus ater/0.jpeg', 'cache/images/Molothrus ater/1.jpeg', 'cache/images/Molothrus ater/2.jpeg', 'cache/images/Molothrus ater/3.jpeg', 'cache/images/Molothrus ater/4.jpeg', 'cache/images/Molothrus ater/5.jpeg', 'cache/images/Molothrus ater/6.jpeg', 'cache/images/Molothrus ater/7.jpeg', 'cache/images/Molothrus ater/8.jpeg', 'cache/images/Molothrus ater/9.jpeg', 'cache/images/Molothrus ater/10.jpeg', 'cache/images/Molothrus ater/11.jpeg', 'cache/images/Molothrus ater/12.jpeg', 'cache/images/Molothrus ater/13.jpeg', 'cache/images/Molothrus ater/14.jpeg', 'cache/images/Molothrus ater/15.jpeg', 'cache/images/Molothrus ater/16.jpeg', 'cache/images/Molothrus ater/17.jpeg', 'cache/images/Molothrus ater/18.jpeg', 'cache/images/Molothrus ater/19.jpeg']
+2020-05-06 07:33:13,514 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:33:13,514 - functions.py -  INFO     - j: 1
+2020-05-06 07:33:13,514 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:33:13,514 - functions.py -  INFO     - size: 129127
+2020-05-06 07:33:13,514 - functions.py -  INFO     - found one!
+2020-05-06 07:33:13,519 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:33:13,519 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:13,520 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:13,520 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:13,520 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:13,520 - functions.py -  INFO     - user global added
+2020-05-06 07:33:13,521 - functions.py -  INFO     - added streak
+2020-05-06 07:33:13,521 - functions.py -  INFO     - no dm
+2020-05-06 07:33:13,521 - functions.py -  INFO     - user server added
+2020-05-06 07:33:13,521 - get_birds.py -  INFO     - args: ['bw', 'female']
+2020-05-06 07:33:13,548 - get_birds.py -  INFO     - args: bw: True; addon: female; taxon: 
+2020-05-06 07:33:13,548 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:33:13,548 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:33:13,548 - functions.py -  INFO     - checking roles
+2020-05-06 07:33:13,548 - functions.py -  INFO     - server context
+2020-05-06 07:33:13,548 - functions.py -  INFO     - user roles: []
+2020-05-06 07:33:13,548 - get_birds.py -  INFO     - addon: female; bw: True; taxon: []; roles: []
+2020-05-06 07:33:13,548 - get_birds.py -  INFO     - number of birds: 159
+2020-05-06 07:33:13,549 - get_birds.py -  INFO     - currentBird: Scissor Tailed Flycatcher
+2020-05-06 07:33:13,549 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:13,549 - functions.py -  INFO     - did not find Scissor Tailed Flycatcher in cache
+2020-05-06 07:33:13,549 - functions.py -  INFO     - getting sciname for Scissor Tailed Flycatcher
+2020-05-06 07:33:13,549 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:13,549 - functions.py -  INFO     - did not find Scissor Tailed Flycatcher in cache
+2020-05-06 07:33:13,549 - functions.py -  INFO     - getting taxon code for Scissor Tailed Flycatcher
+2020-05-06 07:33:13,706 - functions.py -  INFO     - raw data: [{'name': 'Scissor-tailed Flycatcher - Tyrannus forficatus', 'code': 'sctfly'}, {'name': "Couch's Kingbird x Scissor-tailed Flycatcher (hybrid) - Tyrannus couchii x forficatus", 'code': 'x00441'}, {'name': 'Western Kingbird x Scissor-tailed Flycatcher (hybrid) - Tyrannus verticalis x forficatus', 'code': 'x00442'}]
+2020-05-06 07:33:13,707 - functions.py -  INFO     - first item: {'name': 'Scissor-tailed Flycatcher - Tyrannus forficatus', 'code': 'sctfly'}
+2020-05-06 07:33:13,707 - functions.py -  INFO     - entering check
+2020-05-06 07:33:13,707 - functions.py -  INFO     - checking: {'name': 'Scissor-tailed Flycatcher - Tyrannus forficatus', 'code': 'sctfly'}
+2020-05-06 07:33:13,707 - functions.py -  INFO     - ok
+2020-05-06 07:33:13,707 - functions.py -  INFO     - taxon code: sctfly
+2020-05-06 07:33:13,886 - functions.py -  INFO     - sciname: Tyrannus forficatus
+2020-05-06 07:33:13,886 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:33:13,886 - functions.py -  INFO     - trying
+2020-05-06 07:33:13,886 - functions.py -  INFO     - fetching files
+2020-05-06 07:33:13,886 - functions.py -  INFO     - scibird: Tyrannus forficatus
+2020-05-06 07:33:13,886 - functions.py -  INFO     - getting file urls for Tyrannus forficatus
+2020-05-06 07:33:13,887 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:13,887 - functions.py -  INFO     - did not find Tyrannus forficatus in cache
+2020-05-06 07:33:13,887 - functions.py -  INFO     - getting taxon code for Tyrannus forficatus
+2020-05-06 07:33:14,013 - functions.py -  INFO     - raw data: [{'name': 'Scissor-tailed Flycatcher - Tyrannus forficatus', 'code': 'sctfly'}, {'name': "Couch's Kingbird x Scissor-tailed Flycatcher (hybrid) - Tyrannus couchii x forficatus", 'code': 'x00441'}, {'name': 'Western Kingbird x Scissor-tailed Flycatcher (hybrid) - Tyrannus verticalis x forficatus', 'code': 'x00442'}]
+2020-05-06 07:33:14,013 - functions.py -  INFO     - first item: {'name': 'Scissor-tailed Flycatcher - Tyrannus forficatus', 'code': 'sctfly'}
+2020-05-06 07:33:14,013 - functions.py -  INFO     - entering check
+2020-05-06 07:33:14,013 - functions.py -  INFO     - checking: {'name': 'Scissor-tailed Flycatcher - Tyrannus forficatus', 'code': 'sctfly'}
+2020-05-06 07:33:14,013 - functions.py -  INFO     - ok
+2020-05-06 07:33:14,014 - functions.py -  INFO     - taxon code: sctfly
+2020-05-06 07:33:14,684 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:33:14,924 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:33:15,206 - functions.py -  INFO     - downloaded images for Tyrannus forficatus
+2020-05-06 07:33:15,206 - functions.py -  INFO     - returned filename count: 20
+2020-05-06 07:33:15,206 - functions.py -  INFO     - actual filenames count: 20
+2020-05-06 07:33:15,207 - functions.py -  INFO     - images: ['cache/images/Tyrannus forficatusfemale/0.jpeg', 'cache/images/Tyrannus forficatusfemale/1.jpeg', 'cache/images/Tyrannus forficatusfemale/2.jpeg', 'cache/images/Tyrannus forficatusfemale/3.jpeg', 'cache/images/Tyrannus forficatusfemale/4.jpeg', 'cache/images/Tyrannus forficatusfemale/5.jpeg', 'cache/images/Tyrannus forficatusfemale/6.jpeg', 'cache/images/Tyrannus forficatusfemale/7.jpeg', 'cache/images/Tyrannus forficatusfemale/8.jpeg', 'cache/images/Tyrannus forficatusfemale/9.jpeg', 'cache/images/Tyrannus forficatusfemale/10.jpeg', 'cache/images/Tyrannus forficatusfemale/11.jpeg', 'cache/images/Tyrannus forficatusfemale/12.jpeg', 'cache/images/Tyrannus forficatusfemale/13.jpeg', 'cache/images/Tyrannus forficatusfemale/14.jpeg', 'cache/images/Tyrannus forficatusfemale/15.jpeg', 'cache/images/Tyrannus forficatusfemale/16.jpeg', 'cache/images/Tyrannus forficatusfemale/17.jpeg', 'cache/images/Tyrannus forficatusfemale/18.jpeg', 'cache/images/Tyrannus forficatusfemale/19.jpeg']
+2020-05-06 07:33:15,207 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:33:15,207 - functions.py -  INFO     - j: 1
+2020-05-06 07:33:15,207 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:33:15,207 - functions.py -  INFO     - size: 236588
+2020-05-06 07:33:15,207 - functions.py -  INFO     - found one!
+2020-05-06 07:33:15,208 - functions.py -  INFO     - black and white
+2020-05-06 07:33:15,433 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:33:15,434 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:15,434 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:15,434 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:15,434 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:15,435 - functions.py -  INFO     - user global added
+2020-05-06 07:33:15,435 - functions.py -  INFO     - added streak
+2020-05-06 07:33:15,435 - functions.py -  INFO     - no dm
+2020-05-06 07:33:15,436 - functions.py -  INFO     - user server added
+2020-05-06 07:33:15,436 - get_birds.py -  INFO     - args: ['passeriformes', 'yolo', 'bw', 'juvenile']
+2020-05-06 07:33:15,436 - get_birds.py -  INFO     - args: bw: True; addon: juvenile; taxon: passeriformes
+2020-05-06 07:33:15,436 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:33:15,436 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:33:15,436 - functions.py -  INFO     - checking roles
+2020-05-06 07:33:15,436 - functions.py -  INFO     - server context
+2020-05-06 07:33:15,437 - functions.py -  INFO     - user roles: []
+2020-05-06 07:33:15,437 - get_birds.py -  INFO     - addon: juvenile; bw: True; taxon: ['passeriformes']; roles: []
+2020-05-06 07:33:15,437 - get_birds.py -  INFO     - number of birds: 70
+2020-05-06 07:33:15,437 - get_birds.py -  INFO     - currentBird: Vermilion Flycatcher
+2020-05-06 07:33:15,437 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:15,438 - functions.py -  INFO     - did not find Vermilion Flycatcher in cache
+2020-05-06 07:33:15,438 - functions.py -  INFO     - getting sciname for Vermilion Flycatcher
+2020-05-06 07:33:15,438 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:15,438 - functions.py -  INFO     - did not find Vermilion Flycatcher in cache
+2020-05-06 07:33:15,438 - functions.py -  INFO     - getting taxon code for Vermilion Flycatcher
+2020-05-06 07:33:15,569 - functions.py -  INFO     - raw data: [{'name': 'Vermilion Flycatcher - Pyrocephalus rubinus', 'code': 'verfly'}, {'name': 'Vermilion Flycatcher (Northern) - Pyrocephalus rubinus [mexicanus Group]', 'code': 'verfly5'}, {'name': 'Vermilion Flycatcher (saturatus) - Pyrocephalus rubinus saturatus', 'code': 'verfly6'}, {'name': 'Vermilion Flycatcher (obscurus Group) - Pyrocephalus rubinus [obscurus Group]', 'code': 'verfly7'}, {'name': 'Vermilion Flycatcher (Austral) - Pyrocephalus rubinus rubinus', 'code': 'verfly1'}, {'name': 'Vermilion Flycatcher (Galapagos) - Pyrocephalus rubinus nanus', 'code': 'verfly3'}, {'name': 'Vermilion Flycatcher (San Cristobal) - Pyrocephalus rubinus dubius', 'code': 'verfly8'}, {'name': 'Social Flycatcher (Vermilion-crowned) - Myiozetetes similis [texensis Group]', 'code': 'socfly3'}]
+2020-05-06 07:33:15,569 - functions.py -  INFO     - first item: {'name': 'Vermilion Flycatcher - Pyrocephalus rubinus', 'code': 'verfly'}
+2020-05-06 07:33:15,569 - functions.py -  INFO     - entering check
+2020-05-06 07:33:15,569 - functions.py -  INFO     - checking: {'name': 'Vermilion Flycatcher - Pyrocephalus rubinus', 'code': 'verfly'}
+2020-05-06 07:33:15,569 - functions.py -  INFO     - ok
+2020-05-06 07:33:15,569 - functions.py -  INFO     - taxon code: verfly
+2020-05-06 07:33:15,769 - functions.py -  INFO     - sciname: Pyrocephalus rubinus
+2020-05-06 07:33:15,769 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:33:15,769 - functions.py -  INFO     - trying
+2020-05-06 07:33:15,769 - functions.py -  INFO     - fetching files
+2020-05-06 07:33:15,770 - functions.py -  INFO     - scibird: Pyrocephalus rubinus
+2020-05-06 07:33:15,770 - functions.py -  INFO     - getting file urls for Pyrocephalus rubinus
+2020-05-06 07:33:15,770 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:15,770 - functions.py -  INFO     - did not find Pyrocephalus rubinus in cache
+2020-05-06 07:33:15,770 - functions.py -  INFO     - getting taxon code for Pyrocephalus rubinus
+2020-05-06 07:33:15,902 - functions.py -  INFO     - raw data: [{'name': 'Vermilion Flycatcher - Pyrocephalus rubinus', 'code': 'verfly'}, {'name': 'Vermilion Flycatcher (Northern) - Pyrocephalus rubinus [mexicanus Group]', 'code': 'verfly5'}, {'name': 'Vermilion Flycatcher (saturatus) - Pyrocephalus rubinus saturatus', 'code': 'verfly6'}, {'name': 'Vermilion Flycatcher (obscurus Group) - Pyrocephalus rubinus [obscurus Group]', 'code': 'verfly7'}, {'name': 'Vermilion Flycatcher (Austral) - Pyrocephalus rubinus rubinus', 'code': 'verfly1'}, {'name': 'Vermilion Flycatcher (Galapagos) - Pyrocephalus rubinus nanus', 'code': 'verfly3'}, {'name': 'Vermilion Flycatcher (San Cristobal) - Pyrocephalus rubinus dubius', 'code': 'verfly8'}]
+2020-05-06 07:33:15,903 - functions.py -  INFO     - first item: {'name': 'Vermilion Flycatcher - Pyrocephalus rubinus', 'code': 'verfly'}
+2020-05-06 07:33:15,903 - functions.py -  INFO     - entering check
+2020-05-06 07:33:15,903 - functions.py -  INFO     - checking: {'name': 'Vermilion Flycatcher - Pyrocephalus rubinus', 'code': 'verfly'}
+2020-05-06 07:33:15,903 - functions.py -  INFO     - ok
+2020-05-06 07:33:15,903 - functions.py -  INFO     - taxon code: verfly
+2020-05-06 07:33:16,144 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:33:16,518 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:33:16,899 - functions.py -  INFO     - downloaded images for Pyrocephalus rubinus
+2020-05-06 07:33:16,899 - functions.py -  INFO     - returned filename count: 20
+2020-05-06 07:33:16,900 - functions.py -  INFO     - actual filenames count: 20
+2020-05-06 07:33:16,900 - functions.py -  INFO     - images: ['cache/images/Pyrocephalus rubinusjuvenile/0.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/1.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/2.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/3.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/4.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/5.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/6.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/7.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/8.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/9.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/10.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/11.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/12.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/13.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/14.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/15.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/16.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/17.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/18.jpeg', 'cache/images/Pyrocephalus rubinusjuvenile/19.jpeg']
+2020-05-06 07:33:16,901 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:33:16,901 - functions.py -  INFO     - j: 1
+2020-05-06 07:33:16,901 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:33:16,901 - functions.py -  INFO     - size: 217125
+2020-05-06 07:33:16,901 - functions.py -  INFO     - found one!
+2020-05-06 07:33:16,901 - functions.py -  INFO     - black and white
+2020-05-06 07:33:17,040 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:33:17,040 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:17,041 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:17,041 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:17,041 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:17,041 - functions.py -  INFO     - user global added
+2020-05-06 07:33:17,042 - functions.py -  INFO     - added streak
+2020-05-06 07:33:17,042 - functions.py -  INFO     - no dm
+2020-05-06 07:33:17,042 - functions.py -  INFO     - user server added
+2020-05-06 07:33:17,042 - get_birds.py -  INFO     - args: ['13435', 'troglodytidae', 'f']
+2020-05-06 07:33:17,042 - get_birds.py -  INFO     - args: bw: False; addon: female; taxon: troglodytidae
+2020-05-06 07:33:17,043 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:33:17,043 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:33:17,043 - functions.py -  INFO     - checking roles
+2020-05-06 07:33:17,043 - functions.py -  INFO     - server context
+2020-05-06 07:33:17,043 - functions.py -  INFO     - user roles: []
+2020-05-06 07:33:17,043 - get_birds.py -  INFO     - addon: female; bw: False; taxon: ['troglodytidae']; roles: []
+2020-05-06 07:33:17,043 - get_birds.py -  INFO     - number of birds: 3
+2020-05-06 07:33:17,044 - get_birds.py -  INFO     - currentBird: Cactus Wren
+2020-05-06 07:33:17,044 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:17,044 - functions.py -  INFO     - did not find Cactus Wren in cache
+2020-05-06 07:33:17,044 - functions.py -  INFO     - getting sciname for Cactus Wren
+2020-05-06 07:33:17,044 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:17,044 - functions.py -  INFO     - did not find Cactus Wren in cache
+2020-05-06 07:33:17,044 - functions.py -  INFO     - getting taxon code for Cactus Wren
+2020-05-06 07:33:17,172 - functions.py -  INFO     - raw data: [{'name': 'Cactus Wren - Campylorhynchus brunneicapillus', 'code': 'cacwre'}, {'name': 'Cactus Wren (brunneicapillus Group) - Campylorhynchus brunneicapillus [brunneicapillus Group]', 'code': 'cacwre2'}, {'name': 'Cactus Wren (affinis Group) - Campylorhynchus brunneicapillus [affinis Group]', 'code': 'cacwre1'}]
+2020-05-06 07:33:17,172 - functions.py -  INFO     - first item: {'name': 'Cactus Wren - Campylorhynchus brunneicapillus', 'code': 'cacwre'}
+2020-05-06 07:33:17,173 - functions.py -  INFO     - entering check
+2020-05-06 07:33:17,173 - functions.py -  INFO     - checking: {'name': 'Cactus Wren - Campylorhynchus brunneicapillus', 'code': 'cacwre'}
+2020-05-06 07:33:17,173 - functions.py -  INFO     - ok
+2020-05-06 07:33:17,173 - functions.py -  INFO     - taxon code: cacwre
+2020-05-06 07:33:17,328 - functions.py -  INFO     - sciname: Campylorhynchus brunneicapillus
+2020-05-06 07:33:17,328 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:33:17,328 - functions.py -  INFO     - trying
+2020-05-06 07:33:17,328 - functions.py -  INFO     - fetching files
+2020-05-06 07:33:17,328 - functions.py -  INFO     - scibird: Campylorhynchus brunneicapillus
+2020-05-06 07:33:17,328 - functions.py -  INFO     - getting file urls for Campylorhynchus brunneicapillus
+2020-05-06 07:33:17,328 - functions.py -  INFO     - checking cache
+2020-05-06 07:33:17,328 - functions.py -  INFO     - did not find Campylorhynchus brunneicapillus in cache
+2020-05-06 07:33:17,328 - functions.py -  INFO     - getting taxon code for Campylorhynchus brunneicapillus
+2020-05-06 07:33:17,461 - functions.py -  INFO     - raw data: [{'name': 'Cactus Wren - Campylorhynchus brunneicapillus', 'code': 'cacwre'}, {'name': 'Cactus Wren (brunneicapillus Group) - Campylorhynchus brunneicapillus [brunneicapillus Group]', 'code': 'cacwre2'}, {'name': 'Cactus Wren (affinis Group) - Campylorhynchus brunneicapillus [affinis Group]', 'code': 'cacwre1'}]
+2020-05-06 07:33:17,461 - functions.py -  INFO     - first item: {'name': 'Cactus Wren - Campylorhynchus brunneicapillus', 'code': 'cacwre'}
+2020-05-06 07:33:17,462 - functions.py -  INFO     - entering check
+2020-05-06 07:33:17,462 - functions.py -  INFO     - checking: {'name': 'Cactus Wren - Campylorhynchus brunneicapillus', 'code': 'cacwre'}
+2020-05-06 07:33:17,462 - functions.py -  INFO     - ok
+2020-05-06 07:33:17,462 - functions.py -  INFO     - taxon code: cacwre
+2020-05-06 07:33:17,633 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:33:17,784 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:33:18,029 - functions.py -  INFO     - downloaded images for Campylorhynchus brunneicapillus
+2020-05-06 07:33:18,029 - functions.py -  INFO     - returned filename count: 6
+2020-05-06 07:33:18,030 - functions.py -  INFO     - actual filenames count: 6
+2020-05-06 07:33:18,030 - functions.py -  INFO     - images: ['cache/images/Campylorhynchus brunneicapillusfemale/0.jpeg', 'cache/images/Campylorhynchus brunneicapillusfemale/1.jpeg', 'cache/images/Campylorhynchus brunneicapillusfemale/2.jpeg', 'cache/images/Campylorhynchus brunneicapillusfemale/3.jpeg', 'cache/images/Campylorhynchus brunneicapillusfemale/4.jpeg', 'cache/images/Campylorhynchus brunneicapillusfemale/5.jpeg']
+2020-05-06 07:33:18,030 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:33:18,030 - functions.py -  INFO     - j: 3
+2020-05-06 07:33:18,030 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:33:18,031 - functions.py -  INFO     - size: 133940
+2020-05-06 07:33:18,031 - functions.py -  INFO     - found one!
+2020-05-06 07:33:18,036 - hint.py    -  INFO     - command: hint
+2020-05-06 07:33:18,036 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,036 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:18,037 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,037 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,037 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,037 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,037 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,038 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,042 - hint.py    -  INFO     - command: hint
+2020-05-06 07:33:18,042 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,042 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:18,043 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,043 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,043 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,043 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,043 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,044 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,048 - hint.py    -  INFO     - command: hintgoat
+2020-05-06 07:33:18,048 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,048 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:18,048 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,049 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,049 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,049 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,049 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,049 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,054 - hint.py    -  INFO     - command: hintgoat
+2020-05-06 07:33:18,054 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,054 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:18,054 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,054 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,054 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,055 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,055 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,055 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,059 - hint.py    -  INFO     - command: hintsong
+2020-05-06 07:33:18,059 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,060 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:18,060 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,060 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,060 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,061 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,061 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,061 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,065 - hint.py    -  INFO     - command: hintsong
+2020-05-06 07:33:18,065 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,065 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:18,066 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,066 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,066 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,066 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,066 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,067 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,071 - skip.py    -  INFO     - command: skip
+2020-05-06 07:33:18,071 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,071 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:18,072 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,072 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,072 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,072 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,072 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,073 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,077 - skip.py    -  INFO     - command: skip
+2020-05-06 07:33:18,077 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,077 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:18,077 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,077 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,078 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,078 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,078 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,078 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,083 - skip.py    -  INFO     - command: skipgoat
+2020-05-06 07:33:18,083 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,083 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:18,083 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,084 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,084 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,084 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,084 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,084 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,089 - skip.py    -  INFO     - command: skipgoat
+2020-05-06 07:33:18,089 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,089 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:18,089 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,089 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,090 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,090 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,090 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,090 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,095 - skip.py    -  INFO     - command: skipsong
+2020-05-06 07:33:18,095 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,095 - functions.py -  INFO     - channel data added
+2020-05-06 07:33:18,095 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,096 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,096 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,096 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,096 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,097 - functions.py -  INFO     - user server added
+2020-05-06 07:33:18,101 - skip.py    -  INFO     - command: skipsong
+2020-05-06 07:33:18,101 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:33:18,101 - functions.py -  INFO     - channel data ok
+2020-05-06 07:33:18,101 - functions.py -  INFO     - channel score added
+2020-05-06 07:33:18,101 - functions.py -  INFO     - checking user data
+2020-05-06 07:33:18,102 - functions.py -  INFO     - user global added
+2020-05-06 07:33:18,102 - functions.py -  INFO     - added streak
+2020-05-06 07:33:18,102 - functions.py -  INFO     - no dm
+2020-05-06 07:33:18,102 - functions.py -  INFO     - user server added
+2020-05-06 07:35:30,434 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:35:30,435 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:35:30,435 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:35:30,436 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:35:30,436 - __init__.py -  INFO     - Working on memeList
+2020-05-06 07:35:30,436 - __init__.py -  INFO     - Done with memeList
+2020-05-06 07:35:30,436 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:35:30,437 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:35:30,437 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:35:30,437 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:35:30,438 - __init__.py -  INFO     - Done with nats list!
+2020-05-06 07:35:30,438 - __init__.py -  INFO     - Working on NY
+2020-05-06 07:35:30,438 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:35:30,438 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:35:30,439 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:35:30,439 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:35:30,439 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:35:30,439 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:35:30,440 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:35:30,440 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:35:30,440 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:35:30,440 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:35:30,440 - __init__.py -  INFO     - Done with NY
+2020-05-06 07:35:30,441 - __init__.py -  INFO     - Working on OLD
+2020-05-06 07:35:30,441 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:35:30,441 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:35:30,441 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:35:30,442 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:35:30,442 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:35:30,443 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:35:30,444 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:35:30,444 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:35:30,444 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:35:30,445 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:35:30,445 - __init__.py -  INFO     - Done with OLD
+2020-05-06 07:35:30,445 - __init__.py -  INFO     - Working on NC-S
+2020-05-06 07:35:30,445 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:35:30,446 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:35:30,446 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:35:30,446 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:35:30,447 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:35:30,447 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:35:30,447 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:35:30,448 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:35:30,448 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:35:30,448 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:35:30,448 - __init__.py -  INFO     - Done with NC-S
+2020-05-06 07:35:30,448 - __init__.py -  INFO     - Working on NC-R
+2020-05-06 07:35:30,448 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:35:30,449 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:35:30,449 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:35:30,449 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:35:30,449 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:35:30,450 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:35:30,450 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:35:30,450 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:35:30,450 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:35:30,451 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:35:30,451 - __init__.py -  INFO     - Done with NC-R
+2020-05-06 07:35:30,451 - __init__.py -  INFO     - Working on SCA
+2020-05-06 07:35:30,451 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:35:30,452 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:35:30,452 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:35:30,453 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:35:30,453 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:35:30,453 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:35:30,453 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:35:30,454 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:35:30,454 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:35:30,454 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:35:30,454 - __init__.py -  INFO     - Done with SCA
+2020-05-06 07:35:30,454 - __init__.py -  INFO     - Working on MN
+2020-05-06 07:35:30,454 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:35:30,455 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:35:30,455 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:35:30,456 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:35:30,456 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:35:30,456 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:35:30,456 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:35:30,457 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:35:30,457 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:35:30,457 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:35:30,457 - __init__.py -  INFO     - Done with MN
+2020-05-06 07:35:30,457 - __init__.py -  INFO     - Working on NATS
+2020-05-06 07:35:30,457 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:35:30,458 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:35:30,458 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:35:30,459 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:35:30,459 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:35:30,459 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:35:30,460 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:35:30,460 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:35:30,460 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:35:30,460 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:35:30,461 - __init__.py -  INFO     - Done with NATS
+2020-05-06 07:35:30,461 - __init__.py -  INFO     - Working on IN
+2020-05-06 07:35:30,461 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:35:30,461 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:35:30,461 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:35:30,462 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:35:30,462 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:35:30,462 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:35:30,462 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:35:30,463 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:35:30,463 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:35:30,463 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:35:30,463 - __init__.py -  INFO     - Done with IN
+2020-05-06 07:35:30,463 - __init__.py -  INFO     - Done with states list!
+2020-05-06 07:35:30,463 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Done with master lists!
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Working on taxon lists
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Working on taxon master list
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Done with taxon master list
+2020-05-06 07:35:30,464 - __init__.py -  INFO     - Working on strigiformes.txt
+2020-05-06 07:35:30,465 - __init__.py -  INFO     - Done with strigiformes.txt
+2020-05-06 07:35:30,465 - __init__.py -  INFO     - Working on anseriformes.txt
+2020-05-06 07:35:30,465 - __init__.py -  INFO     - Done with anseriformes.txt
+2020-05-06 07:35:30,465 - __init__.py -  INFO     - Working on charadriiformes.txt
+2020-05-06 07:35:30,466 - __init__.py -  INFO     - Done with charadriiformes.txt
+2020-05-06 07:35:30,466 - __init__.py -  INFO     - Working on pelecaniformes.txt
+2020-05-06 07:35:30,466 - __init__.py -  INFO     - Done with pelecaniformes.txt
+2020-05-06 07:35:30,466 - __init__.py -  INFO     - Working on piciformes.txt
+2020-05-06 07:35:30,467 - __init__.py -  INFO     - Done with piciformes.txt
+2020-05-06 07:35:30,467 - __init__.py -  INFO     - Working on cathartiformes.txt
+2020-05-06 07:35:30,467 - __init__.py -  INFO     - Done with cathartiformes.txt
+2020-05-06 07:35:30,467 - __init__.py -  INFO     - Working on passeriformes.txt
+2020-05-06 07:35:30,468 - __init__.py -  INFO     - Done with passeriformes.txt
+2020-05-06 07:35:30,468 - __init__.py -  INFO     - Working on coraciiformes.txt
+2020-05-06 07:35:30,468 - __init__.py -  INFO     - Done with coraciiformes.txt
+2020-05-06 07:35:30,468 - __init__.py -  INFO     - Working on caprimulgiformes.txt
+2020-05-06 07:35:30,469 - __init__.py -  INFO     - Done with caprimulgiformes.txt
+2020-05-06 07:35:30,469 - __init__.py -  INFO     - Working on columbiformes.txt
+2020-05-06 07:35:30,469 - __init__.py -  INFO     - Done with columbiformes.txt
+2020-05-06 07:35:30,469 - __init__.py -  INFO     - Working on gruiformes.txt
+2020-05-06 07:35:30,470 - __init__.py -  INFO     - Done with gruiformes.txt
+2020-05-06 07:35:30,470 - __init__.py -  INFO     - Working on trogoniformes.txt
+2020-05-06 07:35:30,470 - __init__.py -  INFO     - Done with trogoniformes.txt
+2020-05-06 07:35:30,470 - __init__.py -  INFO     - Working on accipitriformes.txt
+2020-05-06 07:35:30,471 - __init__.py -  INFO     - Done with accipitriformes.txt
+2020-05-06 07:35:30,471 - __init__.py -  INFO     - Working on ciconiiformes.txt
+2020-05-06 07:35:30,471 - __init__.py -  INFO     - Done with ciconiiformes.txt
+2020-05-06 07:35:30,471 - __init__.py -  INFO     - Working on cuculiformes.txt
+2020-05-06 07:35:30,472 - __init__.py -  INFO     - Done with cuculiformes.txt
+2020-05-06 07:35:30,472 - __init__.py -  INFO     - Working on galliformes.txt
+2020-05-06 07:35:30,472 - __init__.py -  INFO     - Done with galliformes.txt
+2020-05-06 07:35:30,472 - __init__.py -  INFO     - Working on suliformes.txt
+2020-05-06 07:35:30,472 - __init__.py -  INFO     - Done with suliformes.txt
+2020-05-06 07:35:30,472 - __init__.py -  INFO     - Working on podicipediformes.txt
+2020-05-06 07:35:30,473 - __init__.py -  INFO     - Done with podicipediformes.txt
+2020-05-06 07:35:30,473 - __init__.py -  INFO     - Working on apodiformes.txt
+2020-05-06 07:35:30,473 - __init__.py -  INFO     - Done with apodiformes.txt
+2020-05-06 07:35:30,473 - __init__.py -  INFO     - Working on procellariiformes.txt
+2020-05-06 07:35:30,474 - __init__.py -  INFO     - Done with procellariiformes.txt
+2020-05-06 07:35:30,474 - __init__.py -  INFO     - Working on gaviiformes.txt
+2020-05-06 07:35:30,474 - __init__.py -  INFO     - Done with gaviiformes.txt
+2020-05-06 07:35:30,474 - __init__.py -  INFO     - Working on falconiformes.txt
+2020-05-06 07:35:30,475 - __init__.py -  INFO     - Done with falconiformes.txt
+2020-05-06 07:35:30,475 - __init__.py -  INFO     - Working on passerellidae.txt
+2020-05-06 07:35:30,475 - __init__.py -  INFO     - Done with passerellidae.txt
+2020-05-06 07:35:30,475 - __init__.py -  INFO     - Working on calcariidae.txt
+2020-05-06 07:35:30,476 - __init__.py -  INFO     - Done with calcariidae.txt
+2020-05-06 07:35:30,476 - __init__.py -  INFO     - Working on polioptilidae.txt
+2020-05-06 07:35:30,476 - __init__.py -  INFO     - Done with polioptilidae.txt
+2020-05-06 07:35:30,476 - __init__.py -  INFO     - Working on sturnidae.txt
+2020-05-06 07:35:30,477 - __init__.py -  INFO     - Done with sturnidae.txt
+2020-05-06 07:35:30,477 - __init__.py -  INFO     - Working on laniidae.txt
+2020-05-06 07:35:30,477 - __init__.py -  INFO     - Done with laniidae.txt
+2020-05-06 07:35:30,477 - __init__.py -  INFO     - Working on troglodytidae.txt
+2020-05-06 07:35:30,477 - __init__.py -  INFO     - Done with troglodytidae.txt
+2020-05-06 07:35:30,478 - __init__.py -  INFO     - Working on passeridae.txt
+2020-05-06 07:35:30,478 - __init__.py -  INFO     - Done with passeridae.txt
+2020-05-06 07:35:30,478 - __init__.py -  INFO     - Working on fringillidae.txt
+2020-05-06 07:35:30,478 - __init__.py -  INFO     - Done with fringillidae.txt
+2020-05-06 07:35:30,478 - __init__.py -  INFO     - Working on paridae.txt
+2020-05-06 07:35:30,479 - __init__.py -  INFO     - Done with paridae.txt
+2020-05-06 07:35:30,479 - __init__.py -  INFO     - Working on regulidae.txt
+2020-05-06 07:35:30,479 - __init__.py -  INFO     - Done with regulidae.txt
+2020-05-06 07:35:30,480 - __init__.py -  INFO     - Working on cinclidae.txt
+2020-05-06 07:35:30,480 - __init__.py -  INFO     - Done with cinclidae.txt
+2020-05-06 07:35:30,480 - __init__.py -  INFO     - Working on turdidae.txt
+2020-05-06 07:35:30,480 - __init__.py -  INFO     - Done with turdidae.txt
+2020-05-06 07:35:30,480 - __init__.py -  INFO     - Working on cardinalidae.txt
+2020-05-06 07:35:30,481 - __init__.py -  INFO     - Done with cardinalidae.txt
+2020-05-06 07:35:30,481 - __init__.py -  INFO     - Working on icteridae.txt
+2020-05-06 07:35:30,481 - __init__.py -  INFO     - Done with icteridae.txt
+2020-05-06 07:35:30,481 - __init__.py -  INFO     - Working on parulidae.txt
+2020-05-06 07:35:30,482 - __init__.py -  INFO     - Done with parulidae.txt
+2020-05-06 07:35:30,482 - __init__.py -  INFO     - Working on hirundinidae.txt
+2020-05-06 07:35:30,482 - __init__.py -  INFO     - Done with hirundinidae.txt
+2020-05-06 07:35:30,482 - __init__.py -  INFO     - Working on certhiidae.txt
+2020-05-06 07:35:30,482 - __init__.py -  INFO     - Done with certhiidae.txt
+2020-05-06 07:35:30,482 - __init__.py -  INFO     - Working on vireonidae.txt
+2020-05-06 07:35:30,483 - __init__.py -  INFO     - Done with vireonidae.txt
+2020-05-06 07:35:30,483 - __init__.py -  INFO     - Working on sittidae.txt
+2020-05-06 07:35:30,483 - __init__.py -  INFO     - Done with sittidae.txt
+2020-05-06 07:35:30,483 - __init__.py -  INFO     - Working on tyrannidae.txt
+2020-05-06 07:35:30,484 - __init__.py -  INFO     - Done with tyrannidae.txt
+2020-05-06 07:35:30,484 - __init__.py -  INFO     - Working on alaudidae.txt
+2020-05-06 07:35:30,484 - __init__.py -  INFO     - Done with alaudidae.txt
+2020-05-06 07:35:30,484 - __init__.py -  INFO     - Working on mimidae.txt
+2020-05-06 07:35:30,485 - __init__.py -  INFO     - Done with mimidae.txt
+2020-05-06 07:35:30,485 - __init__.py -  INFO     - Working on corvidae.txt
+2020-05-06 07:35:30,485 - __init__.py -  INFO     - Done with corvidae.txt
+2020-05-06 07:35:30,485 - __init__.py -  INFO     - Working on bombycillidae.txt
+2020-05-06 07:35:30,486 - __init__.py -  INFO     - Done with bombycillidae.txt
+2020-05-06 07:35:30,486 - __init__.py -  INFO     - Done with taxon lists!
+2020-05-06 07:35:30,486 - __init__.py -  INFO     - Working on wiki urls
+2020-05-06 07:35:30,487 - __init__.py -  INFO     - Done with wiki urls
+2020-05-06 07:35:30,487 - __init__.py -  INFO     - National Lengths: 159, 159, 36, 36
+2020-05-06 07:35:30,487 - __init__.py -  INFO     - Master Lengths: 224, 221, 63, 61
+2020-05-06 07:35:30,487 - __init__.py -  INFO     - Done importing data!
+2020-05-06 07:35:30,556 - check.py   -  INFO     - command: check
+2020-05-06 07:35:30,556 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:30,556 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:30,557 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:30,557 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:30,557 - functions.py -  INFO     - user global added
+2020-05-06 07:35:30,557 - functions.py -  INFO     - added streak
+2020-05-06 07:35:30,557 - functions.py -  INFO     - no dm
+2020-05-06 07:35:30,558 - functions.py -  INFO     - user server added
+2020-05-06 07:35:30,648 - check.py   -  INFO     - command: check
+2020-05-06 07:35:30,648 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:30,648 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:30,649 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:30,649 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:30,649 - functions.py -  INFO     - user global added
+2020-05-06 07:35:30,649 - functions.py -  INFO     - added streak
+2020-05-06 07:35:30,649 - functions.py -  INFO     - no dm
+2020-05-06 07:35:30,650 - functions.py -  INFO     - user server added
+2020-05-06 07:35:30,650 - check.py   -  INFO     - currentBird: canada goose
+2020-05-06 07:35:30,650 - check.py   -  INFO     - args: canada goose
+2020-05-06 07:35:30,650 - functions.py -  INFO     - checking bird data
+2020-05-06 07:35:30,650 - functions.py -  INFO     - bird global added
+2020-05-06 07:35:30,651 - functions.py -  INFO     - bird user added
+2020-05-06 07:35:30,651 - functions.py -  INFO     - no dm
+2020-05-06 07:35:30,651 - functions.py -  INFO     - bird server added
+2020-05-06 07:35:30,651 - functions.py -  INFO     - no session
+2020-05-06 07:35:30,651 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:30,651 - functions.py -  INFO     - did not find Canada Goose in cache
+2020-05-06 07:35:30,651 - functions.py -  INFO     - getting sciname for Canada Goose
+2020-05-06 07:35:30,652 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:30,652 - functions.py -  INFO     - did not find Canada Goose in cache
+2020-05-06 07:35:30,652 - functions.py -  INFO     - getting taxon code for Canada Goose
+2020-05-06 07:35:30,792 - functions.py -  INFO     - raw data: [{'name': 'Canada Goose - Branta canadensis', 'code': 'cangoo'}, {'name': 'Canada Goose (moffitti/maxima) - Branta canadensis moffitti/maxima', 'code': 'cangoo4'}, {'name': 'Canada Goose (occidentalis/fulva) - Branta canadensis occidentalis/fulva', 'code': 'cangoo3'}, {'name': 'Canada Goose (canadensis Group) - Branta canadensis [canadensis Group]', 'code': 'cangoo1'}, {'name': 'Bar-headed x Canada Goose (hybrid) - Anser indicus x Branta canadensis', 'code': 'x00908'}, {'name': 'Swan Goose (Domestic type) x Canada Goose (hybrid) - Anser cygnoides (Domestic type) x Branta canadensis', 'code': 'swagoo3'}, {'name': 'Pink-footed x Canada Goose (hybrid) - Anser brachyrhynchus x Branta canadensis', 'code': 'x00650'}, {'name': 'Greater White-fronted x Canada Goose (hybrid) - Anser albifrons x Branta canadensis', 'code': 'x00415'}, {'name': 'Graylag x Canada Goose (hybrid) - Anser anser x Branta canadensis', 'code': 'x00758'}, {'name': 'Graylag Goose (Domestic type) x Canada Goose (hybrid) - Anser anser (Domestic type) x Branta canadensis', 'code': 'gragoo4'}, {'name': 'Domestic goose sp. (Domestic type) x Canada Goose (hybrid) - Anser sp. (Domestic type) x Branta canadensis', 'code': 'x00759'}, {'name': 'Snow x Canada Goose (hybrid) - Anser caerulescens x Branta canadensis', 'code': 'x00197'}, {'name': "Ross's x Canada Goose (hybrid) - Anser rossii x Branta canadensis", 'code': 'x00693'}, {'name': 'Barnacle x Canada Goose (hybrid) - Branta leucopsis x canadensis', 'code': 'x00417'}, {'name': 'Cackling/Canada Goose - Branta hutchinsii/canadensis', 'code': 'y00470'}, {'name': "Snow/Ross's x Cackling/Canada Goose (hybrid) - Anser caerulescens/rossii x Branta hutchinsii/canadensis", 'code': 'y00765'}]
+2020-05-06 07:35:30,793 - functions.py -  INFO     - first item: {'name': 'Canada Goose - Branta canadensis', 'code': 'cangoo'}
+2020-05-06 07:35:30,793 - functions.py -  INFO     - entering check
+2020-05-06 07:35:30,793 - functions.py -  INFO     - checking: {'name': 'Canada Goose - Branta canadensis', 'code': 'cangoo'}
+2020-05-06 07:35:30,793 - functions.py -  INFO     - ok
+2020-05-06 07:35:30,793 - functions.py -  INFO     - taxon code: cangoo
+2020-05-06 07:35:30,943 - functions.py -  INFO     - sciname: Branta canadensis
+2020-05-06 07:35:30,943 - check.py   -  INFO     - correct
+2020-05-06 07:35:30,944 - functions.py -  INFO     - incrementing score by 1
+2020-05-06 07:35:30,944 - functions.py -  INFO     - no dm
+2020-05-06 07:35:30,950 - check.py   -  INFO     - command: check
+2020-05-06 07:35:30,950 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:30,950 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:30,950 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:30,950 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:30,951 - functions.py -  INFO     - user global added
+2020-05-06 07:35:30,951 - functions.py -  INFO     - added streak
+2020-05-06 07:35:30,951 - functions.py -  INFO     - no dm
+2020-05-06 07:35:30,951 - functions.py -  INFO     - user server added
+2020-05-06 07:35:30,952 - check.py   -  INFO     - currentBird: canada goose
+2020-05-06 07:35:30,952 - check.py   -  INFO     - args: canada goosecanada goose
+2020-05-06 07:35:30,952 - functions.py -  INFO     - checking bird data
+2020-05-06 07:35:30,952 - functions.py -  INFO     - bird global ok
+2020-05-06 07:35:30,952 - functions.py -  INFO     - bird user added
+2020-05-06 07:35:30,952 - functions.py -  INFO     - no dm
+2020-05-06 07:35:30,953 - functions.py -  INFO     - bird server added
+2020-05-06 07:35:30,953 - functions.py -  INFO     - no session
+2020-05-06 07:35:30,953 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:30,953 - functions.py -  INFO     - Canada Goose found in cache!
+2020-05-06 07:35:30,953 - check.py   -  INFO     - incorrect
+2020-05-06 07:35:30,954 - functions.py -  INFO     - incrementing incorrect Canada Goose by 1
+2020-05-06 07:35:30,954 - functions.py -  INFO     - no dm
+2020-05-06 07:35:30,954 - functions.py -  INFO     - no session
+2020-05-06 07:35:30,959 - check.py   -  INFO     - command: checksong
+2020-05-06 07:35:30,959 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:30,959 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:30,959 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:30,959 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:30,960 - functions.py -  INFO     - user global added
+2020-05-06 07:35:30,960 - functions.py -  INFO     - added streak
+2020-05-06 07:35:30,960 - functions.py -  INFO     - no dm
+2020-05-06 07:35:30,960 - functions.py -  INFO     - user server added
+2020-05-06 07:35:30,964 - check.py   -  INFO     - command: checksong
+2020-05-06 07:35:30,965 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:30,965 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:30,965 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:30,965 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:30,965 - functions.py -  INFO     - user global added
+2020-05-06 07:35:30,966 - functions.py -  INFO     - added streak
+2020-05-06 07:35:30,966 - functions.py -  INFO     - no dm
+2020-05-06 07:35:30,966 - functions.py -  INFO     - user server added
+2020-05-06 07:35:30,966 - check.py   -  INFO     - currentBird: northern cardinal
+2020-05-06 07:35:30,966 - check.py   -  INFO     - args: northern cardinal
+2020-05-06 07:35:30,966 - functions.py -  INFO     - checking bird data
+2020-05-06 07:35:30,967 - functions.py -  INFO     - bird global added
+2020-05-06 07:35:30,967 - functions.py -  INFO     - bird user added
+2020-05-06 07:35:30,967 - functions.py -  INFO     - no dm
+2020-05-06 07:35:30,967 - functions.py -  INFO     - bird server added
+2020-05-06 07:35:30,967 - functions.py -  INFO     - no session
+2020-05-06 07:35:30,967 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:30,967 - functions.py -  INFO     - did not find Northern Cardinal in cache
+2020-05-06 07:35:30,968 - functions.py -  INFO     - getting sciname for Northern Cardinal
+2020-05-06 07:35:30,968 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:30,968 - functions.py -  INFO     - did not find Northern Cardinal in cache
+2020-05-06 07:35:30,968 - functions.py -  INFO     - getting taxon code for Northern Cardinal
+2020-05-06 07:35:31,095 - functions.py -  INFO     - raw data: [{'name': 'Northern Cardinal - Cardinalis cardinalis', 'code': 'norcar'}, {'name': 'Northern Cardinal (Common) - Cardinalis cardinalis [cardinalis Group]', 'code': 'norcar1'}, {'name': 'Northern Cardinal (Long-crested) - Cardinalis cardinalis carneus', 'code': 'norcar2'}, {'name': 'Northern Cardinal x Pyrrhuloxia (hybrid) - Cardinalis cardinalis x sinuatus', 'code': 'x00774'}, {'name': 'Northern Cardinal/Pyrrhuloxia - Cardinalis cardinalis/sinuatus', 'code': 'y00647'}]
+2020-05-06 07:35:31,096 - functions.py -  INFO     - first item: {'name': 'Northern Cardinal - Cardinalis cardinalis', 'code': 'norcar'}
+2020-05-06 07:35:31,096 - functions.py -  INFO     - entering check
+2020-05-06 07:35:31,096 - functions.py -  INFO     - checking: {'name': 'Northern Cardinal - Cardinalis cardinalis', 'code': 'norcar'}
+2020-05-06 07:35:31,096 - functions.py -  INFO     - ok
+2020-05-06 07:35:31,096 - functions.py -  INFO     - taxon code: norcar
+2020-05-06 07:35:31,228 - functions.py -  INFO     - sciname: Cardinalis cardinalis
+2020-05-06 07:35:31,228 - check.py   -  INFO     - correct
+2020-05-06 07:35:31,229 - functions.py -  INFO     - incrementing score by 1
+2020-05-06 07:35:31,230 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,235 - check.py   -  INFO     - command: checksong
+2020-05-06 07:35:31,235 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:31,235 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:31,236 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:31,236 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:31,236 - functions.py -  INFO     - user global added
+2020-05-06 07:35:31,236 - functions.py -  INFO     - added streak
+2020-05-06 07:35:31,236 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,237 - functions.py -  INFO     - user server added
+2020-05-06 07:35:31,237 - check.py   -  INFO     - currentBird: northern cardinal
+2020-05-06 07:35:31,237 - check.py   -  INFO     - args: northern cardinalnorthern cardinal
+2020-05-06 07:35:31,237 - functions.py -  INFO     - checking bird data
+2020-05-06 07:35:31,237 - functions.py -  INFO     - bird global ok
+2020-05-06 07:35:31,237 - functions.py -  INFO     - bird user added
+2020-05-06 07:35:31,238 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,238 - functions.py -  INFO     - bird server added
+2020-05-06 07:35:31,238 - functions.py -  INFO     - no session
+2020-05-06 07:35:31,238 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:31,238 - functions.py -  INFO     - Northern Cardinal found in cache!
+2020-05-06 07:35:31,239 - check.py   -  INFO     - incorrect
+2020-05-06 07:35:31,239 - functions.py -  INFO     - incrementing incorrect Northern Cardinal by 1
+2020-05-06 07:35:31,239 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,239 - functions.py -  INFO     - no session
+2020-05-06 07:35:31,250 - check.py   -  INFO     - command: checkgoat
+2020-05-06 07:35:31,250 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:31,251 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:31,251 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:31,251 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:31,251 - functions.py -  INFO     - user global added
+2020-05-06 07:35:31,252 - functions.py -  INFO     - added streak
+2020-05-06 07:35:31,252 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,252 - functions.py -  INFO     - user server added
+2020-05-06 07:35:31,256 - check.py   -  INFO     - command: checkgoat
+2020-05-06 07:35:31,256 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:31,257 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:31,257 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:31,257 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:31,257 - functions.py -  INFO     - user global added
+2020-05-06 07:35:31,257 - functions.py -  INFO     - added streak
+2020-05-06 07:35:31,258 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,258 - functions.py -  INFO     - user server added
+2020-05-06 07:35:31,258 - functions.py -  INFO     - checking bird data
+2020-05-06 07:35:31,258 - functions.py -  INFO     - bird global added
+2020-05-06 07:35:31,259 - functions.py -  INFO     - bird user added
+2020-05-06 07:35:31,259 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,259 - functions.py -  INFO     - bird server added
+2020-05-06 07:35:31,259 - functions.py -  INFO     - no session
+2020-05-06 07:35:31,259 - check.py   -  INFO     - correct
+2020-05-06 07:35:31,260 - functions.py -  INFO     - incrementing score by 1
+2020-05-06 07:35:31,260 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,261 - check.py   -  INFO     - currentBird: common pauraque
+2020-05-06 07:35:31,261 - check.py   -  INFO     - args: common pauraque
+2020-05-06 07:35:31,265 - check.py   -  INFO     - command: checkgoat
+2020-05-06 07:35:31,265 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:31,265 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:31,265 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:31,265 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:31,265 - functions.py -  INFO     - user global added
+2020-05-06 07:35:31,266 - functions.py -  INFO     - added streak
+2020-05-06 07:35:31,266 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,266 - functions.py -  INFO     - user server added
+2020-05-06 07:35:31,266 - functions.py -  INFO     - checking bird data
+2020-05-06 07:35:31,267 - functions.py -  INFO     - bird global ok
+2020-05-06 07:35:31,267 - functions.py -  INFO     - bird user added
+2020-05-06 07:35:31,267 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,267 - functions.py -  INFO     - bird server added
+2020-05-06 07:35:31,267 - functions.py -  INFO     - no session
+2020-05-06 07:35:31,268 - check.py   -  INFO     - incorrect
+2020-05-06 07:35:31,268 - functions.py -  INFO     - incrementing incorrect Common Pauraque by 1
+2020-05-06 07:35:31,269 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,269 - functions.py -  INFO     - no session
+2020-05-06 07:35:31,269 - check.py   -  INFO     - currentBird: common pauraque
+2020-05-06 07:35:31,269 - check.py   -  INFO     - args: common pauraquecommon pauraque
+2020-05-06 07:35:31,273 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:35:31,273 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:31,274 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:31,274 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:31,274 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:31,274 - functions.py -  INFO     - user global added
+2020-05-06 07:35:31,275 - functions.py -  INFO     - added streak
+2020-05-06 07:35:31,275 - functions.py -  INFO     - no dm
+2020-05-06 07:35:31,275 - functions.py -  INFO     - user server added
+2020-05-06 07:35:31,275 - get_birds.py -  INFO     - args: ['']
+2020-05-06 07:35:31,275 - get_birds.py -  INFO     - args: bw: False; addon: ; taxon: 
+2020-05-06 07:35:31,276 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:35:31,276 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:35:31,276 - functions.py -  INFO     - checking roles
+2020-05-06 07:35:31,276 - functions.py -  INFO     - server context
+2020-05-06 07:35:31,276 - functions.py -  INFO     - user roles: []
+2020-05-06 07:35:31,276 - get_birds.py -  INFO     - addon: ; bw: False; taxon: []; roles: []
+2020-05-06 07:35:31,276 - get_birds.py -  INFO     - number of birds: 159
+2020-05-06 07:35:31,277 - get_birds.py -  INFO     - currentBird: American Robin
+2020-05-06 07:35:31,277 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:31,277 - functions.py -  INFO     - did not find American Robin in cache
+2020-05-06 07:35:31,277 - functions.py -  INFO     - getting sciname for American Robin
+2020-05-06 07:35:31,277 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:31,277 - functions.py -  INFO     - did not find American Robin in cache
+2020-05-06 07:35:31,277 - functions.py -  INFO     - getting taxon code for American Robin
+2020-05-06 07:35:31,407 - functions.py -  INFO     - raw data: [{'name': 'American Robin - Turdus migratorius', 'code': 'amerob'}, {'name': 'American Robin (nigrideus) - Turdus migratorius nigrideus', 'code': 'amerob3'}, {'name': 'American Robin (migratorius Group) - Turdus migratorius [migratorius Group]', 'code': 'amerob1'}, {'name': 'American Robin (San Lucas) - Turdus migratorius confinis', 'code': 'amerob2'}, {'name': 'Varied Thrush/American Robin - Ixoreus naevius/Turdus migratorius', 'code': 'y00822'}]
+2020-05-06 07:35:31,407 - functions.py -  INFO     - first item: {'name': 'American Robin - Turdus migratorius', 'code': 'amerob'}
+2020-05-06 07:35:31,407 - functions.py -  INFO     - entering check
+2020-05-06 07:35:31,407 - functions.py -  INFO     - checking: {'name': 'American Robin - Turdus migratorius', 'code': 'amerob'}
+2020-05-06 07:35:31,407 - functions.py -  INFO     - ok
+2020-05-06 07:35:31,407 - functions.py -  INFO     - taxon code: amerob
+2020-05-06 07:35:31,541 - functions.py -  INFO     - sciname: Turdus migratorius
+2020-05-06 07:35:31,541 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:35:31,541 - functions.py -  INFO     - trying
+2020-05-06 07:35:31,541 - functions.py -  INFO     - fetching files
+2020-05-06 07:35:31,541 - functions.py -  INFO     - scibird: Turdus migratorius
+2020-05-06 07:35:31,542 - functions.py -  INFO     - getting file urls for Turdus migratorius
+2020-05-06 07:35:31,542 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:31,542 - functions.py -  INFO     - did not find Turdus migratorius in cache
+2020-05-06 07:35:31,542 - functions.py -  INFO     - getting taxon code for Turdus migratorius
+2020-05-06 07:35:31,669 - functions.py -  INFO     - raw data: [{'name': 'American Robin - Turdus migratorius', 'code': 'amerob'}, {'name': 'American Robin (nigrideus) - Turdus migratorius nigrideus', 'code': 'amerob3'}, {'name': 'American Robin (migratorius Group) - Turdus migratorius [migratorius Group]', 'code': 'amerob1'}, {'name': 'American Robin (San Lucas) - Turdus migratorius confinis', 'code': 'amerob2'}, {'name': 'Varied Thrush/American Robin - Ixoreus naevius/Turdus migratorius', 'code': 'y00822'}]
+2020-05-06 07:35:31,669 - functions.py -  INFO     - first item: {'name': 'American Robin - Turdus migratorius', 'code': 'amerob'}
+2020-05-06 07:35:31,669 - functions.py -  INFO     - entering check
+2020-05-06 07:35:31,669 - functions.py -  INFO     - checking: {'name': 'American Robin - Turdus migratorius', 'code': 'amerob'}
+2020-05-06 07:35:31,669 - functions.py -  INFO     - ok
+2020-05-06 07:35:31,669 - functions.py -  INFO     - taxon code: amerob
+2020-05-06 07:35:32,343 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:35:32,773 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:35:33,145 - functions.py -  INFO     - downloaded images for Turdus migratorius
+2020-05-06 07:35:33,145 - functions.py -  INFO     - returned filename count: 20
+2020-05-06 07:35:33,146 - functions.py -  INFO     - actual filenames count: 20
+2020-05-06 07:35:33,146 - functions.py -  INFO     - images: ['cache/images/Turdus migratorius/0.jpeg', 'cache/images/Turdus migratorius/1.jpeg', 'cache/images/Turdus migratorius/2.jpeg', 'cache/images/Turdus migratorius/3.jpeg', 'cache/images/Turdus migratorius/4.jpeg', 'cache/images/Turdus migratorius/5.jpeg', 'cache/images/Turdus migratorius/6.jpeg', 'cache/images/Turdus migratorius/7.jpeg', 'cache/images/Turdus migratorius/8.jpeg', 'cache/images/Turdus migratorius/9.jpeg', 'cache/images/Turdus migratorius/10.jpeg', 'cache/images/Turdus migratorius/11.jpeg', 'cache/images/Turdus migratorius/12.jpeg', 'cache/images/Turdus migratorius/13.jpeg', 'cache/images/Turdus migratorius/14.jpeg', 'cache/images/Turdus migratorius/15.jpeg', 'cache/images/Turdus migratorius/16.jpeg', 'cache/images/Turdus migratorius/17.jpeg', 'cache/images/Turdus migratorius/18.jpeg', 'cache/images/Turdus migratorius/19.jpeg']
+2020-05-06 07:35:33,147 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:35:33,147 - functions.py -  INFO     - j: 1
+2020-05-06 07:35:33,147 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:35:33,147 - functions.py -  INFO     - size: 261091
+2020-05-06 07:35:33,147 - functions.py -  INFO     - found one!
+2020-05-06 07:35:33,153 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:35:33,153 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:33,153 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:33,153 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:33,154 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:33,154 - functions.py -  INFO     - user global added
+2020-05-06 07:35:33,154 - functions.py -  INFO     - added streak
+2020-05-06 07:35:33,154 - functions.py -  INFO     - no dm
+2020-05-06 07:35:33,155 - functions.py -  INFO     - user server added
+2020-05-06 07:35:33,155 - get_birds.py -  INFO     - args: ['bw', 'female']
+2020-05-06 07:35:33,155 - get_birds.py -  INFO     - args: bw: True; addon: female; taxon: 
+2020-05-06 07:35:33,155 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:35:33,155 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:35:33,156 - functions.py -  INFO     - checking roles
+2020-05-06 07:35:33,156 - functions.py -  INFO     - server context
+2020-05-06 07:35:33,156 - functions.py -  INFO     - user roles: []
+2020-05-06 07:35:33,156 - get_birds.py -  INFO     - addon: female; bw: True; taxon: []; roles: []
+2020-05-06 07:35:33,156 - get_birds.py -  INFO     - number of birds: 159
+2020-05-06 07:35:33,156 - get_birds.py -  INFO     - currentBird: Red Breasted Nuthatch
+2020-05-06 07:35:33,157 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:33,157 - functions.py -  INFO     - did not find Red Breasted Nuthatch in cache
+2020-05-06 07:35:33,157 - functions.py -  INFO     - getting sciname for Red Breasted Nuthatch
+2020-05-06 07:35:33,157 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:33,157 - functions.py -  INFO     - did not find Red Breasted Nuthatch in cache
+2020-05-06 07:35:33,157 - functions.py -  INFO     - getting taxon code for Red Breasted Nuthatch
+2020-05-06 07:35:33,283 - functions.py -  INFO     - raw data: [{'name': 'Red-breasted Nuthatch - Sitta canadensis', 'code': 'rebnut'}]
+2020-05-06 07:35:33,284 - functions.py -  INFO     - first item: {'name': 'Red-breasted Nuthatch - Sitta canadensis', 'code': 'rebnut'}
+2020-05-06 07:35:33,284 - functions.py -  INFO     - taxon code: rebnut
+2020-05-06 07:35:33,432 - functions.py -  INFO     - sciname: Sitta canadensis
+2020-05-06 07:35:33,432 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:35:33,432 - functions.py -  INFO     - trying
+2020-05-06 07:35:33,432 - functions.py -  INFO     - fetching files
+2020-05-06 07:35:33,432 - functions.py -  INFO     - scibird: Sitta canadensis
+2020-05-06 07:35:33,432 - functions.py -  INFO     - getting file urls for Sitta canadensis
+2020-05-06 07:35:33,432 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:33,432 - functions.py -  INFO     - did not find Sitta canadensis in cache
+2020-05-06 07:35:33,432 - functions.py -  INFO     - getting taxon code for Sitta canadensis
+2020-05-06 07:35:33,562 - functions.py -  INFO     - raw data: [{'name': 'Red-breasted Nuthatch - Sitta canadensis', 'code': 'rebnut'}]
+2020-05-06 07:35:33,562 - functions.py -  INFO     - first item: {'name': 'Red-breasted Nuthatch - Sitta canadensis', 'code': 'rebnut'}
+2020-05-06 07:35:33,562 - functions.py -  INFO     - taxon code: rebnut
+2020-05-06 07:35:33,805 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:35:34,064 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:35:34,365 - functions.py -  INFO     - downloaded images for Sitta canadensis
+2020-05-06 07:35:34,365 - functions.py -  INFO     - returned filename count: 20
+2020-05-06 07:35:34,366 - functions.py -  INFO     - actual filenames count: 20
+2020-05-06 07:35:34,366 - functions.py -  INFO     - images: ['cache/images/Sitta canadensisfemale/0.jpeg', 'cache/images/Sitta canadensisfemale/1.jpeg', 'cache/images/Sitta canadensisfemale/2.jpeg', 'cache/images/Sitta canadensisfemale/3.jpeg', 'cache/images/Sitta canadensisfemale/4.jpeg', 'cache/images/Sitta canadensisfemale/5.jpeg', 'cache/images/Sitta canadensisfemale/6.jpeg', 'cache/images/Sitta canadensisfemale/7.jpeg', 'cache/images/Sitta canadensisfemale/8.jpeg', 'cache/images/Sitta canadensisfemale/9.jpeg', 'cache/images/Sitta canadensisfemale/10.jpeg', 'cache/images/Sitta canadensisfemale/11.jpeg', 'cache/images/Sitta canadensisfemale/12.jpeg', 'cache/images/Sitta canadensisfemale/13.jpeg', 'cache/images/Sitta canadensisfemale/14.jpeg', 'cache/images/Sitta canadensisfemale/15.jpeg', 'cache/images/Sitta canadensisfemale/16.jpeg', 'cache/images/Sitta canadensisfemale/17.jpeg', 'cache/images/Sitta canadensisfemale/18.jpeg', 'cache/images/Sitta canadensisfemale/19.jpeg']
+2020-05-06 07:35:34,367 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:35:34,367 - functions.py -  INFO     - j: 1
+2020-05-06 07:35:34,367 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:35:34,367 - functions.py -  INFO     - size: 192988
+2020-05-06 07:35:34,367 - functions.py -  INFO     - found one!
+2020-05-06 07:35:34,367 - functions.py -  INFO     - black and white
+2020-05-06 07:35:34,545 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:35:34,546 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:34,546 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:34,546 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:34,546 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:34,547 - functions.py -  INFO     - user global added
+2020-05-06 07:35:34,547 - functions.py -  INFO     - added streak
+2020-05-06 07:35:34,547 - functions.py -  INFO     - no dm
+2020-05-06 07:35:34,547 - functions.py -  INFO     - user server added
+2020-05-06 07:35:34,547 - get_birds.py -  INFO     - args: ['passeriformes', 'yolo', 'bw', 'juvenile']
+2020-05-06 07:35:34,548 - get_birds.py -  INFO     - args: bw: True; addon: juvenile; taxon: passeriformes
+2020-05-06 07:35:34,548 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:35:34,548 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:35:34,548 - functions.py -  INFO     - checking roles
+2020-05-06 07:35:34,548 - functions.py -  INFO     - server context
+2020-05-06 07:35:34,548 - functions.py -  INFO     - user roles: []
+2020-05-06 07:35:34,548 - get_birds.py -  INFO     - addon: juvenile; bw: True; taxon: ['passeriformes']; roles: []
+2020-05-06 07:35:34,549 - get_birds.py -  INFO     - number of birds: 70
+2020-05-06 07:35:34,549 - get_birds.py -  INFO     - currentBird: Painted Bunting
+2020-05-06 07:35:34,549 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:34,549 - functions.py -  INFO     - did not find Painted Bunting in cache
+2020-05-06 07:35:34,549 - functions.py -  INFO     - getting sciname for Painted Bunting
+2020-05-06 07:35:34,549 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:34,549 - functions.py -  INFO     - did not find Painted Bunting in cache
+2020-05-06 07:35:34,550 - functions.py -  INFO     - getting taxon code for Painted Bunting
+2020-05-06 07:35:34,675 - functions.py -  INFO     - raw data: [{'name': 'Painted Bunting - Passerina ciris', 'code': 'paibun'}, {'name': 'Indigo x Painted Bunting (hybrid) - Passerina cyanea x ciris', 'code': 'x00918'}, {'name': 'Varied x Painted Bunting (hybrid) - Passerina versicolor x ciris', 'code': 'x00902'}]
+2020-05-06 07:35:34,676 - functions.py -  INFO     - first item: {'name': 'Painted Bunting - Passerina ciris', 'code': 'paibun'}
+2020-05-06 07:35:34,676 - functions.py -  INFO     - entering check
+2020-05-06 07:35:34,676 - functions.py -  INFO     - checking: {'name': 'Painted Bunting - Passerina ciris', 'code': 'paibun'}
+2020-05-06 07:35:34,676 - functions.py -  INFO     - ok
+2020-05-06 07:35:34,676 - functions.py -  INFO     - taxon code: paibun
+2020-05-06 07:35:34,827 - functions.py -  INFO     - sciname: Passerina ciris
+2020-05-06 07:35:34,827 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:35:34,827 - functions.py -  INFO     - trying
+2020-05-06 07:35:34,827 - functions.py -  INFO     - fetching files
+2020-05-06 07:35:34,827 - functions.py -  INFO     - scibird: Passerina ciris
+2020-05-06 07:35:34,827 - functions.py -  INFO     - getting file urls for Passerina ciris
+2020-05-06 07:35:34,827 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:34,827 - functions.py -  INFO     - did not find Passerina ciris in cache
+2020-05-06 07:35:34,827 - functions.py -  INFO     - getting taxon code for Passerina ciris
+2020-05-06 07:35:34,963 - functions.py -  INFO     - raw data: [{'name': 'Painted Bunting - Passerina ciris', 'code': 'paibun'}, {'name': 'Indigo x Painted Bunting (hybrid) - Passerina cyanea x ciris', 'code': 'x00918'}, {'name': 'Varied x Painted Bunting (hybrid) - Passerina versicolor x ciris', 'code': 'x00902'}]
+2020-05-06 07:35:34,964 - functions.py -  INFO     - first item: {'name': 'Painted Bunting - Passerina ciris', 'code': 'paibun'}
+2020-05-06 07:35:34,964 - functions.py -  INFO     - entering check
+2020-05-06 07:35:34,964 - functions.py -  INFO     - checking: {'name': 'Painted Bunting - Passerina ciris', 'code': 'paibun'}
+2020-05-06 07:35:34,964 - functions.py -  INFO     - ok
+2020-05-06 07:35:34,964 - functions.py -  INFO     - taxon code: paibun
+2020-05-06 07:35:35,182 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:35:35,468 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:35:35,896 - functions.py -  INFO     - downloaded images for Passerina ciris
+2020-05-06 07:35:35,896 - functions.py -  INFO     - returned filename count: 20
+2020-05-06 07:35:35,896 - functions.py -  INFO     - actual filenames count: 20
+2020-05-06 07:35:35,897 - functions.py -  INFO     - images: ['cache/images/Passerina cirisjuvenile/0.jpeg', 'cache/images/Passerina cirisjuvenile/1.jpeg', 'cache/images/Passerina cirisjuvenile/2.jpeg', 'cache/images/Passerina cirisjuvenile/3.jpeg', 'cache/images/Passerina cirisjuvenile/4.jpeg', 'cache/images/Passerina cirisjuvenile/5.jpeg', 'cache/images/Passerina cirisjuvenile/6.jpeg', 'cache/images/Passerina cirisjuvenile/7.jpeg', 'cache/images/Passerina cirisjuvenile/8.png', 'cache/images/Passerina cirisjuvenile/9.jpeg', 'cache/images/Passerina cirisjuvenile/10.jpeg', 'cache/images/Passerina cirisjuvenile/11.jpeg', 'cache/images/Passerina cirisjuvenile/12.jpeg', 'cache/images/Passerina cirisjuvenile/13.jpeg', 'cache/images/Passerina cirisjuvenile/14.jpeg', 'cache/images/Passerina cirisjuvenile/15.jpeg', 'cache/images/Passerina cirisjuvenile/16.jpeg', 'cache/images/Passerina cirisjuvenile/17.jpeg', 'cache/images/Passerina cirisjuvenile/18.jpeg', 'cache/images/Passerina cirisjuvenile/19.jpeg']
+2020-05-06 07:35:35,897 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:35:35,897 - functions.py -  INFO     - j: 1
+2020-05-06 07:35:35,897 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:35:35,897 - functions.py -  INFO     - size: 329056
+2020-05-06 07:35:35,897 - functions.py -  INFO     - found one!
+2020-05-06 07:35:35,898 - functions.py -  INFO     - black and white
+2020-05-06 07:35:36,013 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:35:36,013 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:36,014 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:36,014 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:36,014 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:36,014 - functions.py -  INFO     - user global added
+2020-05-06 07:35:36,015 - functions.py -  INFO     - added streak
+2020-05-06 07:35:36,015 - functions.py -  INFO     - no dm
+2020-05-06 07:35:36,015 - functions.py -  INFO     - user server added
+2020-05-06 07:35:36,015 - get_birds.py -  INFO     - args: ['13435', 'troglodytidae', 'f']
+2020-05-06 07:35:36,016 - get_birds.py -  INFO     - args: bw: False; addon: female; taxon: troglodytidae
+2020-05-06 07:35:36,016 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:35:36,016 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:35:36,016 - functions.py -  INFO     - checking roles
+2020-05-06 07:35:36,016 - functions.py -  INFO     - server context
+2020-05-06 07:35:36,016 - functions.py -  INFO     - user roles: []
+2020-05-06 07:35:36,017 - get_birds.py -  INFO     - addon: female; bw: False; taxon: ['troglodytidae']; roles: []
+2020-05-06 07:35:36,017 - get_birds.py -  INFO     - number of birds: 3
+2020-05-06 07:35:36,017 - get_birds.py -  INFO     - currentBird: Carolina Wren
+2020-05-06 07:35:36,017 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:36,017 - functions.py -  INFO     - did not find Carolina Wren in cache
+2020-05-06 07:35:36,017 - functions.py -  INFO     - getting sciname for Carolina Wren
+2020-05-06 07:35:36,018 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:36,018 - functions.py -  INFO     - did not find Carolina Wren in cache
+2020-05-06 07:35:36,018 - functions.py -  INFO     - getting taxon code for Carolina Wren
+2020-05-06 07:35:36,152 - functions.py -  INFO     - raw data: [{'name': 'Carolina Wren - Thryothorus ludovicianus', 'code': 'carwre'}, {'name': 'Carolina Wren (Northern) - Thryothorus ludovicianus [ludovicianus Group]', 'code': 'carwre1'}, {'name': 'Carolina Wren (Northeast Mexico/South Texas) - Thryothorus ludovicianus [berlandieri Group]', 'code': 'y00487'}, {'name': 'Carolina Wren (White-browed) - Thryothorus ludovicianus albinucha/subfulvus', 'code': 'carwre2'}]
+2020-05-06 07:35:36,153 - functions.py -  INFO     - first item: {'name': 'Carolina Wren - Thryothorus ludovicianus', 'code': 'carwre'}
+2020-05-06 07:35:36,153 - functions.py -  INFO     - entering check
+2020-05-06 07:35:36,153 - functions.py -  INFO     - checking: {'name': 'Carolina Wren - Thryothorus ludovicianus', 'code': 'carwre'}
+2020-05-06 07:35:36,153 - functions.py -  INFO     - ok
+2020-05-06 07:35:36,153 - functions.py -  INFO     - taxon code: carwre
+2020-05-06 07:35:36,302 - functions.py -  INFO     - sciname: Thryothorus ludovicianus
+2020-05-06 07:35:36,302 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:35:36,302 - functions.py -  INFO     - trying
+2020-05-06 07:35:36,302 - functions.py -  INFO     - fetching files
+2020-05-06 07:35:36,302 - functions.py -  INFO     - scibird: Thryothorus ludovicianus
+2020-05-06 07:35:36,302 - functions.py -  INFO     - getting file urls for Thryothorus ludovicianus
+2020-05-06 07:35:36,302 - functions.py -  INFO     - checking cache
+2020-05-06 07:35:36,302 - functions.py -  INFO     - did not find Thryothorus ludovicianus in cache
+2020-05-06 07:35:36,303 - functions.py -  INFO     - getting taxon code for Thryothorus ludovicianus
+2020-05-06 07:35:36,429 - functions.py -  INFO     - raw data: [{'name': 'Carolina Wren - Thryothorus ludovicianus', 'code': 'carwre'}, {'name': 'Carolina Wren (Northern) - Thryothorus ludovicianus [ludovicianus Group]', 'code': 'carwre1'}, {'name': 'Carolina Wren (Northeast Mexico/South Texas) - Thryothorus ludovicianus [berlandieri Group]', 'code': 'y00487'}, {'name': 'Carolina Wren (White-browed) - Thryothorus ludovicianus albinucha/subfulvus', 'code': 'carwre2'}]
+2020-05-06 07:35:36,429 - functions.py -  INFO     - first item: {'name': 'Carolina Wren - Thryothorus ludovicianus', 'code': 'carwre'}
+2020-05-06 07:35:36,429 - functions.py -  INFO     - entering check
+2020-05-06 07:35:36,429 - functions.py -  INFO     - checking: {'name': 'Carolina Wren - Thryothorus ludovicianus', 'code': 'carwre'}
+2020-05-06 07:35:36,430 - functions.py -  INFO     - ok
+2020-05-06 07:35:36,430 - functions.py -  INFO     - taxon code: carwre
+2020-05-06 07:35:36,627 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:35:36,904 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:35:37,219 - functions.py -  INFO     - downloaded images for Thryothorus ludovicianus
+2020-05-06 07:35:37,219 - functions.py -  INFO     - returned filename count: 20
+2020-05-06 07:35:37,219 - functions.py -  INFO     - actual filenames count: 20
+2020-05-06 07:35:37,220 - functions.py -  INFO     - images: ['cache/images/Thryothorus ludovicianusfemale/0.jpeg', 'cache/images/Thryothorus ludovicianusfemale/1.jpeg', 'cache/images/Thryothorus ludovicianusfemale/2.jpeg', 'cache/images/Thryothorus ludovicianusfemale/3.jpeg', 'cache/images/Thryothorus ludovicianusfemale/4.jpeg', 'cache/images/Thryothorus ludovicianusfemale/5.jpeg', 'cache/images/Thryothorus ludovicianusfemale/6.jpeg', 'cache/images/Thryothorus ludovicianusfemale/7.jpeg', 'cache/images/Thryothorus ludovicianusfemale/8.jpeg', 'cache/images/Thryothorus ludovicianusfemale/9.jpeg', 'cache/images/Thryothorus ludovicianusfemale/10.jpeg', 'cache/images/Thryothorus ludovicianusfemale/11.jpeg', 'cache/images/Thryothorus ludovicianusfemale/12.jpeg', 'cache/images/Thryothorus ludovicianusfemale/13.jpeg', 'cache/images/Thryothorus ludovicianusfemale/14.jpeg', 'cache/images/Thryothorus ludovicianusfemale/15.jpeg', 'cache/images/Thryothorus ludovicianusfemale/16.jpeg', 'cache/images/Thryothorus ludovicianusfemale/17.jpeg', 'cache/images/Thryothorus ludovicianusfemale/18.jpeg', 'cache/images/Thryothorus ludovicianusfemale/19.jpeg']
+2020-05-06 07:35:37,220 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:35:37,221 - functions.py -  INFO     - j: 1
+2020-05-06 07:35:37,221 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:35:37,221 - functions.py -  INFO     - size: 222101
+2020-05-06 07:35:37,221 - functions.py -  INFO     - found one!
+2020-05-06 07:35:37,226 - hint.py    -  INFO     - command: hint
+2020-05-06 07:35:37,226 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,227 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:37,227 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,227 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,227 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,228 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,228 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,228 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,232 - hint.py    -  INFO     - command: hint
+2020-05-06 07:35:37,232 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,232 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:37,233 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,233 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,233 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,233 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,233 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,234 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,238 - hint.py    -  INFO     - command: hintgoat
+2020-05-06 07:35:37,238 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,238 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:37,238 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,239 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,239 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,239 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,239 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,239 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,244 - hint.py    -  INFO     - command: hintgoat
+2020-05-06 07:35:37,244 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,244 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:37,244 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,244 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,244 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,245 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,245 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,245 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,249 - hint.py    -  INFO     - command: hintsong
+2020-05-06 07:35:37,249 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,250 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:37,250 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,250 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,250 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,251 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,251 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,251 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,255 - hint.py    -  INFO     - command: hintsong
+2020-05-06 07:35:37,255 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,255 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:37,255 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,256 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,256 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,256 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,256 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,257 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,261 - skip.py    -  INFO     - command: skip
+2020-05-06 07:35:37,261 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,261 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:37,262 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,262 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,262 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,262 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,262 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,263 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,267 - skip.py    -  INFO     - command: skip
+2020-05-06 07:35:37,267 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,267 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:37,267 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,267 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,268 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,268 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,268 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,268 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,273 - skip.py    -  INFO     - command: skipgoat
+2020-05-06 07:35:37,273 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,273 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:37,273 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,273 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,274 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,274 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,274 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,274 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,279 - skip.py    -  INFO     - command: skipgoat
+2020-05-06 07:35:37,279 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,279 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:37,279 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,279 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,280 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,280 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,280 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,281 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,285 - skip.py    -  INFO     - command: skipsong
+2020-05-06 07:35:37,285 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,285 - functions.py -  INFO     - channel data added
+2020-05-06 07:35:37,286 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,286 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,286 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,286 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,286 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,287 - functions.py -  INFO     - user server added
+2020-05-06 07:35:37,291 - skip.py    -  INFO     - command: skipsong
+2020-05-06 07:35:37,291 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:35:37,291 - functions.py -  INFO     - channel data ok
+2020-05-06 07:35:37,292 - functions.py -  INFO     - channel score added
+2020-05-06 07:35:37,292 - functions.py -  INFO     - checking user data
+2020-05-06 07:35:37,292 - functions.py -  INFO     - user global added
+2020-05-06 07:35:37,292 - functions.py -  INFO     - added streak
+2020-05-06 07:35:37,292 - functions.py -  INFO     - no dm
+2020-05-06 07:35:37,293 - functions.py -  INFO     - user server added
+2020-05-06 07:43:23,831 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:43:23,831 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:43:23,831 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:43:23,832 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:43:23,832 - __init__.py -  INFO     - Working on memeList
+2020-05-06 07:43:23,832 - __init__.py -  INFO     - Done with memeList
+2020-05-06 07:43:23,832 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:43:23,832 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:43:23,832 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:43:23,832 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:43:23,832 - __init__.py -  INFO     - Done with nats list!
+2020-05-06 07:43:23,832 - __init__.py -  INFO     - Working on NY
+2020-05-06 07:43:23,833 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:43:23,833 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:43:23,833 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:43:23,833 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:43:23,833 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:43:23,833 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:43:23,833 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:43:23,833 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:43:23,834 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:43:23,834 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:43:23,834 - __init__.py -  INFO     - Done with NY
+2020-05-06 07:43:23,834 - __init__.py -  INFO     - Working on OLD
+2020-05-06 07:43:23,834 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:43:23,834 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:43:23,834 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:43:23,835 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:43:23,835 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:43:23,835 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:43:23,835 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:43:23,835 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:43:23,835 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:43:23,835 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:43:23,835 - __init__.py -  INFO     - Done with OLD
+2020-05-06 07:43:23,835 - __init__.py -  INFO     - Working on NC-S
+2020-05-06 07:43:23,835 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Done with NC-S
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Working on NC-R
+2020-05-06 07:43:23,836 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Done with NC-R
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Working on SCA
+2020-05-06 07:43:23,837 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:43:23,838 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:43:23,838 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:43:23,838 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:43:23,838 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:43:23,838 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:43:23,838 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:43:23,838 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:43:23,839 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:43:23,839 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:43:23,839 - __init__.py -  INFO     - Done with SCA
+2020-05-06 07:43:23,839 - __init__.py -  INFO     - Working on MN
+2020-05-06 07:43:23,839 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:43:23,839 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:43:23,839 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:43:23,839 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:43:23,839 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:43:23,839 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:43:23,840 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:43:23,840 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:43:23,840 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:43:23,840 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:43:23,840 - __init__.py -  INFO     - Done with MN
+2020-05-06 07:43:23,840 - __init__.py -  INFO     - Working on NATS
+2020-05-06 07:43:23,840 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:43:23,840 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:43:23,840 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:43:23,841 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:43:23,841 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:43:23,841 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:43:23,841 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:43:23,841 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:43:23,841 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:43:23,841 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Done with NATS
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Working on IN
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Working on aliases
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Done with aliases
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:43:23,842 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Done with IN
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Done with states list!
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Working on birdList
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Done with birdList
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Working on sciBirdList
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Done with sciBirdList
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Working on songBirds
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Done with songBirds
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Working on sciSongBirds
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Done with sciSongBirds
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Done with master lists!
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Working on taxon lists
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Working on taxon master list
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Done with taxon master list
+2020-05-06 07:43:23,843 - __init__.py -  INFO     - Working on strigiformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Done with strigiformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Working on anseriformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Done with anseriformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Working on charadriiformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Done with charadriiformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Working on pelecaniformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Done with pelecaniformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Working on piciformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Done with piciformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Working on cathartiformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Done with cathartiformes.txt
+2020-05-06 07:43:23,844 - __init__.py -  INFO     - Working on passeriformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Done with passeriformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Working on coraciiformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Done with coraciiformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Working on caprimulgiformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Done with caprimulgiformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Working on columbiformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Done with columbiformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Working on gruiformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Done with gruiformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Working on trogoniformes.txt
+2020-05-06 07:43:23,845 - __init__.py -  INFO     - Done with trogoniformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Working on accipitriformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Done with accipitriformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Working on ciconiiformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Done with ciconiiformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Working on cuculiformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Done with cuculiformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Working on galliformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Done with galliformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Working on suliformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Done with suliformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Working on podicipediformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Done with podicipediformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Working on apodiformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Done with apodiformes.txt
+2020-05-06 07:43:23,846 - __init__.py -  INFO     - Working on procellariiformes.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Done with procellariiformes.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Working on gaviiformes.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Done with gaviiformes.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Working on falconiformes.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Done with falconiformes.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Working on passerellidae.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Done with passerellidae.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Working on calcariidae.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Done with calcariidae.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Working on polioptilidae.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Done with polioptilidae.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Working on sturnidae.txt
+2020-05-06 07:43:23,847 - __init__.py -  INFO     - Done with sturnidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Working on laniidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Done with laniidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Working on troglodytidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Done with troglodytidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Working on passeridae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Done with passeridae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Working on fringillidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Done with fringillidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Working on paridae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Done with paridae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Working on regulidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Done with regulidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Working on cinclidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Done with cinclidae.txt
+2020-05-06 07:43:23,848 - __init__.py -  INFO     - Working on turdidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Done with turdidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Working on cardinalidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Done with cardinalidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Working on icteridae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Done with icteridae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Working on parulidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Done with parulidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Working on hirundinidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Done with hirundinidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Working on certhiidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Done with certhiidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Working on vireonidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Done with vireonidae.txt
+2020-05-06 07:43:23,849 - __init__.py -  INFO     - Working on sittidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Done with sittidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Working on tyrannidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Done with tyrannidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Working on alaudidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Done with alaudidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Working on mimidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Done with mimidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Working on corvidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Done with corvidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Working on bombycillidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Done with bombycillidae.txt
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Done with taxon lists!
+2020-05-06 07:43:23,850 - __init__.py -  INFO     - Working on wiki urls
+2020-05-06 07:43:23,851 - __init__.py -  INFO     - Done with wiki urls
+2020-05-06 07:43:23,851 - __init__.py -  INFO     - National Lengths: 159, 159, 36, 36
+2020-05-06 07:43:23,851 - __init__.py -  INFO     - Master Lengths: 224, 221, 63, 61
+2020-05-06 07:43:23,851 - __init__.py -  INFO     - Done importing data!
+2020-05-06 07:43:23,905 - check.py   -  INFO     - command: check
+2020-05-06 07:43:23,905 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:23,905 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:23,906 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:23,906 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:23,906 - functions.py -  INFO     - user global added
+2020-05-06 07:43:23,906 - functions.py -  INFO     - added streak
+2020-05-06 07:43:23,906 - functions.py -  INFO     - no dm
+2020-05-06 07:43:23,907 - functions.py -  INFO     - user server added
+2020-05-06 07:43:23,911 - check.py   -  INFO     - command: check
+2020-05-06 07:43:23,911 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:23,911 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:23,911 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:23,912 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:23,912 - functions.py -  INFO     - user global added
+2020-05-06 07:43:23,912 - functions.py -  INFO     - added streak
+2020-05-06 07:43:23,912 - functions.py -  INFO     - no dm
+2020-05-06 07:43:23,913 - functions.py -  INFO     - user server added
+2020-05-06 07:43:23,913 - check.py   -  INFO     - currentBird: canada goose
+2020-05-06 07:43:23,913 - check.py   -  INFO     - args: canada goose
+2020-05-06 07:43:23,913 - functions.py -  INFO     - checking bird data
+2020-05-06 07:43:23,913 - functions.py -  INFO     - bird global added
+2020-05-06 07:43:23,913 - functions.py -  INFO     - bird user added
+2020-05-06 07:43:23,914 - functions.py -  INFO     - no dm
+2020-05-06 07:43:23,914 - functions.py -  INFO     - bird server added
+2020-05-06 07:43:23,914 - functions.py -  INFO     - no session
+2020-05-06 07:43:23,914 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:23,914 - functions.py -  INFO     - did not find Canada Goose in cache
+2020-05-06 07:43:23,914 - functions.py -  INFO     - getting sciname for Canada Goose
+2020-05-06 07:43:23,914 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:23,914 - functions.py -  INFO     - did not find Canada Goose in cache
+2020-05-06 07:43:23,914 - functions.py -  INFO     - getting taxon code for Canada Goose
+2020-05-06 07:43:24,141 - functions.py -  INFO     - raw data: [{'name': 'Canada Goose - Branta canadensis', 'code': 'cangoo'}, {'name': 'Canada Goose (moffitti/maxima) - Branta canadensis moffitti/maxima', 'code': 'cangoo4'}, {'name': 'Canada Goose (occidentalis/fulva) - Branta canadensis occidentalis/fulva', 'code': 'cangoo3'}, {'name': 'Canada Goose (canadensis Group) - Branta canadensis [canadensis Group]', 'code': 'cangoo1'}, {'name': 'Bar-headed x Canada Goose (hybrid) - Anser indicus x Branta canadensis', 'code': 'x00908'}, {'name': 'Swan Goose (Domestic type) x Canada Goose (hybrid) - Anser cygnoides (Domestic type) x Branta canadensis', 'code': 'swagoo3'}, {'name': 'Pink-footed x Canada Goose (hybrid) - Anser brachyrhynchus x Branta canadensis', 'code': 'x00650'}, {'name': 'Greater White-fronted x Canada Goose (hybrid) - Anser albifrons x Branta canadensis', 'code': 'x00415'}, {'name': 'Graylag x Canada Goose (hybrid) - Anser anser x Branta canadensis', 'code': 'x00758'}, {'name': 'Graylag Goose (Domestic type) x Canada Goose (hybrid) - Anser anser (Domestic type) x Branta canadensis', 'code': 'gragoo4'}, {'name': 'Domestic goose sp. (Domestic type) x Canada Goose (hybrid) - Anser sp. (Domestic type) x Branta canadensis', 'code': 'x00759'}, {'name': 'Snow x Canada Goose (hybrid) - Anser caerulescens x Branta canadensis', 'code': 'x00197'}, {'name': "Ross's x Canada Goose (hybrid) - Anser rossii x Branta canadensis", 'code': 'x00693'}, {'name': 'Barnacle x Canada Goose (hybrid) - Branta leucopsis x canadensis', 'code': 'x00417'}, {'name': 'Cackling/Canada Goose - Branta hutchinsii/canadensis', 'code': 'y00470'}, {'name': "Snow/Ross's x Cackling/Canada Goose (hybrid) - Anser caerulescens/rossii x Branta hutchinsii/canadensis", 'code': 'y00765'}]
+2020-05-06 07:43:24,141 - functions.py -  INFO     - first item: {'name': 'Canada Goose - Branta canadensis', 'code': 'cangoo'}
+2020-05-06 07:43:24,141 - functions.py -  INFO     - entering check
+2020-05-06 07:43:24,141 - functions.py -  INFO     - checking: {'name': 'Canada Goose - Branta canadensis', 'code': 'cangoo'}
+2020-05-06 07:43:24,141 - functions.py -  INFO     - ok
+2020-05-06 07:43:24,141 - functions.py -  INFO     - taxon code: cangoo
+2020-05-06 07:43:24,307 - functions.py -  INFO     - sciname: Branta canadensis
+2020-05-06 07:43:24,307 - check.py   -  INFO     - correct
+2020-05-06 07:43:24,308 - functions.py -  INFO     - incrementing score by 1
+2020-05-06 07:43:24,308 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,314 - check.py   -  INFO     - command: check
+2020-05-06 07:43:24,314 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:24,314 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:24,314 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:24,314 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:24,315 - functions.py -  INFO     - user global added
+2020-05-06 07:43:24,315 - functions.py -  INFO     - added streak
+2020-05-06 07:43:24,315 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,315 - functions.py -  INFO     - user server added
+2020-05-06 07:43:24,315 - check.py   -  INFO     - currentBird: canada goose
+2020-05-06 07:43:24,316 - check.py   -  INFO     - args: canada goosecanada goose
+2020-05-06 07:43:24,316 - functions.py -  INFO     - checking bird data
+2020-05-06 07:43:24,316 - functions.py -  INFO     - bird global ok
+2020-05-06 07:43:24,316 - functions.py -  INFO     - bird user added
+2020-05-06 07:43:24,316 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,316 - functions.py -  INFO     - bird server added
+2020-05-06 07:43:24,317 - functions.py -  INFO     - no session
+2020-05-06 07:43:24,317 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:24,317 - functions.py -  INFO     - Canada Goose found in cache!
+2020-05-06 07:43:24,317 - check.py   -  INFO     - incorrect
+2020-05-06 07:43:24,317 - functions.py -  INFO     - incrementing incorrect Canada Goose by 1
+2020-05-06 07:43:24,318 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,318 - functions.py -  INFO     - no session
+2020-05-06 07:43:24,323 - check.py   -  INFO     - command: checksong
+2020-05-06 07:43:24,323 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:24,323 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:24,323 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:24,323 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:24,324 - functions.py -  INFO     - user global added
+2020-05-06 07:43:24,324 - functions.py -  INFO     - added streak
+2020-05-06 07:43:24,324 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,324 - functions.py -  INFO     - user server added
+2020-05-06 07:43:24,328 - check.py   -  INFO     - command: checksong
+2020-05-06 07:43:24,329 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:24,329 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:24,329 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:24,329 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:24,329 - functions.py -  INFO     - user global added
+2020-05-06 07:43:24,330 - functions.py -  INFO     - added streak
+2020-05-06 07:43:24,330 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,330 - functions.py -  INFO     - user server added
+2020-05-06 07:43:24,330 - check.py   -  INFO     - currentBird: northern cardinal
+2020-05-06 07:43:24,330 - check.py   -  INFO     - args: northern cardinal
+2020-05-06 07:43:24,330 - functions.py -  INFO     - checking bird data
+2020-05-06 07:43:24,331 - functions.py -  INFO     - bird global added
+2020-05-06 07:43:24,331 - functions.py -  INFO     - bird user added
+2020-05-06 07:43:24,331 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,331 - functions.py -  INFO     - bird server added
+2020-05-06 07:43:24,331 - functions.py -  INFO     - no session
+2020-05-06 07:43:24,332 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:24,332 - functions.py -  INFO     - did not find Northern Cardinal in cache
+2020-05-06 07:43:24,332 - functions.py -  INFO     - getting sciname for Northern Cardinal
+2020-05-06 07:43:24,332 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:24,332 - functions.py -  INFO     - did not find Northern Cardinal in cache
+2020-05-06 07:43:24,332 - functions.py -  INFO     - getting taxon code for Northern Cardinal
+2020-05-06 07:43:24,463 - functions.py -  INFO     - raw data: [{'name': 'Northern Cardinal - Cardinalis cardinalis', 'code': 'norcar'}, {'name': 'Northern Cardinal (Common) - Cardinalis cardinalis [cardinalis Group]', 'code': 'norcar1'}, {'name': 'Northern Cardinal (Long-crested) - Cardinalis cardinalis carneus', 'code': 'norcar2'}, {'name': 'Northern Cardinal x Pyrrhuloxia (hybrid) - Cardinalis cardinalis x sinuatus', 'code': 'x00774'}, {'name': 'Northern Cardinal/Pyrrhuloxia - Cardinalis cardinalis/sinuatus', 'code': 'y00647'}]
+2020-05-06 07:43:24,463 - functions.py -  INFO     - first item: {'name': 'Northern Cardinal - Cardinalis cardinalis', 'code': 'norcar'}
+2020-05-06 07:43:24,464 - functions.py -  INFO     - entering check
+2020-05-06 07:43:24,464 - functions.py -  INFO     - checking: {'name': 'Northern Cardinal - Cardinalis cardinalis', 'code': 'norcar'}
+2020-05-06 07:43:24,464 - functions.py -  INFO     - ok
+2020-05-06 07:43:24,464 - functions.py -  INFO     - taxon code: norcar
+2020-05-06 07:43:24,602 - functions.py -  INFO     - sciname: Cardinalis cardinalis
+2020-05-06 07:43:24,602 - check.py   -  INFO     - correct
+2020-05-06 07:43:24,603 - functions.py -  INFO     - incrementing score by 1
+2020-05-06 07:43:24,604 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,648 - check.py   -  INFO     - command: checksong
+2020-05-06 07:43:24,648 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:24,648 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:24,648 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:24,649 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:24,649 - functions.py -  INFO     - user global added
+2020-05-06 07:43:24,649 - functions.py -  INFO     - added streak
+2020-05-06 07:43:24,649 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,650 - functions.py -  INFO     - user server added
+2020-05-06 07:43:24,650 - check.py   -  INFO     - currentBird: northern cardinal
+2020-05-06 07:43:24,650 - check.py   -  INFO     - args: northern cardinalnorthern cardinal
+2020-05-06 07:43:24,650 - functions.py -  INFO     - checking bird data
+2020-05-06 07:43:24,650 - functions.py -  INFO     - bird global ok
+2020-05-06 07:43:24,650 - functions.py -  INFO     - bird user added
+2020-05-06 07:43:24,650 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,651 - functions.py -  INFO     - bird server added
+2020-05-06 07:43:24,651 - functions.py -  INFO     - no session
+2020-05-06 07:43:24,651 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:24,651 - functions.py -  INFO     - Northern Cardinal found in cache!
+2020-05-06 07:43:24,652 - check.py   -  INFO     - incorrect
+2020-05-06 07:43:24,652 - functions.py -  INFO     - incrementing incorrect Northern Cardinal by 1
+2020-05-06 07:43:24,652 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,652 - functions.py -  INFO     - no session
+2020-05-06 07:43:24,657 - check.py   -  INFO     - command: checkgoat
+2020-05-06 07:43:24,657 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:24,657 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:24,658 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:24,658 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:24,658 - functions.py -  INFO     - user global added
+2020-05-06 07:43:24,658 - functions.py -  INFO     - added streak
+2020-05-06 07:43:24,658 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,659 - functions.py -  INFO     - user server added
+2020-05-06 07:43:24,663 - check.py   -  INFO     - command: checkgoat
+2020-05-06 07:43:24,663 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:24,663 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:24,663 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:24,663 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:24,664 - functions.py -  INFO     - user global added
+2020-05-06 07:43:24,664 - functions.py -  INFO     - added streak
+2020-05-06 07:43:24,664 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,664 - functions.py -  INFO     - user server added
+2020-05-06 07:43:24,665 - functions.py -  INFO     - checking bird data
+2020-05-06 07:43:24,665 - functions.py -  INFO     - bird global added
+2020-05-06 07:43:24,665 - functions.py -  INFO     - bird user added
+2020-05-06 07:43:24,665 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,665 - functions.py -  INFO     - bird server added
+2020-05-06 07:43:24,666 - functions.py -  INFO     - no session
+2020-05-06 07:43:24,666 - check.py   -  INFO     - correct
+2020-05-06 07:43:24,666 - functions.py -  INFO     - incrementing score by 1
+2020-05-06 07:43:24,667 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,667 - check.py   -  INFO     - currentBird: common pauraque
+2020-05-06 07:43:24,667 - check.py   -  INFO     - args: common pauraque
+2020-05-06 07:43:24,671 - check.py   -  INFO     - command: checkgoat
+2020-05-06 07:43:24,671 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:24,671 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:24,672 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:24,672 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:24,672 - functions.py -  INFO     - user global added
+2020-05-06 07:43:24,672 - functions.py -  INFO     - added streak
+2020-05-06 07:43:24,672 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,673 - functions.py -  INFO     - user server added
+2020-05-06 07:43:24,673 - functions.py -  INFO     - checking bird data
+2020-05-06 07:43:24,673 - functions.py -  INFO     - bird global ok
+2020-05-06 07:43:24,673 - functions.py -  INFO     - bird user added
+2020-05-06 07:43:24,673 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,674 - functions.py -  INFO     - bird server added
+2020-05-06 07:43:24,674 - functions.py -  INFO     - no session
+2020-05-06 07:43:24,675 - check.py   -  INFO     - incorrect
+2020-05-06 07:43:24,675 - functions.py -  INFO     - incrementing incorrect Common Pauraque by 1
+2020-05-06 07:43:24,675 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,676 - functions.py -  INFO     - no session
+2020-05-06 07:43:24,676 - check.py   -  INFO     - currentBird: common pauraque
+2020-05-06 07:43:24,676 - check.py   -  INFO     - args: common pauraquecommon pauraque
+2020-05-06 07:43:24,680 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:43:24,680 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:24,680 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:24,681 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:24,681 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:24,681 - functions.py -  INFO     - user global added
+2020-05-06 07:43:24,681 - functions.py -  INFO     - added streak
+2020-05-06 07:43:24,681 - functions.py -  INFO     - no dm
+2020-05-06 07:43:24,682 - functions.py -  INFO     - user server added
+2020-05-06 07:43:24,682 - get_birds.py -  INFO     - args: ['']
+2020-05-06 07:43:24,682 - get_birds.py -  INFO     - args: bw: False; addon: ; taxon: 
+2020-05-06 07:43:24,682 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:43:24,682 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:43:24,682 - functions.py -  INFO     - checking roles
+2020-05-06 07:43:24,682 - functions.py -  INFO     - server context
+2020-05-06 07:43:24,683 - functions.py -  INFO     - user roles: []
+2020-05-06 07:43:24,683 - get_birds.py -  INFO     - addon: ; bw: False; taxon: []; roles: []
+2020-05-06 07:43:24,683 - get_birds.py -  INFO     - number of birds: 159
+2020-05-06 07:43:24,683 - get_birds.py -  INFO     - currentBird: Barn Swallow
+2020-05-06 07:43:24,683 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:24,683 - functions.py -  INFO     - did not find Barn Swallow in cache
+2020-05-06 07:43:24,683 - functions.py -  INFO     - getting sciname for Barn Swallow
+2020-05-06 07:43:24,684 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:24,684 - functions.py -  INFO     - did not find Barn Swallow in cache
+2020-05-06 07:43:24,684 - functions.py -  INFO     - getting taxon code for Barn Swallow
+2020-05-06 07:43:24,821 - functions.py -  INFO     - raw data: [{'name': 'Barn Swallow - Hirundo rustica', 'code': 'barswa'}, {'name': 'Barn Swallow (White-bellied) - Hirundo rustica rustica', 'code': 'barswa2'}, {'name': 'Barn Swallow (Egyptian) - Hirundo rustica savignii', 'code': 'barswa6'}, {'name': 'Barn Swallow (Levant) - Hirundo rustica transitiva', 'code': 'barswa7'}, {'name': "Barn Swallow (Tytler's) - Hirundo rustica tytleri", 'code': 'barswa8'}, {'name': 'Barn Swallow (Buff-bellied) - Hirundo rustica gutturalis/mandschurica', 'code': 'barswa4'}, {'name': 'Barn Swallow (American) - Hirundo rustica erythrogaster', 'code': 'barswa5'}, {'name': 'Tree x Barn Swallow (hybrid) - Tachycineta bicolor x Hirundo rustica', 'code': 'x00666'}, {'name': 'Bank x Barn Swallow (hybrid) - Riparia riparia x Hirundo rustica', 'code': 'x00710'}, {'name': 'Barn/Pacific Swallow - Hirundo rustica/tahitica', 'code': 'y00746'}, {'name': 'Barn x Red-rumped Swallow (hybrid) - Hirundo rustica x Cecropis daurica', 'code': 'x00658'}, {'name': 'Barn x Cliff Swallow (hybrid) - Hirundo rustica x Petrochelidon pyrrhonota', 'code': 'x00717'}, {'name': 'Barn x Cave Swallow (hybrid) - Hirundo rustica x Petrochelidon fulva', 'code': 'x00660'}, {'name': 'Barn Swallow x Common House-Martin (hybrid) - Hirundo rustica x Delichon urbicum', 'code': 'x00659'}]
+2020-05-06 07:43:24,821 - functions.py -  INFO     - first item: {'name': 'Barn Swallow - Hirundo rustica', 'code': 'barswa'}
+2020-05-06 07:43:24,821 - functions.py -  INFO     - entering check
+2020-05-06 07:43:24,821 - functions.py -  INFO     - checking: {'name': 'Barn Swallow - Hirundo rustica', 'code': 'barswa'}
+2020-05-06 07:43:24,821 - functions.py -  INFO     - ok
+2020-05-06 07:43:24,821 - functions.py -  INFO     - taxon code: barswa
+2020-05-06 07:43:24,963 - functions.py -  INFO     - sciname: Hirundo rustica
+2020-05-06 07:43:24,963 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:43:24,964 - functions.py -  INFO     - trying
+2020-05-06 07:43:24,964 - functions.py -  INFO     - fetching files
+2020-05-06 07:43:24,964 - functions.py -  INFO     - scibird: Hirundo rustica
+2020-05-06 07:43:24,964 - functions.py -  INFO     - getting file urls for Hirundo rustica
+2020-05-06 07:43:24,964 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:24,964 - functions.py -  INFO     - did not find Hirundo rustica in cache
+2020-05-06 07:43:24,964 - functions.py -  INFO     - getting taxon code for Hirundo rustica
+2020-05-06 07:43:25,093 - functions.py -  INFO     - raw data: [{'name': 'Barn Swallow - Hirundo rustica', 'code': 'barswa'}, {'name': 'Barn Swallow (White-bellied) - Hirundo rustica rustica', 'code': 'barswa2'}, {'name': 'Barn Swallow (Egyptian) - Hirundo rustica savignii', 'code': 'barswa6'}, {'name': 'Barn Swallow (Levant) - Hirundo rustica transitiva', 'code': 'barswa7'}, {'name': "Barn Swallow (Tytler's) - Hirundo rustica tytleri", 'code': 'barswa8'}, {'name': 'Barn Swallow (Buff-bellied) - Hirundo rustica gutturalis/mandschurica', 'code': 'barswa4'}, {'name': 'Barn Swallow (American) - Hirundo rustica erythrogaster', 'code': 'barswa5'}, {'name': 'Tree x Barn Swallow (hybrid) - Tachycineta bicolor x Hirundo rustica', 'code': 'x00666'}, {'name': 'Bank x Barn Swallow (hybrid) - Riparia riparia x Hirundo rustica', 'code': 'x00710'}, {'name': 'Barn/Pacific Swallow - Hirundo rustica/tahitica', 'code': 'y00746'}, {'name': 'Barn x Red-rumped Swallow (hybrid) - Hirundo rustica x Cecropis daurica', 'code': 'x00658'}, {'name': 'Barn x Cliff Swallow (hybrid) - Hirundo rustica x Petrochelidon pyrrhonota', 'code': 'x00717'}, {'name': 'Barn x Cave Swallow (hybrid) - Hirundo rustica x Petrochelidon fulva', 'code': 'x00660'}, {'name': 'Barn Swallow x Common House-Martin (hybrid) - Hirundo rustica x Delichon urbicum', 'code': 'x00659'}]
+2020-05-06 07:43:25,094 - functions.py -  INFO     - first item: {'name': 'Barn Swallow - Hirundo rustica', 'code': 'barswa'}
+2020-05-06 07:43:25,094 - functions.py -  INFO     - entering check
+2020-05-06 07:43:25,094 - functions.py -  INFO     - checking: {'name': 'Barn Swallow - Hirundo rustica', 'code': 'barswa'}
+2020-05-06 07:43:25,094 - functions.py -  INFO     - ok
+2020-05-06 07:43:25,094 - functions.py -  INFO     - taxon code: barswa
+2020-05-06 07:43:25,760 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:43:26,071 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:43:26,392 - functions.py -  INFO     - downloaded images for Hirundo rustica
+2020-05-06 07:43:26,392 - functions.py -  INFO     - returned filename count: 20
+2020-05-06 07:43:26,393 - functions.py -  INFO     - actual filenames count: 20
+2020-05-06 07:43:26,393 - functions.py -  INFO     - images: ['cache/images/Hirundo rustica/0.jpeg', 'cache/images/Hirundo rustica/1.jpeg', 'cache/images/Hirundo rustica/2.jpeg', 'cache/images/Hirundo rustica/3.jpeg', 'cache/images/Hirundo rustica/4.jpeg', 'cache/images/Hirundo rustica/5.jpeg', 'cache/images/Hirundo rustica/6.jpeg', 'cache/images/Hirundo rustica/7.jpeg', 'cache/images/Hirundo rustica/8.jpeg', 'cache/images/Hirundo rustica/9.jpeg', 'cache/images/Hirundo rustica/10.jpeg', 'cache/images/Hirundo rustica/11.jpeg', 'cache/images/Hirundo rustica/12.jpeg', 'cache/images/Hirundo rustica/13.jpeg', 'cache/images/Hirundo rustica/14.jpeg', 'cache/images/Hirundo rustica/15.jpeg', 'cache/images/Hirundo rustica/16.jpeg', 'cache/images/Hirundo rustica/17.jpeg', 'cache/images/Hirundo rustica/18.jpeg', 'cache/images/Hirundo rustica/19.jpeg']
+2020-05-06 07:43:26,394 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:43:26,394 - functions.py -  INFO     - j: 1
+2020-05-06 07:43:26,394 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:43:26,394 - functions.py -  INFO     - size: 191314
+2020-05-06 07:43:26,394 - functions.py -  INFO     - found one!
+2020-05-06 07:43:26,399 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:43:26,399 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:26,400 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:26,400 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:26,400 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:26,400 - functions.py -  INFO     - user global added
+2020-05-06 07:43:26,401 - functions.py -  INFO     - added streak
+2020-05-06 07:43:26,401 - functions.py -  INFO     - no dm
+2020-05-06 07:43:26,401 - functions.py -  INFO     - user server added
+2020-05-06 07:43:26,401 - get_birds.py -  INFO     - args: ['bw', 'female']
+2020-05-06 07:43:26,401 - get_birds.py -  INFO     - args: bw: True; addon: female; taxon: 
+2020-05-06 07:43:26,402 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:43:26,402 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:43:26,402 - functions.py -  INFO     - checking roles
+2020-05-06 07:43:26,402 - functions.py -  INFO     - server context
+2020-05-06 07:43:26,402 - functions.py -  INFO     - user roles: []
+2020-05-06 07:43:26,402 - get_birds.py -  INFO     - addon: female; bw: True; taxon: []; roles: []
+2020-05-06 07:43:26,402 - get_birds.py -  INFO     - number of birds: 159
+2020-05-06 07:43:26,403 - get_birds.py -  INFO     - currentBird: Ruby Crowned Kinglet
+2020-05-06 07:43:26,403 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:26,403 - functions.py -  INFO     - did not find Ruby Crowned Kinglet in cache
+2020-05-06 07:43:26,403 - functions.py -  INFO     - getting sciname for Ruby Crowned Kinglet
+2020-05-06 07:43:26,403 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:26,403 - functions.py -  INFO     - did not find Ruby Crowned Kinglet in cache
+2020-05-06 07:43:26,403 - functions.py -  INFO     - getting taxon code for Ruby Crowned Kinglet
+2020-05-06 07:43:26,530 - functions.py -  INFO     - raw data: [{'name': 'Ruby-crowned Kinglet - Regulus calendula', 'code': 'ruckin'}]
+2020-05-06 07:43:26,531 - functions.py -  INFO     - first item: {'name': 'Ruby-crowned Kinglet - Regulus calendula', 'code': 'ruckin'}
+2020-05-06 07:43:26,531 - functions.py -  INFO     - taxon code: ruckin
+2020-05-06 07:43:26,685 - functions.py -  INFO     - sciname: Regulus calendula
+2020-05-06 07:43:26,685 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:43:26,685 - functions.py -  INFO     - trying
+2020-05-06 07:43:26,685 - functions.py -  INFO     - fetching files
+2020-05-06 07:43:26,686 - functions.py -  INFO     - scibird: Regulus calendula
+2020-05-06 07:43:26,686 - functions.py -  INFO     - getting file urls for Regulus calendula
+2020-05-06 07:43:26,686 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:26,686 - functions.py -  INFO     - did not find Regulus calendula in cache
+2020-05-06 07:43:26,686 - functions.py -  INFO     - getting taxon code for Regulus calendula
+2020-05-06 07:43:26,811 - functions.py -  INFO     - raw data: [{'name': 'Ruby-crowned Kinglet - Regulus calendula', 'code': 'ruckin'}]
+2020-05-06 07:43:26,811 - functions.py -  INFO     - first item: {'name': 'Ruby-crowned Kinglet - Regulus calendula', 'code': 'ruckin'}
+2020-05-06 07:43:26,811 - functions.py -  INFO     - taxon code: ruckin
+2020-05-06 07:43:27,038 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:43:27,340 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:43:27,739 - functions.py -  INFO     - downloaded images for Regulus calendula
+2020-05-06 07:43:27,739 - functions.py -  INFO     - returned filename count: 20
+2020-05-06 07:43:27,739 - functions.py -  INFO     - actual filenames count: 20
+2020-05-06 07:43:27,740 - functions.py -  INFO     - images: ['cache/images/Regulus calendulafemale/0.jpeg', 'cache/images/Regulus calendulafemale/1.jpeg', 'cache/images/Regulus calendulafemale/2.jpeg', 'cache/images/Regulus calendulafemale/3.jpeg', 'cache/images/Regulus calendulafemale/4.jpeg', 'cache/images/Regulus calendulafemale/5.jpeg', 'cache/images/Regulus calendulafemale/6.jpeg', 'cache/images/Regulus calendulafemale/7.jpeg', 'cache/images/Regulus calendulafemale/8.jpeg', 'cache/images/Regulus calendulafemale/9.jpeg', 'cache/images/Regulus calendulafemale/10.jpeg', 'cache/images/Regulus calendulafemale/11.jpeg', 'cache/images/Regulus calendulafemale/12.jpeg', 'cache/images/Regulus calendulafemale/13.jpeg', 'cache/images/Regulus calendulafemale/14.jpeg', 'cache/images/Regulus calendulafemale/15.jpeg', 'cache/images/Regulus calendulafemale/16.jpeg', 'cache/images/Regulus calendulafemale/17.jpeg', 'cache/images/Regulus calendulafemale/18.jpeg', 'cache/images/Regulus calendulafemale/19.jpeg']
+2020-05-06 07:43:27,740 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:43:27,740 - functions.py -  INFO     - j: 1
+2020-05-06 07:43:27,740 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:43:27,740 - functions.py -  INFO     - size: 262592
+2020-05-06 07:43:27,740 - functions.py -  INFO     - found one!
+2020-05-06 07:43:27,741 - functions.py -  INFO     - black and white
+2020-05-06 07:43:27,919 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:43:27,919 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:27,919 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:27,920 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:27,920 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:27,920 - functions.py -  INFO     - user global added
+2020-05-06 07:43:27,920 - functions.py -  INFO     - added streak
+2020-05-06 07:43:27,921 - functions.py -  INFO     - no dm
+2020-05-06 07:43:27,921 - functions.py -  INFO     - user server added
+2020-05-06 07:43:27,921 - get_birds.py -  INFO     - args: ['passeriformes', 'yolo', 'bw', 'juvenile']
+2020-05-06 07:43:27,921 - get_birds.py -  INFO     - args: bw: True; addon: juvenile; taxon: passeriformes
+2020-05-06 07:43:27,921 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:43:27,922 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:43:27,922 - functions.py -  INFO     - checking roles
+2020-05-06 07:43:27,922 - functions.py -  INFO     - server context
+2020-05-06 07:43:27,922 - functions.py -  INFO     - user roles: []
+2020-05-06 07:43:27,922 - get_birds.py -  INFO     - addon: juvenile; bw: True; taxon: ['passeriformes']; roles: []
+2020-05-06 07:43:27,922 - get_birds.py -  INFO     - number of birds: 70
+2020-05-06 07:43:27,922 - get_birds.py -  INFO     - currentBird: Brown Headed Cowbird
+2020-05-06 07:43:27,923 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:27,923 - functions.py -  INFO     - did not find Brown Headed Cowbird in cache
+2020-05-06 07:43:27,923 - functions.py -  INFO     - getting sciname for Brown Headed Cowbird
+2020-05-06 07:43:27,923 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:27,923 - functions.py -  INFO     - did not find Brown Headed Cowbird in cache
+2020-05-06 07:43:27,923 - functions.py -  INFO     - getting taxon code for Brown Headed Cowbird
+2020-05-06 07:43:28,049 - functions.py -  INFO     - raw data: [{'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}, {'name': 'Shiny/Brown-headed Cowbird - Molothrus bonariensis/ater', 'code': 'y00336'}, {'name': 'Bronzed/Brown-headed Cowbird - Molothrus aeneus/ater', 'code': 'y00337'}]
+2020-05-06 07:43:28,050 - functions.py -  INFO     - first item: {'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}
+2020-05-06 07:43:28,050 - functions.py -  INFO     - entering check
+2020-05-06 07:43:28,050 - functions.py -  INFO     - checking: {'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}
+2020-05-06 07:43:28,050 - functions.py -  INFO     - ok
+2020-05-06 07:43:28,050 - functions.py -  INFO     - taxon code: bnhcow
+2020-05-06 07:43:28,186 - functions.py -  INFO     - sciname: Molothrus ater
+2020-05-06 07:43:28,186 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:43:28,186 - functions.py -  INFO     - trying
+2020-05-06 07:43:28,186 - functions.py -  INFO     - fetching files
+2020-05-06 07:43:28,186 - functions.py -  INFO     - scibird: Molothrus ater
+2020-05-06 07:43:28,187 - functions.py -  INFO     - getting file urls for Molothrus ater
+2020-05-06 07:43:28,187 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:28,187 - functions.py -  INFO     - did not find Molothrus ater in cache
+2020-05-06 07:43:28,187 - functions.py -  INFO     - getting taxon code for Molothrus ater
+2020-05-06 07:43:28,316 - functions.py -  INFO     - raw data: [{'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}, {'name': 'Shiny/Brown-headed Cowbird - Molothrus bonariensis/ater', 'code': 'y00336'}, {'name': 'Bronzed/Brown-headed Cowbird - Molothrus aeneus/ater', 'code': 'y00337'}]
+2020-05-06 07:43:28,316 - functions.py -  INFO     - first item: {'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}
+2020-05-06 07:43:28,316 - functions.py -  INFO     - entering check
+2020-05-06 07:43:28,316 - functions.py -  INFO     - checking: {'name': 'Brown-headed Cowbird - Molothrus ater', 'code': 'bnhcow'}
+2020-05-06 07:43:28,316 - functions.py -  INFO     - ok
+2020-05-06 07:43:28,317 - functions.py -  INFO     - taxon code: bnhcow
+2020-05-06 07:43:28,558 - functions.py -  INFO     - checking filesizes
+2020-05-06 07:43:28,951 - functions.py -  INFO     - filesize check fails: 0
+2020-05-06 07:43:29,333 - functions.py -  INFO     - downloaded images for Molothrus ater
+2020-05-06 07:43:29,333 - functions.py -  INFO     - returned filename count: 20
+2020-05-06 07:43:29,333 - functions.py -  INFO     - actual filenames count: 20
+2020-05-06 07:43:29,334 - functions.py -  INFO     - images: ['cache/images/Molothrus aterjuvenile/0.jpeg', 'cache/images/Molothrus aterjuvenile/1.jpeg', 'cache/images/Molothrus aterjuvenile/2.jpeg', 'cache/images/Molothrus aterjuvenile/3.jpeg', 'cache/images/Molothrus aterjuvenile/4.jpeg', 'cache/images/Molothrus aterjuvenile/5.jpeg', 'cache/images/Molothrus aterjuvenile/6.jpeg', 'cache/images/Molothrus aterjuvenile/7.jpeg', 'cache/images/Molothrus aterjuvenile/8.jpeg', 'cache/images/Molothrus aterjuvenile/9.jpeg', 'cache/images/Molothrus aterjuvenile/10.jpeg', 'cache/images/Molothrus aterjuvenile/11.jpeg', 'cache/images/Molothrus aterjuvenile/12.jpeg', 'cache/images/Molothrus aterjuvenile/13.jpeg', 'cache/images/Molothrus aterjuvenile/14.jpeg', 'cache/images/Molothrus aterjuvenile/15.jpeg', 'cache/images/Molothrus aterjuvenile/16.jpeg', 'cache/images/Molothrus aterjuvenile/17.jpeg', 'cache/images/Molothrus aterjuvenile/18.jpeg', 'cache/images/Molothrus aterjuvenile/19.jpeg']
+2020-05-06 07:43:29,334 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:43:29,334 - functions.py -  INFO     - j: 1
+2020-05-06 07:43:29,334 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:43:29,334 - functions.py -  INFO     - size: 239143
+2020-05-06 07:43:29,335 - functions.py -  INFO     - found one!
+2020-05-06 07:43:29,335 - functions.py -  INFO     - black and white
+2020-05-06 07:43:29,540 - get_birds.py -  INFO     - command: bird
+2020-05-06 07:43:29,540 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,541 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:29,541 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,541 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,541 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,542 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,542 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,542 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,542 - get_birds.py -  INFO     - args: ['13435', 'troglodytidae', 'f']
+2020-05-06 07:43:29,542 - get_birds.py -  INFO     - args: bw: False; addon: female; taxon: troglodytidae
+2020-05-06 07:43:29,542 - get_birds.py -  INFO     - bird: 
+2020-05-06 07:43:29,543 - get_birds.py -  INFO     - answered: 1
+2020-05-06 07:43:29,543 - functions.py -  INFO     - checking roles
+2020-05-06 07:43:29,543 - functions.py -  INFO     - server context
+2020-05-06 07:43:29,543 - functions.py -  INFO     - user roles: []
+2020-05-06 07:43:29,543 - get_birds.py -  INFO     - addon: female; bw: False; taxon: ['troglodytidae']; roles: []
+2020-05-06 07:43:29,543 - get_birds.py -  INFO     - number of birds: 3
+2020-05-06 07:43:29,543 - get_birds.py -  INFO     - currentBird: Carolina Wren
+2020-05-06 07:43:29,544 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:29,544 - functions.py -  INFO     - did not find Carolina Wren in cache
+2020-05-06 07:43:29,544 - functions.py -  INFO     - getting sciname for Carolina Wren
+2020-05-06 07:43:29,544 - functions.py -  INFO     - checking cache
+2020-05-06 07:43:29,544 - functions.py -  INFO     - did not find Carolina Wren in cache
+2020-05-06 07:43:29,544 - functions.py -  INFO     - getting taxon code for Carolina Wren
+2020-05-06 07:43:29,671 - functions.py -  INFO     - raw data: [{'name': 'Carolina Wren - Thryothorus ludovicianus', 'code': 'carwre'}, {'name': 'Carolina Wren (Northern) - Thryothorus ludovicianus [ludovicianus Group]', 'code': 'carwre1'}, {'name': 'Carolina Wren (Northeast Mexico/South Texas) - Thryothorus ludovicianus [berlandieri Group]', 'code': 'y00487'}, {'name': 'Carolina Wren (White-browed) - Thryothorus ludovicianus albinucha/subfulvus', 'code': 'carwre2'}]
+2020-05-06 07:43:29,671 - functions.py -  INFO     - first item: {'name': 'Carolina Wren - Thryothorus ludovicianus', 'code': 'carwre'}
+2020-05-06 07:43:29,672 - functions.py -  INFO     - entering check
+2020-05-06 07:43:29,672 - functions.py -  INFO     - checking: {'name': 'Carolina Wren - Thryothorus ludovicianus', 'code': 'carwre'}
+2020-05-06 07:43:29,672 - functions.py -  INFO     - ok
+2020-05-06 07:43:29,672 - functions.py -  INFO     - taxon code: carwre
+2020-05-06 07:43:29,805 - functions.py -  INFO     - sciname: Thryothorus ludovicianus
+2020-05-06 07:43:29,806 - functions.py -  INFO     - get_files retries: 0
+2020-05-06 07:43:29,806 - functions.py -  INFO     - trying
+2020-05-06 07:43:29,806 - functions.py -  INFO     - cache/images/Thryothorus ludovicianusfemale/
+2020-05-06 07:43:29,806 - functions.py -  INFO     - images: ['cache/images/Thryothorus ludovicianusfemale/16.jpeg', 'cache/images/Thryothorus ludovicianusfemale/4.jpeg', 'cache/images/Thryothorus ludovicianusfemale/2.jpeg', 'cache/images/Thryothorus ludovicianusfemale/14.jpeg', 'cache/images/Thryothorus ludovicianusfemale/11.jpeg', 'cache/images/Thryothorus ludovicianusfemale/7.jpeg', 'cache/images/Thryothorus ludovicianusfemale/12.jpeg', 'cache/images/Thryothorus ludovicianusfemale/17.jpeg', 'cache/images/Thryothorus ludovicianusfemale/0.jpeg', 'cache/images/Thryothorus ludovicianusfemale/5.jpeg', 'cache/images/Thryothorus ludovicianusfemale/10.jpeg', 'cache/images/Thryothorus ludovicianusfemale/9.jpeg', 'cache/images/Thryothorus ludovicianusfemale/8.jpeg', 'cache/images/Thryothorus ludovicianusfemale/19.jpeg', 'cache/images/Thryothorus ludovicianusfemale/15.jpeg', 'cache/images/Thryothorus ludovicianusfemale/6.jpeg', 'cache/images/Thryothorus ludovicianusfemale/13.jpeg', 'cache/images/Thryothorus ludovicianusfemale/18.jpeg', 'cache/images/Thryothorus ludovicianusfemale/1.jpeg', 'cache/images/Thryothorus ludovicianusfemale/3.jpeg']
+2020-05-06 07:43:29,806 - functions.py -  INFO     - prevJ: 20
+2020-05-06 07:43:29,806 - functions.py -  INFO     - j: 1
+2020-05-06 07:43:29,806 - functions.py -  INFO     - extension: jpeg
+2020-05-06 07:43:29,806 - functions.py -  INFO     - size: 173640
+2020-05-06 07:43:29,806 - functions.py -  INFO     - found one!
+2020-05-06 07:43:29,812 - hint.py    -  INFO     - command: hint
+2020-05-06 07:43:29,812 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,812 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:29,812 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,813 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,813 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,813 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,813 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,814 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,851 - hint.py    -  INFO     - command: hint
+2020-05-06 07:43:29,851 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,851 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:29,851 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,852 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,852 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,852 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,852 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,853 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,857 - hint.py    -  INFO     - command: hintgoat
+2020-05-06 07:43:29,857 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,857 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:29,857 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,857 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,858 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,858 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,858 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,858 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,863 - hint.py    -  INFO     - command: hintgoat
+2020-05-06 07:43:29,863 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,863 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:29,863 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,863 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,864 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,864 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,864 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,864 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,868 - hint.py    -  INFO     - command: hintsong
+2020-05-06 07:43:29,868 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,869 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:29,869 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,869 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,869 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,870 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,870 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,870 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,874 - hint.py    -  INFO     - command: hintsong
+2020-05-06 07:43:29,874 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,874 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:29,875 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,875 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,875 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,875 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,875 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,876 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,880 - skip.py    -  INFO     - command: skip
+2020-05-06 07:43:29,880 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,880 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:29,881 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,881 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,881 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,881 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,881 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,882 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,886 - skip.py    -  INFO     - command: skip
+2020-05-06 07:43:29,886 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,886 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:29,886 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,887 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,887 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,887 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,887 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,888 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,892 - skip.py    -  INFO     - command: skipgoat
+2020-05-06 07:43:29,892 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,892 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:29,893 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,893 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,893 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,894 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,894 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,894 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,899 - skip.py    -  INFO     - command: skipgoat
+2020-05-06 07:43:29,899 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,899 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:29,899 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,899 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,900 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,900 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,900 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,900 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,904 - skip.py    -  INFO     - command: skipsong
+2020-05-06 07:43:29,905 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,905 - functions.py -  INFO     - channel data added
+2020-05-06 07:43:29,905 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,905 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,906 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,906 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,906 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,906 - functions.py -  INFO     - user server added
+2020-05-06 07:43:29,910 - skip.py    -  INFO     - command: skipsong
+2020-05-06 07:43:29,910 - functions.py -  INFO     - checking channel setup
+2020-05-06 07:43:29,911 - functions.py -  INFO     - channel data ok
+2020-05-06 07:43:29,911 - functions.py -  INFO     - channel score added
+2020-05-06 07:43:29,911 - functions.py -  INFO     - checking user data
+2020-05-06 07:43:29,911 - functions.py -  INFO     - user global added
+2020-05-06 07:43:29,912 - functions.py -  INFO     - added streak
+2020-05-06 07:43:29,912 - functions.py -  INFO     - no dm
+2020-05-06 07:43:29,912 - functions.py -  INFO     - user server added
