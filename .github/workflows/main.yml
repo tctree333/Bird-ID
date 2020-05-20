@@ -1,0 +1,58 @@
+name: "Deploy"
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+
+    services:
+        # Label used to access the service container
+        redis:
+          # Docker Hub image
+          image: redis
+          # Set health checks to wait until redis has started
+          options: >-
+            --health-cmd "redis-cli ping"
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+    steps:
+        - uses: actions/checkout@v2
+
+        - name: Python Tests
+          uses: tctree333/SciOlyID-Actions/python-tests@master
+          env:
+            SCIOLY_ID_BOT_LOCAL_REDIS: "true"
+            SCIOLY_ID_BOT_LOCAL_REDIS_HOST: "redis"
+            SCIOLY_ID_BOT_USE_SENTRY: "false"
+            CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+
+        - name: Sentry Deploys
+          uses: tctree333/SciOlyID-Actions/sentry@master
+          with:
+            sentry auth: ${{ secrets.SENTRY_TOKEN }}
+            sentry org: "sciolyid"
+            sentry project 1: bird-id-discord
+            sentry project 2: bird-id-api
+
+        - name: Update Redis
+          uses: tctree333/SciOlyID-Actions/update-redis@master
+          with:
+            dokku app name: bird-id
+            dokku host: ${{ secrets.DOKKU_HOST }}
+            ssh private key: ${{ secrets.PRIVATE_KEY }}
+
+            heroku email: ${{ secrets.HEROKU_EMAIL }}
+            heroku token: ${{ secrets.HEROKU_TOKEN }}
+            heroku app name: bird-id
+
+        - name: Deploy to Dokku
+          uses: tctree333/SciOlyID-Actions/deploy-dokku@master
+          with:
+            dokku app name: bird-id
+            dokku host: ${{ secrets.DOKKU_HOST }}
+            ssh private key: ${{ secrets.PRIVATE_KEY }}
