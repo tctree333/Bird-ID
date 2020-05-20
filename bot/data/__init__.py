@@ -222,7 +222,6 @@ def get_wiki_url(ctx, bird=None):
             return f"<{url}>"
         return url
     except KeyError:
-        sentry_sdk.capture_message(f"{bird} not found in wikipedia urls file")
         logger.info(f"{bird} not found in wikipedia url cache, falling back")
         page = wikipedia.page(bird)
         if database.hget(f"session.data:{user_id}", "wiki") == b"":
