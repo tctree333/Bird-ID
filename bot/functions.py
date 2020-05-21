@@ -776,7 +776,7 @@ async def _download_helper(path, url, session):
                 ext = guess_extension(content_type)
                 if ext is None:
                     raise GenericError(f"No extensions found.")
-
+            logger.info(f"download helper - detected extension: {ext}")
             filename = f"{path}{ext}"
             # from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5
             with open(filename, 'wb') as out_file:
