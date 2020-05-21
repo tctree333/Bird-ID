@@ -124,6 +124,18 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # leave confirm format:
 #   leave:guild_id : 0
 
+# custom list confirm format:
+#   custom.confirm:user_id : "valid" after server list validation
+#                            "confirm" after user list validation
+#                            "override" if user is about to override existing list
+
+# custom list cooldown format:
+#   custom.cooldown:user_id : 0
+
+# custom list format (set):
+#   custom.list:user_id : [validated birds, ...]
+
+
 #  states = { state name:
 #               {
 #               aliases: [alias1, alias2...],

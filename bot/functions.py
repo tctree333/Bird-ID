@@ -267,7 +267,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
         if session is None:
             session = await stack.enter_async_context(aiohttp.ClientSession())
         try:
-            code = await get_taxon(bird, session)
+            code = (await get_taxon(bird, session))[0]
         except GenericError as e:
             if e.code == 111:
                 code = bird
@@ -326,12 +326,13 @@ async def get_taxon(bird: str, session=None, retries=0) -> str:
                 else:
                     logger.info(f"An HTTP error occurred; Retries: {retries}")
                     retries += 1
-                    taxon_code = await get_taxon(bird, session, retries)
+                    taxon_code = (await get_taxon(bird, session, retries))[0]
                     return taxon_code
             taxon_code_data = await taxon_code_response.json()
             try:
                 logger.info(f"raw data: {taxon_code_data}")
                 taxon_code = taxon_code_data[0]["code"]
+                item_name = taxon_code_data[0]["name"]
                 logger.info(f"first item: {taxon_code_data[0]}")
                 if len(taxon_code_data) > 1:
                     logger.info("entering check")
@@ -341,12 +342,39 @@ async def get_taxon(bird: str, session=None, retries=0) -> str:
                                       4) or spellcheck(item["name"].split(" - ")[1], bird, 4):
                             logger.info("ok")
                             taxon_code = item["code"]
+                            item_name = item["name"]
                             break
                         logger.info("fail")
             except IndexError:
                 raise GenericError(f"No taxon code found for {bird}", code=111)
     logger.info(f"taxon code: {taxon_code}")
-    return taxon_code
+    logger.info(f"name: {item_name}")
+    return (taxon_code, item_name)
+
+async def valid_bird(bird: str, session=None):
+    """Checks if a bird is valid.
+
+    This checks first if Macaulay has a valid taxon code for the bird,
+    then if Macaulay has valid media for the bird based on the requested
+    media type. Media can be `p` for pictures, `a` for audio, or `v` for video.
+
+    Returns a tuple: `(input bird, valid bool, reason, detected name (may be empty string))`.
+    """
+    bird = string.capwords(bird)
+    logger.info(f"checking if {bird} is valid")
+    async with contextlib.AsyncExitStack() as stack:
+        if session is None:
+            session = await stack.enter_async_context(aiohttp.ClientSession())
+        try:
+            name = (await get_taxon(bird, session))[1]
+        except GenericError as e:
+            if e.code == 111:
+                return (bird, False, "No taxon code found", "")
+            raise e
+        urls = await _get_urls(session, bird, "p")
+        if len(urls) < 2:
+            return (bird, False, "One or less images found", name)
+        return (bird, True, "All checks passed", name)
 
 def _black_and_white(input_image_path) -> BytesIO:
     """Returns a black and white version of an image.
@@ -707,7 +735,7 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type="", re
     `sound_type` (str) - `s` for song, `c` for call, or blank\n
     """
     logger.info(f"getting file urls for {bird}")
-    taxon_code = await get_taxon(bird, session)
+    taxon_code = (await get_taxon(bird, session))[0]
     catalog_url = CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type)
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
