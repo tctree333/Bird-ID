@@ -45,7 +45,7 @@ class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def send_bird_(self, ctx, add_on: str = "", bw: bool = False, taxon_str: str = ""):
+    async def send_bird_(self, ctx, add_on: str = "", bw: bool = False, taxon_str: str = "", role_str: str = ""):
         if add_on == "":
             message = BIRD_MESSAGE.format(option="n image")
         else:
@@ -56,6 +56,11 @@ class Birds(commands.Cog):
         else:
             taxon = []
 
+        if role_str:
+            roles = role_str.split(" ")
+        else:
+            roles = []
+
         if not isinstance(bw, bool):
             bw = bw == "bw"
 
@@ -65,17 +70,10 @@ class Birds(commands.Cog):
         logger.info(f"answered: {answered}")
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
-            roles = check_state_role(ctx)
             if database.exists(f"session.data:{ctx.author.id}"):
                 logger.info("session active")
                 session_increment(ctx, "total", 1)
 
-                roles = database.hget(f"session.data:{ctx.author.id}", "state").decode("utf-8").split(" ")
-                if roles[0] == "":
-                    roles = []
-                if not roles:
-                    logger.info("no session lists")
-                    roles = check_state_role(ctx)
             logger.info(f"addon: {add_on}; bw: {bw}; taxon: {taxon}; roles: {roles}")
 
             await ctx.send(
@@ -171,12 +169,9 @@ class Birds(commands.Cog):
 
         args = args_str.split(" ")
         logger.info(f"args: {args}")
+
         bw = "bw" in args
-        taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
-        if taxon_args:
-            taxon = " ".join(taxon_args).strip()
-        else:
-            taxon = ""
+
         female = "female" in args or "f" in args
         juvenile = "juvenile" in args or "j" in args
         if female and juvenile:
@@ -189,36 +184,70 @@ class Birds(commands.Cog):
         else:
             add_on = ""
 
-        if database.exists(f"session.data:{ctx.author.id}"):
-            logger.info("session parameters")
+        if not database.exists(f"race.data:{ctx.channel.id}"):
+            roles = check_state_role(ctx)
 
+            taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
             if taxon_args:
-                toggle_taxon = list(taxon_args)
-                current_taxons = database.hget(f"session.data:{ctx.author.id}", "taxon").decode("utf-8").split(" ")
-                add_taxons = []
-                logger.info(f"toggle taxons: {toggle_taxon}")
-                logger.info(f"current taxons: {current_taxons}")
-                for o in set(toggle_taxon).symmetric_difference(set(current_taxons)):
-                    add_taxons.append(o)
-                logger.info(f"adding taxons: {add_taxons}")
-                taxon = " ".join(add_taxons).strip()
+                taxon = " ".join(taxon_args).strip()
             else:
-                taxon = database.hget(f"session.data:{ctx.author.id}", "taxon").decode("utf-8")
+                taxon = ""
 
-            session_add_on = database.hget(f"session.data:{ctx.author.id}", "addon").decode("utf-8")
-            if add_on == "":
-                add_on = session_add_on
-            elif add_on == session_add_on:
-                add_on = ""
-            elif session_add_on == "":
-                add_on = add_on
+            state_args = set(states.keys()).intersection({arg.upper() for arg in args})
+            if state_args:
+                state = " ".join(state_args).strip()
             else:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Overriding session options...*")
+                state = ""
 
-            if database.hget(f"session.data:{ctx.author.id}", "bw").decode("utf-8"):
-                bw = not bw
+            if database.exists(f"session.data:{ctx.author.id}"):
+                logger.info("session parameters")
 
-        if database.exists(f"race.data:{ctx.channel.id}"):
+                if taxon_args:
+                    toggle_taxon = list(taxon_args)
+                    current_taxons = database.hget(f"session.data:{ctx.author.id}", "taxon").decode("utf-8").split(" ")
+                    add_taxons = []
+                    logger.info(f"toggle taxons: {toggle_taxon}")
+                    logger.info(f"current taxons: {current_taxons}")
+                    for o in set(toggle_taxon).symmetric_difference(set(current_taxons)):
+                        add_taxons.append(o)
+                    logger.info(f"adding taxons: {add_taxons}")
+                    taxon = " ".join(add_taxons).strip()
+                else:
+                    taxon = database.hget(f"session.data:{ctx.author.id}", "taxon").decode("utf-8")
+
+                roles = database.hget(f"session.data:{ctx.author.id}", "state").decode("utf-8").split(" ")
+                if roles[0] == "":
+                    roles = []
+                if not roles:
+                    logger.info("no session lists")
+                    roles = check_state_role(ctx)
+
+                session_add_on = database.hget(f"session.data:{ctx.author.id}", "addon").decode("utf-8")
+                if add_on == "":
+                    add_on = session_add_on
+                elif add_on == session_add_on:
+                    add_on = ""
+                elif session_add_on == "":
+                    add_on = add_on
+                else:
+                    await ctx.send("**Juvenile females are not yet supported.**\n*Overriding session options...*")
+
+                if database.hget(f"session.data:{ctx.author.id}", "bw").decode("utf-8"):
+                    bw = not bw
+
+            if state_args:
+                toggle_states = list(state_args)
+                add_states = []
+                logger.info(f"toggle states: {toggle_states}")
+                logger.info(f"current states: {roles}")
+                for s in set(toggle_states).symmetric_difference(set(roles)):
+                    add_states.append(s)
+                logger.info(f"adding states: {add_states}")
+                state = " ".join(add_states).strip()
+            else:
+                state = " ".join(roles).strip()
+
+        else:
             logger.info("race parameters")
 
             race_add_on = database.hget(f"race.data:{ctx.channel.id}", "addon").decode("utf-8")
@@ -234,9 +263,12 @@ class Birds(commands.Cog):
             if database.hget(f"race.data:{ctx.channel.id}", "bw").decode("utf-8"):
                 bw = not bw
 
-        logger.info(f"args: bw: {bw}; addon: {add_on}; taxon: {taxon}")
+            taxon = database.hget(f"race.data:{ctx.channel.id}", "taxon").decode("utf-8")
+            state = database.hget(f"race.data:{ctx.channel.id}", "state").decode("utf-8")
 
-        await self.send_bird_(ctx, add_on, bw, taxon)
+        logger.info(f"args: bw: {bw}; addon: {add_on}; taxon: {taxon}; state: {state}")
+
+        await self.send_bird_(ctx, add_on, bw, taxon, state)
 
     # goatsucker command - no args
     # just for fun, no real purpose

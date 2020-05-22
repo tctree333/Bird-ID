@@ -91,7 +91,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #                    "bw": bw,
 #                    "state": state,
 #                    "addon": addon,
-#                    "media": media
+#                    "media": media,
+#                    "taxon": taxon
 # }
 # race.scores:ctx.channel.id : [ctx.author.id, #correct]
 

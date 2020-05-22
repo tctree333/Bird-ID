@@ -92,9 +92,9 @@ class Check(commands.Cog):
                         await race.stop_race_(ctx)
                     else:
                         logger.info("auto sending next bird image")
-                        addon, bw, taxon = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon"])
+                        addon, bw, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon", "state"])
                         birds = self.bot.get_cog("Birds")
-                        await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"), taxon.decode("utf-8"))
+                        await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"), taxon.decode("utf-8"), state.decode("utf-8"))
 
             else:
                 logger.info("incorrect")

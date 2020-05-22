@@ -21,7 +21,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger, states, taxons
-from bot.functions import channel_setup, check_state_role, user_setup, CustomCooldown
+from bot.functions import channel_setup, user_setup, CustomCooldown
 
 class Race(commands.Cog):
     def __init__(self, bot):
@@ -173,7 +173,7 @@ class Race(commands.Cog):
             if states_args:
                 state = " ".join(states_args).strip()
             else:
-                state = " ".join(check_state_role(ctx))
+                state = ""
 
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
@@ -239,13 +239,14 @@ class Race(commands.Cog):
                 database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
                 logger.info("auto sending next bird image")
-                addon, bw, taxon = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon"])
+                addon, bw, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon", "state"])
                 birds = self.bot.get_cog("Birds")
                 await birds.send_bird_(
                     ctx,
                     addon.decode("utf-8"),  # type: ignore
                     bw.decode("utf-8"),  # type: ignore
-                    taxon.decode("utf-8")  # type: ignore
+                    taxon.decode("utf-8"),  # type: ignore
+                    state.decode("utf-8"),  # type: ignore
                 )
 
             if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "song":
