@@ -123,6 +123,17 @@ async def user_setup(ctx):
             score = int(database.zscore("users:global", str(ctx.author.id)))
             database.zadd(f"users.server:{ctx.guild.id}", {str(ctx.author.id): score})
             logger.info("user server added")
+
+        role_ids = [role.id for role in ctx.author.roles]
+        role_names = [role.name.lower() for role in ctx.author.roles]
+        if (
+            set(role_names).intersection(set(states["CUSTOM"]["aliases"])) 
+            and not database.exists(f"custom.list:{ctx.author.id}")
+        ):
+            index = role_names.index(states["CUSTOM"]["aliases"][0].lower())
+            role = ctx.guild.get_role(role_ids[index])
+            await ctx.author.remove_roles(role, reason="Remove state role for bird list")
+
     else:
         logger.info("dm context")
 
