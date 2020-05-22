@@ -83,7 +83,16 @@ class Birds(commands.Cog):
                 f"*Detected State*: `{'None' if roles == [] else ' '.join(roles)}`"
             )
 
-            birds = build_id_list(user_id=ctx.author.id, taxon=taxon, roles=roles, media="image")
+            custom_role = {i if i.startswith("CUSTOM:") else "" for i in roles}
+            custom_role.discard("")
+            if database.exists(f"race.data:{ctx.channel.id}") and len(custom_role) == 1:
+                custom_role = custom_role.pop()
+                roles.remove(custom_role)
+                roles.append("CUSTOM")
+                user_id = custom_role.split(":")[1]
+                birds = build_id_list(user_id=user_id, taxon=taxon, roles=roles, media="image")
+            else:
+                birds = build_id_list(user_id=ctx.author.id, taxon=taxon, roles=roles, media="image")
 
             if not birds:
                 logger.info("no birds for taxon/state")

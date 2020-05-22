@@ -171,6 +171,16 @@ class Race(commands.Cog):
 
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
+                if {"CUSTOM"}.issubset(states_args):
+                    if (
+                        database.exists(f"custom.list:{ctx.author.id}")
+                        and not database.exists(f"custom.confirm:{ctx.author.id}")
+                    ):
+                        states_args.discard("CUSTOM")
+                        states_args.add(f"CUSTOM:{ctx.author.id}")
+                    else:
+                        states_args.discard("CUSTOM")
+                        await ctx.send("**You don't have a custom list set.**\n*Ignoring the argument.*")
                 state = " ".join(states_args).strip()
             else:
                 state = ""
@@ -178,7 +188,7 @@ class Race(commands.Cog):
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
             if female and juvenile:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
+                await ctx.send("**Juvenile females are not yet supported.**\n*Please try again.*")
                 return
             elif female:
                 addon = "female"
