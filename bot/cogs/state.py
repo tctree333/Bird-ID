@@ -120,7 +120,13 @@ class States(commands.Cog):
         )
 
     # set custom bird list
-    @commands.command(help="- Sets your custom bird list")
+    @commands.command(brief="- Sets your custom bird list",
+                      help="- Sets your custom bird list. " +
+                           "This command only works in DMs. Lists have a max size of 200 birds. " +
+                           "When verifying, the bot may incorrectly say it didn't find any images. " +
+                           "If this is the case and you have verified yourself by going to https://macaulaylibrary.org, " +
+                           "just try again later. You can use your custom list anywhere you would use " +
+                           "a state with the `CUSTOM` 'state'.")
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     @commands.dm_only()
     async def custom(self, ctx, *, args=""):
