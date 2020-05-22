@@ -63,8 +63,8 @@ class States(commands.Cog):
 
         if (
             "CUSTOM" in args
-            and not database.exists(f"custom.list:{ctx.author.id}")
-            and not database.exists(f"custom.confirm:{ctx.author.id}")
+            and (not database.exists(f"custom.list:{ctx.author.id}")
+            or database.exists(f"custom.confirm:{ctx.author.id}"))
         ):
             await ctx.send("Sorry, you don't have a custom list! Use `b!custom` to set your custom list.")
             return
@@ -217,8 +217,8 @@ class States(commands.Cog):
             database.delete(f"custom.list:{ctx.author.id}", f"custom.confirm:{ctx.author.id}")
             await self.validate(ctx, parsed_birdlist)
             elapsed = time.perf_counter() - start
-            await ctx.send(f"**Finished validation in {elapsed} seconds.** {ctx.author.mention}")
-            logger.info(f"Finished validation in {elapsed} seconds.")
+            await ctx.send(f"**Finished validation in {round(elapsed//60)} minutes {round(elapsed%60, 4)} seconds.** {ctx.author.mention}")
+            logger.info(f"Finished validation in {round(elapsed//60)} minutes {round(elapsed%60, 4)} seconds.")
             return
 
         if database.exists(f"custom.confirm:{ctx.author.id}"):
