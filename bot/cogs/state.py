@@ -205,7 +205,7 @@ class States(commands.Cog):
                 logger.info("no file detected")
                 await ctx.send("Sorry, no file was detected. Upload your txt file and put `b!custom` in the **Add a Comment** section.")
                 return
-            parsed_birdlist = (await ctx.message.attachments[0].read()).decode("utf-8").strip().split("\n")
+            parsed_birdlist = (await ctx.message.attachments[0].read()).decode("utf-8-sig").strip().split("\n")
             parsed_birdlist = {item.strip() for item in parsed_birdlist}
             parsed_birdlist.discard("")
             parsed_birdlist = list(parsed_birdlist)
