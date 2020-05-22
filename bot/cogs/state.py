@@ -30,14 +30,16 @@ class States(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def broken_send(self, ctx, message):
+    async def broken_send(self, ctx, message, between=""):
         pages = []
         temp_out = ""
         for line in message.splitlines(keepends=True):
             temp_out += line
             if len(temp_out) > 1700:
+                temp_out = f"{between}{temp_out}{between}"
                 pages.append(temp_out.strip())
                 temp_out = ""
+        temp_out = f"{between}{temp_out}{between}"
         pages.append(temp_out.strip())
         for item in pages:
             await ctx.send(item)
@@ -158,9 +160,9 @@ class States(commands.Cog):
                                "and put `b!custom` in the **Add a Comment** section.")
                 return
             birdlist = "\n".join(bird.decode("utf-8") for bird in database.smembers(f"custom.list:{ctx.author.id}"))
-            birdlist = f"```{birdlist}```"
+            birdlist = f"{birdlist}"
             await ctx.send(f"**Your Custom Bird List** ({int(database.scard(f'custom.list:{ctx.author.id}'))} items)")
-            await self.broken_send(ctx, birdlist)
+            await self.broken_send(ctx, birdlist, between="```\n")
             return
 
         if (not database.exists(f"custom.list:{ctx.author.id}") or "replace" in args):
