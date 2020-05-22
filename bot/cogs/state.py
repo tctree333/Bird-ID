@@ -59,6 +59,14 @@ class States(commands.Cog):
         role_names = [role.name.lower() for role in ctx.author.roles]
         args = args.upper().split(" ")
 
+        if (
+            "CUSTOM" in args
+            and not database.exists(f"custom.list:{ctx.author.id}")
+            and not database.exists(f"custom.confirm:{ctx.author.id}")
+        ):
+            await ctx.send("Sorry, you don't have a custom list! Use `b!custom` to set your custom list.")
+            return
+
         added = []
         removed = []
         invalid = []
@@ -126,6 +134,24 @@ class States(commands.Cog):
             await ctx.send("Woah there. You already have a custom list. " +
                            "To view its contents, use `b!custom view`. " +
                            "If you want to replace your list, upload the file with `b!custom replace`.")
+            return
+
+        if "delete" in args and database.exists(f"custom.list:{ctx.author.id}"):
+            if database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8") == "delete":
+                role_ids = [role.id for role in ctx.author.roles]
+                role_names = [role.name.lower() for role in ctx.author.roles]
+                if set(role_names).intersection(set(states["CUSTOM"]["aliases"])):
+                    index = role_names.index(states["CUSTOM"]["aliases"][0].lower())
+                    role = ctx.guild.get_role(role_ids[index])
+                    await ctx.author.remove_roles(role, reason="Remove state role for bird list")
+
+                database.delete(f"custom.list:{ctx.author.id}", f"custom.confirm:{ctx.author.id}")
+                await ctx.send("Ok, your list was deleted.")
+                return
+
+            database.set(f"custom.confirm:{ctx.author.id}", "delete", ex=86400)
+            await ctx.send("Are you sure you want to permanently delete your list? " +
+                           "Use `b!delete` again within 24 hours to clear your custom list.")
             return
 
         if "confirm" in args and database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8") == "confirm":
