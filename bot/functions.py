@@ -421,7 +421,6 @@ def build_id_list(user_id = None, taxon = [], roles = [], state = [], media = "i
     ):
         custom_list = [bird.decode("utf-8") for bird in database.smembers(f"custom.list:{user_id}")]
 
-    print(user_id, taxon, state_roles, state, media)
     birds = []
     if taxon:
         birds_in_taxon = set(itertools.chain.from_iterable(taxons[o] for o in taxon))

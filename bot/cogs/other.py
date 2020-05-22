@@ -74,9 +74,12 @@ class Other(commands.Cog):
             )
             return
 
+        state_birdlist = build_id_list(user_id=ctx.author.id, state=state, media="images")
+        state_songlist = build_id_list(user_id=ctx.author.id, state=state, media="songs")
+
         birdLists = []
         temp = ""
-        for bird in build_id_list(user_id=ctx.author.id, state=state, media="images"):
+        for bird in state_birdlist:
             temp += f"{bird}\n"
             if len(temp) > 1950:
                 birdLists.append(temp)
@@ -85,7 +88,7 @@ class Other(commands.Cog):
 
         songLists = []
         temp = ""
-        for bird in build_id_list(user_id=ctx.author.id, state=state, media="songs"):
+        for bird in state_songlist:
             temp += f"{bird}\n"
             if len(temp) > 1950:
                 songLists.append(temp)
@@ -104,8 +107,8 @@ class Other(commands.Cog):
             await ctx.author.dm_channel.send(f"```\n{birds}```")
 
         await ctx.send(
-            f"The `{state}` bird list has **{len(states[state]['birdList'])}** birds.\n" +
-            f"The `{state}` bird list has **{len(states[state]['songBirds'])}** songs.\n" +
+            f"The `{state}` bird list has **{len(state_birdlist)}** birds.\n" +
+            f"The `{state}` bird list has **{len(state_songlist)}** songs.\n" +
             "*A full list of birds has been sent to you via DMs.*"
         )
 
