@@ -14,17 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import string
 import asyncio
-import aiohttp
 import re
+import string
+import time
 
+import aiohttp
 import discord
 from discord.ext import commands
 from sentry_sdk import capture_exception, capture_message
 
-from bot.data import logger, states, GenericError, database
-from bot.functions import channel_setup, user_setup, CustomCooldown, valid_bird
+from bot.data import GenericError, database, logger, states
+from bot.functions import CustomCooldown, channel_setup, user_setup, valid_bird
+
 
 class States(commands.Cog):
     def __init__(self, bot):
@@ -188,6 +190,7 @@ class States(commands.Cog):
 
         if (not database.exists(f"custom.list:{ctx.author.id}") or "replace" in args):
             # user inputted bird list, now validating
+            start = time.perf_counter()
             if database.exists(f"custom.cooldown:{ctx.author.id}"):
                 await ctx.send("Sorry, you'll have to wait 24 hours between changing lists.")
                 return
@@ -196,9 +199,9 @@ class States(commands.Cog):
                 logger.info("no file detected")
                 await ctx.send("Sorry, no file was detected. Upload your txt file and put `b!custom` in the **Add a Comment** section.")
                 return
-            parsed_birdlist = set((await ctx.message.attachments[0].read()).decode("utf-8").strip().split("\n"))
+            parsed_birdlist = (await ctx.message.attachments[0].read()).decode("utf-8").strip().split("\n")
+            parsed_birdlist = {item.strip() for item in parsed_birdlist}
             parsed_birdlist.discard("")
-            parsed_birdlist.discard(" ")
             parsed_birdlist = list(parsed_birdlist)
             if len(parsed_birdlist) > 200:
                 logger.info("parsed birdlist too long")
@@ -213,6 +216,9 @@ class States(commands.Cog):
                     return
             database.delete(f"custom.list:{ctx.author.id}", f"custom.confirm:{ctx.author.id}")
             await self.validate(ctx, parsed_birdlist)
+            elapsed = time.perf_counter() - start
+            await ctx.send(f"**Finished validation in {elapsed} seconds.** {ctx.author.mention}")
+            logger.info(f"Finished validation in {elapsed} seconds.")
             return
 
         if database.exists(f"custom.confirm:{ctx.author.id}"):
@@ -248,7 +254,8 @@ class States(commands.Cog):
             validity = []
             for x in range(0, len(parsed_birdlist), 10):
                 validity += await asyncio.gather(*(valid_bird(bird, session) for bird in parsed_birdlist[x:x+10]))
-                asyncio.sleep(5)
+                logger.info("sleeping during validation...")
+                await asyncio.sleep(5)
             logger.info("checking validation")
             for item in validity:
                 if item[1]:

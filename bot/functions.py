@@ -381,7 +381,7 @@ async def valid_bird(bird: str, session=None):
         try:
             name = (await get_taxon(bird, session))[1]
         except GenericError as e:
-            if e.code == 111:
+            if e.code in (111, 201):
                 return (bird, False, "No taxon code found", "")
             raise e
         urls = await _get_urls(session, bird, "p")
