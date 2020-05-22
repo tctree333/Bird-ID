@@ -14,16 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import itertools
 import random
 
 from discord.ext import commands
 
-from bot.data import (birdList, database, goatsuckers, logger, taxons, songBirds, states)
-from bot.functions import (
-    channel_setup, check_state_role, error_skip, error_skip_goat, error_skip_song, send_bird, send_birdsong,
-    session_increment, user_setup, CustomCooldown
-)
+from bot.data import (birdList, database, goatsuckers, logger, songBirds,
+                      states, taxons)
+from bot.functions import (CustomCooldown, build_id_list, channel_setup,
+                           check_state_role, error_skip, error_skip_goat,
+                           error_skip_song, send_bird, send_birdsong,
+                           session_increment, user_setup)
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +
@@ -85,23 +85,12 @@ class Birds(commands.Cog):
                 f"*Detected State*: `{'None' if roles == [] else ' '.join(roles)}`"
             )
 
-            if taxon:
-                birds_in_taxon = set(itertools.chain.from_iterable(taxons[o] for o in taxon))
-                if roles:
-                    birds_in_state = set(itertools.chain.from_iterable(states[state]["birdList"] for state in roles))
-                    birds = list(birds_in_taxon.intersection(birds_in_state))
-                else:
-                    birds = list(birds_in_taxon.intersection(set(birdList)))
-            elif roles:
-                birds = list(set(itertools.chain.from_iterable(states[state]["birdList"] for state in roles)))
-            else:
-                birds = birdList
+            birds = build_id_list(user_id=ctx.author.id, taxon=taxon, roles=roles, media="image")
 
             if not birds:
                 logger.info("no birds for taxon/state")
                 await ctx.send(f"**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*")
                 return
-            logger.info(f"number of birds: {len(birds)}")
 
             currentBird = random.choice(birds)
             prevB = database.hget(f"channel:{ctx.channel.id}", "prevB").decode("utf-8")
@@ -143,11 +132,12 @@ class Birds(commands.Cog):
                     roles = check_state_role(ctx)
                 logger.info(f"roles: {roles}")
 
-            if roles:
-                birds = list(itertools.chain.from_iterable(states[state]["songBirds"] for state in roles))
-            else:
-                birds = songBirds
-            logger.info(f"number of birds: {len(birds)}")
+            birds = build_id_list(user_id=ctx.author.id, roles=roles, media="songs")
+
+            if not birds:
+                logger.info("no birds for taxon/state")
+                await ctx.send(f"**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*")
+                return
 
             currentSongBird = random.choice(birds)
             prevS = database.hget(f"channel:{ctx.channel.id}", "prevS").decode("utf-8")

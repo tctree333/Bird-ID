@@ -17,6 +17,8 @@
 import asyncio
 import contextlib
 import difflib
+import functools
+import itertools
 import os
 import pickle
 import random
@@ -24,20 +26,20 @@ import shutil
 import string
 import time
 import urllib.parse
-import functools
 from io import BytesIO
 from mimetypes import guess_all_extensions, guess_extension
 
 import aiohttp
 import discord
-from discord.ext import commands
 import eyed3
+from discord.ext import commands
 from PIL import Image
 from sentry_sdk import capture_exception
 
-from bot.data import (GenericError, birdListMaster, database, get_wiki_url,
-                      logger, sciBirdListMaster, sciSongBirdsMaster,
-                      screech_owls, states)
+from bot.data import (GenericError, birdList, birdListMaster, database,
+                      get_wiki_url, logger, sciBirdListMaster,
+                      sciSongBirdsMaster, screech_owls, songBirds, states,
+                      taxons)
 
 # Macaulay URL definitions
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
@@ -375,6 +377,54 @@ async def valid_bird(bird: str, session=None):
         if len(urls) < 2:
             return (bird, False, "One or less images found", name)
         return (bird, True, "All checks passed", name)
+
+def build_id_list(user_id = None, taxon = [], roles = [], state = [], media = "images") -> list:
+    """Generates an ID list based on given arguments
+
+    - `user_id`: User ID of custom list
+    - `taxon`: taxon string/list
+    - `roles`: role list
+    - `state`: state string/list
+    - `media`: image/song
+    """
+    logger.info("building id list")
+    if isinstance(taxon, str):
+        taxon = taxon.split(" ")
+    if isinstance(state, str):
+        state = state.split(" ")
+
+    state_roles = state + roles
+    if media in ("songs", "song", "s", "a"):
+        state_list = "songBirds"
+        default = songBirds
+    else:
+        state_list = "birdList"
+        default = birdList
+
+    custom_list = []
+    if (
+        user_id 
+        and "CUSTOM" in state_roles 
+        and database.exists(f"custom.list:{user_id}") 
+        and not database.exists(f"custom.confirm:{user_id}")
+    ):
+        custom_list = [bird.decode("utf-8") for bird in database.smembers(f"custom.list:{user_id}")]
+
+    print(user_id, taxon, state_roles, state, media)
+    birds = []
+    if taxon:
+        birds_in_taxon = set(itertools.chain.from_iterable(taxons[o] for o in taxon))
+        if state_roles:
+            birds_in_state = set(itertools.chain(*(states[state][state_list] for state in state_roles), custom_list))
+            birds = list(birds_in_taxon.intersection(birds_in_state))
+        else:
+            birds = list(birds_in_taxon.intersection(set(default)))
+    elif state_roles:
+        birds = list(set(itertools.chain(*(states[state][state_list] for state in state_roles), custom_list)))
+    else:
+        birds = default
+    logger.info(f"number of birds: {len(birds)}")
+    return birds
 
 def _black_and_white(input_image_path) -> BytesIO:
     """Returns a black and white version of an image.

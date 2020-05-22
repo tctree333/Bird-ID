@@ -26,8 +26,9 @@ from sentry_sdk import capture_exception
 
 from bot.data import (birdListMaster, database, logger, memeList,
                       sciBirdListMaster, states, taxons)
-from bot.functions import (CustomCooldown, channel_setup, get_sciname, get_taxon,
-                           precache, send_bird, send_birdsong, user_setup)
+from bot.functions import (CustomCooldown, build_id_list, channel_setup,
+                           get_sciname, get_taxon, precache, send_bird,
+                           send_birdsong, user_setup)
 
 
 class Other(commands.Cog):
@@ -75,7 +76,7 @@ class Other(commands.Cog):
 
         birdLists = []
         temp = ""
-        for bird in states[state]['birdList']:
+        for bird in build_id_list(user_id=ctx.author.id, state=state, media="images"):
             temp += f"{bird}\n"
             if len(temp) > 1950:
                 birdLists.append(temp)
@@ -84,7 +85,7 @@ class Other(commands.Cog):
 
         songLists = []
         temp = ""
-        for bird in states[state]['songBirds']:
+        for bird in build_id_list(user_id=ctx.author.id, state=state, media="songs"):
             temp += f"{bird}\n"
             if len(temp) > 1950:
                 songLists.append(temp)
@@ -138,12 +139,8 @@ class Other(commands.Cog):
             )
             return
 
-        birds_in_taxon = set(taxons[taxon])
-        birds_in_state = set(states[state]["birdList"])
-        song_birds_in_state = set(states[state]["songBirds"])
-        bird_list = list(birds_in_taxon.intersection(birds_in_state))
-        song_bird_list = list(birds_in_taxon.intersection(song_birds_in_state))
-
+        bird_list = build_id_list(user_id=ctx.author.id, taxon=taxon, state=state, media="images")
+        song_bird_list = build_id_list(user_id=ctx.author.id, taxon=taxon, state=state, media="songs")
         if not bird_list and not song_bird_list:
             logger.info("no birds for taxon/state")
             await ctx.send(f"**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*")
