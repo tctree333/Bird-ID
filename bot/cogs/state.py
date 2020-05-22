@@ -214,11 +214,17 @@ class States(commands.Cog):
                 await ctx.send("Sorry, we're not supporting custom lists larger than 200 birds. Make sure there are no empty lines.")
                 return
             logger.info("checking for invalid characters")
-            char = re.compile("[^A-Za-z '-]")
+            char = re.compile(r"[^A-Za-z '-]")
             for item in parsed_birdlist:
-                if char.search(item) is not None:
+                if len(item) > 1000:
+                    logger.info("item too long")
+                    await ctx.send(f"Line starting with `{item[:100]}` exceeds 1000 characters.")
+                    return
+                search = char.search(item)
+                if search:
                     logger.info("invalid character detected")
-                    await ctx.send("An invalid character was detected. Only letters, spaces, hyphens, and apostrophes are allowed.")
+                    await ctx.send(f"An invalid character `{search.group()}` was detected. Only letters, spaces, hyphens, and apostrophes are allowed.")
+                    await ctx.send(f"Error on line starting with `{item[:100]}`, position {search.span()[0]}")
                     return
             database.delete(f"custom.list:{ctx.author.id}", f"custom.confirm:{ctx.author.id}")
             await self.validate(ctx, parsed_birdlist)
