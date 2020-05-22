@@ -21,7 +21,7 @@ import re
 
 import discord
 from discord.ext import commands
-from sentry_sdk import capture_exception
+from sentry_sdk import capture_exception, capture_message
 
 from bot.data import logger, states, GenericError, database
 from bot.functions import channel_setup, user_setup, CustomCooldown, valid_bird
@@ -137,14 +137,10 @@ class States(commands.Cog):
             return
 
         if "delete" in args and database.exists(f"custom.list:{ctx.author.id}"):
-            if database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8") == "delete":
-                role_ids = [role.id for role in ctx.author.roles]
-                role_names = [role.name.lower() for role in ctx.author.roles]
-                if set(role_names).intersection(set(states["CUSTOM"]["aliases"])):
-                    index = role_names.index(states["CUSTOM"]["aliases"][0].lower())
-                    role = ctx.guild.get_role(role_ids[index])
-                    await ctx.author.remove_roles(role, reason="Remove state role for bird list")
-
+            if (
+                database.exists(f"custom.confirm:{ctx.author.id}") 
+                and database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8") == "delete"
+            ):
                 database.delete(f"custom.list:{ctx.author.id}", f"custom.confirm:{ctx.author.id}")
                 await ctx.send("Ok, your list was deleted.")
                 return
@@ -170,9 +166,8 @@ class States(commands.Cog):
             database.expire(f"custom.list:{ctx.author.id}", 86400)
             database.set(f"custom.confirm:{ctx.author.id}", "confirm", ex=86400)
             birdlist = "\n".join(bird.decode("utf-8") for bird in database.smembers(f"custom.list:{ctx.author.id}"))
-            birdlist = f"```{birdlist}```"
             await ctx.send(f"**Please confirm the following list.** ({int(database.scard(f'custom.list:{ctx.author.id}'))} items)")
-            await self.broken_send(ctx, birdlist)
+            await self.broken_send(ctx, birdlist, between="```\n")
             await ctx.send("Once you have looked over the list and are sure you want to add it, " +
                            "please use `b!custom confirm` to have this list added as a custom list. " +
                            "You have another 24 hours to confirm. " +
@@ -219,6 +214,26 @@ class States(commands.Cog):
             database.delete(f"custom.list:{ctx.author.id}", f"custom.confirm:{ctx.author.id}")
             await self.validate(ctx, parsed_birdlist)
             return
+
+        if database.exists(f"custom.confirm:{ctx.author.id}"):
+            next_step = database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8")
+            if next_step == "valid":
+                await ctx.send("You need to validate your list. Use `b!custom validate` to do so. " +
+                               "You can also delete or replace your list with `b!custom [delete|replace]`")
+                return
+            elif next_step == "confirm":
+                await ctx.send("You need to confirm your list. Use `b!custom confirm` to do so. " +
+                               "You can also delete or replace your list with `b!custom [delete|replace]`")
+                return
+            elif next_step == "delete":
+                await ctx.send("You're in the process of deleting your list. Use `b!custom delete` to do so. " +
+                               "You can also replace your list with `b!custom replace`")
+                return
+            else:
+                capture_message(f"custom.confirm database invalid with {next_step}")
+                await ctx.send("Whoops, something went wrong. Please report this incident " +
+                               "in the support server below.\nhttps://discord.gg/fXxYyDJ")
+                return
 
         await ctx.send("Use `b!custom view` to view your bird list or `b!custom replace` to replace your bird list.")
 
