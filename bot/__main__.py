@@ -168,11 +168,14 @@ if __name__ == '__main__':
         logger.info("Error: " + str(error))
 
         # don't handle errors with local handlers
-        if hasattr(ctx.command, 'on_error'):
+        if hasattr(ctx.command, "on_error"):
             return
 
         if isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
+            await ctx.send(
+                "**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", 
+                delete_after=5.0,
+            )
 
         elif isinstance(error, commands.CommandNotFound):
             capture_exception(error)
