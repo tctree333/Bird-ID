@@ -201,11 +201,9 @@ if __name__ == '__main__':
             )
 
         elif isinstance(error, commands.NoPrivateMessage):
-            capture_exception(error)
             await ctx.send("**This command is unavaliable in DMs!**")
         
         elif isinstance(error, commands.PrivateMessageOnly):
-            capture_exception(error)
             await ctx.send("**This command is only avaliable in DMs!**")
 
         elif isinstance(error, GenericError):
