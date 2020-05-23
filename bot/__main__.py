@@ -290,6 +290,10 @@ if __name__ == '__main__':
                         "**Error:** " + str(error.original)
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
+            
+            elif isinstance(error.original, aiohttp.ServerDisconnectedError):
+                capture_exception(error.original)
+                await ctx.send("**The server disconnected.**\n*Please try again.*")
 
             elif isinstance(error.original, asyncio.TimeoutError):
                 capture_exception(error.original)
