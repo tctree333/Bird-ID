@@ -291,6 +291,10 @@ if __name__ == '__main__':
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
 
+            elif isinstance(error.original, asyncio.TimeoutError):
+                capture_exception(error.original)
+                await ctx.send("**The request timed out.**\n*Please try again in a bit.*")
+
             else:
                 logger.info("uncaught command error")
                 capture_exception(error.original)
