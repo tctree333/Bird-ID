@@ -49,7 +49,7 @@ class TestScore:
 
         coroutine = self.cog.score.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[2].content == "Wow, looks like a total of 0 birds have been answered correctly in this channel! Good job everyone!"
+        assert self.ctx.messages[2].content == "Wow, looks like a total of `0` birds have been answered correctly in this **channel**!\nGood job everyone!"
 
     def test_with_score(self):
         self.setup(guild=True)
@@ -57,7 +57,7 @@ class TestScore:
 
         coroutine = self.cog.score.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[2].content == "Wow, looks like a total of 20 birds have been answered correctly in this channel! Good job everyone!"
+        assert self.ctx.messages[2].content == "Wow, looks like a total of `20` birds have been answered correctly in this **channel**!\nGood job everyone!"
 
     ### Userscore Command Tests
     def test_userscore_self(self):
