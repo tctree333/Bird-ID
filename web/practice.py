@@ -5,7 +5,7 @@ import flask
 from flask import Blueprint, abort, request
 
 from bot.data import birdList, songBirds, get_wiki_url
-from bot.functions import spellcheck
+from bot.core import spellcheck
 from web.config import (FRONTEND_URL, bird_setup, database, get_session_id,
                         logger)
 from web.functions import get_sciname, send_bird
