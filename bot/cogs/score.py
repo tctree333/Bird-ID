@@ -288,7 +288,8 @@ class Score(commands.Cog):
     # missed - returns top 1-10 missed birds
     @commands.command(
         brief="- Top incorrect birds",
-        help="- Top incorrect birds, scope is either global, server, or me. (g, s, m)",
+        help="- Top incorrect birds, either global, server, personal, or monthly.",
+        usage="[global|g server|s me|m month|monthly|mo] [page]",
         aliases=["m"]
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
@@ -312,7 +313,7 @@ class Score(commands.Cog):
 
         if not scope in ("global", "server", "me", "month", "monthly", "mo", "g", "s", "m"):
             logger.info("invalid scope")
-            await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me`")
+            await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me, month`")
             return
 
         if page < 1:
