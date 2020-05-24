@@ -83,12 +83,11 @@ class Score(commands.Cog):
                 "Good job everyone!"
             )
 
-
     # sends correct answers by a user
     @commands.command(
         brief="- How many correct answers given by a user",
         help="- Gives the amount of correct answers by a user.\n" +
-        "Mention someone to get their score, Don't mention anyone to get your score.",
+        "Mention someone to get their score, don't mention anyone to get your score.",
         aliases=["us"]
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
@@ -139,7 +138,10 @@ class Score(commands.Cog):
 
     # leaderboard - returns top 1-10 users
     @commands.command(
-        brief="- Top scores", help="- Top scores, scope is either global or server. (g, s)", aliases=["lb"]
+        brief="- Top scores",
+        help="- Top scores, either global, server, or monthly.",
+        usage="[global|g server|s month|monthly|m] [page]",
+        aliases=["lb"]
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def leaderboard(self, ctx, scope="", page=1):
@@ -162,7 +164,7 @@ class Score(commands.Cog):
 
         if not scope in ("global", "server", "month", "monthly", "m", "g", "s"):
             logger.info("invalid scope")
-            await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server`")
+            await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, month`")
             return
 
         if page < 1:
