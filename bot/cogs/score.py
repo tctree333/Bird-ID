@@ -58,6 +58,21 @@ class Score(commands.Cog):
         total_scores = total_scores.sort_values(ascending=False)
         return total_scores
 
+    def _monthly_missed(self, ctx):
+        logger.info("generating monthly missed bitds")
+        today = datetime.datetime.now(datetime.timezone.utc).date()
+        past_month = pd.date_range(today-datetime.timedelta(29), today).date
+        pipe = database.pipeline()
+        for day in past_month:
+            pipe.zrevrangebyscore(f"daily.incorrect:{day}", "+inf", "-inf", withscores=True)
+        result = pipe.execute()
+        total_missed = pd.Series(dtype="int64")
+        for daily_missed in result:
+            daily_missed = pd.Series({e[0]:e[1] for e in map(lambda x: (x[0].decode("utf-8"), int(x[1])), daily_missed)})
+            total_missed = total_missed.add(daily_missed, fill_value=0)
+        total_missed = total_missed.sort_values(ascending=False)
+        return total_missed
+
     # returns total number of correct answers so far
     @commands.command(
         brief="- Total correct answers in a channel or server",
@@ -202,10 +217,12 @@ class Score(commands.Cog):
             page = user_amount - (user_amount % 10)
 
         users_per_page = 10
-        if database_key is None:
-            leaderboard_list = monthly_scores.iloc[page:page+users_per_page-1].items()
-        else:
-            leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", page, users_per_page, True)
+        leaderboard_list = (
+            database.zrevrangebyscore(database_key, "+inf", "-inf", page, users_per_page, True)
+            if database_key is not None
+            else monthly_scores.iloc[page:page+users_per_page-1].items()
+        )
+
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
@@ -293,7 +310,7 @@ class Score(commands.Cog):
         logger.info(f"scope: {scope}")
         logger.info(f"page: {page}")
 
-        if not scope in ("global", "server", "me", "g", "s", "m"):
+        if not scope in ("global", "server", "me", "month", "monthly", "mo", "g", "s", "m"):
             logger.info("invalid scope")
             await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me`")
             return
@@ -316,11 +333,15 @@ class Score(commands.Cog):
         elif scope in ("me", "m"):
             database_key = f"incorrect.user:{ctx.author.id}"
             scope = "me"
+        elif scope in ("month", "monthly", "mo"):
+            database_key = None
+            scope = "Last 30 days"
+            monthly_missed = self._monthly_missed(ctx)
         else:
             database_key = "incorrect:global"
             scope = "global"
 
-        user_amount = int(database.zcard(database_key))
+        user_amount = (int(database.zcard(database_key)) if database_key is not None else monthly_missed.count())
         page = (page * 10) - 10
 
         if user_amount == 0:
@@ -331,13 +352,21 @@ class Score(commands.Cog):
         if page > user_amount:
             page = user_amount - (user_amount % 10)
 
-        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", page, 10, True)
+        users_per_page = 10
+        leaderboard_list = (
+            map(
+                lambda x: (x[0].decode("utf-8"), x[1]), 
+                database.zrevrangebyscore(database_key, "+inf", "-inf", page, users_per_page, True)
+            )
+            if database_key is not None
+            else monthly_missed.iloc[page:page+users_per_page-1].items()
+        )
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
 
         for i, stats in enumerate(leaderboard_list):
-            leaderboard += f"{i+1+page}. **{stats[0].decode('utf-8')}** - {int(stats[1])}\n"
+            leaderboard += f"{i+1+page}. **{stats[0]}** - {int(stats[1])}\n"
         embed.add_field(name=f"Top Missed Birds ({scope})", value=leaderboard, inline=False)
 
         await ctx.send(embed=embed)
