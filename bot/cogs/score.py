@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import datetime
 import textwrap
 import typing
 
 import discord
+import pandas as pd
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
@@ -29,20 +31,56 @@ class Score(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    def _server_total(self, ctx):
+        channels = map(
+            lambda x: x.decode("utf-8").split(":")[1],
+            database.zrangebylex("channels:global", f"[{ctx.guild.id}", f"({ctx.guild.id}\xff")
+        )
+        pipe = database.pipeline() # use a pipeline to get all the scores
+        for channel in channels:
+            pipe.zscore("score:global", channel)
+        scores = pipe.execute()
+        return int(sum(scores))
+
+    def _monthly_lb(self, ctx):
+        today = datetime.datetime.now(datetime.timezone.utc).date()
+        past_month = pd.date_range(today-datetime.timedelta(30), today).date
+        pipe = database.pipeline()
+        for day in past_month:
+            pipe.zrevrangebyscore(f"daily.score:{day}", "+inf", "-inf", withscores=True)
+        result = pipe.execute()
+        total_scores = pd.Series(dtype="int64")
+        for daily_score in result:
+            daily_score = pd.Series({e[0]:e[1] for e in map(lambda x: (x[0].decode("utf-8"), int(x[1])), daily_score)})
+            total_scores = total_scores.add(daily_score, fill_value=0)
+        total_scores = total_scores.sort_values(ascending=False)
+        return total_scores
+
     # returns total number of correct answers so far
-    @commands.command(help="- Total correct answers in a channel")
+    @commands.command(
+        brief="- Total correct answers in a channel or server",
+        help="- Total correct answers in a channel or server. Defaults to channel.",
+        usage="[total|server|t|s]")
     @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.channel))
-    async def score(self, ctx):
+    async def score(self, ctx, scope=""):
         logger.info("command: score")
 
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        total_correct = int(database.zscore("score:global", str(ctx.channel.id)))
-        await ctx.send(
-            f"Wow, looks like a total of {total_correct} birds have been answered correctly in this channel! " +
-            "Good job everyone!"
-        )
+        if scope in ("total", "server", "t", "s"):
+            total_correct = self._server_total(ctx)
+            await ctx.send(
+                f"Wow, looks like a total of `{total_correct}` birds have been answered correctly in this **server**!\n" +
+                "Good job everyone!"
+            )
+        else:
+            total_correct = int(database.zscore("score:global", str(ctx.channel.id)))
+            await ctx.send(
+                f"Wow, looks like a total of `{total_correct}` birds have been answered correctly in this **channel**!\n" +
+                "Good job everyone!"
+            )
+
 
     # sends correct answers by a user
     @commands.command(
@@ -120,7 +158,7 @@ class Score(commands.Cog):
         logger.info(f"scope: {scope}")
         logger.info(f"page: {page}")
 
-        if not scope in ("global", "server", "g", "s"):
+        if not scope in ("global", "server", "month", "monthly", "m", "g", "s"):
             logger.info("invalid scope")
             await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server`")
             return
@@ -140,11 +178,15 @@ class Score(commands.Cog):
                 await ctx.send("**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*")
                 scope = "global"
                 database_key = "users:global"
+        elif scope in ("month", "monthly", "m"):
+            database_key = None
+            scope = "Last 30 Days"
+            monthly_scores = self._monthly_lb(ctx)
         else:
             database_key = "users:global"
             scope = "global"
 
-        user_amount = int(database.zcard(database_key))
+        user_amount = (int(database.zcard(database_key)) if database_key is not None else monthly_scores.count())
         page = (page * 10) - 10
 
         if user_amount == 0:
@@ -155,7 +197,10 @@ class Score(commands.Cog):
         if page > user_amount:
             page = user_amount - (user_amount % 10)
 
-        leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", page, 10, True)
+        if database_key is None:
+            leaderboard_list = monthly_scores.items()
+        else:
+            leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", page, 10, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
@@ -179,12 +224,22 @@ class Score(commands.Cog):
 
         embed.add_field(name=f"Leaderboard ({scope})", value=leaderboard, inline=False)
 
-        if database.zscore(database_key, str(ctx.author.id)) is not None:
-            placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
-            distance = (
-                int(database.zrevrange(database_key, placement - 2, placement - 2, True)[0][1]) -
-                int(database.zscore(database_key, str(ctx.author.id)))
-            )
+        user_score = (
+            database.zscore(database_key, str(ctx.author.id))
+            if database_key is not None
+            else monthly_scores.get(str(ctx.author.id))
+        )
+
+        if user_score is not None:
+            if database_key is not None:
+                placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
+                distance = (
+                    int(database.zrevrange(database_key, placement - 2, placement - 2, True)[0][1]) -
+                    int(user_score))
+            else:
+                placement = int(monthly_scores.rank(ascending=False)[str(ctx.author.id)])
+                distance = monthly_scores.iloc[placement-1] - user_score
+
             if placement == 1:
                 embed.add_field(
                     name="You:",
