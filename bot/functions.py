@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import contextlib
+import datetime
 import difflib
 import itertools
 import os
@@ -65,6 +66,12 @@ async def channel_setup(ctx):
         database.zadd("score:global", {str(ctx.channel.id): 0})
         logger.info("channel score added")
 
+    if ctx.guild is not None:
+        if database.zadd("channels:global", {f"{ctx.guild.id}:{ctx.channel.id}": 0}) is not 0:
+            logger.info("server lookup ok")
+        else:
+            logger.info("server lookup added")
+
 async def user_setup(ctx):
     """Sets up a new discord user for score tracking.
     
@@ -77,6 +84,13 @@ async def user_setup(ctx):
         database.zadd("users:global", {str(ctx.author.id): 0})
         logger.info("user global added")
         await ctx.send("Welcome <@" + str(ctx.author.id) + ">!")
+
+    date = str(datetime.datetime.now(datetime.timezone.utc).date())
+    if database.zscore(f"daily.score:{date}", str(ctx.author.id)) is not None:
+        logger.info("user daily ok")
+    else:
+        database.zadd(f"daily.score:{date}", {str(ctx.author.id): 0})
+        logger.info("user daily added")
 
     #Add streak
     if (database.zscore("streak:global", str(ctx.author.id)) is
@@ -110,7 +124,6 @@ async def user_setup(ctx):
             index = role_names.index(states["CUSTOM"]["aliases"][0].lower())
             role = ctx.guild.get_role(role_ids[index])
             await ctx.author.remove_roles(role, reason="Remove state role for bird list")
-
     else:
         logger.info("dm context")
 
@@ -132,6 +145,13 @@ async def bird_setup(ctx, bird: str):
     else:
         database.zadd(f"incorrect.user:{ctx.author.id}", {string.capwords(bird): 0})
         logger.info("bird user added")
+
+    date = str(datetime.datetime.now(datetime.timezone.utc).date())
+    if database.zscore(f"daily.incorrect:{date}", string.capwords(bird)) is not None:
+        logger.info("bird daily ok")
+    else:
+        database.zadd(f"daily.incorrect:{date}", {string.capwords(bird): 0})
+        logger.info("bird daily added")
 
     if ctx.guild is not None:
         logger.info("no dm")
@@ -267,8 +287,10 @@ def incorrect_increment(ctx, bird: str, amount: int):
     `amount` (int) - amount to increment by, usually 1
     """
     logger.info(f"incrementing incorrect {bird} by {amount}")
+    date = str(datetime.datetime.now(datetime.timezone.utc).date())
     database.zincrby("incorrect:global", amount, string.capwords(str(bird)))
     database.zincrby(f"incorrect.user:{ctx.author.id}", amount, string.capwords(str(bird)))
+    database.zincrby(f"daily.incorrect:{date}", amount, string.capwords(str(bird)))
     if ctx.guild is not None:
         logger.info("no dm")
         database.zincrby(f"incorrect.server:{ctx.guild.id}", amount, string.capwords(str(bird)))
@@ -287,8 +309,10 @@ def score_increment(ctx, amount: int):
     `amount` (int) - amount to increment by, usually 1
     """
     logger.info(f"incrementing score by {amount}")
+    date = str(datetime.datetime.now(datetime.timezone.utc).date())
     database.zincrby("score:global", amount, str(ctx.channel.id))
     database.zincrby("users:global", amount, str(ctx.author.id))
+    database.zincrby(f"daily.score:{date}", amount, str(ctx.author.id))
     if ctx.guild is not None:
         logger.info("no dm")
         database.zincrby(f"users.server:{ctx.guild.id}", amount, str(ctx.author.id))

@@ -98,7 +98,7 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 
 # leaderboard format = {
 #    users:global : [user id, # of correct]
-#    users.server:server_id : [user id, # of correct]
+#    users.server:guild_id : [user id, # of correct]
 # }
 
 # streaks format = {
@@ -108,12 +108,18 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 
 # incorrect birds format = {
 #    incorrect:global : [bird name, # incorrect]
-#    incorrect.server:server_id : [bird name, # incorrect]
+#    incorrect.server:guild_id : [bird name, # incorrect]
 #    incorrect.user:user_id: : [bird name, # incorrect]
 # }
 
 # channel score format = {
 #   score:global : [channel id, # of correct]
+#   channels:global : ["guild id:channel id", 0]
+# }
+
+# daily update format = {
+#     daily.score:YYYY-MM-DD : [user id, # correct today]
+#     daily.incorrect:YYYY-MM-DD : [bird name, # incorrect today]
 # }
 
 # ban format:
