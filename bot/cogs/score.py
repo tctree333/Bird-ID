@@ -32,6 +32,7 @@ class Score(commands.Cog):
         self.bot = bot
 
     def _server_total(self, ctx):
+        logger.info("fetching server totals")
         channels = map(
             lambda x: x.decode("utf-8").split(":")[1],
             database.zrangebylex("channels:global", f"[{ctx.guild.id}", f"({ctx.guild.id}\xff")
@@ -43,8 +44,9 @@ class Score(commands.Cog):
         return int(sum(scores))
 
     def _monthly_lb(self, ctx):
+        logger.info("generating monthly leaderboard")
         today = datetime.datetime.now(datetime.timezone.utc).date()
-        past_month = pd.date_range(today-datetime.timedelta(30), today).date
+        past_month = pd.date_range(today-datetime.timedelta(29), today).date
         pipe = database.pipeline()
         for day in past_month:
             pipe.zrevrangebyscore(f"daily.score:{day}", "+inf", "-inf", withscores=True)
@@ -197,10 +199,11 @@ class Score(commands.Cog):
         if page > user_amount:
             page = user_amount - (user_amount % 10)
 
+        users_per_page = 10
         if database_key is None:
-            leaderboard_list = monthly_scores.items()
+            leaderboard_list = monthly_scores.iloc[page:page+users_per_page-1].items()
         else:
-            leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", page, 10, True)
+            leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", page, users_per_page, True)
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         leaderboard = ""
@@ -238,7 +241,7 @@ class Score(commands.Cog):
                     int(user_score))
             else:
                 placement = int(monthly_scores.rank(ascending=False)[str(ctx.author.id)])
-                distance = monthly_scores.iloc[placement-1] - user_score
+                distance = int(monthly_scores.iloc[placement-2] - user_score)
 
             if placement == 1:
                 embed.add_field(
