@@ -18,12 +18,12 @@ import random
 
 from discord.ext import commands
 
+from bot.core import send_bird, send_birdsong
 from bot.data import (birdList, database, goatsuckers, logger, songBirds,
                       states, taxons)
 from bot.functions import (CustomCooldown, build_id_list, channel_setup,
                            check_state_role, error_skip, error_skip_goat,
-                           error_skip_song, send_bird, send_birdsong,
-                           session_increment, user_setup)
+                           error_skip_song, session_increment, user_setup)
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +

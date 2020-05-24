@@ -14,15 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import typing
 import textwrap
+import typing
 
 import discord
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
-from bot.data import database, logger, GenericError
-from bot.functions import channel_setup, user_setup, CustomCooldown
+from bot.data import GenericError, database, logger
+from bot.functions import CustomCooldown, channel_setup, user_setup
+
 
 class Score(commands.Cog):
     def __init__(self, bot):

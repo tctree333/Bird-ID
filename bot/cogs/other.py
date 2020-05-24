@@ -24,11 +24,11 @@ import wikipedia
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
+from bot.core import get_sciname, get_taxon, precache, send_bird, send_birdsong
 from bot.data import (birdListMaster, database, logger, memeList,
                       sciBirdListMaster, states, taxons)
 from bot.functions import (CustomCooldown, build_id_list, channel_setup,
-                           get_sciname, get_taxon, precache, send_bird,
-                           send_birdsong, user_setup)
+                           user_setup)
 
 
 class Other(commands.Cog):

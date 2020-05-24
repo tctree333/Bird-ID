@@ -21,11 +21,11 @@ import os
 import string
 import sys
 
-from dotenv import load_dotenv, find_dotenv
 import redis
 import sentry_sdk
 import wikipedia
 from discord.ext import commands
+from dotenv import find_dotenv, load_dotenv
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 

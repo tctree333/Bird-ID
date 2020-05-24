@@ -21,7 +21,8 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger, states, taxons
-from bot.functions import channel_setup, user_setup, CustomCooldown
+from bot.functions import CustomCooldown, channel_setup, user_setup
+
 
 class Race(commands.Cog):
     def __init__(self, bot):

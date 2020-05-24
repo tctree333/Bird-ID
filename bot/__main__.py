@@ -19,7 +19,7 @@ import concurrent.futures
 import errno
 import os
 import sys
-from datetime import datetime, date, timezone, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 import aiohttp
 import discord
@@ -29,8 +29,9 @@ import wikipedia
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception, configure_scope
 
+from bot.core import precache, send_bird
 from bot.data import GenericError, database, logger
-from bot.functions import backup_all, channel_setup, precache, send_bird, drone_attack
+from bot.functions import backup_all, channel_setup, drone_attack
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])

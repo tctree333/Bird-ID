@@ -25,7 +25,8 @@ from discord.ext import commands
 from sentry_sdk import capture_exception, capture_message
 
 from bot.data import GenericError, database, logger, states
-from bot.functions import CustomCooldown, channel_setup, user_setup, valid_bird
+from bot.core import valid_bird
+from bot.functions import CustomCooldown, channel_setup, user_setup
 
 
 class States(commands.Cog):
