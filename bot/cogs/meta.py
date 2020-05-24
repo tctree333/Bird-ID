@@ -105,23 +105,19 @@ class Meta(commands.Cog):
         await channel_setup(ctx)
         await user_setup(ctx)
 
-        if channels is None:
-            logger.info("defaulting to current")
-            await ctx.send(
-                "**No valid channels were found.**\n*Defaulting to current channel...*"
-            )
-            channels = [ctx.channel]
-
-        logger.info(f"ignored channels: {[c.name for c in channels]}")
         added = ""
         removed = ""
-        for channel in channels:
-            if database.zscore("ignore:global", str(channel.id)) is None:
-                added += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
-                database.zadd("ignore:global", {str(channel.id): ctx.guild.id})
-            else:
-                removed += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
-                database.zrem("ignore:global", str(channel.id))
+        if channels is not None:
+            logger.info(f"ignored channels: {[c.name for c in channels]}")
+            for channel in channels:
+                if database.zscore("ignore:global", str(channel.id)) is None:
+                    added += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
+                    database.zadd("ignore:global", {str(channel.id): ctx.guild.id})
+                else:
+                    removed += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
+                    database.zrem("ignore:global", str(channel.id))
+        else:
+            await ctx.send("**No valid channels were passed.**")
 
         ignored = "".join(
             [
@@ -138,7 +134,7 @@ class Meta(commands.Cog):
         await ctx.send(
             (f"**Ignoring:**\n{added}" if added else "")
             + (f"**Stopped ignoring:**\n{removed}" if removed else "")
-            + (f"**Ignored Channels:**\n{ignored}" if ignored else "")
+            + (f"**Ignored Channels:**\n{ignored}" if ignored else "**No channels in this server are currently ignored.**")
         )
 
     # leave command - removes itself from guild
