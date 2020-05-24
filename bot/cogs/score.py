@@ -56,6 +56,7 @@ class Score(commands.Cog):
 
         await channel_setup(ctx)
         await user_setup(ctx)
+        logger.info(type(user))
 
         if user is not None:
             if isinstance(user, str):
@@ -70,12 +71,8 @@ class Score(commands.Cog):
                 await ctx.send("This user does not exist on our records!")
                 return
         else:
-            if database.zscore("users:global", str(ctx.author.id)) is not None:
-                user = f"<@{ctx.author.id}>"
-                times = str(int(database.zscore("users:global", str(ctx.author.id))))
-            else:
-                await ctx.send("You haven't used this bot yet! (except for this)")
-                return
+            user = f"<@{ctx.author.id}>"
+            times = str(int(database.zscore("users:global", str(ctx.author.id))))
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")

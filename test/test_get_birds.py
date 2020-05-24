@@ -1,11 +1,10 @@
 import asyncio
-import os
 
 import pytest
 
+import discord_mock as mock
 from bot.cogs import get_birds
 from bot.data import database
-import discord_mock as mock
 
 class TestBirds:
     @pytest.yield_fixture(autouse=True)
@@ -26,7 +25,7 @@ class TestBirds:
     def setup(self, guild=False):
         self.bot = mock.Bot()
         self.cog = get_birds.Birds(self.bot)
-        self.ctx = mock.Context()
+        self.ctx = mock.Context(self.bot)
 
         if guild:
             self.ctx.set_guild()
@@ -44,7 +43,8 @@ class TestBirds:
     ### Bird Command Tests
     def test_bird_dm_1(self):
         self.setup(guild=True)
-        coroutine = self.cog.bird.callback(self.cog, self.ctx)  # pylint: disable=no-member
+
+        coroutine = self.cog.bird.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[
             2
@@ -55,7 +55,8 @@ class TestBirds:
 
     def test_bird_dm_2(self):
         self.setup(guild=True)
-        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="bw female")  # pylint: disable=no-member
+
+        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="bw female") # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[
             2
@@ -66,7 +67,8 @@ class TestBirds:
 
     def test_bird_dm_3(self):
         self.setup(guild=True)
-        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="passeriformes yolo bw juvenile")  # pylint: disable=no-member
+
+        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="passeriformes yolo bw juvenile") # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[
             2
@@ -77,6 +79,7 @@ class TestBirds:
 
     def test_bird_dm_4(self):
         self.setup(guild=True)
+
         coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="13435 troglodytidae f")  # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[

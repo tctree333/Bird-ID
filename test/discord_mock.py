@@ -1,18 +1,39 @@
 import random
+
+import pytest
+
+from bot.data import database
+
+
+class Bot:
+    def __init__(self, guilds=[]):
+        self.guilds = guilds
+
+
 class Channel:
     def __init__(self, channel_id=None):
         self.id = channel_id
 
 
-class Author:
-    def __init__(self, user_id=None):
+class User:
+    def __init__(self, user_id=None, username=None):
         self.id = user_id
         self.roles = []
 
+class Member(User):
+    def __init__(self, guild=None, nick=None, user_id=None, username=None):
+        super().__init__(user_id, username)
+        self.guild = guild
+        self.nick = nick
 
 class Guild:
     def __init__(self, guild_id=None):
         self.id = guild_id
+        self.members = []
+
+    def add_member(self, nick):
+        self.members.append(Member(self, nick+"_MEMBER", random.randint(999999999999990000, 999999999999999999), nick))
+
 
 
 class Message:
@@ -51,15 +72,17 @@ class Message:
         return
 
 class Context:
-    def __init__(self):
+    def __init__(self, bot=None):
         self.guild = None
         self.channel = Channel(random.randint(999999999999990000, 999999999999999999))
-        self.author = Author(random.randint(999999999999990000, 999999999999999999))
+        self.author = User(random.randint(999999999999990000, 999999999999999999), "MOCK USER")
         self.last_message = Message()
         self.messages = []
+        self.bot = bot
 
     def set_guild(self):
         self.guild = Guild(random.randint(999999999999990000, 999999999999999999))
+        self.bot.guilds.append(self.guild)
 
     async def send(
         self,
@@ -80,8 +103,3 @@ class Context:
 
     async def trigger_typing(self):
         return
-
-
-class Bot:
-    def __init__(self):
-        pass
