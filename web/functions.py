@@ -6,9 +6,9 @@ import eyed3
 from flask import abort
 from sentry_sdk import capture_exception
 
+from bot.core import (_black_and_white, get_files, get_sciname,
+                      valid_audio_extensions, valid_image_extensions)
 from bot.data import GenericError, birdList, database, logger, screech_owls
-from bot.functions import (_black_and_white, get_files, get_sciname,
-                           valid_audio_extensions, valid_image_extensions)
 from web.config import get_session_id
 
 
