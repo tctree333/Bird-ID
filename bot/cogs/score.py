@@ -43,35 +43,27 @@ class Score(commands.Cog):
         scores = pipe.execute()
         return int(sum(scores))
 
-    def _monthly_lb(self, ctx):
+    def _monthly_lb(self, ctx, category):
         logger.info("generating monthly leaderboard")
+        if category == "scores":
+            key = "daily.score"
+        elif category == "missed":
+            key = "daily.incorrect"
+        else:
+            raise GenericError("Invalid category", 990)
+
         today = datetime.datetime.now(datetime.timezone.utc).date()
         past_month = pd.date_range(today-datetime.timedelta(29), today).date
         pipe = database.pipeline()
         for day in past_month:
-            pipe.zrevrangebyscore(f"daily.score:{day}", "+inf", "-inf", withscores=True)
+            pipe.zrevrangebyscore(f"{key}:{day}", "+inf", "-inf", withscores=True)
         result = pipe.execute()
-        total_scores = pd.Series(dtype="int64")
+        totals = pd.Series(dtype="int64")
         for daily_score in result:
             daily_score = pd.Series({e[0]:e[1] for e in map(lambda x: (x[0].decode("utf-8"), int(x[1])), daily_score)})
-            total_scores = total_scores.add(daily_score, fill_value=0)
-        total_scores = total_scores.sort_values(ascending=False)
-        return total_scores
-
-    def _monthly_missed(self, ctx):
-        logger.info("generating monthly missed bitds")
-        today = datetime.datetime.now(datetime.timezone.utc).date()
-        past_month = pd.date_range(today-datetime.timedelta(29), today).date
-        pipe = database.pipeline()
-        for day in past_month:
-            pipe.zrevrangebyscore(f"daily.incorrect:{day}", "+inf", "-inf", withscores=True)
-        result = pipe.execute()
-        total_missed = pd.Series(dtype="int64")
-        for daily_missed in result:
-            daily_missed = pd.Series({e[0]:e[1] for e in map(lambda x: (x[0].decode("utf-8"), int(x[1])), daily_missed)})
-            total_missed = total_missed.add(daily_missed, fill_value=0)
-        total_missed = total_missed.sort_values(ascending=False)
-        return total_missed
+            totals = totals.add(daily_score, fill_value=0)
+        totals = totals.sort_values(ascending=False)
+        return totals
 
     # returns total number of correct answers so far
     @commands.command(
@@ -187,7 +179,7 @@ class Score(commands.Cog):
         elif scope in ("month", "monthly", "m"):
             database_key = None
             scope = "Last 30 Days"
-            monthly_scores = self._monthly_lb(ctx)
+            monthly_scores = self._monthly_lb(ctx, "scores")
         else:
             database_key = "users:global"
             scope = "global"
@@ -315,7 +307,7 @@ class Score(commands.Cog):
             database_key = f"incorrect.user:{ctx.author.id}"
             scope = "me"
         elif scope in ("month", "monthly", "mo"):
-            data = self._monthly_missed(ctx)
+            data = self._monthly_lb(ctx, "missed")
             database_key = None
             scope = "Last 30 days"
         else:
