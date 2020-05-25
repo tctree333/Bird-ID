@@ -6,6 +6,7 @@ import pytest
 import discord_mock as mock
 from bot.cogs import score
 from bot.data import database
+from bot.functions import channel_setup, user_setup
 
 
 class TestScore:
@@ -41,6 +42,9 @@ class TestScore:
 
         if self.ctx.guild is not None:
             database.delete(f"users.server:{self.ctx.guild.id}")
+
+        asyncio.run(channel_setup(self.ctx))
+        asyncio.run(user_setup(self.ctx))
 
 
     ### Score Command Tests

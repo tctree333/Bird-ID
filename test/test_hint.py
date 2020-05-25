@@ -5,6 +5,7 @@ import pytest
 import discord_mock as mock
 from bot.cogs import hint
 from bot.data import database
+from bot.functions import channel_setup, user_setup
 
 
 class TestHint:
@@ -41,6 +42,10 @@ class TestHint:
         if self.ctx.guild is not None:
             database.delete(f"users.server:{self.ctx.guild.id}")
 
+        asyncio.run(channel_setup(self.ctx))
+        asyncio.run(user_setup(self.ctx))
+
+
     ### Hint Command Tests
     def test_hint_nobird_dm(self):
         self.setup(guild=True)
@@ -56,7 +61,7 @@ class TestHint:
 
         coroutine = self.cog.hint.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == f"The first letter is {test_word[0]}"
+        assert self.ctx.messages[2].content == f"The first letter is {test_word[0]}"
 
 
     ### Hintgoat Command Tests
@@ -74,7 +79,7 @@ class TestHint:
 
         coroutine = self.cog.hintgoat.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == f"The first letter is {test_word[0]}"
+        assert self.ctx.messages[2].content == f"The first letter is {test_word[0]}"
 
 
     ### Hintsong Command Tests
@@ -92,4 +97,4 @@ class TestHint:
 
         coroutine = self.cog.hintsong.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == f"The first letter is {test_word[0]}"
+        assert self.ctx.messages[2].content == f"The first letter is {test_word[0]}"
