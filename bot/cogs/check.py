@@ -20,7 +20,8 @@ from discord.ext import commands
 from bot.core import get_sciname, spellcheck
 from bot.data import database, get_wiki_url, goatsuckers, logger, sciGoat
 from bot.functions import (CustomCooldown, bird_setup, incorrect_increment,
-                           score_increment, session_increment)
+                           score_increment, session_increment,
+                           streak_increment)
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
@@ -54,13 +55,7 @@ class Check(commands.Cog):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
 
-                database.zincrby("streak:global", 1, str(ctx.author.id))
-                # check if streak is greater than max, if so, increases max
-                if database.zscore("streak:global", str(ctx.author.id
-                                                       )) > database.zscore("streak.max:global", str(ctx.author.id)):
-                    database.zadd(
-                        "streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))}
-                    )
+                streak_increment(ctx, 1)
 
                 await ctx.send(
                     "Correct! Good job!" if not database.exists(f"race.data:{ctx.channel.id}") else
@@ -95,7 +90,7 @@ class Check(commands.Cog):
             else:
                 logger.info("incorrect")
 
-                database.zadd("streak:global", {str(ctx.author.id): 0})
+                streak_increment(ctx, None) # reset streak
 
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
@@ -134,13 +129,7 @@ class Check(commands.Cog):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
 
-                # increment streak and update max
-                database.zincrby("streak:global", 1, str(ctx.author.id))
-                if database.zscore("streak:global", str(ctx.author.id
-                                                       )) > database.zscore("streak.max:global", str(ctx.author.id)):
-                    database.zadd(
-                        "streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))}
-                    )
+                streak_increment(ctx, 1)
 
                 await ctx.send("Correct! Good job!")
                 url = get_wiki_url(ctx, currentBird)
@@ -156,7 +145,7 @@ class Check(commands.Cog):
             else:
                 logger.info("incorrect")
 
-                database.zadd("streak:global", {str(ctx.author.id): 0})
+                streak_increment(ctx, None) # reset streak
 
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")
@@ -194,13 +183,7 @@ class Check(commands.Cog):
                     logger.info("session active")
                     session_increment(ctx, "correct", 1)
 
-                # increment streak and update max
-                database.zincrby("streak:global", 1, str(ctx.author.id))
-                if database.zscore("streak:global", str(ctx.author.id
-                                                       )) > database.zscore("streak.max:global", str(ctx.author.id)):
-                    database.zadd(
-                        "streak.max:global", {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))}
-                    )
+                streak_increment(ctx, 1)
 
                 await ctx.send(
                     "Correct! Good job!" if not database.exists(f"race.data:{ctx.channel.id}") else
@@ -234,7 +217,7 @@ class Check(commands.Cog):
             else:
                 logger.info("incorrect")
 
-                database.zadd("streak:global", {str(ctx.author.id): 0})
+                streak_increment(ctx, None) # reset streak
 
                 if database.exists(f"session.data:{ctx.author.id}"):
                     logger.info("session active")

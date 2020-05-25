@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import datetime
 
 import sentry_sdk
 from flask import Flask, session
@@ -98,6 +99,13 @@ def user_setup(user_id):
         database.zadd("users:global", {str(user_id): 0})
         logger.info("user global added")
 
+    date = str(datetime.datetime.now(datetime.timezone.utc).date())
+    if database.zscore(f"daily.score:{date}", str(user_id)) is not None:
+        logger.info("user daily ok")
+    else:
+        database.zadd(f"daily.score:{date}", {str(user_id): 0})
+        logger.info("user daily added")
+
     # Add streak
     if (database.zscore("streak:global", str(user_id)) is
         not None) and (database.zscore("streak.max:global", str(user_id)) is not None):
@@ -116,11 +124,35 @@ def bird_setup(user_id, bird):
         database.zadd("incorrect:global", {string.capwords(str(bird)): 0})
         logger.info("bird global added")
 
-    if database.zscore(f"incorrect.user:{user_id}", string.capwords(str(bird))) is not None:
-        logger.info("bird user ok")
+    date = str(datetime.datetime.now(datetime.timezone.utc).date())
+    if database.zscore(f"daily.incorrect:{date}", string.capwords(bird)) is not None:
+        logger.info("bird daily ok")
     else:
-        database.zadd(f"incorrect.user:{user_id}", {string.capwords(str(bird)): 0})
-        logger.info("bird user added")
+        database.zadd(f"daily.incorrect:{date}", {string.capwords(bird): 0})
+        logger.info("bird daily added")
+
+    if database.zscore("frequency.bird:global", string.capwords(bird)) is not None:
+        logger.info("bird freq global ok")
+    else:
+        database.zadd("frequency.bird:global", {string.capwords(bird): 0})
+        logger.info("bird freq global added")
+
+    if user_id is not None:
+        if database.zscore(f"incorrect.user:{user_id}", string.capwords(str(bird))) is not None:
+            logger.info("bird user ok")
+        else:
+            database.zadd(f"incorrect.user:{user_id}", {string.capwords(str(bird)): 0})
+            logger.info("bird user added")
+
+        if database.exists(f"session.data:{user_id}"):
+            logger.info("session in session")
+            if database.zscore(f"session.incorrect:{user_id}", string.capwords(bird)) is not None:
+                logger.info("bird session ok")
+            else:
+                database.zadd(f"session.incorrect:{user_id}", {string.capwords(bird): 0})
+                logger.info("bird session added")
+        else:
+            logger.info("no session")
 
 def get_session_id():
     if "id" not in session:
@@ -155,3 +187,8 @@ def verify_session(session_id):
     else:
         logger.info("exists with user id")
         return int(database.hget(f"web.session:{session_id}", "user_id"))
+
+class MockContext:
+    def __init__(self, user_id):
+        self.author.id = user_id
+        self.guild = None

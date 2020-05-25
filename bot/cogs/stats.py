@@ -47,9 +47,10 @@ class Stats(commands.Cog):
     # export data as csv
     @commands.command(help="- Exports bot data as a csv")
     @commands.check(CustomCooldown(10.0, bucket=commands.BucketType.channel))
-    async def export(self, ctx, scope="", page=1):
+    async def export(self, ctx):
         logger.info("command: export")
 
+        
 
 
 

@@ -369,6 +369,25 @@ def score_increment(ctx, amount: int):
         logger.info("race in session")
         database.zincrby(f"race.scores:{ctx.channel.id}", amount, str(ctx.author.id))
 
+def streak_increment(ctx, amount:int):
+    """Increments the streak of a user by `amount`.
+
+    `ctx` - Discord context object\n
+    `amount` (int) - amount to increment by, usually 1.
+    If amount is None, the streak is ended.
+    """
+
+    if amount is not None:
+        # increment streak and update max
+        database.zincrby("streak:global", amount, str(ctx.author.id))
+        if database.zscore("streak:global", str(ctx.author.id)) > database.zscore("streak.max:global", str(ctx.author.id)):
+            database.zadd(
+                "streak.max:global", 
+                {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))}
+            )
+    else:
+        database.zadd("streak:global", {str(ctx.author.id): 0})
+
 
 async def drone_attack(ctx):
     logger.info(f"holiday check: invoked command: {str(ctx.command)}")

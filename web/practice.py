@@ -1,13 +1,15 @@
 import asyncio
 import random
+import string
 
 import flask
 from flask import Blueprint, abort, request
 
-from bot.data import birdList, songBirds, get_wiki_url
 from bot.core import spellcheck
-from web.config import (FRONTEND_URL, bird_setup, database, get_session_id,
-                        logger)
+from bot.data import birdList, get_wiki_url, songBirds
+from bot.functions import streak_increment
+from web.config import (FRONTEND_URL, MockContext, bird_setup, database,
+                        get_session_id, logger)
 from web.functions import get_sciname, send_bird
 
 bp = Blueprint('practice', __name__, url_prefix='/practice')
@@ -18,6 +20,10 @@ def after_request(response):
     header['Access-Control-Allow-Origin'] = FRONTEND_URL
     header['Access-Control-Allow-Credentials'] = 'true'
     return response
+
+def increment_bird_frequency(bird):
+    bird_setup(None, bird)
+    database.zincrby("frequency.bird:global", 1, string.capwords(bird))
 
 @bp.route('/get', methods=['GET'])
 def get_bird():
@@ -46,6 +52,7 @@ def get_bird():
     if answered:  # if yes, give a new bird
         id_list = (songBirds if media_type == "songs" else birdList)
         currentBird = random.choice(id_list)
+        increment_bird_frequency(session_id, currentBird)
         prevB = database.hget(f"web.session:{session_id}", "prevB").decode("utf-8")
         while currentBird == prevB and len(id_list) > 1:
             currentBird = random.choice(id_list)
@@ -97,10 +104,7 @@ def check_bird():
             tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
             if user_id != 0:
                 database.zincrby("users:global", 1, str(user_id))
-                database.zincrby("streak:global", 1, str(user_id))
-                # check if streak is greater than max, if so, increases max
-                if database.zscore("streak:global", str(user_id)) > database.zscore("streak.max:global", str(user_id)):
-                    database.zadd("streak.max:global", {str(user_id): database.zscore("streak:global", str(user_id))})
+                streak_increment(MockContext(user_id), 1)
             elif tempScore >= 10:
                 logger.info("trial maxed")
                 abort(403, "Sign in to continue")
@@ -118,7 +122,7 @@ def check_bird():
             database.zincrby("incorrect:global", 1, currentBird)
 
             if user_id != 0:
-                database.zadd("streak:global", {str(user_id): 0})
+                streak_increment(MockContext(user_id), None) # reset streak
                 database.zincrby(f"incorrect.user:{user_id}", 1, currentBird)
 
             url = get_wiki_url(currentBird)
@@ -135,7 +139,7 @@ def skip_bird():
         database.hset(f"web.session:{session_id}", "bird", "")
         database.hset(f"web.session:{session_id}", "answered", "1")
         if user_id != 0:
-            database.zadd("streak:global", {str(user_id): 0})  # end streak
+            streak_increment(MockContext(user_id), None) # reset streak
 
         scibird = asyncio.run(get_sciname(currentBird))
         url = get_wiki_url(currentBird)  # sends wiki page
