@@ -70,8 +70,8 @@ if __name__ == '__main__':
 
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
     core_extensions = [
-        'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', 'bot.cogs.state',
-        'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.meta', 'bot.cogs.other'
+        'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', "bot.cogs.stats",
+        'bot.cogs.state', 'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.meta', 'bot.cogs.other'
     ]
     
     if "SCIOLY_ID_BOT_EXTRA_COGS" in os.environ and len(os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip()) > 0:
