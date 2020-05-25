@@ -20,7 +20,7 @@ import discord
 import pandas as pd
 from discord.ext import commands
 
-from bot.data import GenericError, database, logger
+from bot.data import database, logger
 from bot.functions import CustomCooldown, send_leaderboard
 
 
