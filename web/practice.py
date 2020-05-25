@@ -52,7 +52,7 @@ def get_bird():
     if answered:  # if yes, give a new bird
         id_list = (songBirds if media_type == "songs" else birdList)
         currentBird = random.choice(id_list)
-        increment_bird_frequency(session_id, currentBird)
+        increment_bird_frequency(currentBird)
         prevB = database.hget(f"web.session:{session_id}", "prevB").decode("utf-8")
         while currentBird == prevB and len(id_list) > 1:
             currentBird = random.choice(id_list)
