@@ -24,7 +24,7 @@ from discord.ext import commands
 from sentry_sdk import capture_exception
 
 from bot.data import GenericError, database, logger
-from bot.functions import CustomCooldown
+from bot.functions import CustomCooldown, send_leaderboard
 
 
 class Score(commands.Cog):
@@ -300,13 +300,8 @@ class Score(commands.Cog):
             await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me, month`")
             return
 
-        if page < 1:
-            logger.info("invalid page")
-            await ctx.send("Not a valid number. Pick a positive integer!")
-            return
-
-        database_key = ""
         if scope in ("server", "s"):
+            data = None
             if ctx.guild is not None:
                 database_key = f"incorrect.server:{ctx.guild.id}"
                 scope = "server"
@@ -316,45 +311,19 @@ class Score(commands.Cog):
                 scope = "global"
                 database_key = "incorrect:global"
         elif scope in ("me", "m"):
+            data = None
             database_key = f"incorrect.user:{ctx.author.id}"
             scope = "me"
         elif scope in ("month", "monthly", "mo"):
+            data = self._monthly_missed(ctx)
             database_key = None
             scope = "Last 30 days"
-            monthly_missed = self._monthly_missed(ctx)
         else:
+            data = None
             database_key = "incorrect:global"
             scope = "global"
 
-        user_amount = (int(database.zcard(database_key)) if database_key is not None else monthly_missed.count())
-        page = (page * 10) - 10
-
-        if user_amount == 0:
-            logger.info(f"no users in {database_key}")
-            await ctx.send("There are no birds in the database.")
-            return
-
-        if page > user_amount:
-            page = user_amount - (user_amount % 10)
-
-        users_per_page = 10
-        leaderboard_list = (
-            map(
-                lambda x: (x[0].decode("utf-8"), x[1]), 
-                database.zrevrangebyscore(database_key, "+inf", "-inf", page, users_per_page, True)
-            )
-            if database_key is not None
-            else monthly_missed.iloc[page:page+users_per_page-1].items()
-        )
-        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
-        embed.set_author(name="Bird ID - An Ornithology Bot")
-        leaderboard = ""
-
-        for i, stats in enumerate(leaderboard_list):
-            leaderboard += f"{i+1+page}. **{stats[0]}** - {int(stats[1])}\n"
-        embed.add_field(name=f"Top Missed Birds ({scope})", value=leaderboard, inline=False)
-
-        await ctx.send(embed=embed)
+        await send_leaderboard(ctx, f"Top Missed Birds ({scope})", page, database_key, data)
 
     # Command-specific error checking
     @leaderboard.error

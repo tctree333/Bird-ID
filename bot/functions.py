@@ -225,6 +225,47 @@ def check_state_role(ctx) -> list:
     logger.info(f"user roles: {user_states}")
     return user_states
 
+async def send_leaderboard(ctx, title, page, database_key=None, data=None):
+        logger.info("building/sending leaderboard")
+        
+        if database_key is None and data is None:
+            raise GenericError("database_key and data are both NoneType", 990)
+        elif database_key is not None and data is not None:
+            raise GenericError("database_key and data are both set", 990)
+
+        if page < 1:
+            page = 1
+
+        entry_count = (int(database.zcard(database_key)) if database_key is not None else data.count())
+        page = (page * 10) - 10
+
+        if entry_count == 0:
+            logger.info(f"no items in {database_key}")
+            await ctx.send("There are no items in the database.")
+            return
+
+        if page > entry_count:
+            page = entry_count - (entry_count % 10)
+
+        items_per_page = 10
+        leaderboard_list = (
+            map(
+                lambda x: (x[0].decode("utf-8"), x[1]), 
+                database.zrevrangebyscore(database_key, "+inf", "-inf", page, items_per_page, True)
+            )
+            if database_key is not None
+            else data.iloc[page:page+items_per_page-1].items()
+        )
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        leaderboard = ""
+
+        for i, stats in enumerate(leaderboard_list):
+            leaderboard += f"{i+1+page}. **{stats[0]}** - {int(stats[1])}\n"
+        embed.add_field(name=title, value=leaderboard, inline=False)
+
+        await ctx.send(embed=embed)
+
 def build_id_list(user_id = None, taxon = [], roles = [], state = [], media = "images") -> list:
     """Generates an ID list based on given arguments
 
