@@ -23,9 +23,8 @@ from bot.core import send_bird, send_birdsong
 from bot.data import (birdList, database, goatsuckers, logger, songBirds,
                       states, taxons)
 from bot.functions import (CustomCooldown, bird_setup, build_id_list,
-                           channel_setup, check_state_role, error_skip,
-                           error_skip_goat, error_skip_song, session_increment,
-                           user_setup)
+                           check_state_role, error_skip, error_skip_goat,
+                           error_skip_song, session_increment)
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +
@@ -183,9 +182,6 @@ class Birds(commands.Cog):
     async def bird(self, ctx, *, args_str: str = ""):
         logger.info("command: bird")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         args = args_str.split(" ")
         logger.info(f"args: {args}")
 
@@ -296,9 +292,6 @@ class Birds(commands.Cog):
     async def goatsucker(self, ctx):
         logger.info("command: goatsucker")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         answered = int(database.hget(f"channel:{ctx.channel.id}", "gsAnswered"))
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
@@ -326,9 +319,6 @@ class Birds(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def song(self, ctx):
         logger.info("command: song")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         logger.info("bird: " + database.hget(f"channel:{ctx.channel.id}", "sBird").decode("utf-8"))
         logger.info("answered: " + str(int(database.hget(f"channel:{ctx.channel.id}", "sAnswered"))))

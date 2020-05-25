@@ -31,7 +31,7 @@ from sentry_sdk import capture_exception, configure_scope
 
 from bot.core import precache, send_bird
 from bot.data import GenericError, database, logger
-from bot.functions import backup_all, channel_setup, drone_attack
+from bot.functions import backup_all, channel_setup, drone_attack, user_setup
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])
@@ -147,6 +147,15 @@ if __name__ == '__main__':
             raise commands.BotMissingPermissions(missing)
         else:
             return True
+
+    @bot.check
+    async def database_setup(ctx):
+        """Ensures database consistency before commands run."""
+        logger.info("global check: database setup")
+        channel_setup(ctx)
+        user_setup(ctx)
+        await ctx.trigger_typing()
+        return True
 
     @bot.check
     async def is_holiday(ctx):

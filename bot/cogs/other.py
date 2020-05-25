@@ -27,8 +27,7 @@ from sentry_sdk import capture_exception
 from bot.core import get_sciname, get_taxon, precache, send_bird, send_birdsong
 from bot.data import (birdListMaster, database, logger, memeList,
                       sciBirdListMaster, states, taxons)
-from bot.functions import (CustomCooldown, build_id_list, channel_setup,
-                           user_setup)
+from bot.functions import CustomCooldown, build_id_list
 
 
 class Other(commands.Cog):
@@ -40,9 +39,6 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(10.0, bucket=commands.BucketType.user))
     async def info(self, ctx, *, arg):
         logger.info("command: info")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         matches = get_close_matches(arg, birdListMaster + sciBirdListMaster, n=1)
         if matches:
@@ -61,9 +57,6 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
     async def list_of_birds(self, ctx, state: str = "blank"):
         logger.info("command: list")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         state = state.upper()
 
@@ -121,9 +114,6 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
     async def bird_taxons(self, ctx, taxon: str = "blank", state: str = "NATS"):
         logger.info("command: taxons")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         taxon = taxon.lower()
         state = state.upper()
@@ -190,9 +180,6 @@ class Other(commands.Cog):
     async def wikipedia(self, ctx, *, arg):
         logger.info("command: wiki")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         try:
             page = wikipedia.page(arg)
             await ctx.send(page.url)
@@ -207,8 +194,6 @@ class Other(commands.Cog):
     async def meme(self, ctx):
         logger.info("command: meme")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
         await ctx.send(random.choice(memeList))
 
     # Send command - for testing purposes only

@@ -17,7 +17,7 @@
 from discord.ext import commands
 
 from bot.data import database, get_wiki_url, logger
-from bot.functions import CustomCooldown, channel_setup, user_setup
+from bot.functions import CustomCooldown
 
 
 class Skip(commands.Cog):
@@ -29,9 +29,6 @@ class Skip(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def skip(self, ctx):
         logger.info("command: skip")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         currentBird = str(database.hget(f"channel:{ctx.channel.id}", "bird"))[2:-1]
         database.hset(f"channel:{ctx.channel.id}", "bird", "")
@@ -64,9 +61,6 @@ class Skip(commands.Cog):
     async def skipgoat(self, ctx):
         logger.info("command: skipgoat")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         currentBird = str(database.hget(f"channel:{ctx.channel.id}", "goatsucker"))[2:-1]
         database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
         database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
@@ -83,9 +77,6 @@ class Skip(commands.Cog):
     @commands.check(CustomCooldown(10.0, bucket=commands.BucketType.channel))
     async def skipsong(self, ctx):
         logger.info("command: skipsong")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         currentSongBird = str(database.hget(f"channel:{ctx.channel.id}", "sBird"))[2:-1]
         database.hset(f"channel:{ctx.channel.id}", "sBird", "")

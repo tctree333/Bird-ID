@@ -24,7 +24,7 @@ from discord.ext import commands
 from sentry_sdk import capture_exception
 
 from bot.data import GenericError, database, logger
-from bot.functions import CustomCooldown, channel_setup, user_setup
+from bot.functions import CustomCooldown
 
 
 class Score(commands.Cog):
@@ -82,9 +82,6 @@ class Score(commands.Cog):
     async def score(self, ctx, scope=""):
         logger.info("command: score")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         if scope in ("total", "server", "t", "s"):
             total_correct = self._server_total(ctx)
             await ctx.send(
@@ -108,10 +105,6 @@ class Score(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def userscore(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None):
         logger.info("command: userscore")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
-        logger.info(type(user))
 
         if user is not None:
             if isinstance(user, str):
@@ -139,9 +132,6 @@ class Score(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def streak(self, ctx):
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title="**User Streaks**")
         embed.set_author(name="Bird ID - An Ornithology Bot")
         current_streak = f"You have answered `{int(database.zscore('streak:global', str(ctx.author.id)))}` in a row!"
@@ -161,9 +151,6 @@ class Score(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def leaderboard(self, ctx, scope="", page=1):
         logger.info("command: leaderboard")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         try:
             page = int(scope)
@@ -295,9 +282,6 @@ class Score(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def missed(self, ctx, scope="", page=1):
         logger.info("command: missed")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         try:
             page = int(scope)

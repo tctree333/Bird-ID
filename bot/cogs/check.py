@@ -19,9 +19,8 @@ from discord.ext import commands
 
 from bot.core import get_sciname, spellcheck
 from bot.data import database, get_wiki_url, goatsuckers, logger, sciGoat
-from bot.functions import (CustomCooldown, bird_setup, channel_setup,
-                           incorrect_increment, score_increment,
-                           session_increment, user_setup)
+from bot.functions import (CustomCooldown, bird_setup, incorrect_increment,
+                           score_increment, session_increment)
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
@@ -35,9 +34,6 @@ class Check(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def check(self, ctx, *, arg):
         logger.info("command: check")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
         if currentBird == "":  # no bird
@@ -122,9 +118,6 @@ class Check(commands.Cog):
     async def checkgoat(self, ctx, *, arg):
         logger.info("command: checkgoat")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         currentBird = database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode("utf-8")
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
@@ -181,9 +174,6 @@ class Check(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def checksong(self, ctx, *, arg):
         logger.info("command: checksong")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         currentSongBird = database.hget(f"channel:{ctx.channel.id}", "sBird").decode("utf-8")
         if currentSongBird == "":  # no bird
