@@ -152,9 +152,9 @@ if __name__ == '__main__':
     async def database_setup(ctx):
         """Ensures database consistency before commands run."""
         logger.info("global check: database setup")
+        await ctx.trigger_typing()
         await channel_setup(ctx)
         await user_setup(ctx)
-        await ctx.trigger_typing()
         return True
 
     @bot.check
