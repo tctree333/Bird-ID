@@ -112,6 +112,14 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #    incorrect.user:user_id: : [bird name, # incorrect]
 # }
 
+# bird frequency format = {
+#   frequency.bird:global : [bird name, # displayed]
+# }
+
+# command frequency format = {
+#   frequency.command:global : [command, # used]
+# }
+
 # channel score format = {
 #   score:global : [channel id, # of correct]
 #   channels:global : ["guild id:channel id", 0]

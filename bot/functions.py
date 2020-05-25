@@ -153,6 +153,12 @@ async def bird_setup(ctx, bird: str):
         database.zadd(f"daily.incorrect:{date}", {string.capwords(bird): 0})
         logger.info("bird daily added")
 
+    if database.zscore("frequency.bird:global", string.capwords(bird)) is not None:
+        logger.info("bird freq global ok")
+    else:
+        database.zadd("frequency.bird:global", {string.capwords(bird): 0})
+        logger.info("bird freq global added")
+
     if ctx.guild is not None:
         logger.info("no dm")
         if database.zscore(f"incorrect.server:{ctx.guild.id}", string.capwords(bird)) is not None:

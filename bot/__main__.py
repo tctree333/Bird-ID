@@ -98,6 +98,13 @@ if __name__ == '__main__':
     ######
 
     @bot.check
+    def log_command_frequency(ctx):
+        """Logs the command used to the database."""
+        logger.info("global check: logging command frequency")
+        database.zincrby("frequency.command:global", 1, str(ctx.command))
+        return True
+
+    @bot.check
     def set_sentry_tag(ctx):
         """Tags sentry errors with current command."""
         logger.info("global check: setting sentry tag")
