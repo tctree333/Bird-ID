@@ -65,6 +65,95 @@ class Score(commands.Cog):
         totals = totals.sort_values(ascending=False)
         return totals
 
+    async def user_lb(self, ctx, title, page, database_key=None, data=None):
+        if database_key is None and data is None:
+            raise GenericError("database_key and data are both NoneType", 990)
+        elif database_key is not None and data is not None:
+            raise GenericError("database_key and data are both set", 990)
+
+        if page < 1:
+            page = 1
+
+        user_amount = (int(database.zcard(database_key)) if database_key is not None else data.count())
+        page = (page * 10) - 10
+
+        if user_amount == 0:
+            logger.info(f"no users in {database_key}")
+            await ctx.send("There are no users in the database.")
+            return
+
+        if page > user_amount:
+            page = user_amount - (user_amount % 10)
+
+        users_per_page = 10
+        leaderboard_list = (
+            database.zrevrangebyscore(database_key, "+inf", "-inf", page, users_per_page, True)
+            if database_key is not None
+            else data.iloc[page:page+users_per_page-1].items()
+        )
+
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        leaderboard = ""
+
+        for i, stats in enumerate(leaderboard_list):
+            if ctx.guild is not None:
+                user = ctx.guild.get_member(int(stats[0]))
+            else:
+                user = None
+
+            if user is None:
+                user = self.bot.get_user(int(stats[0]))
+                if user is None:
+                    user = "**Deleted**"
+                else:
+                    user = f"**{user.name}#{user.discriminator}**"
+            else:
+                user = f"**{user.name}#{user.discriminator}** ({user.mention})"
+
+            leaderboard += f"{i+1+page}. {user} - {int(stats[1])}\n"
+
+        embed.add_field(name=title, value=leaderboard, inline=False)
+
+        user_score = (
+            database.zscore(database_key, str(ctx.author.id))
+            if database_key is not None
+            else data.get(str(ctx.author.id))
+        )
+
+        if user_score is not None:
+            if database_key is not None:
+                placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
+                distance = (
+                    int(database.zrevrange(database_key, placement - 2, placement - 2, True)[0][1]) -
+                    int(user_score))
+            else:
+                placement = int(data.rank(ascending=False)[str(ctx.author.id)])
+                distance = int(data.iloc[placement-2] - user_score)
+
+            if placement == 1:
+                embed.add_field(
+                    name="You:",
+                    value=f"You are #{placement} on the leaderboard.\nYou are in first place.",
+                    inline=False
+                )
+            elif distance == 0:
+                embed.add_field(
+                    name="You:",
+                    value=f"You are #{placement} on the leaderboard.\nYou are tied with #{placement-1}",
+                    inline=False
+                )
+            else:
+                embed.add_field(
+                    name="You:",
+                    value=f"You are #{placement} on the leaderboard.\nYou are {distance} away from #{placement-1}",
+                    inline=False
+                )
+        else:
+            embed.add_field(name="You:", value="You haven't answered any correctly.")
+
+        await ctx.send(embed=embed)
+
     # returns total number of correct answers so far
     @commands.command(
         brief="- Total correct answers in a channel or server",
@@ -104,34 +193,102 @@ class Score(commands.Cog):
                 return
             usera = user.id
             logger.info(usera)
-            if database.zscore("users:global", str(usera)) is not None:
-                times = str(int(database.zscore("users:global", str(usera))))
+            score = database.zscore("users:global", str(usera))
+            if score is not None:
+                score = int(score)
                 user = f"<@{usera}>"
             else:
                 await ctx.send("This user does not exist on our records!")
                 return
         else:
             user = f"<@{ctx.author.id}>"
-            times = str(int(database.zscore("users:global", str(ctx.author.id))))
+            score = int(database.zscore("users:global", str(ctx.author.id)))
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
-        embed.add_field(name="User Score:", value=f"{user} has answered correctly {times} times.")
+        embed.add_field(name="User Score:", value=f"{user} has answered correctly {score} times.")
         await ctx.send(embed=embed)
 
     # gives streak of a user
-    @commands.command(help='- Gives your current/max streak', aliases=["streaks", "stk"])
+    @commands.group(help='- Gives your current/max streak', aliases=["streaks", "stk"])
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def streak(self, ctx):
+        if ctx.invoked_subcommand is not None:
+            return
+        logger.info("command: streak")
+        args = " ".join(ctx.message.content.split(" ")[1:])
+        if args:
+            user = await commands.MemberConverter().convert(ctx, args)
+        else:
+            user = None
+
+        if user is not None:
+            if isinstance(user, str):
+                await ctx.send("Not a user!")
+                return
+            usera = user.id
+            logger.info(usera)
+            streak = database.zscore('streak:global', str(usera))
+            max_streak = database.zscore('streak.max:global', str(usera))
+            if streak is not None and max_streak is not None:
+                streak = int(streak)
+                max_streak = int(max_streak)
+                user = f"<@{usera}>"
+            else:
+                await ctx.send("This user does not exist on our records!")
+                return
+        else:
+            user = f"<@{ctx.author.id}>"
+            streak = int(database.zscore('streak:global', str(ctx.author.id)))
+            max_streak = int(database.zscore('streak.max:global', str(ctx.author.id)))
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title="**User Streaks**")
         embed.set_author(name="Bird ID - An Ornithology Bot")
-        current_streak = f"You have answered `{int(database.zscore('streak:global', str(ctx.author.id)))}` in a row!"
-        max_streak = f"Your max was `{int(database.zscore('streak.max:global', str(ctx.author.id)))}` in a row!"
+        current_streak = f"{user} has answered `{streak}` in a row!"
+        max_streak = f"{user}'s max was `{max_streak}` in a row!"
         embed.add_field(name=f"**Current Streak**", value=current_streak, inline=False)
         embed.add_field(name=f"**Max Streak**", value=max_streak, inline=False)
 
         await ctx.send(embed=embed)
+
+    # streak leaderboard - returns top streaks
+    @streak.command(
+        brief="- Top streaks",
+        help="- Top streaks, either current (default) or max.",
+        usage="[max|m] [page]",
+        name="leaderboard",
+        aliases=["lb"]
+    )
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
+    async def streak_leaderboard(self, ctx, scope="", page=1):
+        logger.info("command: leaderboard")
+
+        try:
+            page = int(scope)
+        except ValueError:
+            if scope == "":
+                scope = "current"
+            scope = scope.lower()
+        else:
+            scope = "current"
+
+        logger.info(f"scope: {scope}")
+        logger.info(f"page: {page}")
+
+        if not scope in ("current", "now", "c", "max", "m"):
+            logger.info("invalid scope")
+            await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `max`")
+            return
+
+        data = None
+        if scope in ("max", "m"):
+            database_key = "streak.max:global"
+            scope = "max"
+        else:
+            database_key = "streak:global"
+            scope = "current"
+
+        await self.user_lb(ctx, f"Streak Leaderboard ({scope})", page, database_key, data)
 
     # leaderboard - returns top 1-10 users
     @commands.command(
@@ -161,12 +318,6 @@ class Score(commands.Cog):
             await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, month`")
             return
 
-        if page < 1:
-            logger.info("invalid page")
-            await ctx.send("Not a valid number. Pick a positive integer!")
-            return
-
-        database_key = ""
         if scope in ("server", "s"):
             if ctx.guild is not None:
                 database_key = f"users.server:{ctx.guild.id}"
@@ -176,93 +327,17 @@ class Score(commands.Cog):
                 await ctx.send("**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*")
                 scope = "global"
                 database_key = "users:global"
+            data = None
         elif scope in ("month", "monthly", "m"):
             database_key = None
             scope = "Last 30 Days"
-            monthly_scores = self._monthly_lb(ctx, "scores")
+            data = self._monthly_lb(ctx, "scores")
         else:
             database_key = "users:global"
             scope = "global"
+            data = None
 
-        user_amount = (int(database.zcard(database_key)) if database_key is not None else monthly_scores.count())
-        page = (page * 10) - 10
-
-        if user_amount == 0:
-            logger.info(f"no users in {database_key}")
-            await ctx.send("There are no users in the database.")
-            return
-
-        if page > user_amount:
-            page = user_amount - (user_amount % 10)
-
-        users_per_page = 10
-        leaderboard_list = (
-            database.zrevrangebyscore(database_key, "+inf", "-inf", page, users_per_page, True)
-            if database_key is not None
-            else monthly_scores.iloc[page:page+users_per_page-1].items()
-        )
-
-        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
-        embed.set_author(name="Bird ID - An Ornithology Bot")
-        leaderboard = ""
-
-        for i, stats in enumerate(leaderboard_list):
-            if ctx.guild is not None:
-                user = ctx.guild.get_member(int(stats[0]))
-            else:
-                user = None
-
-            if user is None:
-                user = self.bot.get_user(int(stats[0]))
-                if user is None:
-                    user = "**Deleted**"
-                else:
-                    user = f"**{user.name}#{user.discriminator}**"
-            else:
-                user = f"**{user.name}#{user.discriminator}** ({user.mention})"
-
-            leaderboard += f"{i+1+page}. {user} - {int(stats[1])}\n"
-
-        embed.add_field(name=f"Leaderboard ({scope})", value=leaderboard, inline=False)
-
-        user_score = (
-            database.zscore(database_key, str(ctx.author.id))
-            if database_key is not None
-            else monthly_scores.get(str(ctx.author.id))
-        )
-
-        if user_score is not None:
-            if database_key is not None:
-                placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
-                distance = (
-                    int(database.zrevrange(database_key, placement - 2, placement - 2, True)[0][1]) -
-                    int(user_score))
-            else:
-                placement = int(monthly_scores.rank(ascending=False)[str(ctx.author.id)])
-                distance = int(monthly_scores.iloc[placement-2] - user_score)
-
-            if placement == 1:
-                embed.add_field(
-                    name="You:",
-                    value=f"You are #{placement} on the leaderboard.\nYou are in first place.",
-                    inline=False
-                )
-            elif distance == 0:
-                embed.add_field(
-                    name="You:",
-                    value=f"You are #{placement} on the leaderboard.\nYou are tied with #{placement-1}",
-                    inline=False
-                )
-            else:
-                embed.add_field(
-                    name="You:",
-                    value=f"You are #{placement} on the leaderboard.\nYou are {distance} away from #{placement-1}",
-                    inline=False
-                )
-        else:
-            embed.add_field(name="You:", value="You haven't answered any correctly.")
-
-        await ctx.send(embed=embed)
+        await self.user_lb(ctx, f"Leaderboard ({scope})", page, database_key, data)
 
     # missed - returns top 1-10 missed birds
     @commands.command(
