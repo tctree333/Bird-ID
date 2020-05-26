@@ -45,7 +45,7 @@ class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def increment_bird_frequency(self, ctx, bird):
+    def increment_bird_frequency(self, ctx, bird):
         bird_setup(ctx, bird)
         database.zincrby("frequency.bird:global", 1, string.capwords(bird))
 
@@ -102,7 +102,7 @@ class Birds(commands.Cog):
                 return
 
             currentBird = random.choice(birds)
-            await self.increment_bird_frequency(ctx, currentBird)
+            self.increment_bird_frequency(ctx, currentBird)
 
             prevB = database.hget(f"channel:{ctx.channel.id}", "prevB").decode("utf-8")
             while currentBird == prevB and len(birds) > 1:
@@ -151,7 +151,7 @@ class Birds(commands.Cog):
                 return
 
             currentSongBird = random.choice(birds)
-            await self.increment_bird_frequency(ctx, currentSongBird)
+            self.increment_bird_frequency(ctx, currentSongBird)
 
             prevS = database.hget(f"channel:{ctx.channel.id}", "prevS").decode("utf-8")
             while currentSongBird == prevS and len(birds) > 1:
@@ -296,7 +296,7 @@ class Birds(commands.Cog):
 
             database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "0")
             currentBird = random.choice(goatsuckers)
-            await self.increment_bird_frequency(ctx, currentBird)
+            self.increment_bird_frequency(ctx, currentBird)
 
             database.hset(f"channel:{ctx.channel.id}", "goatsucker", str(currentBird))
             logger.info("currentBird: " + str(currentBird))
