@@ -15,14 +15,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import random
+import string
 
 from discord.ext import commands
 
 from bot.core import send_bird, send_birdsong
 from bot.data import database, goatsuckers, logger, states, taxons
-from bot.functions import (CustomCooldown, build_id_list, channel_setup,
+from bot.functions import (CustomCooldown, bird_setup, build_id_list,
                            check_state_role, error_skip, error_skip_goat,
-                           error_skip_song, session_increment, user_setup)
+                           error_skip_song, session_increment)
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +
@@ -43,6 +44,10 @@ SONG_MESSAGE = BASE_MESSAGE.format(
 class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    async def increment_bird_frequency(self, ctx, bird):
+        bird_setup(ctx, bird)
+        database.zincrby("frequency.bird:global", 1, string.capwords(bird))
 
     async def send_bird_(self, ctx, add_on: str = "", bw: bool = False, taxon_str: str = "", role_str: str = ""):
         if add_on == "":
@@ -69,9 +74,7 @@ class Birds(commands.Cog):
         logger.info(f"answered: {answered}")
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
-            if database.exists(f"session.data:{ctx.author.id}"):
-                logger.info("session active")
-                session_increment(ctx, "total", 1)
+            session_increment(ctx, "total", 1)
 
             logger.info(f"addon: {add_on}; bw: {bw}; taxon: {taxon}; roles: {roles}")
 
@@ -99,6 +102,8 @@ class Birds(commands.Cog):
                 return
 
             currentBird = random.choice(birds)
+            await self.increment_bird_frequency(ctx, currentBird)
+
             prevB = database.hget(f"channel:{ctx.channel.id}", "prevB").decode("utf-8")
             while currentBird == prevB and len(birds) > 1:
                 currentBird = random.choice(birds)
@@ -126,9 +131,9 @@ class Birds(commands.Cog):
         # check to see if previous bird was answered
         if songAnswered:  # if yes, give a new bird
             roles = check_state_role(ctx)
+            session_increment(ctx, "total", 1)
             if database.exists(f"session.data:{ctx.author.id}"):
                 logger.info("session active")
-                session_increment(ctx, "total", 1)
 
                 roles = database.hget(f"session.data:{ctx.author.id}", "state").decode("utf-8").split(" ")
                 if roles[0] == "":
@@ -146,6 +151,8 @@ class Birds(commands.Cog):
                 return
 
             currentSongBird = random.choice(birds)
+            await self.increment_bird_frequency(ctx, currentSongBird)
+
             prevS = database.hget(f"channel:{ctx.channel.id}", "prevS").decode("utf-8")
             while currentSongBird == prevS and len(birds) > 1:
                 currentSongBird = random.choice(birds)
@@ -171,9 +178,6 @@ class Birds(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def bird(self, ctx, *, args_str: str = ""):
         logger.info("command: bird")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         args = args_str.split(" ")
         logger.info(f"args: {args}")
@@ -285,18 +289,15 @@ class Birds(commands.Cog):
     async def goatsucker(self, ctx):
         logger.info("command: goatsucker")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         answered = int(database.hget(f"channel:{ctx.channel.id}", "gsAnswered"))
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
-            if database.exists(f"session.data:{ctx.author.id}"):
-                logger.info("session active")
-                session_increment(ctx, "total", 1)
+            session_increment(ctx, "total", 1)
 
             database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "0")
             currentBird = random.choice(goatsuckers)
+            await self.increment_bird_frequency(ctx, currentBird)
+
             database.hset(f"channel:{ctx.channel.id}", "goatsucker", str(currentBird))
             logger.info("currentBird: " + str(currentBird))
             await send_bird(ctx, currentBird, on_error=error_skip_goat, message=GS_MESSAGE)
@@ -313,9 +314,6 @@ class Birds(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def song(self, ctx):
         logger.info("command: song")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         logger.info("bird: " + database.hget(f"channel:{ctx.channel.id}", "sBird").decode("utf-8"))
         logger.info("answered: " + str(int(database.hget(f"channel:{ctx.channel.id}", "sAnswered"))))

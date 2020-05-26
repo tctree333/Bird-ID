@@ -20,7 +20,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger
-from bot.functions import CustomCooldown, channel_setup, user_setup
+from bot.functions import CustomCooldown
 
 
 class Meta(commands.Cog):
@@ -35,9 +35,6 @@ class Meta(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def botinfo(self, ctx):
         logger.info("command: botinfo")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
@@ -73,9 +70,6 @@ class Meta(commands.Cog):
     async def invite(self, ctx):
         logger.info("command: invite")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         embed.add_field(
@@ -101,9 +95,6 @@ class Meta(commands.Cog):
     @commands.has_guild_permissions(manage_guild=True)
     async def ignore(self, ctx, channels: commands.Greedy[discord.TextChannel] = None):
         logger.info("command: invite")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         added = ""
         removed = ""
@@ -148,9 +139,6 @@ class Meta(commands.Cog):
     @commands.has_guild_permissions(manage_guild=True)
     async def leave(self, ctx, confirm: typing.Optional[bool] = False):
         logger.info("command: leave")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         if database.exists(f"leave:{ctx.guild.id}"):
             logger.info("confirming")

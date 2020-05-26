@@ -5,6 +5,8 @@ import pytest
 import discord_mock as mock
 from bot.cogs import get_birds
 from bot.data import database
+from bot.functions import channel_setup, user_setup
+
 
 class TestBirds:
     @pytest.yield_fixture(autouse=True)
@@ -39,6 +41,10 @@ class TestBirds:
 
         if self.ctx.guild is not None:
             database.delete(f"users.server:{self.ctx.guild.id}")
+
+        asyncio.run(channel_setup(self.ctx))
+        asyncio.run(user_setup(self.ctx))
+
 
     ### Bird Command Tests
     def test_bird_dm_1(self):

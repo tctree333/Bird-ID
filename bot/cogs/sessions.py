@@ -22,8 +22,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger, states, taxons
-from bot.functions import (CustomCooldown, channel_setup, check_state_role,
-                           user_setup)
+from bot.functions import CustomCooldown, check_state_role
 
 
 class Sessions(commands.Cog):
@@ -111,9 +110,6 @@ class Sessions(commands.Cog):
     async def start(self, ctx, *, args_str: str = ""):
         logger.info("command: start session")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("already session")
             await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session edit`*")
@@ -187,9 +183,6 @@ class Sessions(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def edit(self, ctx, *, args_str: str = ""):
         logger.info("command: view session")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         if database.exists(f"session.data:{ctx.author.id}"):
             args = args_str.lower().split(" ")
@@ -266,9 +259,6 @@ class Sessions(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def stop(self, ctx):
         logger.info("command: stop session")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         if database.exists(f"session.data:{ctx.author.id}"):
             database.hset(f"session.data:{ctx.author.id}", "stop", round(time.time()))

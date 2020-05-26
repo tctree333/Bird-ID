@@ -1,12 +1,14 @@
 import asyncio
 import random
+import string
 
 import flask
 
 from bot.core import spellcheck
 from bot.data import birdList, get_wiki_url, songBirds
-from web.config import (FRONTEND_URL, bird_setup, database, get_session_id,
-                        logger)
+from bot.functions import (bird_setup, incorrect_increment, score_increment,
+                           session_increment, streak_increment)
+from web.config import FRONTEND_URL, database, get_session_id, logger
 from web.functions import get_sciname, send_bird
 
 bp = flask.Blueprint('practice', __name__, url_prefix='/practice')
@@ -17,6 +19,10 @@ def after_request(response):
     header['Access-Control-Allow-Origin'] = FRONTEND_URL
     header['Access-Control-Allow-Credentials'] = 'true'
     return response
+
+def increment_bird_frequency(bird, user_id):
+    bird_setup(user_id, bird)
+    database.zincrby("frequency.bird:global", 1, string.capwords(bird))
 
 @bp.route('/get', methods=['GET'])
 def get_bird():
@@ -45,6 +51,10 @@ def get_bird():
     if answered:  # if yes, give a new bird
         id_list = (songBirds if media_type == "songs" else birdList)
         currentBird = random.choice(id_list)
+        user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
+        if user_id != 0:
+            session_increment(user_id, "total", 1)
+            increment_bird_frequency(currentBird, user_id)
         prevB = database.hget(f"web.session:{session_id}", "prevB").decode("utf-8")
         while currentBird == prevB and len(id_list) > 1:
             currentBird = random.choice(id_list)
@@ -85,7 +95,6 @@ def check_bird():
         logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
         logger.info("args: " + str(bird_guess.lower().replace("-", " ")))
 
-        bird_setup(user_id, currentBird)
         sciBird = asyncio.run(get_sciname(currentBird))
         if spellcheck(bird_guess, currentBird) or spellcheck(bird_guess, sciBird):
             logger.info("correct")
@@ -95,11 +104,10 @@ def check_bird():
 
             tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
             if user_id != 0:
-                database.zincrby("users:global", 1, str(user_id))
-                database.zincrby("streak:global", 1, str(user_id))
-                # check if streak is greater than max, if so, increases max
-                if database.zscore("streak:global", str(user_id)) > database.zscore("streak.max:global", str(user_id)):
-                    database.zadd("streak.max:global", {str(user_id): database.zscore("streak:global", str(user_id))})
+                bird_setup(user_id, currentBird)
+                score_increment(user_id, 1)
+                session_increment(user_id, "correct", 1)
+                streak_increment(user_id, 1)
             elif tempScore >= 10:
                 logger.info("trial maxed")
                 flask.abort(403, "Sign in to continue")
@@ -117,8 +125,10 @@ def check_bird():
             database.zincrby("incorrect:global", 1, currentBird)
 
             if user_id != 0:
-                database.zadd("streak:global", {str(user_id): 0})
-                database.zincrby(f"incorrect.user:{user_id}", 1, currentBird)
+                bird_setup(user_id, currentBird)
+                incorrect_increment(user_id, currentBird, 1)
+                session_increment(user_id, "incorrect", 1)
+                streak_increment(user_id, None) # reset streak
 
             url = get_wiki_url(currentBird)
             return {"guess": bird_guess, "answer": currentBird, "sciname": sciBird, "status": "incorrect", "wiki": url}
@@ -134,8 +144,7 @@ def skip_bird():
         database.hset(f"web.session:{session_id}", "bird", "")
         database.hset(f"web.session:{session_id}", "answered", "1")
         if user_id != 0:
-            database.zadd("streak:global", {str(user_id): 0})  # end streak
-
+            streak_increment(user_id, None) # reset streak
         scibird = asyncio.run(get_sciname(currentBird))
         url = get_wiki_url(currentBird)  # sends wiki page
     else:

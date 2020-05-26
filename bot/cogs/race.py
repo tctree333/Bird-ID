@@ -21,7 +21,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger, states, taxons
-from bot.functions import CustomCooldown, channel_setup, user_setup
+from bot.functions import CustomCooldown
 
 
 class Race(commands.Cog):
@@ -140,9 +140,6 @@ class Race(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def start(self, ctx, *, args_str: str = ""):
         logger.info("command: start race")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         if not str(ctx.channel.name).startswith("racing"):
             logger.info("not race channel")
@@ -277,9 +274,6 @@ class Race(commands.Cog):
     async def view(self, ctx):
         logger.info("command: view race")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         if database.exists(f"race.data:{ctx.channel.id}"):
             await self._send_stats(ctx, f"**Race In Progress**")
         else:
@@ -289,9 +283,6 @@ class Race(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def stop(self, ctx):
         logger.info("command: stop race")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         if database.exists(f"race.data:{ctx.channel.id}"):
             await self.stop_race_(ctx)

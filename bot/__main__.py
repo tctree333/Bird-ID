@@ -31,7 +31,7 @@ from sentry_sdk import capture_exception, configure_scope
 
 from bot.core import precache, send_bird
 from bot.data import GenericError, database, logger
-from bot.functions import backup_all, channel_setup, drone_attack
+from bot.functions import backup_all, channel_setup, drone_attack, user_setup
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])
@@ -70,8 +70,8 @@ if __name__ == '__main__':
 
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
     core_extensions = [
-        'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', 'bot.cogs.state',
-        'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.meta', 'bot.cogs.other'
+        'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', "bot.cogs.stats",
+        'bot.cogs.state', 'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.meta', 'bot.cogs.other'
     ]
     
     if "SCIOLY_ID_BOT_EXTRA_COGS" in os.environ and len(os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip()) > 0:
@@ -96,6 +96,13 @@ if __name__ == '__main__':
     ######
     # Global Command Checks
     ######
+
+    @bot.check
+    def log_command_frequency(ctx):
+        """Logs the command used to the database."""
+        logger.info("global check: logging command frequency")
+        database.zincrby("frequency.command:global", 1, str(ctx.command))
+        return True
 
     @bot.check
     def set_sentry_tag(ctx):
@@ -140,6 +147,15 @@ if __name__ == '__main__':
             raise commands.BotMissingPermissions(missing)
         else:
             return True
+
+    @bot.check
+    async def database_setup(ctx):
+        """Ensures database consistency before commands run."""
+        logger.info("global check: database setup")
+        await ctx.trigger_typing()
+        await channel_setup(ctx)
+        await user_setup(ctx)
+        return True
 
     @bot.check
     async def is_holiday(ctx):

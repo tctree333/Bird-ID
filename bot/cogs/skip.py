@@ -17,7 +17,7 @@
 from discord.ext import commands
 
 from bot.data import database, get_wiki_url, logger
-from bot.functions import CustomCooldown, channel_setup, user_setup
+from bot.functions import CustomCooldown, streak_increment
 
 
 class Skip(commands.Cog):
@@ -30,9 +30,6 @@ class Skip(commands.Cog):
     async def skip(self, ctx):
         logger.info("command: skip")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         currentBird = str(database.hget(f"channel:{ctx.channel.id}", "bird"))[2:-1]
         database.hset(f"channel:{ctx.channel.id}", "bird", "")
         database.hset(f"channel:{ctx.channel.id}", "answered", "1")
@@ -40,7 +37,7 @@ class Skip(commands.Cog):
             url = get_wiki_url(ctx, currentBird)
             await ctx.send(f"Ok, skipping {currentBird.lower()}")
             await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")  # sends wiki page
-            database.zadd("streak:global", {str(ctx.author.id): 0})  # end streak
+            streak_increment(ctx, None) # reset streak
             if database.exists(f"race.data:{ctx.channel.id}") and database.hget(f"race.data:{ctx.channel.id}",
                                                                                 "media").decode("utf-8") == "image":
 
@@ -64,9 +61,6 @@ class Skip(commands.Cog):
     async def skipgoat(self, ctx):
         logger.info("command: skipgoat")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         currentBird = str(database.hget(f"channel:{ctx.channel.id}", "goatsucker"))[2:-1]
         database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
         database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
@@ -74,7 +68,7 @@ class Skip(commands.Cog):
             url = get_wiki_url(ctx, currentBird)
             await ctx.send(f"Ok, skipping {currentBird.lower()}")  
             await ctx.send(url) # sends wiki page
-            database.zadd("streak:global", {str(ctx.author.id): 0})
+            streak_increment(ctx, None) # reset streak
         else:
             await ctx.send("You need to ask for a bird first!")
 
@@ -84,9 +78,6 @@ class Skip(commands.Cog):
     async def skipsong(self, ctx):
         logger.info("command: skipsong")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         currentSongBird = str(database.hget(f"channel:{ctx.channel.id}", "sBird"))[2:-1]
         database.hset(f"channel:{ctx.channel.id}", "sBird", "")
         database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
@@ -94,7 +85,7 @@ class Skip(commands.Cog):
             url = get_wiki_url(ctx, currentSongBird)
             await ctx.send(f"Ok, skipping {currentSongBird.lower()}")
             await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")  # sends wiki page
-            database.zadd("streak:global", {str(ctx.author.id): 0})
+            streak_increment(ctx, None) # reset streak
             if database.exists(f"race.data:{ctx.channel.id}") and str(
                 database.hget(f"race.data:{ctx.channel.id}", "media")
             )[2:-1] == "song":

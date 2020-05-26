@@ -24,9 +24,9 @@ import discord
 from discord.ext import commands
 from sentry_sdk import capture_exception, capture_message
 
-from bot.data import GenericError, database, logger, states
 from bot.core import valid_bird
-from bot.functions import CustomCooldown, channel_setup, user_setup
+from bot.data import GenericError, database, logger, states
+from bot.functions import CustomCooldown
 
 
 class States(commands.Cog):
@@ -53,9 +53,6 @@ class States(commands.Cog):
     @commands.guild_only()
     async def state(self, ctx, *, args):
         logger.info("command: state set")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         raw_roles = ctx.author.roles
         role_ids = [role.id for role in raw_roles]
@@ -132,9 +129,6 @@ class States(commands.Cog):
     @commands.dm_only()
     async def custom(self, ctx, *, args=""):
         logger.info("command: custom list set")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         args = args.lower().strip().split(" ")
         logger.info(f"parsed args: {args}")

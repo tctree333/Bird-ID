@@ -72,33 +72,42 @@ async def channel_setup(ctx):
 async def user_setup(ctx):
     """Sets up a new discord user for score tracking.
     
-    `ctx` - Discord context object
+    `ctx` - Discord context object or user id
     """
+    if isinstance(ctx, (str, int)):
+        user_id = str(ctx)
+        guild = None
+        ctx = None
+    else:
+        user_id = str(ctx.author.id)
+        guild = ctx.guild
+
     logger.info("checking user data")
-    if database.zscore("users:global", str(ctx.author.id)) is not None:
+    if database.zscore("users:global",user_id) is not None:
         logger.info("user global ok")
     else:
-        database.zadd("users:global", {str(ctx.author.id): 0})
+        database.zadd("users:global", {user_id: 0})
         logger.info("user global added")
-        await ctx.send("Welcome <@" + str(ctx.author.id) + ">!")
+        if ctx is not None:
+            await ctx.send("Welcome <@" + user_id + ">!")
 
     date = str(datetime.datetime.now(datetime.timezone.utc).date())
-    if database.zscore(f"daily.score:{date}", str(ctx.author.id)) is not None:
+    if database.zscore(f"daily.score:{date}", user_id) is not None:
         logger.info("user daily ok")
     else:
-        database.zadd(f"daily.score:{date}", {str(ctx.author.id): 0})
+        database.zadd(f"daily.score:{date}", {user_id: 0})
         logger.info("user daily added")
 
     #Add streak
-    if (database.zscore("streak:global", str(ctx.author.id)) is
-        not None) and (database.zscore("streak.max:global", str(ctx.author.id)) is not None):
+    if (database.zscore("streak:global", user_id) is
+        not None) and (database.zscore("streak.max:global", user_id) is not None):
         logger.info("user streak in already")
     else:
-        database.zadd("streak:global", {str(ctx.author.id): 0})
-        database.zadd("streak.max:global", {str(ctx.author.id): 0})
+        database.zadd("streak:global", {user_id: 0})
+        database.zadd("streak.max:global", {user_id: 0})
         logger.info("added streak")
 
-    if ctx.guild is not None:
+    if guild is not None:
         logger.info("no dm")
         if database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id)) is not None:
             server_score = database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id))
@@ -124,12 +133,19 @@ async def user_setup(ctx):
     else:
         logger.info("dm context")
 
-async def bird_setup(ctx, bird: str):
+def bird_setup(ctx, bird: str):
     """Sets up a new bird for incorrect tracking.
     
-    `ctx` - Discord context object
+    `ctx` - Discord context object or user id\n
     `bird` - bird to setup
     """
+    if isinstance(ctx, (str, int)):
+        user_id = ctx
+        guild = None
+    else:
+        user_id = ctx.author.id
+        guild = ctx.guild
+
     logger.info("checking bird data")
     if database.zscore("incorrect:global", string.capwords(bird)) is not None:
         logger.info("bird global ok")
@@ -137,10 +153,10 @@ async def bird_setup(ctx, bird: str):
         database.zadd("incorrect:global", {string.capwords(bird): 0})
         logger.info("bird global added")
 
-    if database.zscore(f"incorrect.user:{ctx.author.id}", string.capwords(bird)) is not None:
+    if database.zscore(f"incorrect.user:{user_id}", string.capwords(bird)) is not None:
         logger.info("bird user ok")
     else:
-        database.zadd(f"incorrect.user:{ctx.author.id}", {string.capwords(bird): 0})
+        database.zadd(f"incorrect.user:{user_id}", {string.capwords(bird): 0})
         logger.info("bird user added")
 
     date = str(datetime.datetime.now(datetime.timezone.utc).date())
@@ -150,7 +166,13 @@ async def bird_setup(ctx, bird: str):
         database.zadd(f"daily.incorrect:{date}", {string.capwords(bird): 0})
         logger.info("bird daily added")
 
-    if ctx.guild is not None:
+    if database.zscore("frequency.bird:global", string.capwords(bird)) is not None:
+        logger.info("bird freq global ok")
+    else:
+        database.zadd("frequency.bird:global", {string.capwords(bird): 0})
+        logger.info("bird freq global added")
+
+    if guild is not None:
         logger.info("no dm")
         if database.zscore(f"incorrect.server:{ctx.guild.id}", string.capwords(bird)) is not None:
             logger.info("bird server ok")
@@ -160,12 +182,12 @@ async def bird_setup(ctx, bird: str):
     else:
         logger.info("dm context")
 
-    if database.exists(f"session.data:{ctx.author.id}"):
+    if database.exists(f"session.data:{user_id}"):
         logger.info("session in session")
-        if database.zscore(f"session.incorrect:{ctx.author.id}", string.capwords(bird)) is not None:
+        if database.zscore(f"session.incorrect:{user_id}", string.capwords(bird)) is not None:
             logger.info("bird session ok")
         else:
-            database.zadd(f"session.incorrect:{ctx.author.id}", {string.capwords(bird): 0})
+            database.zadd(f"session.incorrect:{user_id}", {string.capwords(bird): 0})
             logger.info("bird session added")
     else:
         logger.info("no session")
@@ -215,6 +237,47 @@ def check_state_role(ctx) -> list:
         logger.info("dm context")
     logger.info(f"user roles: {user_states}")
     return user_states
+
+async def send_leaderboard(ctx, title, page, database_key=None, data=None):
+        logger.info("building/sending leaderboard")
+        
+        if database_key is None and data is None:
+            raise GenericError("database_key and data are both NoneType", 990)
+        elif database_key is not None and data is not None:
+            raise GenericError("database_key and data are both set", 990)
+
+        if page < 1:
+            page = 1
+
+        entry_count = (int(database.zcard(database_key)) if database_key is not None else data.count())
+        page = (page * 10) - 10
+
+        if entry_count == 0:
+            logger.info(f"no items in {database_key}")
+            await ctx.send("There are no items in the database.")
+            return
+
+        if page > entry_count:
+            page = entry_count - (entry_count % 10)
+
+        items_per_page = 10
+        leaderboard_list = (
+            map(
+                lambda x: (x[0].decode("utf-8"), x[1]), 
+                database.zrevrangebyscore(database_key, "+inf", "-inf", page, items_per_page, True)
+            )
+            if database_key is not None
+            else data.iloc[page:page+items_per_page-1].items()
+        )
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        leaderboard = ""
+
+        for i, stats in enumerate(leaderboard_list):
+            leaderboard += f"{i+1+page}. **{stats[0]}** - {int(stats[1])}\n"
+        embed.add_field(name=title, value=leaderboard, inline=False)
+
+        await ctx.send(embed=embed)
 
 def build_id_list(user_id = None, taxon = [], roles = [], state = [], media = "images") -> list:
     """Generates an ID list based on given arguments
@@ -266,36 +329,52 @@ def build_id_list(user_id = None, taxon = [], roles = [], state = [], media = "i
 def session_increment(ctx, item: str, amount: int):
     """Increments the value of a database hash field by `amount`.
 
-    `ctx` - Discord context object\n
+    `ctx` - Discord context object or user id\n
     `item` - hash field to increment (see data.py for details,
     possible values include correct, incorrect, total)\n
     `amount` (int) - amount to increment by, usually 1
     """
-    logger.info(f"incrementing {item} by {amount}")
-    value = int(database.hget(f"session.data:{ctx.author.id}", item))
-    value += int(amount)
-    database.hset(f"session.data:{ctx.author.id}", item, str(value))
+    if isinstance(ctx, (str, int)):
+        user_id = ctx
+    else:
+        user_id = ctx.author.id
+
+    if database.exists(f"session.data:{user_id}"):
+        logger.info("session active")
+        logger.info(f"incrementing {item} by {amount}")
+        value = int(database.hget(f"session.data:{user_id}", item))
+        value += int(amount)
+        database.hset(f"session.data:{user_id}", item, str(value))
+    else:
+        logger.info("session not active")
 
 def incorrect_increment(ctx, bird: str, amount: int):
     """Increments the value of an incorrect bird by `amount`.
 
-    `ctx` - Discord context object\n
+    `ctx` - Discord context object or user id\n
     `bird` - bird that was incorrect\n
     `amount` (int) - amount to increment by, usually 1
     """
+    if isinstance(ctx, (str, int)):
+        user_id = ctx
+        guild = None
+    else:
+        user_id = ctx.author.id
+        guild = ctx.guild
+
     logger.info(f"incrementing incorrect {bird} by {amount}")
     date = str(datetime.datetime.now(datetime.timezone.utc).date())
     database.zincrby("incorrect:global", amount, string.capwords(str(bird)))
-    database.zincrby(f"incorrect.user:{ctx.author.id}", amount, string.capwords(str(bird)))
+    database.zincrby(f"incorrect.user:{user_id}", amount, string.capwords(str(bird)))
     database.zincrby(f"daily.incorrect:{date}", amount, string.capwords(str(bird)))
-    if ctx.guild is not None:
+    if guild is not None:
         logger.info("no dm")
         database.zincrby(f"incorrect.server:{ctx.guild.id}", amount, string.capwords(str(bird)))
     else:
         logger.info("dm context")
-    if database.exists(f"session.data:{ctx.author.id}"):
+    if database.exists(f"session.data:{user_id}"):
         logger.info("session in session")
-        database.zincrby(f"session.incorrect:{ctx.author.id}", amount, string.capwords(str(bird)))
+        database.zincrby(f"session.incorrect:{user_id}", amount, string.capwords(str(bird)))
     else:
         logger.info("no session")
 
@@ -305,19 +384,51 @@ def score_increment(ctx, amount: int):
     `ctx` - Discord context object\n
     `amount` (int) - amount to increment by, usually 1
     """
+    if isinstance(ctx, (str, int)):
+        user_id = str(ctx)
+        guild = None
+        channel_id = ""
+    else:
+        user_id = str(ctx.author.id)
+        guild = ctx.guild
+        channel_id = str(ctx.channel.id)
+
     logger.info(f"incrementing score by {amount}")
     date = str(datetime.datetime.now(datetime.timezone.utc).date())
-    database.zincrby("score:global", amount, str(ctx.channel.id))
-    database.zincrby("users:global", amount, str(ctx.author.id))
-    database.zincrby(f"daily.score:{date}", amount, str(ctx.author.id))
-    if ctx.guild is not None:
+    database.zincrby("score:global", amount, channel_id)
+    database.zincrby("users:global", amount, user_id)
+    database.zincrby(f"daily.score:{date}", amount, user_id)
+    if guild is not None:
         logger.info("no dm")
-        database.zincrby(f"users.server:{ctx.guild.id}", amount, str(ctx.author.id))
+        database.zincrby(f"users.server:{ctx.guild.id}", amount, user_id)
+        if database.exists(f"race.data:{ctx.channel.id}"):
+            logger.info("race in session")
+            database.zincrby(f"race.scores:{ctx.channel.id}", amount, user_id)
     else:
         logger.info("dm context")
-    if database.exists(f"race.data:{ctx.channel.id}"):
-        logger.info("race in session")
-        database.zincrby(f"race.scores:{ctx.channel.id}", amount, str(ctx.author.id))
+
+def streak_increment(ctx, amount:int):
+    """Increments the streak of a user by `amount`.
+
+    `ctx` - Discord context object or user id\n
+    `amount` (int) - amount to increment by, usually 1.
+    If amount is None, the streak is ended.
+    """
+    if isinstance(ctx, (str, int)):
+        user_id = str(ctx)
+    else:
+        user_id = str(ctx.author.id)
+
+    if amount is not None:
+        # increment streak and update max
+        database.zincrby("streak:global", amount, user_id)
+        if database.zscore("streak:global", user_id) > database.zscore("streak.max:global", user_id):
+            database.zadd(
+                "streak.max:global", 
+                {user_id: database.zscore("streak:global", user_id)}
+            )
+    else:
+        database.zadd("streak:global", {user_id: 0})
 
 
 async def drone_attack(ctx):

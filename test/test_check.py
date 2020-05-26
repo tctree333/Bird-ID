@@ -5,6 +5,7 @@ import pytest
 import discord_mock as mock
 from bot.cogs import check
 from bot.data import database
+from bot.functions import channel_setup, user_setup
 
 
 class TestCheck:
@@ -41,6 +42,10 @@ class TestCheck:
         if self.ctx.guild is not None:
             database.delete(f"users.server:{self.ctx.guild.id}")
 
+        asyncio.run(channel_setup(self.ctx))
+        asyncio.run(user_setup(self.ctx))
+
+
     ### Check Command Tests
     def test_check_nobird_dm(self):
         self.setup(guild=True)
@@ -56,7 +61,7 @@ class TestCheck:
 
         coroutine = self.cog.check.callback(self.cog, self.ctx, arg=test_word) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == "Correct! Good job!"
+        assert self.ctx.messages[2].content == "Correct! Good job!"
 
     def test_check_bird_dm_2(self):
         self.setup(guild=True)
@@ -65,7 +70,7 @@ class TestCheck:
 
         coroutine = self.cog.check.callback(self.cog, self.ctx, arg=test_word*2) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == f"Sorry, the bird was actually {test_word.lower()}."
+        assert self.ctx.messages[2].content == f"Sorry, the bird was actually {test_word.lower()}."
 
     def test_check_nosong_dm(self):
         self.setup(guild=True)
@@ -81,7 +86,7 @@ class TestCheck:
 
         coroutine = self.cog.checksong.callback(self.cog, self.ctx, arg=test_word) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == "Correct! Good job!"
+        assert self.ctx.messages[2].content == "Correct! Good job!"
 
     def test_check_song_dm_2(self):
         self.setup(guild=True)
@@ -90,7 +95,7 @@ class TestCheck:
 
         coroutine = self.cog.checksong.callback(self.cog, self.ctx, arg=test_word*2) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == f"Sorry, the bird was actually {test_word.lower()}."
+        assert self.ctx.messages[2].content == f"Sorry, the bird was actually {test_word.lower()}."
 
     def test_check_nogoat_dm(self):
         self.setup(guild=True)
@@ -106,7 +111,7 @@ class TestCheck:
 
         coroutine = self.cog.checkgoat.callback(self.cog, self.ctx, arg=test_word) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == "Correct! Good job!"
+        assert self.ctx.messages[2].content == "Correct! Good job!"
 
     def test_check_goat_dm_2(self):
         self.setup(guild=True)
@@ -115,4 +120,4 @@ class TestCheck:
 
         coroutine = self.cog.checkgoat.callback(self.cog, self.ctx, arg=test_word*2) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[1].content == f"Sorry, the bird was actually {test_word.lower()}."
+        assert self.ctx.messages[2].content == f"Sorry, the bird was actually {test_word.lower()}."

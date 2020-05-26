@@ -16,12 +16,12 @@
 
 import difflib
 
-import requests
 import discord
+import requests
 from discord.ext import commands
 
 from bot.data import logger
-from bot.functions import channel_setup, user_setup, CustomCooldown
+from bot.functions import CustomCooldown
 
 
 class COVID(commands.Cog):
@@ -140,10 +140,6 @@ class COVID(commands.Cog):
                 fix_channel_mentions=True, use_nicknames=True, escape_markdown=True
             ).convert(ctx, " ".join(ctx.message.content.split(" ")[1:]))
 
-            await channel_setup(ctx)
-            await user_setup(ctx)
-            await ctx.trigger_typing()
-
             if not location:
                 c, d, r = self.getLatest().values()
                 embed = self.format_data(c, d, r)
@@ -188,10 +184,6 @@ class COVID(commands.Cog):
     async def top(self, ctx, ranking: str = "confirmed", amt: int = 3):
         logger.info("command: covid top")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-        await ctx.trigger_typing()
-        
         if amt > 10:
             await ctx.send("**Invalid amount!** Defaulting to 10.")
             amt = 10
@@ -226,10 +218,6 @@ class COVID(commands.Cog):
     async def update(self, ctx):
         logger.info("command: update_covid")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
-        await ctx.trigger_typing()
         self.update_covid()
 
         await ctx.send("Ok, done!")
