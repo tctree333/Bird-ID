@@ -82,8 +82,8 @@ class Score(commands.Cog):
             await ctx.send("There are no users in the database.")
             return
 
-        if page > user_amount:
-            page = user_amount - (user_amount % 10)
+        if page >= user_amount:
+            page = user_amount - (user_amount % 10 if user_amount % 10 != 0 else 10)
 
         users_per_page = 10
         leaderboard_list = (
@@ -280,7 +280,6 @@ class Score(commands.Cog):
             await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `max`")
             return
 
-        data = None
         if scope in ("max", "m"):
             database_key = "streak.max:global"
             scope = "max"
@@ -288,7 +287,7 @@ class Score(commands.Cog):
             database_key = "streak:global"
             scope = "current"
 
-        await self.user_lb(ctx, f"Streak Leaderboard ({scope})", page, database_key, data)
+        await self.user_lb(ctx, f"Streak Leaderboard ({scope})", page, database_key, None)
 
     # leaderboard - returns top 1-10 users
     @commands.command(
@@ -391,101 +390,6 @@ class Score(commands.Cog):
             scope = "global"
 
         await send_leaderboard(ctx, f"Top Missed Birds ({scope})", page, database_key, data)
-
-    # Command-specific error checking
-    @leaderboard.error
-    async def leader_error(self, ctx, error):
-        logger.info("leaderboard error")
-        if isinstance(error, commands.BadArgument):
-            await ctx.send('Not an integer!')
-        elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
-        elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.send(
-                textwrap.dedent(
-                    f"""\
-                    **The bot does not have enough permissions to fully function.**
-                    **Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`
-                    *Please try again once the correct permissions are set.*
-                    """
-                )
-            )
-        elif isinstance(error, GenericError):
-            if error.code == 192:
-                #channel is ignored
-                return
-            elif error.code == 842:
-                await ctx.send("**Sorry, you cannot use this command.**")
-            elif error.code == 666:
-                logger.info("GenericError 666")
-            elif error.code == 201:
-                logger.info("HTTP Error")
-                capture_exception(error)
-                await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
-            else:
-                logger.info("uncaught generic error")
-                capture_exception(error)
-                await ctx.send(
-                    "**An uncaught generic error has occurred.**\n" +
-                    "*Please log this message in #support in the support server below, or try again.*\n" +
-                    "**Error:** " + str(error)
-                )
-                await ctx.send("https://discord.gg/fXxYyDJ")
-                raise error
-        else:
-            capture_exception(error)
-            await ctx.send(
-                "**An uncaught leaderboard error has occurred.**\n" +
-                "*Please log this message in #support in the support server below, or try again.*\n" + "**Error:** " +
-                str(error)
-            )
-            await ctx.send("https://discord.gg/fXxYyDJ")
-            raise error
-
-    @missed.error
-    async def missed_error(self, ctx, error):
-        logger.info("missed error")
-        if isinstance(error, commands.BadArgument):
-            await ctx.send('Not an integer!')
-        elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
-        elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.send(
-                "**The bot does not have enough permissions to fully function.**\n" +
-                f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n" +
-                "*Please try again once the correct permissions are set.*"
-            )
-        elif isinstance(error, GenericError):
-            if error.code == 192:
-                #channel is ignored
-                return
-            elif error.code == 842:
-                await ctx.send("**Sorry, you cannot use this command.**")
-            elif error.code == 666:
-                logger.info("GenericError 666")
-            elif error.code == 201:
-                logger.info("HTTP Error")
-                capture_exception(error)
-                await ctx.send("**An unexpected HTTP Error has occurred.**\n *Please try again.*")
-            else:
-                logger.info("uncaught generic error")
-                capture_exception(error)
-                await ctx.send(
-                    "**An uncaught generic error has occurred.**\n" +
-                    "*Please log this message in #support in the support server below, or try again.*\n" +
-                    "**Error:** " + str(error)
-                )
-                await ctx.send("https://discord.gg/fXxYyDJ")
-                raise error
-        else:
-            capture_exception(error)
-            await ctx.send(
-                "**An uncaught missed birds error has occurred.**\n"
-                "*Please log this message in #support in the support server below, or try again.*\n"
-                "**Error:** " + str(error)
-            )
-            await ctx.send("https://discord.gg/fXxYyDJ")
-            raise error
 
 def setup(bot):
     bot.add_cog(Score(bot))
