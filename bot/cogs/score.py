@@ -156,12 +156,12 @@ class Score(commands.Cog):
     @commands.command(
         brief="- Total correct answers in a channel or server",
         help="- Total correct answers in a channel or server. Defaults to channel.",
-        usage="[total|server|t|s]")
+        usage="[server|s]")
     @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.channel))
     async def score(self, ctx, scope=""):
         logger.info("command: score")
 
-        if scope in ("total", "server", "t", "s"):
+        if scope in ("server", "s"):
             total_correct = self._server_total(ctx)
             await ctx.send(
                 f"Wow, looks like a total of `{total_correct}` birds have been answered correctly in this **server**!\n" +
@@ -208,7 +208,10 @@ class Score(commands.Cog):
         await ctx.send(embed=embed)
 
     # gives streak of a user
-    @commands.group(help='- Gives your current/max streak', aliases=["streaks", "stk"])
+    @commands.group(
+        help='- Gives your current/max streak',
+        usage="[user]",
+        aliases=["streaks", "stk"])
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def streak(self, ctx):
         if ctx.invoked_subcommand is not None:
@@ -291,7 +294,7 @@ class Score(commands.Cog):
     @commands.command(
         brief="- Top scores",
         help="- Top scores, either global, server, or monthly.",
-        usage="[global|g server|s month|monthly|m] [page]",
+        usage="[global|g  server|s  month|monthly|m] [page]",
         aliases=["lb"]
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
@@ -340,7 +343,7 @@ class Score(commands.Cog):
     @commands.command(
         brief="- Top incorrect birds",
         help="- Top incorrect birds, either global, server, personal, or monthly.",
-        usage="[global|g server|s me|m month|monthly|mo] [page]",
+        usage="[global|g  server|s  me|m  month|monthly|mo] [page]",
         aliases=["m"]
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))

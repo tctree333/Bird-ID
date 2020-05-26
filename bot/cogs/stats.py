@@ -60,7 +60,10 @@ class Stats(commands.Cog):
         return df
 
     # give frequency stats
-    @commands.command(help="- Gives info on command/bird frequencies", aliases=["freq"])
+    @commands.command(
+        help="- Gives info on command/bird frequencies",
+        usage="[command|commands|c  bird|birds|b] [page]",
+        aliases=["freq"])
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def frequency(self, ctx, scope="", page=1):
         logger.info("command: frequency")
