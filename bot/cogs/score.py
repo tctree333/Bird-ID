@@ -15,13 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import datetime
-import textwrap
 import typing
 
 import discord
 import pandas as pd
 from discord.ext import commands
-from sentry_sdk import capture_exception
 
 from bot.data import GenericError, database, logger
 from bot.functions import CustomCooldown, send_leaderboard

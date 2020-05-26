@@ -1,8 +1,6 @@
 import asyncio
-import datetime
 import os
 import random
-import string
 
 import sentry_sdk
 from flask import Flask, session
@@ -10,7 +8,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
 from bot.data import database, logger
-from bot.functions import bird_setup, user_setup
+from bot.functions import user_setup
 
 sentry_sdk.init(
     release=f"{os.getenv('CURRENT_PLATFORM')} Release "
