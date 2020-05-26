@@ -20,8 +20,7 @@ import string
 from discord.ext import commands
 
 from bot.core import send_bird, send_birdsong
-from bot.data import (birdList, database, goatsuckers, logger, songBirds,
-                      states, taxons)
+from bot.data import database, goatsuckers, logger, states, taxons
 from bot.functions import (CustomCooldown, bird_setup, build_id_list,
                            check_state_role, error_skip, error_skip_goat,
                            error_skip_song, session_increment)

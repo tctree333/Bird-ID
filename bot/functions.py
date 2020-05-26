@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import contextlib
 import datetime
 import difflib
 import itertools
@@ -23,10 +22,8 @@ import pickle
 import random
 import string
 
-import aiohttp
 import discord
 from discord.ext import commands
-from sentry_sdk import capture_exception
 
 from bot.data import (GenericError, birdList, birdListMaster, database, logger,
                       sciBirdListMaster, songBirds, states, taxons)
