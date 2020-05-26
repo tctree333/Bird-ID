@@ -21,7 +21,7 @@ import requests
 from discord.ext import commands
 
 from bot.data import logger
-from bot.functions import channel_setup, user_setup, CustomCooldown
+from bot.functions import CustomCooldown
 
 
 class COVID(commands.Cog):
