@@ -47,7 +47,7 @@ class Birds(commands.Cog):
         self.bot = bot
 
     async def increment_bird_frequency(self, ctx, bird):
-        await bird_setup(ctx, bird)
+        bird_setup(ctx, bird)
         database.zincrby("frequency.bird:global", 1, string.capwords(bird))
 
     async def send_bird_(self, ctx, add_on: str = "", bw: bool = False, taxon_str: str = "", role_str: str = ""):
@@ -75,9 +75,7 @@ class Birds(commands.Cog):
         logger.info(f"answered: {answered}")
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
-            if database.exists(f"session.data:{ctx.author.id}"):
-                logger.info("session active")
-                session_increment(ctx, "total", 1)
+            session_increment(ctx, "total", 1)
 
             logger.info(f"addon: {add_on}; bw: {bw}; taxon: {taxon}; roles: {roles}")
 
@@ -134,9 +132,9 @@ class Birds(commands.Cog):
         # check to see if previous bird was answered
         if songAnswered:  # if yes, give a new bird
             roles = check_state_role(ctx)
+            session_increment(ctx, "total", 1)
             if database.exists(f"session.data:{ctx.author.id}"):
                 logger.info("session active")
-                session_increment(ctx, "total", 1)
 
                 roles = database.hget(f"session.data:{ctx.author.id}", "state").decode("utf-8").split(" ")
                 if roles[0] == "":
@@ -295,9 +293,7 @@ class Birds(commands.Cog):
         answered = int(database.hget(f"channel:{ctx.channel.id}", "gsAnswered"))
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
-            if database.exists(f"session.data:{ctx.author.id}"):
-                logger.info("session active")
-                session_increment(ctx, "total", 1)
+            session_increment(ctx, "total", 1)
 
             database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "0")
             currentBird = random.choice(goatsuckers)

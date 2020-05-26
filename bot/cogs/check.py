@@ -43,7 +43,7 @@ class Check(commands.Cog):
             logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
             logger.info("args: " + str(arg.lower().replace("-", " ")))
 
-            await bird_setup(ctx, currentBird)
+            bird_setup(ctx, currentBird)
             sciBird = await get_sciname(currentBird)
             if spellcheck(arg, currentBird) or spellcheck(arg, sciBird):
                 logger.info("correct")
@@ -51,10 +51,7 @@ class Check(commands.Cog):
                 database.hset(f"channel:{ctx.channel.id}", "bird", "")
                 database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
-                if database.exists(f"session.data:{ctx.author.id}"):
-                    logger.info("session active")
-                    session_increment(ctx, "correct", 1)
-
+                session_increment(ctx, "correct", 1)
                 streak_increment(ctx, 1)
 
                 await ctx.send(
@@ -91,11 +88,7 @@ class Check(commands.Cog):
                 logger.info("incorrect")
 
                 streak_increment(ctx, None) # reset streak
-
-                if database.exists(f"session.data:{ctx.author.id}"):
-                    logger.info("session active")
-                    session_increment(ctx, "incorrect", 1)
-
+                session_increment(ctx, "incorrect", 1)
                 incorrect_increment(ctx, str(currentBird), 1)
 
                 if database.exists(f"race.data:{ctx.channel.id}"):
@@ -117,7 +110,7 @@ class Check(commands.Cog):
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
-            await bird_setup(ctx, currentBird)
+            bird_setup(ctx, currentBird)
             index = goatsuckers.index(currentBird)
             sciBird = sciGoat[index]
             database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
@@ -125,10 +118,7 @@ class Check(commands.Cog):
             if spellcheck(arg, currentBird) or spellcheck(arg, sciBird):
                 logger.info("correct")
 
-                if database.exists(f"session.data:{ctx.author.id}"):
-                    logger.info("session active")
-                    session_increment(ctx, "correct", 1)
-
+                session_increment(ctx, "correct", 1)
                 streak_increment(ctx, 1)
 
                 await ctx.send("Correct! Good job!")
@@ -146,12 +136,9 @@ class Check(commands.Cog):
                 logger.info("incorrect")
 
                 streak_increment(ctx, None) # reset streak
-
-                if database.exists(f"session.data:{ctx.author.id}"):
-                    logger.info("session active")
-                    session_increment(ctx, "incorrect", 1)
-
+                session_increment(ctx, "incorrect", 1)
                 incorrect_increment(ctx, str(currentBird), 1)
+
                 await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
                 url = get_wiki_url(ctx, currentBird)
                 await ctx.send(url)
@@ -171,7 +158,7 @@ class Check(commands.Cog):
             logger.info("currentBird: " + str(currentSongBird.lower().replace("-", " ")))
             logger.info("args: " + str(arg.lower().replace("-", " ")))
 
-            await bird_setup(ctx, currentSongBird)
+            bird_setup(ctx, currentSongBird)
             sciBird = await get_sciname(currentSongBird)
             if spellcheck(arg, currentSongBird) or spellcheck(arg, sciBird):
                 logger.info("correct")
@@ -179,10 +166,7 @@ class Check(commands.Cog):
                 database.hset(f"channel:{ctx.channel.id}", "sBird", "")
                 database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
 
-                if database.exists(f"session.data:{ctx.author.id}"):
-                    logger.info("session active")
-                    session_increment(ctx, "correct", 1)
-
+                session_increment(ctx, "correct", 1)
                 streak_increment(ctx, 1)
 
                 await ctx.send(
@@ -218,12 +202,9 @@ class Check(commands.Cog):
                 logger.info("incorrect")
 
                 streak_increment(ctx, None) # reset streak
-
-                if database.exists(f"session.data:{ctx.author.id}"):
-                    logger.info("session active")
-                    session_increment(ctx, "incorrect", 1)
-
+                session_increment(ctx, "incorrect", 1)
                 incorrect_increment(ctx, str(currentSongBird), 1)
+
                 if database.exists(f"race.data:{ctx.channel.id}"):
                     await ctx.send("Sorry, that wasn't the right answer.")
                 else:

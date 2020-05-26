@@ -1,7 +1,8 @@
+import asyncio
+import datetime
 import os
 import random
 import string
-import datetime
 
 import sentry_sdk
 from flask import Flask, session
@@ -9,6 +10,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
 from bot.data import database, logger
+from bot.functions import bird_setup, user_setup
 
 sentry_sdk.init(
     release=f"{os.getenv('CURRENT_PLATFORM')} Release "
@@ -83,76 +85,12 @@ def update_web_user(user_data):
             "discriminator": str(user_data['discriminator'])
         }
     )
-    user_setup(user_id)
+    asyncio.run(user_setup(user_id))
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
     if tempScore not in (0, -1):
         database.zincrby("users:global", tempScore, int(user_id))
         database.hset(f"web.session:{session_id}", "tempScore", -1)
     logger.info("updated user data")
-
-# sets up new user
-def user_setup(user_id):
-    logger.info("checking user data")
-    if database.zscore("users:global", str(user_id)) is not None:
-        logger.info("user global ok")
-    else:
-        database.zadd("users:global", {str(user_id): 0})
-        logger.info("user global added")
-
-    date = str(datetime.datetime.now(datetime.timezone.utc).date())
-    if database.zscore(f"daily.score:{date}", str(user_id)) is not None:
-        logger.info("user daily ok")
-    else:
-        database.zadd(f"daily.score:{date}", {str(user_id): 0})
-        logger.info("user daily added")
-
-    # Add streak
-    if (database.zscore("streak:global", str(user_id)) is
-        not None) and (database.zscore("streak.max:global", str(user_id)) is not None):
-        logger.info("user streak in already")
-    else:
-        database.zadd("streak:global", {str(user_id): 0})
-        database.zadd("streak.max:global", {str(user_id): 0})
-        logger.info("added streak")
-
-# sets up new birds
-def bird_setup(user_id, bird):
-    logger.info("checking bird data")
-    if database.zscore("incorrect:global", string.capwords(str(bird))) is not None:
-        logger.info("bird global ok")
-    else:
-        database.zadd("incorrect:global", {string.capwords(str(bird)): 0})
-        logger.info("bird global added")
-
-    date = str(datetime.datetime.now(datetime.timezone.utc).date())
-    if database.zscore(f"daily.incorrect:{date}", string.capwords(bird)) is not None:
-        logger.info("bird daily ok")
-    else:
-        database.zadd(f"daily.incorrect:{date}", {string.capwords(bird): 0})
-        logger.info("bird daily added")
-
-    if database.zscore("frequency.bird:global", string.capwords(bird)) is not None:
-        logger.info("bird freq global ok")
-    else:
-        database.zadd("frequency.bird:global", {string.capwords(bird): 0})
-        logger.info("bird freq global added")
-
-    if user_id is not None:
-        if database.zscore(f"incorrect.user:{user_id}", string.capwords(str(bird))) is not None:
-            logger.info("bird user ok")
-        else:
-            database.zadd(f"incorrect.user:{user_id}", {string.capwords(str(bird)): 0})
-            logger.info("bird user added")
-
-        if database.exists(f"session.data:{user_id}"):
-            logger.info("session in session")
-            if database.zscore(f"session.incorrect:{user_id}", string.capwords(bird)) is not None:
-                logger.info("bird session ok")
-            else:
-                database.zadd(f"session.incorrect:{user_id}", {string.capwords(bird): 0})
-                logger.info("bird session added")
-        else:
-            logger.info("no session")
 
 def get_session_id():
     if "id" not in session:

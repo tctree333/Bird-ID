@@ -7,7 +7,8 @@ from flask import Blueprint, abort, request
 
 from bot.core import spellcheck
 from bot.data import birdList, get_wiki_url, songBirds
-from bot.functions import streak_increment
+from bot.functions import (incorrect_increment, score_increment,
+                           session_increment, streak_increment)
 from web.config import (FRONTEND_URL, bird_setup, database, get_session_id,
                         logger)
 from web.functions import get_sciname, send_bird
@@ -21,8 +22,8 @@ def after_request(response):
     header['Access-Control-Allow-Credentials'] = 'true'
     return response
 
-def increment_bird_frequency(bird):
-    bird_setup(None, bird)
+def increment_bird_frequency(bird, user_id):
+    bird_setup(user_id, bird)
     database.zincrby("frequency.bird:global", 1, string.capwords(bird))
 
 @bp.route('/get', methods=['GET'])
@@ -52,7 +53,10 @@ def get_bird():
     if answered:  # if yes, give a new bird
         id_list = (songBirds if media_type == "songs" else birdList)
         currentBird = random.choice(id_list)
-        increment_bird_frequency(currentBird)
+        user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
+        if user_id != 0:
+            session_increment(user_id, "total", 1)
+            increment_bird_frequency(currentBird, user_id)
         prevB = database.hget(f"web.session:{session_id}", "prevB").decode("utf-8")
         while currentBird == prevB and len(id_list) > 1:
             currentBird = random.choice(id_list)
@@ -93,7 +97,6 @@ def check_bird():
         logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
         logger.info("args: " + str(bird_guess.lower().replace("-", " ")))
 
-        bird_setup(user_id, currentBird)
         sciBird = asyncio.run(get_sciname(currentBird))
         if spellcheck(bird_guess, currentBird) or spellcheck(bird_guess, sciBird):
             logger.info("correct")
@@ -103,7 +106,9 @@ def check_bird():
 
             tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
             if user_id != 0:
-                database.zincrby("users:global", 1, str(user_id))
+                bird_setup(user_id, currentBird)
+                score_increment(user_id, 1)
+                session_increment(user_id, "correct", 1)
                 streak_increment(user_id, 1)
             elif tempScore >= 10:
                 logger.info("trial maxed")
@@ -122,8 +127,10 @@ def check_bird():
             database.zincrby("incorrect:global", 1, currentBird)
 
             if user_id != 0:
+                bird_setup(user_id, currentBird)
+                incorrect_increment(user_id, currentBird, 1)
+                session_increment(user_id, "incorrect", 1)
                 streak_increment(user_id, None) # reset streak
-                database.zincrby(f"incorrect.user:{user_id}", 1, currentBird)
 
             url = get_wiki_url(currentBird)
             return {"guess": bird_guess, "answer": currentBird, "sciname": sciBird, "status": "incorrect", "wiki": url}
