@@ -237,6 +237,7 @@ def _wiki_urls():
     return urls
 
 def get_wiki_url(ctx, bird=None):
+    logger.info("fetching wiki url")
     if bird is None:
         bird = ctx
         user_id = 0
@@ -246,12 +247,15 @@ def get_wiki_url(ctx, bird=None):
         bird = string.capwords(bird.replace("-", " "))
         url = wikipedia_urls[bird]
         if database.hget(f"session.data:{user_id}", "wiki") == b"":
+            logger.info("found in cache, disabling preview")
             return f"<{url}>"
+        logger.info("found in cache")
         return url
     except KeyError:
         logger.info(f"{bird} not found in wikipedia url cache, falling back")
         page = wikipedia.page(bird)
         if database.hget(f"session.data:{user_id}", "wiki") == b"":
+            logger.info("disabling preview")
             return f"<{page.url}>"
         return page.url
 

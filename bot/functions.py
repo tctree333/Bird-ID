@@ -316,15 +316,23 @@ def build_id_list(user_id = None, taxon = [], roles = [], state = [], media = "i
 def session_increment(ctx, item: str, amount: int):
     """Increments the value of a database hash field by `amount`.
 
-    `ctx` - Discord context object\n
+    `ctx` - Discord context object or user id\n
     `item` - hash field to increment (see data.py for details,
     possible values include correct, incorrect, total)\n
     `amount` (int) - amount to increment by, usually 1
     """
-    logger.info(f"incrementing {item} by {amount}")
-    value = int(database.hget(f"session.data:{ctx.author.id}", item))
-    value += int(amount)
-    database.hset(f"session.data:{ctx.author.id}", item, str(value))
+    if isinstance(ctx, (str, int)):
+        user_id = ctx
+    else:
+        user_id = ctx.author.id
+    if database.exists(f"session.data:{user_id}"):
+        logger.info("session active")
+        logger.info(f"incrementing {item} by {amount}")
+        value = int(database.hget(f"session.data:{user_id}", item))
+        value += int(amount)
+        database.hset(f"session.data:{user_id}", item, str(value))
+    else:
+        logger.info("session not active")
 
 def incorrect_increment(ctx, bird: str, amount: int):
     """Increments the value of an incorrect bird by `amount`.
@@ -372,21 +380,25 @@ def score_increment(ctx, amount: int):
 def streak_increment(ctx, amount:int):
     """Increments the streak of a user by `amount`.
 
-    `ctx` - Discord context object\n
+    `ctx` - Discord context object or user id\n
     `amount` (int) - amount to increment by, usually 1.
     If amount is None, the streak is ended.
     """
+    if isinstance(ctx, (str, int)):
+        user_id = str(ctx)
+    else:
+        user_id = str(ctx.author.id)
 
     if amount is not None:
         # increment streak and update max
-        database.zincrby("streak:global", amount, str(ctx.author.id))
-        if database.zscore("streak:global", str(ctx.author.id)) > database.zscore("streak.max:global", str(ctx.author.id)):
+        database.zincrby("streak:global", amount, user_id)
+        if database.zscore("streak:global", user_id) > database.zscore("streak.max:global", user_id):
             database.zadd(
                 "streak.max:global", 
-                {str(ctx.author.id): database.zscore("streak:global", str(ctx.author.id))}
+                {user_id: database.zscore("streak:global", user_id)}
             )
     else:
-        database.zadd("streak:global", {str(ctx.author.id): 0})
+        database.zadd("streak:global", {user_id: 0})
 
 
 async def drone_attack(ctx):

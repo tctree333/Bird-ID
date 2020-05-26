@@ -187,8 +187,3 @@ def verify_session(session_id):
     else:
         logger.info("exists with user id")
         return int(database.hget(f"web.session:{session_id}", "user_id"))
-
-class MockContext:
-    def __init__(self, user_id):
-        self.author.id = user_id
-        self.guild = None

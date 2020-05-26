@@ -8,8 +8,8 @@ from flask import Blueprint, abort, request
 from bot.core import spellcheck
 from bot.data import birdList, get_wiki_url, songBirds
 from bot.functions import streak_increment
-from web.config import (FRONTEND_URL, MockContext, bird_setup, database,
-                        get_session_id, logger)
+from web.config import (FRONTEND_URL, bird_setup, database, get_session_id,
+                        logger)
 from web.functions import get_sciname, send_bird
 
 bp = Blueprint('practice', __name__, url_prefix='/practice')
@@ -104,7 +104,7 @@ def check_bird():
             tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
             if user_id != 0:
                 database.zincrby("users:global", 1, str(user_id))
-                streak_increment(MockContext(user_id), 1)
+                streak_increment(user_id, 1)
             elif tempScore >= 10:
                 logger.info("trial maxed")
                 abort(403, "Sign in to continue")
@@ -122,7 +122,7 @@ def check_bird():
             database.zincrby("incorrect:global", 1, currentBird)
 
             if user_id != 0:
-                streak_increment(MockContext(user_id), None) # reset streak
+                streak_increment(user_id, None) # reset streak
                 database.zincrby(f"incorrect.user:{user_id}", 1, currentBird)
 
             url = get_wiki_url(currentBird)
@@ -139,8 +139,7 @@ def skip_bird():
         database.hset(f"web.session:{session_id}", "bird", "")
         database.hset(f"web.session:{session_id}", "answered", "1")
         if user_id != 0:
-            streak_increment(MockContext(user_id), None) # reset streak
-
+            streak_increment(user_id, None) # reset streak
         scibird = asyncio.run(get_sciname(currentBird))
         url = get_wiki_url(currentBird)  # sends wiki page
     else:
