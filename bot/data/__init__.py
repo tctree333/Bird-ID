@@ -34,7 +34,7 @@ load_dotenv(find_dotenv(), verbose=True)
 # define database for one connection
 if os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS") == "true":
     host = os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS_HOST")
-    if host == None:
+    if host is None:
         host = "localhost"
     database = redis.Redis(host=host, port=6379, db=0)
 else:

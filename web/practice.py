@@ -2,15 +2,14 @@ import asyncio
 import random
 
 import flask
-from flask import Blueprint, abort, request
 
-from bot.data import birdList, songBirds, get_wiki_url
 from bot.core import spellcheck
+from bot.data import birdList, get_wiki_url, songBirds
 from web.config import (FRONTEND_URL, bird_setup, database, get_session_id,
                         logger)
 from web.functions import get_sciname, send_bird
 
-bp = Blueprint('practice', __name__, url_prefix='/practice')
+bp = flask.Blueprint('practice', __name__, url_prefix='/practice')
 
 @bp.after_request  # enable CORS
 def after_request(response):
@@ -23,9 +22,9 @@ def after_request(response):
 def get_bird():
     logger.info("endpoint: get bird")
     session_id = get_session_id()
-    media_type = request.args.get("media", "images", str)
-    addon = request.args.get("addon", "", str)
-    bw = bool(request.args.get("bw", 0, int))
+    media_type = flask.request.args.get("media", "images", str)
+    addon = flask.request.args.get("addon", "", str)
+    bw = bool(flask.request.args.get("bw", 0, int))
     logger.info(f"args: media: {media_type}; addon: {addon}; bw: {bw};")
 
     logger.info("bird: " + database.hget(f"web.session:{session_id}", "bird").decode("utf-8"))
@@ -33,11 +32,11 @@ def get_bird():
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
     if tempScore >= 10:
         logger.info("trial maxed")
-        abort(403, "Sign in to continue")
+        flask.abort(403, "Sign in to continue")
 
     if media_type != "images" and media_type != "songs":
         logger.error(f"invalid media type {media_type}")
-        abort(406, "Invalid media type")
+        flask.abort(406, "Invalid media type")
         return
 
     answered = int(database.hget(f"web.session:{session_id}", "answered"))
@@ -70,7 +69,7 @@ def get_bird():
 @bp.route('/check', methods=['GET'])
 def check_bird():
     logger.info("endpoint: check bird")
-    bird_guess = request.args.get("guess", "", str)
+    bird_guess = flask.request.args.get("guess", "", str)
 
     session_id = get_session_id()
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
@@ -78,10 +77,10 @@ def check_bird():
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird == "":  # no bird
         logger.info("bird is blank")
-        abort(406, "Bird is blank")
+        flask.abort(406, "Bird is blank")
     elif bird_guess == "":
         logger.info("empty guess")
-        abort(406, "Empty guess")
+        flask.abort(406, "Empty guess")
     else:  # if there is a bird, it checks answer
         logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
         logger.info("args: " + str(bird_guess.lower().replace("-", " ")))
@@ -103,7 +102,7 @@ def check_bird():
                     database.zadd("streak.max:global", {str(user_id): database.zscore("streak:global", str(user_id))})
             elif tempScore >= 10:
                 logger.info("trial maxed")
-                abort(403, "Sign in to continue")
+                flask.abort(403, "Sign in to continue")
             else:
                 database.hset(f"web.session:{session_id}", "tempScore", str(tempScore + 1))
 
@@ -141,7 +140,7 @@ def skip_bird():
         url = get_wiki_url(currentBird)  # sends wiki page
     else:
         logger.info("bird is blank")
-        abort(406, "Bird is blank")
+        flask.abort(406, "Bird is blank")
     return {"answer": currentBird, "sciname": scibird, "wiki": url}
 
 @bp.route('/hint', methods=['GET'])
@@ -154,4 +153,4 @@ def hint_bird():
         return {"hint": currentBird[0]}
     else:
         logger.info("bird is blank")
-        abort(406, "Bird is blank")
+        flask.abort(406, "Bird is blank")

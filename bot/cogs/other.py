@@ -15,18 +15,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import random
-import time
-import typing
 from difflib import get_close_matches
 
-import discord
 import wikipedia
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
 from bot.core import get_sciname, get_taxon, precache, send_bird, send_birdsong
-from bot.data import (birdListMaster, database, logger, memeList,
-                      sciBirdListMaster, states, taxons)
+from bot.data import (birdListMaster, logger, memeList, sciBirdListMaster,
+                      states, taxons)
 from bot.functions import (CustomCooldown, build_id_list, channel_setup,
                            user_setup)
 

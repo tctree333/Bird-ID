@@ -3,7 +3,6 @@ import random
 import urllib.parse
 
 import flask
-from flask import jsonify
 from sentry_sdk import capture_exception
 
 from bot.data import birdList
@@ -45,24 +44,24 @@ def bird_song(bird):
 @app.errorhandler(403)
 def not_allowed(e):
     capture_exception(e)
-    return jsonify(error=str(e)), 403
+    return flask.jsonify(error=str(e)), 403
 
 @app.errorhandler(404)
 def not_found(e):
     capture_exception(e)
-    return jsonify(error=str(e)), 404
+    return flask.jsonify(error=str(e)), 404
 
 @app.errorhandler(406)
 def input_error(e):
     capture_exception(e)
-    return jsonify(error=str(e)), 406
+    return flask.jsonify(error=str(e)), 406
 
 @app.errorhandler(500)
 def other_internal_error(e):
     capture_exception(e)
-    return jsonify(error=str(e)), 500
+    return flask.jsonify(error=str(e)), 500
 
 @app.errorhandler(503)
 def internal_error(e):
     capture_exception(e)
-    return jsonify(error=str(e)), 503
+    return flask.jsonify(error=str(e)), 503
