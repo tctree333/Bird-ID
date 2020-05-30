@@ -20,7 +20,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger
-from bot.functions import channel_setup, user_setup, CustomCooldown
+from bot.functions import CustomCooldown
 
 
 class Meta(commands.Cog):
@@ -35,9 +35,6 @@ class Meta(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def botinfo(self, ctx):
         logger.info("command: botinfo")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
@@ -73,9 +70,6 @@ class Meta(commands.Cog):
     async def invite(self, ctx):
         logger.info("command: invite")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
         embed.add_field(
@@ -102,26 +96,19 @@ class Meta(commands.Cog):
     async def ignore(self, ctx, channels: commands.Greedy[discord.TextChannel] = None):
         logger.info("command: invite")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
-        if channels is None:
-            logger.info("defaulting to current")
-            await ctx.send(
-                "**No valid channels were found.**\n*Defaulting to current channel...*"
-            )
-            channels = [ctx.channel]
-
-        logger.info(f"ignored channels: {[c.name for c in channels]}")
         added = ""
         removed = ""
-        for channel in channels:
-            if database.zscore("ignore:global", str(channel.id)) is None:
-                added += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
-                database.zadd("ignore:global", {str(channel.id): ctx.guild.id})
-            else:
-                removed += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
-                database.zrem("ignore:global", str(channel.id))
+        if channels is not None:
+            logger.info(f"ignored channels: {[c.name for c in channels]}")
+            for channel in channels:
+                if database.zscore("ignore:global", str(channel.id)) is None:
+                    added += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
+                    database.zadd("ignore:global", {str(channel.id): ctx.guild.id})
+                else:
+                    removed += f"`#{channel.name}` (`{channel.category.name if channel.category else 'No Category'}`)\n"
+                    database.zrem("ignore:global", str(channel.id))
+        else:
+            await ctx.send("**No valid channels were passed.**")
 
         ignored = "".join(
             [
@@ -138,7 +125,7 @@ class Meta(commands.Cog):
         await ctx.send(
             (f"**Ignoring:**\n{added}" if added else "")
             + (f"**Stopped ignoring:**\n{removed}" if removed else "")
-            + (f"**Ignored Channels:**\n{ignored}" if ignored else "")
+            + (f"**Ignored Channels:**\n{ignored}" if ignored else "**No channels in this server are currently ignored.**")
         )
 
     # leave command - removes itself from guild
@@ -152,9 +139,6 @@ class Meta(commands.Cog):
     @commands.has_guild_permissions(manage_guild=True)
     async def leave(self, ctx, confirm: typing.Optional[bool] = False):
         logger.info("command: leave")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         if database.exists(f"leave:{ctx.guild.id}"):
             logger.info("confirming")

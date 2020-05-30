@@ -21,15 +21,16 @@ import time
 import discord
 from discord.ext import commands
 
-from bot.data import database, logger, taxons, states
-from bot.functions import channel_setup, check_state_role, user_setup, CustomCooldown
+from bot.data import database, logger, states, taxons
+from bot.functions import CustomCooldown, check_state_role
+
 
 class Sessions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, taxon, wiki = database.hmget(f"session.data:{ctx.author.id}", ["bw", "addon", "state", "taxon", "wiki"])
+        bw, addon, state, taxon, wiki, strict = database.hmget(f"session.data:{ctx.author.id}", ["bw", "addon", "state", "taxon", "wiki", "strict"])
         options = textwrap.dedent(
             f"""\
             **Age/Sex:** {addon.decode('utf-8') if addon else 'default'}
@@ -37,6 +38,7 @@ class Sessions(commands.Cog):
             **State bird list:** {state.decode('utf-8') if state else 'None'}
             **Bird taxon:** {taxon.decode('utf-8') if taxon else 'None'}
             **Wiki Embeds**: {wiki==b'wiki'}
+            **Strict Spelling**: {strict==b'strict'}
             """
         )
         return options
@@ -109,9 +111,6 @@ class Sessions(commands.Cog):
     async def start(self, ctx, *, args_str: str = ""):
         logger.info("command: start session")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("already session")
             await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session edit`*")
@@ -129,6 +128,11 @@ class Sessions(commands.Cog):
                 wiki = ""
             else:
                 wiki = "wiki"
+
+            if "strict" in args:
+                strict = "strict"
+            else:
+                strict = ""
 
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
@@ -154,7 +158,7 @@ class Sessions(commands.Cog):
             else:
                 addon = ""
 
-            logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}")
+            logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}; wiki: {wiki}; strict: {strict}")
 
             database.hset(
                 f"session.data:{ctx.author.id}",
@@ -169,6 +173,7 @@ class Sessions(commands.Cog):
                     "addon": addon,
                     "taxon": taxon,
                     "wiki": wiki,
+                    "strict": strict
                 }
             )
             await ctx.send(f"**Session started with options:**\n{await self._get_options(ctx)}")
@@ -185,9 +190,6 @@ class Sessions(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def edit(self, ctx, *, args_str: str = ""):
         logger.info("command: view session")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         if database.exists(f"session.data:{ctx.author.id}"):
             args = args_str.lower().split(" ")
@@ -208,6 +210,14 @@ class Sessions(commands.Cog):
                 else:
                     logger.info("disabling wiki embeds")
                     database.hset(f"session.data:{ctx.author.id}", "wiki", "wiki")
+            
+            if "strict" in args:
+                if database.hget(f"session.data:{ctx.author.id}", "strict"):
+                    logger.info("disabling strict spelling")
+                    database.hset(f"session.data:{ctx.author.id}", "strict", "")
+                else:
+                    logger.info("enabling strict spelling")
+                    database.hset(f"session.data:{ctx.author.id}", "strict", "strict")
 
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
@@ -264,9 +274,6 @@ class Sessions(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def stop(self, ctx):
         logger.info("command: stop session")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         if database.exists(f"session.data:{ctx.author.id}"):
             database.hset(f"session.data:{ctx.author.id}", "stop", round(time.time()))

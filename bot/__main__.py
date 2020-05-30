@@ -19,7 +19,7 @@ import concurrent.futures
 import errno
 import os
 import sys
-from datetime import datetime, date, timezone, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 import aiohttp
 import discord
@@ -29,8 +29,9 @@ import wikipedia
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception, configure_scope
 
+from bot.core import precache, send_bird
 from bot.data import GenericError, database, logger
-from bot.functions import backup_all, channel_setup, precache, send_bird, drone_attack
+from bot.functions import backup_all, channel_setup, drone_attack, user_setup
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])
@@ -69,8 +70,8 @@ if __name__ == '__main__':
 
     # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
     core_extensions = [
-        'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', 'bot.cogs.state',
-        'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.meta', 'bot.cogs.other'
+        'bot.cogs.get_birds', 'bot.cogs.check', 'bot.cogs.skip', 'bot.cogs.hint', 'bot.cogs.score', "bot.cogs.stats",
+        'bot.cogs.state', 'bot.cogs.sessions', 'bot.cogs.race', 'bot.cogs.meta', 'bot.cogs.other'
     ]
     
     if "SCIOLY_ID_BOT_EXTRA_COGS" in os.environ and len(os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip()) > 0:
@@ -95,6 +96,13 @@ if __name__ == '__main__':
     ######
     # Global Command Checks
     ######
+
+    @bot.check
+    def log_command_frequency(ctx):
+        """Logs the command used to the database."""
+        logger.info("global check: logging command frequency")
+        database.zincrby("frequency.command:global", 1, str(ctx.command))
+        return True
 
     @bot.check
     def set_sentry_tag(ctx):
@@ -141,6 +149,15 @@ if __name__ == '__main__':
             return True
 
     @bot.check
+    async def database_setup(ctx):
+        """Ensures database consistency before commands run."""
+        logger.info("global check: database setup")
+        await ctx.trigger_typing()
+        await channel_setup(ctx)
+        await user_setup(ctx)
+        return True
+
+    @bot.check
     async def is_holiday(ctx):
         """Sends a picture of a turkey on Thanksgiving.
         
@@ -168,11 +185,14 @@ if __name__ == '__main__':
         logger.info("Error: " + str(error))
 
         # don't handle errors with local handlers
-        if hasattr(ctx.command, 'on_error'):
+        if hasattr(ctx.command, "on_error"):
             return
 
         if isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send("**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", delete_after=5.0)
+            await ctx.send(
+                "**Cooldown.** Try again after " + str(round(error.retry_after)) + " s.", 
+                delete_after=5.0,
+            )
 
         elif isinstance(error, commands.CommandNotFound):
             capture_exception(error)
@@ -201,8 +221,10 @@ if __name__ == '__main__':
             )
 
         elif isinstance(error, commands.NoPrivateMessage):
-            capture_exception(error)
             await ctx.send("**This command is unavaliable in DMs!**")
+        
+        elif isinstance(error, commands.PrivateMessageOnly):
+            await ctx.send("**This command is only avaliable in DMs!**")
 
         elif isinstance(error, GenericError):
             if error.code == 192:
@@ -288,6 +310,14 @@ if __name__ == '__main__':
                         "**Error:** " + str(error.original)
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
+            
+            elif isinstance(error.original, aiohttp.ServerDisconnectedError):
+                capture_exception(error.original)
+                await ctx.send("**The server disconnected.**\n*Please try again.*")
+
+            elif isinstance(error.original, asyncio.TimeoutError):
+                capture_exception(error.original)
+                await ctx.send("**The request timed out.**\n*Please try again in a bit.*")
 
             else:
                 logger.info("uncaught command error")

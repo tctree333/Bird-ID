@@ -15,19 +15,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import random
-import time
-import typing
 from difflib import get_close_matches
 
-import discord
 import wikipedia
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
-from bot.data import (birdListMaster, database, logger, memeList,
-                      sciBirdListMaster, states, taxons)
-from bot.functions import (CustomCooldown, channel_setup, get_sciname, get_taxon,
-                           precache, send_bird, send_birdsong, user_setup)
+from bot.core import get_sciname, get_taxon, precache, send_bird, send_birdsong
+from bot.data import (birdListMaster, logger, memeList, sciBirdListMaster,
+                      states, taxons)
+from bot.functions import CustomCooldown, build_id_list
 
 
 class Other(commands.Cog):
@@ -39,9 +36,6 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(10.0, bucket=commands.BucketType.user))
     async def info(self, ctx, *, arg):
         logger.info("command: info")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         matches = get_close_matches(arg, birdListMaster + sciBirdListMaster, n=1)
         if matches:
@@ -61,9 +55,6 @@ class Other(commands.Cog):
     async def list_of_birds(self, ctx, state: str = "blank"):
         logger.info("command: list")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         state = state.upper()
 
         if state not in states:
@@ -73,9 +64,12 @@ class Other(commands.Cog):
             )
             return
 
+        state_birdlist = build_id_list(user_id=ctx.author.id, state=state, media="images")
+        state_songlist = build_id_list(user_id=ctx.author.id, state=state, media="songs")
+
         birdLists = []
         temp = ""
-        for bird in states[state]['birdList']:
+        for bird in state_birdlist:
             temp += f"{bird}\n"
             if len(temp) > 1950:
                 birdLists.append(temp)
@@ -84,7 +78,7 @@ class Other(commands.Cog):
 
         songLists = []
         temp = ""
-        for bird in states[state]['songBirds']:
+        for bird in state_songlist:
             temp += f"{bird}\n"
             if len(temp) > 1950:
                 songLists.append(temp)
@@ -103,8 +97,8 @@ class Other(commands.Cog):
             await ctx.author.dm_channel.send(f"```\n{birds}```")
 
         await ctx.send(
-            f"The `{state}` bird list has **{len(states[state]['birdList'])}** birds.\n" +
-            f"The `{state}` bird list has **{len(states[state]['songBirds'])}** songs.\n" +
+            f"The `{state}` bird list has **{len(state_birdlist)}** birds.\n" +
+            f"The `{state}` bird list has **{len(state_songlist)}** songs.\n" +
             "*A full list of birds has been sent to you via DMs.*"
         )
 
@@ -117,9 +111,6 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
     async def bird_taxons(self, ctx, taxon: str = "blank", state: str = "NATS"):
         logger.info("command: taxons")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         taxon = taxon.lower()
         state = state.upper()
@@ -138,12 +129,8 @@ class Other(commands.Cog):
             )
             return
 
-        birds_in_taxon = set(taxons[taxon])
-        birds_in_state = set(states[state]["birdList"])
-        song_birds_in_state = set(states[state]["songBirds"])
-        bird_list = list(birds_in_taxon.intersection(birds_in_state))
-        song_bird_list = list(birds_in_taxon.intersection(song_birds_in_state))
-
+        bird_list = build_id_list(user_id=ctx.author.id, taxon=taxon, state=state, media="images")
+        song_bird_list = build_id_list(user_id=ctx.author.id, taxon=taxon, state=state, media="songs")
         if not bird_list and not song_bird_list:
             logger.info("no birds for taxon/state")
             await ctx.send(f"**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*")
@@ -190,9 +177,6 @@ class Other(commands.Cog):
     async def wikipedia(self, ctx, *, arg):
         logger.info("command: wiki")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         try:
             page = wikipedia.page(arg)
             await ctx.send(page.url)
@@ -207,8 +191,6 @@ class Other(commands.Cog):
     async def meme(self, ctx):
         logger.info("command: meme")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
         await ctx.send(random.choice(memeList))
 
     # Send command - for testing purposes only

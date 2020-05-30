@@ -13,7 +13,7 @@ from web.config import (FRONTEND_URL, app, database, get_session_id, logger,
 bp = Blueprint('user', __name__, url_prefix='/user')
 oauth = OAuth(app)
 
-relative_url_regex = re.compile(r"/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*")
+relative_url_regex = re.compile(r"/[^/](?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*")
 
 DISCORD_CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 oauth.register(
@@ -56,7 +56,7 @@ def logout():
     logger.info("endpoint: logout")
     redirect_after = request.args.get("redirect", FRONTEND_URL, str)
     if relative_url_regex.fullmatch(redirect_after) is not None:
-        redirect_url = redirect_after
+        redirect_url = FRONTEND_URL + redirect_after
     else:
         redirect_url = FRONTEND_URL
 

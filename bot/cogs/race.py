@@ -21,21 +21,26 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger, states, taxons
-from bot.functions import channel_setup, check_state_role, user_setup, CustomCooldown
+from bot.functions import CustomCooldown
+
 
 class Race(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, media, limit, taxon = database.hmget(
-            f"race.data:{ctx.channel.id}", ["bw", "addon", "state", "media", "limit", "taxon"]
+        bw, addon, state, media, limit, taxon, strict = database.hmget(
+            f"race.data:{ctx.channel.id}",
+            ["bw", "addon", "state", "media", "limit", "taxon", "strict"]
         )
-        options = str(
-            f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" + f"**Black & White:** {bw==b'bw'}\n" +
+        options = (
+            f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" +
+            f"**Black & White:** {bw==b'bw'}\n" +
             f"**Special bird list:** {state.decode('utf-8') if state else 'None'}\n" +
             f"**Taxons:** {taxon.decode('utf-8') if taxon else 'None'}\n" +
-            f"**Media Type:** {media.decode('utf-8')}\n" + f"**Amount to Win:** {limit.decode('utf-8')}\n"
+            f"**Media Type:** {media.decode('utf-8')}\n" + 
+            f"**Amount to Win:** {limit.decode('utf-8')}\n" +
+            f"**Strict Spelling:** {strict == b'strict'}"
         )
         return options
 
@@ -130,7 +135,7 @@ class Race(commands.Cog):
     @race.command(
         brief="- Starts race",
         help="""- Starts race.
-        Arguments passed will become the default arguments to 'b!bird', but can be manually overwritten during use.
+        Arguments passed will become the default arguments to 'b!bird', but some can be manually overwritten during use.
         Arguments can be passed in any taxon.
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
@@ -139,9 +144,6 @@ class Race(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def start(self, ctx, *, args_str: str = ""):
         logger.info("command: start race")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         if not str(ctx.channel.name).startswith("racing"):
             logger.info("not race channel")
@@ -169,16 +171,31 @@ class Race(commands.Cog):
             else:
                 taxon = ""
 
+            if "strict" in args:
+                strict = "strict"
+            else:
+                strict = ""
+
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
+                if {"CUSTOM"}.issubset(states_args):
+                    if (
+                        database.exists(f"custom.list:{ctx.author.id}")
+                        and not database.exists(f"custom.confirm:{ctx.author.id}")
+                    ):
+                        states_args.discard("CUSTOM")
+                        states_args.add(f"CUSTOM:{ctx.author.id}")
+                    else:
+                        states_args.discard("CUSTOM")
+                        await ctx.send("**You don't have a custom list set.**\n*Ignoring the argument.*")
                 state = " ".join(states_args).strip()
             else:
-                state = " ".join(check_state_role(ctx))
+                state = ""
 
             female = "female" in args or "f" in args
             juvenile = "juvenile" in args or "j" in args
             if female and juvenile:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
+                await ctx.send("**Juvenile females are not yet supported.**\n*Please try again.*")
                 return
             elif female:
                 addon = "female"
@@ -226,7 +243,8 @@ class Race(commands.Cog):
                     "state": state,
                     "addon": addon,
                     "media": media,
-                    "taxon": taxon
+                    "taxon": taxon,
+                    "strict": strict
                 }
             )
 
@@ -239,13 +257,14 @@ class Race(commands.Cog):
                 database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
                 logger.info("auto sending next bird image")
-                addon, bw, taxon = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon"])
+                addon, bw, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon", "state"])
                 birds = self.bot.get_cog("Birds")
                 await birds.send_bird_(
                     ctx,
                     addon.decode("utf-8"),  # type: ignore
                     bw.decode("utf-8"),  # type: ignore
-                    taxon.decode("utf-8")  # type: ignore
+                    taxon.decode("utf-8"),  # type: ignore
+                    state.decode("utf-8"),  # type: ignore
                 )
 
             if database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8") == "song":
@@ -265,9 +284,6 @@ class Race(commands.Cog):
     async def view(self, ctx):
         logger.info("command: view race")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         if database.exists(f"race.data:{ctx.channel.id}"):
             await self._send_stats(ctx, f"**Race In Progress**")
         else:
@@ -277,9 +293,6 @@ class Race(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def stop(self, ctx):
         logger.info("command: stop race")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         if database.exists(f"race.data:{ctx.channel.id}"):
             await self.stop_race_(ctx)

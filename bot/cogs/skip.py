@@ -17,7 +17,8 @@
 from discord.ext import commands
 
 from bot.data import database, get_wiki_url, logger
-from bot.functions import channel_setup, user_setup, CustomCooldown
+from bot.functions import CustomCooldown, streak_increment
+
 
 class Skip(commands.Cog):
     def __init__(self, bot):
@@ -29,17 +30,14 @@ class Skip(commands.Cog):
     async def skip(self, ctx):
         logger.info("command: skip")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
-        currentBird = str(database.hget(f"channel:{ctx.channel.id}", "bird"))[2:-1]
+        currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
         database.hset(f"channel:{ctx.channel.id}", "bird", "")
         database.hset(f"channel:{ctx.channel.id}", "answered", "1")
         if currentBird != "":  # check if there is bird
             url = get_wiki_url(ctx, currentBird)
             await ctx.send(f"Ok, skipping {currentBird.lower()}")
             await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")  # sends wiki page
-            database.zadd("streak:global", {str(ctx.author.id): 0})  # end streak
+            streak_increment(ctx, None) # reset streak
             if database.exists(f"race.data:{ctx.channel.id}") and database.hget(f"race.data:{ctx.channel.id}",
                                                                                 "media").decode("utf-8") == "image":
 
@@ -51,9 +49,9 @@ class Skip(commands.Cog):
                     await race.stop_race_(ctx)
                 else:
                     logger.info("auto sending next bird image")
-                    addon, bw, taxon = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon"])
+                    addon, bw, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon", "state"])
                     birds = self.bot.get_cog("Birds")
-                    await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"), taxon.decode("utf-8"))
+                    await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"), taxon.decode("utf-8"), state.decode("utf-8"))
         else:
             await ctx.send("You need to ask for a bird first!")
 
@@ -63,17 +61,14 @@ class Skip(commands.Cog):
     async def skipgoat(self, ctx):
         logger.info("command: skipgoat")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
-        currentBird = str(database.hget(f"channel:{ctx.channel.id}", "goatsucker"))[2:-1]
+        currentBird = database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode("utf-8")
         database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
         database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
         if currentBird != "":  # check if there is bird
             url = get_wiki_url(ctx, currentBird)
             await ctx.send(f"Ok, skipping {currentBird.lower()}")  
             await ctx.send(url) # sends wiki page
-            database.zadd("streak:global", {str(ctx.author.id): 0})
+            streak_increment(ctx, None) # reset streak
         else:
             await ctx.send("You need to ask for a bird first!")
 
@@ -83,20 +78,19 @@ class Skip(commands.Cog):
     async def skipsong(self, ctx):
         logger.info("command: skipsong")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
-        currentSongBird = str(database.hget(f"channel:{ctx.channel.id}", "sBird"))[2:-1]
+        currentSongBird = database.hget(f"channel:{ctx.channel.id}", "sBird").decode("utf-8")
         database.hset(f"channel:{ctx.channel.id}", "sBird", "")
         database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
         if currentSongBird != "":  # check if there is bird
             url = get_wiki_url(ctx, currentSongBird)
             await ctx.send(f"Ok, skipping {currentSongBird.lower()}")
             await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")  # sends wiki page
-            database.zadd("streak:global", {str(ctx.author.id): 0})
-            if database.exists(f"race.data:{ctx.channel.id}") and str(
+            streak_increment(ctx, None) # reset streak
+            if (
+                database.exists(f"race.data:{ctx.channel.id}") and
                 database.hget(f"race.data:{ctx.channel.id}", "media")
-            )[2:-1] == "song":
+                .decode("utf-8") == "song"
+            ):
 
                 limit = int(database.hget(f"race.data:{ctx.channel.id}", "limit"))
                 first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]

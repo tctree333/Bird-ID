@@ -1,0 +1,27 @@
+# Editor
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Python
+__pycache__/
+.pytest_cache/
+venv/
+
+# Secrets
+setup.sh
+.env
+
+# Bot generated
+logs/
+cache/
+backups/
+
+# Local Redis generated
+dump.rdb
+
+# Test generated
+cc-test-reporter
+.coverage
+coverage.xml

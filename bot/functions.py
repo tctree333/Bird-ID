@@ -14,43 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import asyncio
-import contextlib
+import datetime
 import difflib
+import itertools
 import os
 import pickle
 import random
-import shutil
 import string
-import time
-import urllib.parse
-import functools
-from io import BytesIO
-from mimetypes import guess_all_extensions, guess_extension
 
-import aiohttp
 import discord
 from discord.ext import commands
-import eyed3
-from PIL import Image
-from sentry_sdk import capture_exception
 
-from bot.data import (GenericError, birdListMaster, database, get_wiki_url,
-                      logger, sciBirdListMaster, sciSongBirdsMaster,
-                      screech_owls, states)
+from bot.data import (GenericError, birdList, birdListMaster, database, logger,
+                      sciBirdListMaster, songBirds, states, taxons)
 
-# Macaulay URL definitions
-TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
-CATALOG_URL = (
-    "https://search.macaulaylibrary.org/catalog.json?searchField=species" +
-    "&taxonCode={}&count={}&mediaType={}&sex={}&age={}&behavior={}&qua=3,4,5"
-)
-SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
-COUNT = 20  # set this to include a margin of error in case some urls throw error code 476 due to still being processed
-
-# Valid file types
-valid_image_extensions = {"jpg", "png", "jpeg", "gif"}
-valid_audio_extensions = {"mp3", "wav"}
 
 async def channel_setup(ctx):
     """Sets up a new discord channel.
@@ -86,34 +63,56 @@ async def channel_setup(ctx):
         database.zadd("score:global", {str(ctx.channel.id): 0})
         logger.info("channel score added")
 
+    if ctx.guild is not None:
+        if database.zadd("channels:global", {f"{ctx.guild.id}:{ctx.channel.id}": 0}) is not 0:
+            logger.info("server lookup ok")
+        else:
+            logger.info("server lookup added")
+
 async def user_setup(ctx):
     """Sets up a new discord user for score tracking.
     
-    `ctx` - Discord context object
+    `ctx` - Discord context object or user id
     """
+    if isinstance(ctx, (str, int)):
+        user_id = str(ctx)
+        guild = None
+        ctx = None
+    else:
+        user_id = str(ctx.author.id)
+        guild = ctx.guild
+
     logger.info("checking user data")
-    if database.zscore("users:global", str(ctx.author.id)) is not None:
+    if database.zscore("users:global",user_id) is not None:
         logger.info("user global ok")
     else:
-        database.zadd("users:global", {str(ctx.author.id): 0})
+        database.zadd("users:global", {user_id: 0})
         logger.info("user global added")
-        await ctx.send("Welcome <@" + str(ctx.author.id) + ">!")
+        if ctx is not None:
+            await ctx.send("Welcome <@" + user_id + ">!")
+
+    date = str(datetime.datetime.now(datetime.timezone.utc).date())
+    if database.zscore(f"daily.score:{date}", user_id) is not None:
+        logger.info("user daily ok")
+    else:
+        database.zadd(f"daily.score:{date}", {user_id: 0})
+        logger.info("user daily added")
 
     #Add streak
-    if (database.zscore("streak:global", str(ctx.author.id)) is
-        not None) and (database.zscore("streak.max:global", str(ctx.author.id)) is not None):
+    if (database.zscore("streak:global", user_id) is
+        not None) and (database.zscore("streak.max:global", user_id) is not None):
         logger.info("user streak in already")
     else:
-        database.zadd("streak:global", {str(ctx.author.id): 0})
-        database.zadd("streak.max:global", {str(ctx.author.id): 0})
+        database.zadd("streak:global", {user_id: 0})
+        database.zadd("streak.max:global", {user_id: 0})
         logger.info("added streak")
 
-    if ctx.guild is not None:
+    if guild is not None:
         logger.info("no dm")
         if database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id)) is not None:
             server_score = database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id))
             global_score = database.zscore("users:global", str(ctx.author.id))
-            if server_score is global_score:
+            if server_score == global_score:
                 logger.info("user server ok")
             else:
                 database.zadd(f"users.server:{ctx.guild.id}", {str(ctx.author.id): global_score})
@@ -121,15 +120,32 @@ async def user_setup(ctx):
             score = int(database.zscore("users:global", str(ctx.author.id)))
             database.zadd(f"users.server:{ctx.guild.id}", {str(ctx.author.id): score})
             logger.info("user server added")
+
+        role_ids = [role.id for role in ctx.author.roles]
+        role_names = [role.name.lower() for role in ctx.author.roles]
+        if (
+            set(role_names).intersection(set(states["CUSTOM"]["aliases"])) 
+            and not database.exists(f"custom.list:{ctx.author.id}")
+        ):
+            index = role_names.index(states["CUSTOM"]["aliases"][0].lower())
+            role = ctx.guild.get_role(role_ids[index])
+            await ctx.author.remove_roles(role, reason="Remove state role for bird list")
     else:
         logger.info("dm context")
 
-async def bird_setup(ctx, bird: str):
+def bird_setup(ctx, bird: str):
     """Sets up a new bird for incorrect tracking.
     
-    `ctx` - Discord context object
+    `ctx` - Discord context object or user id\n
     `bird` - bird to setup
     """
+    if isinstance(ctx, (str, int)):
+        user_id = ctx
+        guild = None
+    else:
+        user_id = ctx.author.id
+        guild = ctx.guild
+
     logger.info("checking bird data")
     if database.zscore("incorrect:global", string.capwords(bird)) is not None:
         logger.info("bird global ok")
@@ -137,13 +153,26 @@ async def bird_setup(ctx, bird: str):
         database.zadd("incorrect:global", {string.capwords(bird): 0})
         logger.info("bird global added")
 
-    if database.zscore(f"incorrect.user:{ctx.author.id}", string.capwords(bird)) is not None:
+    if database.zscore(f"incorrect.user:{user_id}", string.capwords(bird)) is not None:
         logger.info("bird user ok")
     else:
-        database.zadd(f"incorrect.user:{ctx.author.id}", {string.capwords(bird): 0})
+        database.zadd(f"incorrect.user:{user_id}", {string.capwords(bird): 0})
         logger.info("bird user added")
 
-    if ctx.guild is not None:
+    date = str(datetime.datetime.now(datetime.timezone.utc).date())
+    if database.zscore(f"daily.incorrect:{date}", string.capwords(bird)) is not None:
+        logger.info("bird daily ok")
+    else:
+        database.zadd(f"daily.incorrect:{date}", {string.capwords(bird): 0})
+        logger.info("bird daily added")
+
+    if database.zscore("frequency.bird:global", string.capwords(bird)) is not None:
+        logger.info("bird freq global ok")
+    else:
+        database.zadd("frequency.bird:global", {string.capwords(bird): 0})
+        logger.info("bird freq global added")
+
+    if guild is not None:
         logger.info("no dm")
         if database.zscore(f"incorrect.server:{ctx.guild.id}", string.capwords(bird)) is not None:
             logger.info("bird server ok")
@@ -153,12 +182,12 @@ async def bird_setup(ctx, bird: str):
     else:
         logger.info("dm context")
 
-    if database.exists(f"session.data:{ctx.author.id}"):
+    if database.exists(f"session.data:{user_id}"):
         logger.info("session in session")
-        if database.zscore(f"session.incorrect:{ctx.author.id}", string.capwords(bird)) is not None:
+        if database.zscore(f"session.incorrect:{user_id}", string.capwords(bird)) is not None:
             logger.info("bird session ok")
         else:
-            database.zadd(f"session.incorrect:{ctx.author.id}", {string.capwords(bird): 0})
+            database.zadd(f"session.incorrect:{user_id}", {string.capwords(bird): 0})
             logger.info("bird session added")
     else:
         logger.info("no session")
@@ -209,191 +238,143 @@ def check_state_role(ctx) -> list:
     logger.info(f"user roles: {user_states}")
     return user_states
 
-def cache(func=None):
-    """Cache decorator based on functools.lru_cache.
+async def send_leaderboard(ctx, title, page, database_key=None, data=None):
+        logger.info("building/sending leaderboard")
+        
+        if database_key is None and data is None:
+            raise GenericError("database_key and data are both NoneType", 990)
+        elif database_key is not None and data is not None:
+            raise GenericError("database_key and data are both set", 990)
 
-    This does not have a max_size and does not evict items.
-    In addition, results are only cached by the first provided argument.
+        if page < 1:
+            page = 1
+
+        entry_count = (int(database.zcard(database_key)) if database_key is not None else data.count())
+        page = (page * 10) - 10
+
+        if entry_count == 0:
+            logger.info(f"no items in {database_key}")
+            await ctx.send("There are no items in the database.")
+            return
+
+        if page > entry_count:
+            page = entry_count - (entry_count % 10)
+
+        items_per_page = 10
+        leaderboard_list = (
+            map(
+                lambda x: (x[0].decode("utf-8"), x[1]), 
+                database.zrevrangebyscore(database_key, "+inf", "-inf", page, items_per_page, True)
+            )
+            if database_key is not None
+            else data.iloc[page:page+items_per_page-1].items()
+        )
+        embed = discord.Embed(type="rich", colour=discord.Color.blurple())
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        leaderboard = ""
+
+        for i, stats in enumerate(leaderboard_list):
+            leaderboard += f"{i+1+page}. **{stats[0]}** - {int(stats[1])}\n"
+        embed.add_field(name=title, value=leaderboard, inline=False)
+
+        await ctx.send(embed=embed)
+
+def build_id_list(user_id = None, taxon = [], roles = [], state = [], media = "images") -> list:
+    """Generates an ID list based on given arguments
+
+    - `user_id`: User ID of custom list
+    - `taxon`: taxon string/list
+    - `roles`: role list
+    - `state`: state string/list
+    - `media`: image/song
     """
-    def wrapper(func):
-        sentinel = object()
+    logger.info("building id list")
+    if isinstance(taxon, str):
+        taxon = taxon.split(" ")
+    if isinstance(state, str):
+        state = state.split(" ")
 
-        cache = {}
-        hits = misses = 0
-        cache_get = cache.get
-        cache_len = cache.__len__
-
-        async def wrapped(*args, **kwds):
-            # Simple caching without ordering or size limit
-            logger.info("checking cache")
-            nonlocal hits, misses
-            key = hash(args[0])
-            result = cache_get(key, sentinel)
-            if result is not sentinel:
-                logger.info(f"{args[0]} found in cache!")
-                hits += 1
-                return result
-            logger.info(f"did not find {args[0]} in cache")
-            misses += 1
-            result = await func(*args, **kwds)
-            cache[key] = result
-            return result
-
-        def cache_info():
-            """Report cache statistics"""
-            return functools._CacheInfo(hits, misses, None, cache_len())
-
-        wrapped.cache_info = cache_info
-        return functools.update_wrapper(wrapped, func)
-
-    if func:
-        return wrapper(func)
+    state_roles = state + roles
+    if media in ("songs", "song", "s", "a"):
+        state_list = "songBirds"
+        default = songBirds
     else:
-        return wrapper
+        state_list = "birdList"
+        default = birdList
 
-@cache()
-async def get_sciname(bird: str, session=None, retries=0) -> str:
-    """Returns the scientific name of a bird.
+    custom_list = []
+    if (
+        user_id 
+        and "CUSTOM" in state_roles 
+        and database.exists(f"custom.list:{user_id}") 
+        and not database.exists(f"custom.confirm:{user_id}")
+    ):
+        custom_list = [bird.decode("utf-8") for bird in database.smembers(f"custom.list:{user_id}")]
 
-    Scientific names are found using the eBird API from the Cornell Lab of Ornithology,
-    using `SCINAME_URL` to fetch data.
-    Raises a `GenericError` if a scientific name is not found or an HTTP error occurs.
-
-    `bird` (str) - common/scientific name of the bird you want to look up\n
-    `session` (optional) - an aiohttp client session
-    """
-    logger.info(f"getting sciname for {bird}")
-    async with contextlib.AsyncExitStack() as stack:
-        if session is None:
-            session = await stack.enter_async_context(aiohttp.ClientSession())
-        try:
-            code = await get_taxon(bird, session)
-        except GenericError as e:
-            if e.code == 111:
-                code = bird
-            else:
-                raise
-
-        sciname_url = SCINAME_URL.format(urllib.parse.quote(code))
-        async with session.get(sciname_url) as sciname_response:
-            if sciname_response.status != 200:
-                if retries >= 3:
-                    logger.info("Retried more than 3 times. Aborting...")
-                    raise GenericError(
-                        f"An http error code of {sciname_response.status} occured" +
-                        f" while fetching {sciname_url} for {bird}",
-                        code=201
-                    )
-                else:
-                    logger.info(f"An HTTP error occurred; Retries: {retries}")
-                    retries += 1
-                    sciname = await get_sciname(bird, session, retries)
-                    return sciname
-            sciname_data = await sciname_response.json()
-            try:
-                sciname = sciname_data[0]["sciName"]
-            except IndexError:
-                raise GenericError(f"No sciname found for {code}", code=111)
-    logger.info(f"sciname: {sciname}")
-    return sciname
-
-@cache()
-async def get_taxon(bird: str, session=None, retries=0) -> str:
-    """Returns the taxonomic code of a bird.
-
-    Taxonomic codes are used by the Cornell Lab of Ornithology to identify species of birds.
-    This function uses the Macaulay Library's internal API to fetch the taxon code
-    from the common or scientific name, using `TAXON_CODE_URL`.
-    Raises a `GenericError` if a code is not found or if an HTTP error occurs.
-
-    `bird` (str) - common/scientific name of bird you want to look up\n
-    `session` (optional) - an aiohttp client session
-    """
-    logger.info(f"getting taxon code for {bird}")
-    async with contextlib.AsyncExitStack() as stack:
-        if session is None:
-            session = await stack.enter_async_context(aiohttp.ClientSession())
-        taxon_code_url = TAXON_CODE_URL.format(urllib.parse.quote(bird.replace("-", " ").replace("'s", "")))
-        async with session.get(taxon_code_url) as taxon_code_response:
-            if taxon_code_response.status != 200:
-                if retries >= 3:
-                    logger.info("Retried more than 3 times. Aborting...")
-                    raise GenericError(
-                        f"An http error code of {taxon_code_response.status} occured" +
-                        f" while fetching {taxon_code_url} for {bird}",
-                        code=201
-                    )
-                else:
-                    logger.info(f"An HTTP error occurred; Retries: {retries}")
-                    retries += 1
-                    taxon_code = await get_taxon(bird, session, retries)
-                    return taxon_code
-            taxon_code_data = await taxon_code_response.json()
-            try:
-                logger.info(f"raw data: {taxon_code_data}")
-                taxon_code = taxon_code_data[0]["code"]
-                logger.info(f"first item: {taxon_code_data[0]}")
-                if len(taxon_code_data) > 1:
-                    logger.info("entering check")
-                    for item in taxon_code_data:
-                        logger.info(f"checking: {item}")
-                        if spellcheck(item["name"].split(" - ")[0], bird,
-                                      4) or spellcheck(item["name"].split(" - ")[1], bird, 4):
-                            logger.info("ok")
-                            taxon_code = item["code"]
-                            break
-                        logger.info("fail")
-            except IndexError:
-                raise GenericError(f"No taxon code found for {bird}", code=111)
-    logger.info(f"taxon code: {taxon_code}")
-    return taxon_code
-
-def _black_and_white(input_image_path) -> BytesIO:
-    """Returns a black and white version of an image.
-
-    Output type is a file object (BytesIO).
-
-    `input_image_path` - path to image (string) or file object
-    """
-    logger.info("black and white")
-    with Image.open(input_image_path) as color_image:
-        bw = color_image.convert('L')
-        final_buffer = BytesIO()
-        bw.save(final_buffer, "png")
-    final_buffer.seek(0)
-    return final_buffer
+    birds = []
+    if taxon:
+        birds_in_taxon = set(itertools.chain.from_iterable(taxons[o] for o in taxon))
+        if state_roles:
+            birds_in_state = set(itertools.chain(*(states[state][state_list] for state in state_roles), custom_list))
+            birds = list(birds_in_taxon.intersection(birds_in_state))
+        else:
+            birds = list(birds_in_taxon.intersection(set(default)))
+    elif state_roles:
+        birds = list(set(itertools.chain(*(states[state][state_list] for state in state_roles), custom_list)))
+    else:
+        birds = default
+    logger.info(f"number of birds: {len(birds)}")
+    return birds
 
 def session_increment(ctx, item: str, amount: int):
     """Increments the value of a database hash field by `amount`.
 
-    `ctx` - Discord context object\n
+    `ctx` - Discord context object or user id\n
     `item` - hash field to increment (see data.py for details,
     possible values include correct, incorrect, total)\n
     `amount` (int) - amount to increment by, usually 1
     """
-    logger.info(f"incrementing {item} by {amount}")
-    value = int(database.hget(f"session.data:{ctx.author.id}", item))
-    value += int(amount)
-    database.hset(f"session.data:{ctx.author.id}", item, str(value))
+    if isinstance(ctx, (str, int)):
+        user_id = ctx
+    else:
+        user_id = ctx.author.id
+
+    if database.exists(f"session.data:{user_id}"):
+        logger.info("session active")
+        logger.info(f"incrementing {item} by {amount}")
+        value = int(database.hget(f"session.data:{user_id}", item))
+        value += int(amount)
+        database.hset(f"session.data:{user_id}", item, str(value))
+    else:
+        logger.info("session not active")
 
 def incorrect_increment(ctx, bird: str, amount: int):
     """Increments the value of an incorrect bird by `amount`.
 
-    `ctx` - Discord context object\n
+    `ctx` - Discord context object or user id\n
     `bird` - bird that was incorrect\n
     `amount` (int) - amount to increment by, usually 1
     """
+    if isinstance(ctx, (str, int)):
+        user_id = ctx
+        guild = None
+    else:
+        user_id = ctx.author.id
+        guild = ctx.guild
+
     logger.info(f"incrementing incorrect {bird} by {amount}")
+    date = str(datetime.datetime.now(datetime.timezone.utc).date())
     database.zincrby("incorrect:global", amount, string.capwords(str(bird)))
-    database.zincrby(f"incorrect.user:{ctx.author.id}", amount, string.capwords(str(bird)))
-    if ctx.guild is not None:
+    database.zincrby(f"incorrect.user:{user_id}", amount, string.capwords(str(bird)))
+    database.zincrby(f"daily.incorrect:{date}", amount, string.capwords(str(bird)))
+    if guild is not None:
         logger.info("no dm")
         database.zincrby(f"incorrect.server:{ctx.guild.id}", amount, string.capwords(str(bird)))
     else:
         logger.info("dm context")
-    if database.exists(f"session.data:{ctx.author.id}"):
+    if database.exists(f"session.data:{user_id}"):
         logger.info("session in session")
-        database.zincrby(f"session.incorrect:{ctx.author.id}", amount, string.capwords(str(bird)))
+        database.zincrby(f"session.incorrect:{user_id}", amount, string.capwords(str(bird)))
     else:
         logger.info("no session")
 
@@ -403,394 +384,51 @@ def score_increment(ctx, amount: int):
     `ctx` - Discord context object\n
     `amount` (int) - amount to increment by, usually 1
     """
+    if isinstance(ctx, (str, int)):
+        user_id = str(ctx)
+        guild = None
+        channel_id = ""
+    else:
+        user_id = str(ctx.author.id)
+        guild = ctx.guild
+        channel_id = str(ctx.channel.id)
+
     logger.info(f"incrementing score by {amount}")
-    database.zincrby("score:global", amount, str(ctx.channel.id))
-    database.zincrby("users:global", amount, str(ctx.author.id))
-    if ctx.guild is not None:
+    date = str(datetime.datetime.now(datetime.timezone.utc).date())
+    database.zincrby("score:global", amount, channel_id)
+    database.zincrby("users:global", amount, user_id)
+    database.zincrby(f"daily.score:{date}", amount, user_id)
+    if guild is not None:
         logger.info("no dm")
-        database.zincrby(f"users.server:{ctx.guild.id}", amount, str(ctx.author.id))
+        database.zincrby(f"users.server:{ctx.guild.id}", amount, user_id)
+        if database.exists(f"race.data:{ctx.channel.id}"):
+            logger.info("race in session")
+            database.zincrby(f"race.scores:{ctx.channel.id}", amount, user_id)
     else:
         logger.info("dm context")
-    if database.exists(f"race.data:{ctx.channel.id}"):
-        logger.info("race in session")
-        database.zincrby(f"race.scores:{ctx.channel.id}", amount, str(ctx.author.id))
 
-async def send_bird(ctx, bird: str, on_error=None, message=None, addOn="", bw=False):
-    """Gets a bird picture and sends it to the user.
+def streak_increment(ctx, amount:int):
+    """Increments the streak of a user by `amount`.
 
-    `ctx` - Discord context object\n
-    `bird` (str) - bird picture to send\n
-    `on_error` (function)- function to run when an error occurs\n
-    `message` (str) - text message to send before bird picture\n
-    `addOn` (str) - string to append to search for female/juvenile birds\n
-    `bw` (bool) - whether the image should be black and white (converts with `_black_and_white()`)
+    `ctx` - Discord context object or user id\n
+    `amount` (int) - amount to increment by, usually 1.
+    If amount is None, the streak is ended.
     """
-    if bird == "":
-        logger.error("error - bird is blank")
-        await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
-        if on_error is not None:
-            on_error(ctx)
-        return
-
-    # add special condition for screech owls
-    # since screech owl is a genus and SciOly
-    # doesn't specify a species
-    if bird == "Screech Owl":
-        logger.info("choosing specific Screech Owl")
-        bird = random.choice(screech_owls)
-
-    delete = await ctx.send("**Fetching.** This may take a while.")
-    # trigger "typing" discord message
-    await ctx.trigger_typing()
-
-    try:
-        response = await get_image(ctx, bird, addOn)
-    except GenericError as e:
-        await delete.delete()
-        await ctx.send(f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {e}")
-        logger.exception(e)
-        if on_error is not None:
-            on_error(ctx)
-        return
-
-    filename = str(response[0])
-    extension = str(response[1])
-    statInfo = os.stat(filename)
-    if statInfo.st_size > 4000000:  # another filesize check (4mb)
-        await delete.delete()
-        await ctx.send("**Oops! File too large :(**\n*Please try again.*")
+    if isinstance(ctx, (str, int)):
+        user_id = str(ctx)
     else:
-        if bw:
-            # prevent the black and white conversion from blocking
-            loop = asyncio.get_running_loop()
-            fn = functools.partial(_black_and_white, filename)
-            file_stream = await loop.run_in_executor(None, fn)
-        else:
-            file_stream = filename
+        user_id = str(ctx.author.id)
 
-        if message is not None:
-            await ctx.send(message)
-
-        # change filename to avoid spoilers
-        file_obj = discord.File(file_stream, filename=f"bird.{extension}")
-        await ctx.send(file=file_obj)
-        await delete.delete()
-
-async def send_birdsong(ctx, bird: str, on_error=None, message=None):
-    """Gets a bird sound and sends it to the user.
-
-    `ctx` - Discord context object\n
-    `bird` (str) - bird picture to send\n
-    `on_error` (function) - function to run when an error occurs\n
-    `message` (str) - text message to send before bird picture
-    """
-    if bird == "":
-        logger.error("error - bird is blank")
-        await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
-        if on_error is not None:
-            on_error(ctx)
-        return
-
-    delete = await ctx.send("**Fetching.** This may take a while.")
-    # trigger "typing" discord message
-    await ctx.trigger_typing()
-
-    try:
-        response = await get_song(ctx, bird)
-    except GenericError as e:
-        await delete.delete()
-        await ctx.send(f"**An error has occurred while fetching songs.**\n*Please try again.*\n**Reason:** {e}")
-        logger.exception(e)
-        if on_error is not None:
-            on_error(ctx)
-        return
-
-    filename = str(response[0])
-    extension = str(response[1])
-
-    # remove spoilers in tag metadata
-    audioFile = eyed3.load(filename)
-    if audioFile is not None and audioFile.tag is not None:
-        audioFile.tag.remove(filename)
-
-    statInfo = os.stat(filename)
-    if statInfo.st_size > 4000000:  # another filesize check (4mb)
-        await delete.delete()
-        await ctx.send("**Oops! File too large :(**\n*Please try again.*")
+    if amount is not None:
+        # increment streak and update max
+        database.zincrby("streak:global", amount, user_id)
+        if database.zscore("streak:global", user_id) > database.zscore("streak.max:global", user_id):
+            database.zadd(
+                "streak.max:global", 
+                {user_id: database.zscore("streak:global", user_id)}
+            )
     else:
-        with open(filename, 'rb') as img:
-            if message is not None:
-                await ctx.send(message)
-            # change filename to avoid spoilers
-            await ctx.send(file=discord.File(img, filename="bird." + extension))
-            await delete.delete()
-
-async def get_image(ctx, bird, addOn=None):
-    """Chooses an image from a list of images.
-
-    This function chooses a valid image to pass to send_bird().
-    Valid images are based on file extension and size. (8mb discord limit)
-
-    Returns a list containing the file path and extension type.
-
-    `ctx` - Discord context object\n
-    `bird` (str) - bird to get image of\n
-    `addOn` (str) - string to append to search for female/juvenile birds\n
-    """
-
-    # fetch scientific names of birds
-    try:
-        sciBird = await get_sciname(bird)
-    except GenericError:
-        sciBird = bird
-    images = await get_files(sciBird, "images", addOn)
-    logger.info("images: " + str(images))
-    prevJ = int(str(database.hget(f"channel:{ctx.channel.id}", "prevJ"))[2:-1])
-    # Randomize start (choose beginning 4/5ths in case it fails checks)
-    if images:
-        j = (prevJ + 1) % len(images)
-        logger.info("prevJ: " + str(prevJ))
-        logger.info("j: " + str(j))
-
-        for x in range(0, len(images)):  # check file type and size
-            y = (x + j) % len(images)
-            image_link = images[y]
-            extension = image_link.split('.')[-1]
-            logger.info("extension: " + str(extension))
-            statInfo = os.stat(image_link)
-            logger.info("size: " + str(statInfo.st_size))
-            if extension.lower() in valid_image_extensions and statInfo.st_size < 4000000:  # keep files less than 4mb
-                logger.info("found one!")
-                break
-            elif y == prevJ:
-                raise GenericError("No Valid Images Found", code=999)
-
-        database.hset(f"channel:{ctx.channel.id}", "prevJ", str(j))
-    else:
-        raise GenericError("No Images Found", code=100)
-
-    return [image_link, extension]
-
-async def get_song(ctx, bird):
-    """Chooses a song from a list of songs.
-
-    This function chooses a valid song to pass to send_birdsong().
-    Valid songs are based on file extension and size. (8mb discord limit)
-
-    Returns a list containing the file path and extension type.
-
-    `ctx` - Discord context object\n
-    `bird` (str) - bird to get song of
-    """
-
-    # fetch scientific names of birds
-    try:
-        sciBird = await get_sciname(bird)
-    except GenericError:
-        sciBird = bird
-    songs = await get_files(sciBird, "songs")
-    logger.info("songs: " + str(songs))
-    prevK = int(str(database.hget(f"channel:{ctx.channel.id}", "prevK"))[2:-1])
-    if songs:
-        k = (prevK + 1) % len(songs)
-        logger.info("prevK: " + str(prevK))
-        logger.info("k: " + str(k))
-
-        for x in range(0, len(songs)):  # check file type and size
-            y = (x + k) % len(songs)
-            song_link = songs[y]
-            extension = song_link.split('.')[-1]
-            logger.info("extension: " + str(extension))
-            statInfo = os.stat(song_link)
-            logger.info("size: " + str(statInfo.st_size))
-            if extension.lower() in valid_audio_extensions and statInfo.st_size < 4000000:  # keep files less than 4mb
-                logger.info("found one!")
-                break
-            elif y == prevK:
-                raise GenericError("No Valid Songs Found", code=999)
-
-        database.hset(f"channel:{ctx.channel.id}", "prevK", str(k))
-    else:
-        raise GenericError("No Songs Found", code=100)
-
-    return [song_link, extension]
-
-async def get_files(sciBird, media_type, addOn="", retries=0):
-    """Returns a list of image/song filenames.
-
-    This function also does cache management,
-    looking for files in the cache for media and
-    downloading images to the cache if not found.
-
-    `sciBird` (str) - scientific name of bird\n
-    `media_type` (str) - type of media (images/songs)\n
-    `addOn` (str) - string to append to search for female/juvenile birds\n
-    """
-    logger.info(f"get_files retries: {retries}")
-    directory = f"cache/{media_type}/{sciBird}{addOn}/"
-    try:
-        logger.info("trying")
-        files_dir = os.listdir(directory)
-        logger.info(directory)
-        if not files_dir:
-            raise GenericError("No Files", code=100)
-        return [f"{directory}{path}" for path in files_dir]
-    except (FileNotFoundError, GenericError):
-        logger.info("fetching files")
-        # if not found, fetch images
-        logger.info("scibird: " + str(sciBird))
-        filenames = await download_media(sciBird, media_type, addOn, directory)
-        if not filenames:
-            if retries < 3:
-                retries += 1
-                return await get_files(sciBird, media_type, addOn, retries)
-            else:
-                logger.info("More than 3 retries")
-        return filenames
-
-async def download_media(bird, media_type, addOn="", directory=None, session=None):
-    """Returns a list of filenames downloaded from Macaulay Library.
-    
-    This function manages the download helpers to fetch images from Macaulay.
-
-    `bird` (str) - scientific name of bird\n
-    `media_type` (str) - type of media (images/songs)\n
-    `addOn` (str) - string to append to search for female/juvenile birds\n
-    `directory` (str) - relative path to bird directory\n
-    `session` (aiohttp ClientSession)
-    """
-    if directory is None:
-        directory = f"cache/{media_type}/{bird}{addOn}/"
-
-    if addOn == "female":
-        sex = "f"
-    else:
-        sex = ""
-
-    if addOn == "juvenile":
-        age = "j"
-    else:
-        age = ""
-
-    if media_type == "images":
-        media = "p"
-    elif media_type == "songs":
-        media = "a"
-
-    async with contextlib.AsyncExitStack() as stack:
-        if session is None:
-            session = await stack.enter_async_context(aiohttp.ClientSession())
-        urls = await _get_urls(session, bird, media, sex, age)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        paths = [f"{directory}{i}" for i in range(len(urls))]
-        filenames = await asyncio.gather(*(_download_helper(path, url, session) for path, url in zip(paths, urls)))
-        logger.info(f"downloaded {media_type} for {bird}")
-        logger.info(f"returned filename count: {len(filenames)}")
-        logger.info(f"actual filenames count: {len(os.listdir(directory))}")
-        return filenames
-
-async def _get_urls(session, bird, media_type, sex="", age="", sound_type="", retries=0):
-    """Returns a list of urls to Macaulay Library media.
-
-    The amount of urls returned is specified in `COUNT`. 
-    Media URLs are fetched using Macaulay Library's internal JSON API, 
-    with `CATALOG_URL`. Raises a `GenericError` if fails.\n
-    Some urls may return an error code of 476 (because it is still being processed), 
-    if so, ignore that url.
-
-    `session` (aiohttp ClientSession)\n
-    `bird` (str) - can be either common name or scientific name\n
-    `media_type` (str) - either `p` for pictures, `a` for audio, or `v` for video\n
-    `sex` (str) - `m`, `f`, or blank\n
-    `age` (str) - `a` for adult, `j` for juvenile, `i` for immature (may not have many), or blank\n
-    `sound_type` (str) - `s` for song, `c` for call, or blank\n
-    """
-    logger.info(f"getting file urls for {bird}")
-    taxon_code = await get_taxon(bird, session)
-    catalog_url = CATALOG_URL.format(taxon_code, COUNT, media_type, sex, age, sound_type)
-    async with session.get(catalog_url) as catalog_response:
-        if catalog_response.status != 200:
-            if retries >= 3:
-                logger.info("Retried more than 3 times. Aborting...")
-                raise GenericError(
-                    f"An http error code of {catalog_response.status} occured " +
-                    f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}",
-                    code=201
-                )
-            else:
-                retries += 1
-                logger.info(f"An HTTP error occurred; Retries: {retries}")
-                urls = await _get_urls(session, bird, media_type, sex, age, sound_type, retries)
-                return urls
-        catalog_data = await catalog_response.json()
-        content = catalog_data["results"]["content"]
-
-        logger.info("checking filesizes")
-        urls = await asyncio.gather(*(_check_media_url(session, data["mediaUrl"]) for data in content))
-        fails = urls.count(None)
-        if None in urls:
-            urls = set(urls)
-            urls.remove(None)
-            urls = list(urls)
-        logger.info(f"filesize check fails: {fails}")
-        return urls
-
-async def _check_media_url(session, media_url):
-    async with session.head(media_url) as header_check:
-        media_size = header_check.headers.get("content-length")
-        if header_check.status == 200 and media_size != None and int(media_size) < 4000000:
-            return media_url
-    return None
-
-async def _download_helper(path, url, session):
-    """Downloads media from the given URL.
-
-    Returns the file path to the downloaded item.
-
-    `path` (str) - path with filename of location to download, no extension\n
-    `url` (str) - url to the item to be downloaded\n
-    `session` (aiohttp ClientSession)
-    """
-    try:
-        async with session.get(url) as response:
-            # from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
-            content_type = response.headers['content-type'].partition(';')[0].strip()
-            if content_type.partition("/")[0] == "image":
-                try:
-                    ext = "." + \
-                                                      (set(ext[1:] for ext in guess_all_extensions(
-                        content_type)).intersection(valid_image_extensions)).pop()
-                except KeyError:
-                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
-
-            elif content_type.partition("/")[0] == "audio":
-                try:
-                    ext = "." + (
-                        set(ext[1:] for ext in guess_all_extensions(content_type)).intersection(valid_audio_extensions)
-                    ).pop()
-                except KeyError:
-                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
-
-            else:
-                ext = guess_extension(content_type)
-                if ext is None:
-                    raise GenericError(f"No extensions found.")
-
-            filename = f"{path}{ext}"
-            # from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5
-            with open(filename, 'wb') as out_file:
-                block_size = 1024 * 8
-                while True:
-                    block = await response.content.read(block_size)  # pylint: disable=no-member
-                    if not block:
-                        break
-                    out_file.write(block)
-            return filename
-    except aiohttp.ClientError as e:
-        logger.info(f"Client Error with url {url} and path {path}")
-        capture_exception(e)
-        raise
+        database.zadd("streak:global", {user_id: 0})
 
 
 async def drone_attack(ctx):
@@ -880,56 +518,6 @@ async def drone_attack(ctx):
     raise GenericError(code=666)
 
 
-async def precache():
-    """Downloads all images and songs.
-
-    This function downloads all images and songs in the bird lists,
-    including females and juveniles.
-
-    This function is run with a task every 24 hours.
-    """
-    logger.info("clear cache")
-    try:
-        shutil.rmtree(r'cache/images/', ignore_errors=True)
-        logger.info("Cleared image cache.")
-    except FileNotFoundError:
-        logger.info("Already cleared image cache.")
-
-    try:
-        shutil.rmtree(r'cache/songs/', ignore_errors=True)
-        logger.info("Cleared songs cache.")
-    except FileNotFoundError:
-        logger.info("Already cleared songs cache.")
-
-    output = dict()
-    output["start"] = time.perf_counter()
-    timeout = aiohttp.ClientTimeout(total=10 * 60)
-    conn = aiohttp.TCPConnector(limit=100)
-    async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
-        logger.info("Starting cache")
-        await asyncio.gather(*(download_media(bird, "images", session=session) for bird in sciBirdListMaster))
-        output["plain"] = (time.perf_counter() - output["start"])
-        logger.info("Starting females")
-        await asyncio.gather(
-            *(download_media(bird, "images", addOn="female", session=session) for bird in sciBirdListMaster)
-        )
-        output["female"] = (time.perf_counter() - output["start"]) - output["plain"]
-        logger.info("Starting juveniles")
-        await asyncio.gather(
-            *(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster)
-        )
-        output["juvenile"] = (time.perf_counter()- output["start"]) - output["female"]
-        logger.info("Starting songs")
-        await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
-        output["songs"] = (time.perf_counter() - output["start"]) - output["juvenile"]
-    output["end"] = time.perf_counter()
-    output["total"] = output['end'] - output['start']
-    output["sciname_cache"] = get_sciname.cache_info()
-    output["taxon_cache"] = get_taxon.cache_info()
-    logger.info(f"Images Cached in {output['total']} sec.")
-    logger.info(f"Cache Timing Output: {output}")
-    return output
-
 async def backup_all():
     """Backs up the database to a file.
     
@@ -956,21 +544,6 @@ async def backup_all():
                 pickle.dump(item, f)
                 k.write(f"{key}\n")
     logger.info("Backup Finished")
-
-def spellcheck(worda, wordb, cutoff=3):
-    """Checks if two words are close to each other.
-    
-    `worda` (str) - first word to compare
-    `wordb` (str) - second word to compare
-    `cutoff` (int) - allowed difference amount
-    """
-    worda = worda.lower().replace("-", " ").replace("'", "")
-    wordb = wordb.lower().replace("-", " ").replace("'", "")
-    shorterword = min(worda, wordb, key=len)
-    if worda != wordb:
-        if len(list(difflib.Differ().compare(worda, wordb))) - len(shorterword) >= cutoff:
-            return False
-    return True
 
 class CustomCooldown:
         """Halve cooldown times in DM channels."""

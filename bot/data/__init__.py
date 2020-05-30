@@ -21,11 +21,11 @@ import os
 import string
 import sys
 
-from dotenv import load_dotenv, find_dotenv
 import redis
 import sentry_sdk
 import wikipedia
 from discord.ext import commands
+from dotenv import find_dotenv, load_dotenv
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
@@ -34,7 +34,7 @@ load_dotenv(find_dotenv(), verbose=True)
 # define database for one connection
 if os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS") == "true":
     host = os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS_HOST")
-    if host == None:
+    if host is None:
         host = "localhost"
     database = redis.Redis(host=host, port=6379, db=0)
 else:
@@ -78,9 +78,18 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # }
 
 # session format:
-# session.data:user_id : {"start": 0, "stop": 0,
-#                         "correct": 0, "incorrect": 0, "total": 0,
-#                         "bw": bw, "state": state, "addon": addon}
+# session.data:user_id : {
+#                    "start": 0,
+#                    "stop": 0,
+#                    "correct": 0,
+#                    "incorrect": 0,
+#                    "total": 0,
+#                    "bw": bw, - Toggles if "bw", doesn't if empty (""), default ""
+#                    "state": state,
+#                    "addon": addon,
+#                    "wiki": wiki, - Enables if "wiki", disables if empty (""), default "wiki"
+#                    "strict": strict - Enables strict spelling if "strict", disables if empty, default ""
+# }
 # session.incorrect:user_id : [bird name, # incorrect]
 
 # race format:
@@ -91,13 +100,15 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #                    "bw": bw,
 #                    "state": state,
 #                    "addon": addon,
-#                    "media": media
+#                    "media": media,
+#                    "taxon": taxon,
+#                    "strict": strict - Enables strict spelling if "strict", disables if empty, default ""
 # }
 # race.scores:ctx.channel.id : [ctx.author.id, #correct]
 
 # leaderboard format = {
 #    users:global : [user id, # of correct]
-#    users.server:server_id : [user id, # of correct]
+#    users.server:guild_id : [user id, # of correct]
 # }
 
 # streaks format = {
@@ -107,12 +118,26 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 
 # incorrect birds format = {
 #    incorrect:global : [bird name, # incorrect]
-#    incorrect.server:server_id : [bird name, # incorrect]
+#    incorrect.server:guild_id : [bird name, # incorrect]
 #    incorrect.user:user_id: : [bird name, # incorrect]
+# }
+
+# bird frequency format = {
+#   frequency.bird:global : [bird name, # displayed]
+# }
+
+# command frequency format = {
+#   frequency.command:global : [command, # used]
 # }
 
 # channel score format = {
 #   score:global : [channel id, # of correct]
+#   channels:global : ["guild id:channel id", 0]
+# }
+
+# daily update format = {
+#     daily.score:YYYY-MM-DD : [user id, # correct today]
+#     daily.incorrect:YYYY-MM-DD : [bird name, # incorrect today]
 # }
 
 # ban format:
@@ -123,6 +148,18 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 
 # leave confirm format:
 #   leave:guild_id : 0
+
+# custom list confirm format:
+#   custom.confirm:user_id : "valid" after server list validation
+#                            "confirm" after user list validation
+#                            "delete" if user is about to delete lists
+
+# custom list cooldown format:
+#   custom.cooldown:user_id : 0
+
+# custom list format (set):
+#   custom.list:user_id : [validated birds, ...]
+
 
 #  states = { state name:
 #               {
@@ -210,6 +247,7 @@ def _wiki_urls():
     return urls
 
 def get_wiki_url(ctx, bird=None):
+    logger.info("fetching wiki url")
     if bird is None:
         bird = ctx
         user_id = 0
@@ -219,13 +257,15 @@ def get_wiki_url(ctx, bird=None):
         bird = string.capwords(bird.replace("-", " "))
         url = wikipedia_urls[bird]
         if database.hget(f"session.data:{user_id}", "wiki") == b"":
+            logger.info("found in cache, disabling preview")
             return f"<{url}>"
+        logger.info("found in cache")
         return url
     except KeyError:
-        sentry_sdk.capture_message(f"{bird} not found in wikipedia urls file")
         logger.info(f"{bird} not found in wikipedia url cache, falling back")
         page = wikipedia.page(bird)
         if database.hget(f"session.data:{user_id}", "wiki") == b"":
+            logger.info("disabling preview")
             return f"<{page.url}>"
         return page.url
 

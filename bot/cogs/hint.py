@@ -17,7 +17,8 @@
 from discord.ext import commands
 
 from bot.data import database, logger
-from bot.functions import channel_setup, user_setup, CustomCooldown
+from bot.functions import CustomCooldown
+
 
 class Hint(commands.Cog):
     def __init__(self, bot):
@@ -28,9 +29,6 @@ class Hint(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def hint(self, ctx):
         logger.info("command: hint")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
         if currentBird != "":  # check if there is bird
@@ -44,9 +42,6 @@ class Hint(commands.Cog):
     async def hintgoat(self, ctx):
         logger.info("command: hintgoat")
 
-        await channel_setup(ctx)
-        await user_setup(ctx)
-
         currentBird = database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode("utf-8")
         if currentBird != "":  # check if there is bird
             await ctx.send(f"The first letter is {currentBird[0]}")
@@ -58,9 +53,6 @@ class Hint(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def hintsong(self, ctx):
         logger.info("command: hintsong")
-
-        await channel_setup(ctx)
-        await user_setup(ctx)
 
         currentSongBird = database.hget(f"channel:{ctx.channel.id}", "sBird").decode("utf-8")
         if currentSongBird != "":  # check if there is bird
