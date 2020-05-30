@@ -33,7 +33,7 @@ class Race(commands.Cog):
             f"race.data:{ctx.channel.id}",
             ["bw", "addon", "state", "media", "limit", "taxon", "strict"]
         )
-        options = str(
+        options = (
             f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" +
             f"**Black & White:** {bw==b'bw'}\n" +
             f"**Special bird list:** {state.decode('utf-8') if state else 'None'}\n" +
