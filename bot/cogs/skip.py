@@ -30,7 +30,7 @@ class Skip(commands.Cog):
     async def skip(self, ctx):
         logger.info("command: skip")
 
-        currentBird = str(database.hget(f"channel:{ctx.channel.id}", "bird"))[2:-1]
+        currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
         database.hset(f"channel:{ctx.channel.id}", "bird", "")
         database.hset(f"channel:{ctx.channel.id}", "answered", "1")
         if currentBird != "":  # check if there is bird
@@ -61,7 +61,7 @@ class Skip(commands.Cog):
     async def skipgoat(self, ctx):
         logger.info("command: skipgoat")
 
-        currentBird = str(database.hget(f"channel:{ctx.channel.id}", "goatsucker"))[2:-1]
+        currentBird = database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode("utf-8")
         database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
         database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
         if currentBird != "":  # check if there is bird
@@ -78,7 +78,7 @@ class Skip(commands.Cog):
     async def skipsong(self, ctx):
         logger.info("command: skipsong")
 
-        currentSongBird = str(database.hget(f"channel:{ctx.channel.id}", "sBird"))[2:-1]
+        currentSongBird = database.hget(f"channel:{ctx.channel.id}", "sBird").decode("utf-8")
         database.hset(f"channel:{ctx.channel.id}", "sBird", "")
         database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
         if currentSongBird != "":  # check if there is bird
@@ -86,9 +86,11 @@ class Skip(commands.Cog):
             await ctx.send(f"Ok, skipping {currentSongBird.lower()}")
             await ctx.send(url if not database.exists(f"race.data:{ctx.channel.id}") else f"<{url}>")  # sends wiki page
             streak_increment(ctx, None) # reset streak
-            if database.exists(f"race.data:{ctx.channel.id}") and str(
+            if (
+                database.exists(f"race.data:{ctx.channel.id}") and
                 database.hget(f"race.data:{ctx.channel.id}", "media")
-            )[2:-1] == "song":
+                .decode("utf-8") == "song"
+            ):
 
                 limit = int(database.hget(f"race.data:{ctx.channel.id}", "limit"))
                 first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]

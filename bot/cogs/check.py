@@ -78,10 +78,11 @@ class Check(commands.Cog):
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
-                if database.exists(f"race.data:{ctx.channel.id}") and str(
+                if (
+                    database.exists(f"race.data:{ctx.channel.id}") and
                     database.hget(f"race.data:{ctx.channel.id}", "media")
-                )[2:-1] == "image":
-
+                    .decode("utf-8") == "image"
+                ):
                     limit = int(database.hget(f"race.data:{ctx.channel.id}", "limit"))
                     first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]
                     if int(first[1]) >= limit:
@@ -215,9 +216,11 @@ class Check(commands.Cog):
                     with open(filename, 'rb') as img:
                         await ctx.send(file=discord.File(img, filename="award.png"))
 
-                if database.exists(f"race.data:{ctx.channel.id}") and str(
+                if (
+                    database.exists(f"race.data:{ctx.channel.id}") and
                     database.hget(f"race.data:{ctx.channel.id}", "media")
-                )[2:-1] == "song":
+                    .decode("utf-8") == "song"
+                ):
 
                     limit = int(database.hget(f"race.data:{ctx.channel.id}", "limit"))
                     first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]
