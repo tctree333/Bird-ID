@@ -30,7 +30,7 @@ class Sessions(commands.Cog):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, taxon, wiki = database.hmget(f"session.data:{ctx.author.id}", ["bw", "addon", "state", "taxon", "wiki"])
+        bw, addon, state, taxon, wiki, strict = database.hmget(f"session.data:{ctx.author.id}", ["bw", "addon", "state", "taxon", "wiki", "strict"])
         options = textwrap.dedent(
             f"""\
             **Age/Sex:** {addon.decode('utf-8') if addon else 'default'}
@@ -38,6 +38,7 @@ class Sessions(commands.Cog):
             **State bird list:** {state.decode('utf-8') if state else 'None'}
             **Bird taxon:** {taxon.decode('utf-8') if taxon else 'None'}
             **Wiki Embeds**: {wiki==b'wiki'}
+            **Strict Spelling**: {strict==b'strict'}
             """
         )
         return options
@@ -128,6 +129,11 @@ class Sessions(commands.Cog):
             else:
                 wiki = "wiki"
 
+            if "strict" in args:
+                strict = "strict"
+            else:
+                strict = ""
+
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
                 state = " ".join(states_args).strip()
@@ -152,7 +158,7 @@ class Sessions(commands.Cog):
             else:
                 addon = ""
 
-            logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}")
+            logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}; wiki: {wiki}; strict: {strict}")
 
             database.hset(
                 f"session.data:{ctx.author.id}",
@@ -167,6 +173,7 @@ class Sessions(commands.Cog):
                     "addon": addon,
                     "taxon": taxon,
                     "wiki": wiki,
+                    "strict": strict
                 }
             )
             await ctx.send(f"**Session started with options:**\n{await self._get_options(ctx)}")
@@ -203,6 +210,14 @@ class Sessions(commands.Cog):
                 else:
                     logger.info("disabling wiki embeds")
                     database.hset(f"session.data:{ctx.author.id}", "wiki", "wiki")
+            
+            if "strict" in args:
+                if database.hget(f"session.data:{ctx.author.id}", "strict"):
+                    logger.info("disabling strict spelling")
+                    database.hset(f"session.data:{ctx.author.id}", "strict", "")
+                else:
+                    logger.info("enabling strict spelling")
+                    database.hset(f"session.data:{ctx.author.id}", "strict", "strict")
 
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:

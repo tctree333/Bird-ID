@@ -361,7 +361,7 @@ async def get_image(ctx, bird, addOn=None):
         sciBird = bird
     images = await get_files(sciBird, "images", addOn)
     logger.info("images: " + str(images))
-    prevJ = int(str(database.hget(f"channel:{ctx.channel.id}", "prevJ"))[2:-1])
+    prevJ = int(database.hget(f"channel:{ctx.channel.id}", "prevJ"))
     # Randomize start (choose beginning 4/5ths in case it fails checks)
     if images:
         j = (prevJ + 1) % len(images)
@@ -406,7 +406,7 @@ async def get_song(ctx, bird):
         sciBird = bird
     songs = await get_files(sciBird, "songs")
     logger.info("songs: " + str(songs))
-    prevK = int(str(database.hget(f"channel:{ctx.channel.id}", "prevK"))[2:-1])
+    prevK = int(database.hget(f"channel:{ctx.channel.id}", "prevK"))
     if songs:
         k = (prevK + 1) % len(songs)
         logger.info("prevK: " + str(prevK))

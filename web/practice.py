@@ -68,7 +68,7 @@ def get_bird():
         file_object, ext = asyncio.run(
             send_bird(
                 database.hget(f"web.session:{session_id}", "bird").decode("utf-8"),
-                str(database.hget(f"web.session:{session_id}", "media_type"))[2:-1], addon, bw
+                database.hget(f"web.session:{session_id}", "media_type").decode("utf-8"), addon, bw
             )
         )
 

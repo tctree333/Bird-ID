@@ -78,9 +78,18 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # }
 
 # session format:
-# session.data:user_id : {"start": 0, "stop": 0,
-#                         "correct": 0, "incorrect": 0, "total": 0,
-#                         "bw": bw, "state": state, "addon": addon}
+# session.data:user_id : {
+#                    "start": 0,
+#                    "stop": 0,
+#                    "correct": 0,
+#                    "incorrect": 0,
+#                    "total": 0,
+#                    "bw": bw, - Toggles if "bw", doesn't if empty (""), default ""
+#                    "state": state,
+#                    "addon": addon,
+#                    "wiki": wiki, - Enables if "wiki", disables if empty (""), default "wiki"
+#                    "strict": strict - Enables strict spelling if "strict", disables if empty, default ""
+# }
 # session.incorrect:user_id : [bird name, # incorrect]
 
 # race format:
@@ -92,7 +101,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #                    "state": state,
 #                    "addon": addon,
 #                    "media": media,
-#                    "taxon": taxon
+#                    "taxon": taxon,
+#                    "strict": strict - Enables strict spelling if "strict", disables if empty, default ""
 # }
 # race.scores:ctx.channel.id : [ctx.author.id, #correct]
 
