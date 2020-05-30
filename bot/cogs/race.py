@@ -29,14 +29,18 @@ class Race(commands.Cog):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, media, limit, taxon = database.hmget(
-            f"race.data:{ctx.channel.id}", ["bw", "addon", "state", "media", "limit", "taxon"]
+        bw, addon, state, media, limit, taxon, strict = database.hmget(
+            f"race.data:{ctx.channel.id}",
+            ["bw", "addon", "state", "media", "limit", "taxon", "strict"]
         )
         options = str(
-            f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" + f"**Black & White:** {bw==b'bw'}\n" +
+            f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" +
+            f"**Black & White:** {bw==b'bw'}\n" +
             f"**Special bird list:** {state.decode('utf-8') if state else 'None'}\n" +
             f"**Taxons:** {taxon.decode('utf-8') if taxon else 'None'}\n" +
-            f"**Media Type:** {media.decode('utf-8')}\n" + f"**Amount to Win:** {limit.decode('utf-8')}\n"
+            f"**Media Type:** {media.decode('utf-8')}\n" + 
+            f"**Amount to Win:** {limit.decode('utf-8')}\n" +
+            f"**Strict Spelling:** {strict == b'strict'}"
         )
         return options
 
@@ -131,7 +135,7 @@ class Race(commands.Cog):
     @race.command(
         brief="- Starts race",
         help="""- Starts race.
-        Arguments passed will become the default arguments to 'b!bird', but can be manually overwritten during use.
+        Arguments passed will become the default arguments to 'b!bird', but some can be manually overwritten during use.
         Arguments can be passed in any taxon.
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
@@ -166,6 +170,11 @@ class Race(commands.Cog):
                 taxon = " ".join(taxon_args).strip()
             else:
                 taxon = ""
+
+            if "strict" in args:
+                strict = "strict"
+            else:
+                strict = ""
 
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
@@ -234,7 +243,8 @@ class Race(commands.Cog):
                     "state": state,
                     "addon": addon,
                     "media": media,
-                    "taxon": taxon
+                    "taxon": taxon,
+                    "strict": strict
                 }
             )
 
