@@ -40,12 +40,22 @@ class Check(commands.Cog):
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
-            logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
-            logger.info("args: " + str(arg.lower().replace("-", " ")))
+            sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
+            arg = arg.lower().replace("-", " ")
+            currentBird = currentBird.lower().replace("-", " ")
+            logger.info("currentBird: " + currentBird)
+            logger.info("arg: " + arg)
 
             bird_setup(ctx, currentBird)
-            sciBird = await get_sciname(currentBird)
-            if spellcheck(arg, currentBird) or spellcheck(arg, sciBird):
+
+            if database.hget(f"session.data:{ctx.author.id}", "strict"):
+                logger.info("strict spelling")
+                correct = arg == currentBird or arg == sciBird
+            else:
+                logger.info("spelling leniency")
+                correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
+
+            if correct:
                 logger.info("correct")
 
                 database.hset(f"channel:{ctx.channel.id}", "bird", "")
@@ -96,7 +106,7 @@ class Check(commands.Cog):
                 else:
                     database.hset(f"channel:{ctx.channel.id}", "bird", "")
                     database.hset(f"channel:{ctx.channel.id}", "answered", "1")
-                    await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
+                    await ctx.send("Sorry, the bird was actually " + currentBird + ".")
                     url = get_wiki_url(ctx, currentBird)
                     await ctx.send(url)
 
@@ -110,12 +120,26 @@ class Check(commands.Cog):
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
-            bird_setup(ctx, currentBird)
             index = goatsuckers.index(currentBird)
-            sciBird = sciGoat[index]
+            sciBird = (sciGoat[index]).lower().replace("-", " ")
+            args = arg.lower().replace("-", " ")
+            currentBird = currentBird.lower().replace("-", " ")
+            logger.info("currentBird: " + currentBird)
+            logger.info("arg: " + arg)
+
+            bird_setup(ctx, currentBird)
+
             database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
             database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
-            if spellcheck(arg, currentBird) or spellcheck(arg, sciBird):
+
+            if database.hget(f"session.data:{ctx.author.id}", "strict"):
+                logger.info("strict spelling")
+                correct = arg == currentBird or arg == sciBird
+            else:
+                logger.info("spelling leniency")
+                correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
+
+            if correct:
                 logger.info("correct")
 
                 session_increment(ctx, "correct", 1)
@@ -139,11 +163,9 @@ class Check(commands.Cog):
                 session_increment(ctx, "incorrect", 1)
                 incorrect_increment(ctx, str(currentBird), 1)
 
-                await ctx.send("Sorry, the bird was actually " + currentBird.lower() + ".")
+                await ctx.send("Sorry, the bird was actually " + currentBird + ".")
                 url = get_wiki_url(ctx, currentBird)
                 await ctx.send(url)
-            logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
-            logger.info("args: " + str(arg.lower().replace("-", " ")))
 
     # Check command - argument is the guess
     @commands.command(help='- Checks the song', aliases=["songcheck", "cs", "sc"])
@@ -155,12 +177,22 @@ class Check(commands.Cog):
         if currentSongBird == "":  # no bird
             await ctx.send("You must ask for a bird call first!")
         else:  # if there is a bird, it checks answer
-            logger.info("currentBird: " + str(currentSongBird.lower().replace("-", " ")))
-            logger.info("args: " + str(arg.lower().replace("-", " ")))
+            sciBird = (await get_sciname(currentSongBird)).lower().replace("-", " ")
+            arg = arg.lower().replace("-", " ")
+            currentSongBird = currentSongBird.lower().replace("-", " ")
+            logger.info("currentSongBird: " + currentSongBird)
+            logger.info("args: " + arg)
 
             bird_setup(ctx, currentSongBird)
-            sciBird = await get_sciname(currentSongBird)
-            if spellcheck(arg, currentSongBird) or spellcheck(arg, sciBird):
+
+            if database.hget(f"session.data:{ctx.author.id}", "strict"):
+                logger.info("strict spelling")
+                correct = arg == currentSongBird or arg == sciBird
+            else:
+                logger.info("spelling leniency")
+                correct = spellcheck(arg, currentSongBird) or spellcheck(arg, sciBird)
+            
+            if correct:
                 logger.info("correct")
 
                 database.hset(f"channel:{ctx.channel.id}", "sBird", "")
@@ -210,7 +242,7 @@ class Check(commands.Cog):
                 else:
                     database.hset(f"channel:{ctx.channel.id}", "sBird", "")
                     database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
-                    await ctx.send("Sorry, the bird was actually " + currentSongBird.lower() + ".")
+                    await ctx.send("Sorry, the bird was actually " + currentSongBird + ".")
                     url = get_wiki_url(ctx, currentSongBird)
                     await ctx.send(url)
 
