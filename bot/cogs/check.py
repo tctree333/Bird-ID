@@ -48,12 +48,22 @@ class Check(commands.Cog):
 
             bird_setup(ctx, currentBird)
 
-            if database.hget(f"session.data:{ctx.author.id}", "strict"):
-                logger.info("strict spelling")
-                correct = arg == currentBird or arg == sciBird
+            if database.exists(f"race.data:{ctx.channel.id}"):
+                logger.info("race in session")
+                if database.hget(f"race.data:{ctx.channel.id}", "strict"):
+                    logger.info("strict spelling")
+                    correct = arg == currentBird or arg == sciBird
+                else:
+                    logger.info("spelling leniency")
+                    correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
             else:
-                logger.info("spelling leniency")
-                correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
+                logger.info("no race")
+                if database.hget(f"session.data:{ctx.author.id}", "strict"):
+                    logger.info("strict spelling")
+                    correct = arg == currentBird or arg == sciBird
+                else:
+                    logger.info("spelling leniency")
+                    correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
 
             if correct:
                 logger.info("correct")
@@ -186,12 +196,22 @@ class Check(commands.Cog):
 
             bird_setup(ctx, currentSongBird)
 
-            if database.hget(f"session.data:{ctx.author.id}", "strict"):
-                logger.info("strict spelling")
-                correct = arg == currentSongBird or arg == sciBird
+            if database.exists(f"race.data:{ctx.channel.id}"):
+                logger.info("race in session")
+                if database.hget(f"race.data:{ctx.channel.id}", "strict"):
+                    logger.info("strict spelling")
+                    correct = arg == currentSongBird or arg == sciBird
+                else:
+                    logger.info("spelling leniency")
+                    correct = spellcheck(arg, currentSongBird) or spellcheck(arg, sciBird)
             else:
-                logger.info("spelling leniency")
-                correct = spellcheck(arg, currentSongBird) or spellcheck(arg, sciBird)
+                logger.info("no race")
+                if database.hget(f"session.data:{ctx.author.id}", "strict"):
+                    logger.info("strict spelling")
+                    correct = arg == currentSongBird or arg == sciBird
+                else:
+                    logger.info("spelling leniency")
+                    correct = spellcheck(arg, currentSongBird) or spellcheck(arg, sciBird)
             
             if correct:
                 logger.info("correct")
