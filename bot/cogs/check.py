@@ -133,7 +133,7 @@ class Check(commands.Cog):
         else:  # if there is a bird, it checks answer
             index = goatsuckers.index(currentBird)
             sciBird = (sciGoat[index]).lower().replace("-", " ")
-            args = arg.lower().replace("-", " ")
+            arg = arg.lower().replace("-", " ")
             currentBird = currentBird.lower().replace("-", " ")
             logger.info("currentBird: " + currentBird)
             logger.info("arg: " + arg)
