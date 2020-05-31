@@ -6,12 +6,13 @@ import flask
 from sentry_sdk import capture_exception
 
 from bot.data import birdList
-from web import practice, user
+from web import practice, user, tools
 from web.config import app, logger
 from web.functions import get_media, get_sciname
 
 app.register_blueprint(practice.bp)
 app.register_blueprint(user.bp)
+app.register_blueprint(tools.bp)
 
 @app.route('/')
 def api_index():
