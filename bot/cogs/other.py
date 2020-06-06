@@ -21,7 +21,7 @@ import wikipedia
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
-from bot.core import get_sciname, get_taxon, precache, send_bird, send_birdsong
+from bot.core import get_sciname, get_taxon, send_bird, send_birdsong
 from bot.data import (birdListMaster, logger, memeList, sciBirdListMaster,
                       states, taxons)
 from bot.functions import CustomCooldown, build_id_list
@@ -240,16 +240,6 @@ class Other(commands.Cog):
             capture_exception(e)
             logger.exception(e)
             await ctx.send(f"Error: {e}")
-
-    # Test command - for testing purposes only
-    @commands.command(help="- test command", hidden=True, aliases=["getall", "precache"])
-    @commands.is_owner()
-    async def get_all(self, ctx):
-        logger.info("command: get_all")
-        await ctx.send(f"Caching all images.")
-        stats = await precache()
-        await ctx.send(f"Finished Cache in approx. {stats['total']} seconds. {ctx.author.mention}")
-        await ctx.send(f"```python\n{stats}```")
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)

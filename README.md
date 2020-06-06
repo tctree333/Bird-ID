@@ -36,8 +36,6 @@ To run the bot locally, you'll need to install some software first.
 8. Install any necessary packages with `pip install -r requirements.txt`. You may also want to setup a python virtual environment to avoid package conflicts before installing packages.
 9. You are now ready to run the application! Start the bot with `python3 -m bot`. Make sure you're on Python version 3.7.
 
-If you're running this for production, you may want to enable precaching of media files, which will slow response during startup, especially with slower internet. To enable the precache, set `SCIOLY_ID_BOT_ENABLE_PRECACHE` to `true` in `.env`.
-
 The bot can also attempt to backup the Redis database to a set Discord channel. To enable this, set `SCIOLY_ID_BOT_ENABLE_BACKUPS` to `true` and `SCIOLY_ID_BOT_BACKUPS_CHANNEL` to the channel id of a channel the bot has access to in `.env`.
 
 If you need help or have any questions, let us know in our [Discord support server.](https://discord.gg/xDqYddK)

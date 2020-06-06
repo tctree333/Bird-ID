@@ -609,60 +609,19 @@ async def _download_helper(path, url, session, sem):
             capture_exception(e)
             raise
 
-async def precache():
-    """Downloads all images and songs.
-
-    This function downloads all images and songs in the bird lists,
-    including females and juveniles.
-
-    This function is run with a task every 24 hours.
-    """
-    logger.info("clear cache")
-    try:
-        shutil.rmtree(r'cache/images/', ignore_errors=True)
-        logger.info("Cleared image cache.")
-    except FileNotFoundError:
-        logger.info("Already cleared image cache.")
-
-    try:
-        shutil.rmtree(r'cache/songs/', ignore_errors=True)
-        logger.info("Cleared songs cache.")
-    except FileNotFoundError:
-        logger.info("Already cleared songs cache.")
-
-    output = dict()
-    output["start"] = time.perf_counter()
-    timeout = aiohttp.ClientTimeout(total=10 * 60)
-    conn = aiohttp.TCPConnector(limit=100)
-    sem = asyncio.Semaphore(1)
-    async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
-        logger.info("Starting cache")
-        await asyncio.gather(*(_limit_download_media(sem, bird, "images", session=session) for bird in sciBirdListMaster))
-        output["plain"] = (time.perf_counter() - output["start"])
-        logger.info("Starting females")
-        await asyncio.gather(
-            *(_limit_download_media(sem, bird, "images", addOn="female", session=session) for bird in sciBirdListMaster)
-        )
-        output["female"] = (time.perf_counter() - output["start"]) - output["plain"]
-        logger.info("Starting juveniles")
-        await asyncio.gather(
-            *(_limit_download_media(sem, bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster)
-        )
-        output["juvenile"] = (time.perf_counter()- output["start"]) - output["female"]
-        logger.info("Starting songs")
-        await asyncio.gather(*(_limit_download_media(sem, bird, "songs", session=session) for bird in sciSongBirdsMaster))
-        output["songs"] = (time.perf_counter() - output["start"]) - output["juvenile"]
-    output["end"] = time.perf_counter()
-    output["total"] = output['end'] - output['start']
-    output["sciname_cache"] = get_sciname.cache_info()
-    output["taxon_cache"] = get_taxon.cache_info()
-    logger.info(f"Images Cached in {output['total']} sec.")
-    logger.info(f"Cache Timing Output: {output}")
-    return output
-
-async def _limit_download_media(sem, bird, media_type, addOn='', directory=None, session=None):
-    async with sem:
-        return await download_media(bird, media_type, addOn, directory, session)
+def rotate_cache():
+    """Deletes a random selection of cached birds."""
+    logger.info("Rotating cache items")
+    items = []
+    with contextlib.suppress(FileNotFoundError):
+        items += map(lambda x: f"cache/images/{x}/", os.listdir("cache/images/"))
+    with contextlib.suppress(FileNotFoundError):
+        items += map(lambda x: f"cache/songs/{x}/", os.listdir("cache/songs/"))
+    logger.info(f"num birds: {len(items)}")
+    delete = random.choices(items, k=round(len(items) * 0.1)) # choose 10% of the items to delete
+    for directory in delete:
+        shutil.rmtree(directory)
+        logger.info(f"{directory} removed")
 
 def spellcheck(worda, wordb, cutoff=3):
     """Checks if two words are close to each other.
