@@ -46,7 +46,7 @@ TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 COUNT = 20  # set this to include a margin of error in case some urls throw error code 476 due to still being processed
 
 # Valid file types
-valid_image_extensions = {"jpg", "png", "jpeg", "gif"}
+valid_image_extensions = {"png", "jpeg"}
 valid_audio_extensions = {"mp3", "wav"}
 
 def cache(func=None):
@@ -500,8 +500,15 @@ async def download_media(bird, media_type, addOn="", directory=None, session=Non
         if not os.path.exists(directory):
             os.makedirs(directory)
         paths = [f"{directory}{i}" for i in range(len(urls))]
-        filenames = await asyncio.gather(*(_download_helper(path, url, session) for path, url in zip(paths, urls)))
+        sem = asyncio.Semaphore(5)
+        filenames = await asyncio.gather(*(_download_helper(path, url, session, sem) for path, url in zip(paths, urls)))
+        fails = filenames.count(None)
+        if None in filenames:
+            filenames = set(filenames)
+            filenames.discard(None)
+            filenames = list(filenames)
         logger.info(f"downloaded {media_type} for {bird}")
+        logger.info(f"download check fails: {fails}")
         logger.info(f"returned filename count: {len(filenames)}")
         logger.info(f"actual filenames count: {len(os.listdir(directory))}")
         return filenames
@@ -541,25 +548,10 @@ async def _get_urls(session, bird, media_type, sex="", age="", sound_type="", re
                 return urls
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
-
-        logger.info("checking filesizes")
-        urls = await asyncio.gather(*(_check_media_url(session, data["mediaUrl"]) for data in content))
-        fails = urls.count(None)
-        if None in urls:
-            urls = set(urls)
-            urls.remove(None)
-            urls = list(urls)
-        logger.info(f"filesize check fails: {fails}")
+        urls = [data["mediaUrl"] for data in content]
         return urls
 
-async def _check_media_url(session, media_url):
-    async with session.head(media_url) as header_check:
-        media_size = header_check.headers.get("content-length")
-        if header_check.status == 200 and media_size != None and int(media_size) < 4000000:
-            return media_url
-    return None
-
-async def _download_helper(path, url, session):
+async def _download_helper(path, url, session, sem):
     """Downloads media from the given URL.
 
     Returns the file path to the downloaded item.
@@ -568,45 +560,54 @@ async def _download_helper(path, url, session):
     `url` (str) - url to the item to be downloaded\n
     `session` (aiohttp ClientSession)
     """
-    try:
-        async with session.get(url) as response:
-            # from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
-            content_type = response.headers['content-type'].partition(';')[0].strip()
-            if content_type.partition("/")[0] == "image":
-                try:
-                    ext = "." + \
-                                                      (set(ext[1:] for ext in guess_all_extensions(
-                        content_type)).intersection(valid_image_extensions)).pop()
-                except KeyError:
-                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
+    async with sem:
+        try:
+            async with session.get(url) as response:
+                media_size = response.headers.get("content-length")
+                if response.status != 200 or media_size == None or int(media_size) > 4000000:
+                    logger.info(f"FAIL: status: {response.status}; size: {media_size}")
+                    logger.info(url)
+                    return None
 
-            elif content_type.partition("/")[0] == "audio":
-                try:
-                    ext = "." + (
-                        set(ext[1:] for ext in guess_all_extensions(content_type)).intersection(valid_audio_extensions)
-                    ).pop()
-                except KeyError:
-                    raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
+                # from https://stackoverflow.com/questions/29674905/convert-content-type-header-into-file-extension
+                content_type = response.headers['content-type'].partition(';')[0].strip()
+                if content_type.partition("/")[0] == "image":
+                    try:
+                        ext = "." + (
+                            set(ext[1:] for ext in guess_all_extensions(content_type))
+                            .intersection(valid_image_extensions)
+                            ).pop()
+                    except KeyError:
+                        raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
 
-            else:
-                ext = guess_extension(content_type)
-                if ext is None:
-                    raise GenericError(f"No extensions found.")
-            logger.info(f"download helper - detected extension: {ext} with content type {content_type}")
-            filename = f"{path}{ext}"
-            # from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5
-            with open(filename, 'wb') as out_file:
-                block_size = 1024 * 8
-                while True:
-                    block = await response.content.read(block_size)  # pylint: disable=no-member
-                    if not block:
-                        break
-                    out_file.write(block)
-            return filename
-    except aiohttp.ClientError as e:
-        logger.info(f"Client Error with url {url} and path {path}")
-        capture_exception(e)
-        raise
+                elif content_type.partition("/")[0] == "audio":
+                    try:
+                        ext = "." + (
+                            set(ext[1:] for ext in guess_all_extensions(content_type))
+                            .intersection(valid_audio_extensions)
+                        ).pop()
+                    except KeyError:
+                        raise GenericError(f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}")
+
+                else:
+                    ext = guess_extension(content_type)
+                    if ext is None:
+                        raise GenericError(f"No extensions found.")
+                logger.info(f"download helper - detected extension: {ext} with content type {content_type}")
+                filename = f"{path}{ext}"
+                # from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5
+                with open(filename, 'wb') as out_file:
+                    block_size = 1024 * 8
+                    while True:
+                        block = await response.content.read(block_size)  # pylint: disable=no-member
+                        if not block:
+                            break
+                        out_file.write(block)
+                return filename
+        except aiohttp.ClientError as e:
+            logger.info(f"Client Error with url {url} and path {path}")
+            capture_exception(e)
+            raise
 
 async def precache():
     """Downloads all images and songs.
@@ -633,22 +634,23 @@ async def precache():
     output["start"] = time.perf_counter()
     timeout = aiohttp.ClientTimeout(total=10 * 60)
     conn = aiohttp.TCPConnector(limit=100)
+    sem = asyncio.Semaphore(1)
     async with aiohttp.ClientSession(connector=conn, timeout=timeout) as session:
         logger.info("Starting cache")
-        await asyncio.gather(*(download_media(bird, "images", session=session) for bird in sciBirdListMaster))
+        await asyncio.gather(*(_limit_download_media(sem, bird, "images", session=session) for bird in sciBirdListMaster))
         output["plain"] = (time.perf_counter() - output["start"])
         logger.info("Starting females")
         await asyncio.gather(
-            *(download_media(bird, "images", addOn="female", session=session) for bird in sciBirdListMaster)
+            *(_limit_download_media(sem, bird, "images", addOn="female", session=session) for bird in sciBirdListMaster)
         )
         output["female"] = (time.perf_counter() - output["start"]) - output["plain"]
         logger.info("Starting juveniles")
         await asyncio.gather(
-            *(download_media(bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster)
+            *(_limit_download_media(sem, bird, "images", addOn="juvenile", session=session) for bird in sciBirdListMaster)
         )
         output["juvenile"] = (time.perf_counter()- output["start"]) - output["female"]
         logger.info("Starting songs")
-        await asyncio.gather(*(download_media(bird, "songs", session=session) for bird in sciSongBirdsMaster))
+        await asyncio.gather(*(_limit_download_media(sem, bird, "songs", session=session) for bird in sciSongBirdsMaster))
         output["songs"] = (time.perf_counter() - output["start"]) - output["juvenile"]
     output["end"] = time.perf_counter()
     output["total"] = output['end'] - output['start']
@@ -657,6 +659,10 @@ async def precache():
     logger.info(f"Images Cached in {output['total']} sec.")
     logger.info(f"Cache Timing Output: {output}")
     return output
+
+async def _limit_download_media(sem, bird, media_type, addOn='', directory=None, session=None):
+    async with sem:
+        return await download_media(bird, media_type, addOn, directory, session)
 
 def spellcheck(worda, wordb, cutoff=3):
     """Checks if two words are close to each other.
