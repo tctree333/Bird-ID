@@ -3,6 +3,7 @@ from collections.abc import Iterable
 
 COUNT = 20
 
+
 class Filter:
     def __init__(
         self,
@@ -13,7 +14,7 @@ class Filter:
         sounds: Union[str, Iterable] = (),
         tags: Union[str, Iterable] = (),
         captive: Union[str, Iterable] = (),
-        quality: Union[str, Iterable] = ('3','4','5'),
+        quality: Union[str, Iterable] = ("3", "4", "5"),
         small: bool = False,
     ):
         """Represents Macaulay Library media filters.
@@ -66,8 +67,8 @@ class Filter:
         return self.__dict__.__repr__()
 
     def _clear(self):
-        """Resets filters to default."""
-        self.__init__()
+        """Clear all filters."""
+        self.__dict__ = {k: (set() if k != "small" else False) for k in self.__dict__.keys()}
 
     def _validate(self) -> bool:
         """Check the validity of filter values.
@@ -147,32 +148,36 @@ class Filter:
         
         This is calculated with a 46 digit binary number representing the 46 filter options.
         """
-        out = ["0"]*46
+        out = ["0"] * 46
         indexes = self.aliases(num=True)
         for title, filters in self.__dict__.items():
             if title == "small":
                 if filters:
-                    out[indexes[title][filters]-1] = '1'
+                    out[indexes[title][filters] - 1] = "1"
                 continue
             for name in filters:
-                out[indexes[title][name]-1] = '1'
+                out[indexes[title][name] - 1] = "1"
         return int("".join(reversed(out)), 2)
 
-    def from_int(self, number:int):
+    def from_int(self, number: int):
         """Convert an int to a filter object."""
-        if number >= 2**46 or number < 0:
+        if number >= 2 ** 46 or number < 0:
             raise ValueError("Input number out of bounds.")
-        self._clear()
+
+        self._clear()  # reset existing filters to empty
         binary = reversed("{0:0>46b}".format(number))
-        parse = []
+        lookup = self.aliases(lookup=True)
         for index, value in enumerate(binary):
             if int(value):
-                parse.append(str(index+1))
-        self.parse(" ".join(parse))
+                key = lookup[str(index+1)]
+                if key[0] == "small":
+                    self.__dict__[key[0]] = key[1]
+                    continue
+                self.__dict__[key[0]].add(key[1])
 
     def parse(self, args: str):
         """Parse an argument string as Macaulay Library media filters."""
-        self._clear()
+        self.__init__()  # reset existing filters to default
         aliases = self.aliases(lookup=True)
         args = args.strip()
         if "," in args:
@@ -295,9 +300,9 @@ class Filter:
                 ("good", "4"): ("44", "good", "q:4"),
                 ("excellent", "5"): ("45", "excellent", "best", "q:5"),
             },
-            ("smaller images", "small") : {
+            ("smaller images", "small"): {
                 ("yes", True): ("46", "small", "smaller images")
-            }
+            },
         }
         if lookup:
             return {
@@ -308,7 +313,9 @@ class Filter:
             }
         elif num:
             return {
-                title[1]: {name[1]: int(aliases[0]) for name, aliases in subdict.items()}
+                title[1]: {
+                    name[1]: int(aliases[0]) for name, aliases in subdict.items()
+                }
                 for title, subdict in aliases.items()
             }
         else:
