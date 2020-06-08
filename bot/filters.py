@@ -13,7 +13,7 @@ class Filter:
         sounds: Union[str, Iterable] = (),
         tags: Union[str, Iterable] = (),
         captive: Union[str, Iterable] = (),
-        quality: Union[str, Iterable] = (),
+        quality: Union[str, Iterable] = ('3','4','5'),
         small: bool = False,
     ):
         """Represents Macaulay Library media filters.
