@@ -17,6 +17,7 @@
 import random
 from difflib import get_close_matches
 
+import discord
 import wikipedia
 from discord.ext import commands
 from sentry_sdk import capture_exception
@@ -24,6 +25,7 @@ from sentry_sdk import capture_exception
 from bot.core import get_sciname, get_taxon, send_bird, send_birdsong
 from bot.data import (birdListMaster, logger, memeList, sciBirdListMaster,
                       states, taxons)
+from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list
 
 
@@ -48,6 +50,30 @@ class Other(commands.Cog):
 
         else:
             await ctx.send("Bird not found. Are you sure it's on the list?")
+
+    # Filter command - lists available Macaulay Library filters and aliases
+    @commands.command(help="- Lists available Macaulay Library filters.", aliases=["filter"])
+    @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
+    async def filters(self, ctx):
+        logger.info("command: filters")
+        filters = Filter().aliases()
+        embed = discord.Embed(
+            title="Media Filters",
+            type="rich",
+            description="Filters can be space-seperated or comma-seperated. " +
+                        "You can use any alias to set filters. " +
+                        "Please note media will only be shown if it " +
+                        "matches all the filters, so using filters can " +
+                        "greatly reduce the number of media returned.",
+            color=discord.Color.green()
+        )
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        for title, subdict in filters.items():
+            value = ""
+            for name, aliases in subdict.items():
+                value += f"**{name.title()}**: `{'`,`'.join(aliases)}`\n"
+            embed.add_field(name=title.title(), value=value, inline=False)
+        await ctx.send(embed=embed)
 
     # List command - argument is state/bird list
     @commands.command(help="- DMs the user with the appropriate bird list.", name="list")

@@ -179,7 +179,7 @@ class Filter:
         """Parse an argument string as Macaulay Library media filters."""
         self.__init__()  # reset existing filters to default
         aliases = self.aliases(lookup=True)
-        args = args.strip()
+        args = args.lower().strip()
         if "," in args:
             args = map(lambda x: x.strip(), args.split(","))
         else:
@@ -287,12 +287,12 @@ class Filter:
                 ),
                 ("no bird", "non"): ("36", "none", "no bird", "non"),
             },
-            ("captive", "captive"): {
+            ("captive (animals in captivity)", "captive"): {
                 ("all", "all"): ("37", "captive:all"),
                 ("yes", "yes"): ("38", "captive"),
                 ("no", "no"): ("39", "captive:no", "not captive"),
             },
-            ("quality", "quality"): {
+            ("quality (defaults to 3,4,5)", "quality"): {
                 ("no rating", "0"): ("40", "no rating", "q:0"),
                 ("terrible", "1"): ("41", "terrible", "q:1"),
                 ("poor", "2"): ("42", "poor", "q:2"),
@@ -300,7 +300,7 @@ class Filter:
                 ("good", "4"): ("44", "good", "q:4"),
                 ("excellent", "5"): ("45", "excellent", "best", "q:5"),
             },
-            ("smaller images", "small"): {
+            ("smaller images (defaults to no)", "small"): {
                 ("yes", True): ("46", "small", "smaller images")
             },
         }
