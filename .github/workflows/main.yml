@@ -39,17 +39,6 @@ jobs:
             sentry project 1: bird-id-discord
             sentry project 2: bird-id-api
 
-        - name: Update Redis
-          uses: tctree333/SciOlyID-Actions/update-redis@master
-          with:
-            dokku app name: bird-id
-            dokku host: ${{ secrets.DOKKU_HOST }}
-            ssh private key: ${{ secrets.PRIVATE_KEY }}
-
-            heroku email: ${{ secrets.HEROKU_EMAIL }}
-            heroku token: ${{ secrets.HEROKU_TOKEN }}
-            heroku app name: bird-id
-
         - name: Deploy to Dokku
           uses: tctree333/SciOlyID-Actions/deploy-dokku@master
           with:
