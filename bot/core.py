@@ -22,7 +22,6 @@ import os
 import random
 import shutil
 import string
-import time
 import urllib
 from io import BytesIO
 from mimetypes import guess_all_extensions, guess_extension
@@ -33,8 +32,7 @@ import eyed3
 from PIL import Image
 from sentry_sdk import capture_exception
 
-from bot.data import (GenericError, database, logger, sciBirdListMaster,
-                      sciSongBirdsMaster, screech_owls)
+from bot.data import GenericError, database, logger, screech_owls
 from bot.filters import Filter
 
 # Macaulay URL definitions
@@ -558,7 +556,7 @@ async def _download_helper(path, url, session, sem):
         try:
             async with session.get(url) as response:
                 media_size = response.headers.get("content-length")
-                if response.status != 200 or media_size == None or int(media_size) > 4000000:
+                if response.status != 200 or media_size is None or int(media_size) > 4000000:
                     logger.info(f"FAIL: status: {response.status}; size: {media_size}")
                     logger.info(url)
                     return None
