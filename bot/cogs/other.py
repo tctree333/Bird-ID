@@ -226,7 +226,6 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(300.0, bucket=commands.BucketType.user))
     async def meme(self, ctx):
         logger.info("command: meme")
-
         await ctx.send(random.choice(memeList))
 
     # Send command - for testing purposes only
@@ -240,42 +239,6 @@ class Other(commands.Cog):
         channel = self.bot.get_channel(channel_id)
         await channel.send(message)
         await ctx.send("Ok, sent!")
-
-    # Role command - for testing purposes only
-    @commands.command(help="- role command", hidden=True, aliases=["giverole"])
-    @commands.is_owner()
-    async def give_role(self, ctx, *, args):
-        logger.info("command: give role")
-        logger.info(f"args: {args}")
-        try:
-            guild_id = int(args.split(' ')[0])
-            role_id = int(args.split(' ')[1])
-            guild = self.bot.get_guild(guild_id)
-            role = guild.get_role(role_id)
-            await guild.get_member(ctx.author.id).add_roles(role)
-            await ctx.send("Ok, done!")
-        except Exception as e:
-            capture_exception(e)
-            logger.exception(e)
-            await ctx.send(f"Error: {e}")
-
-    # Un role command - for testing purposes only
-    @commands.command(help="- role command", hidden=True, aliases=["rmrole"])
-    @commands.is_owner()
-    async def remove_role(self, ctx, *, args):
-        logger.info("command: remove role")
-        logger.info(f"args: {args}")
-        try:
-            guild_id = int(args.split(' ')[0])
-            role_id = int(args.split(' ')[1])
-            guild = self.bot.get_guild(guild_id)
-            role = guild.get_role(role_id)
-            await guild.get_member(ctx.author.id).remove_roles(role)
-            await ctx.send("Ok, done!")
-        except Exception as e:
-            capture_exception(e)
-            logger.exception(e)
-            await ctx.send(f"Error: {e}")
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
@@ -292,14 +255,6 @@ class Other(commands.Cog):
     async def error(self, ctx):
         logger.info("command: error")
         await ctx.send(1 / 0)
-
-    # Test command - for testing purposes only
-    @commands.command(help="- test command", hidden=True)
-    @commands.check(CustomCooldown(10.0))
-    @commands.is_owner()
-    async def test(self, ctx):
-        logger.info("command: test")
-        await ctx.send("test")
 
 def setup(bot):
     bot.add_cog(Other(bot))
