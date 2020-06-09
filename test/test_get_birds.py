@@ -187,3 +187,25 @@ class TestBirds:
             "Use `b!check guess` to check your answer.",
         ):
             assert i in self.ctx.messages[4].content
+
+    def test_bird_quality_option(self):
+        self.setup(guild=True)
+
+        coroutine = self.cog.bird.callback(
+            self.cog, self.ctx, args_str="q1"
+        )  # pylint: disable=no-member
+        assert asyncio.run(coroutine) is None
+        for i in (
+            "Active Filters",
+            "quality: terrible",
+        ):
+            assert i in self.ctx.messages[2].content
+        for i in ("quality: excellent","quality: average", "quality: good"):
+            assert i not in self.ctx.messages[2].content
+        for i in (
+            "Here you go!",
+            "Use `b!bird` again",
+            "b!skip",
+            "Use `b!check guess` to check your answer.",
+        ):
+            assert i in self.ctx.messages[4].content
