@@ -21,6 +21,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger, states, taxons
+from bot.filters import Filter
 from bot.functions import CustomCooldown
 
 
@@ -29,13 +30,13 @@ class Race(commands.Cog):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, media, limit, taxon, strict = database.hmget(
+        filter_int, state, media, limit, taxon, strict = database.hmget(
             f"race.data:{ctx.channel.id}",
-            ["bw", "addon", "state", "media", "limit", "taxon", "strict"]
+            ["filter", "state", "media", "limit", "taxon", "strict"]
         )
+        filters = Filter().from_int(int(filter_int))
         options = (
-            f"**Age/Sex:** {addon.decode('utf-8') if addon else 'default'}\n" +
-            f"**Black & White:** {bw==b'bw'}\n" +
+            f"**Active Filters:** {', '.join(filters.display())}\n" +
             f"**Special bird list:** {state.decode('utf-8') if state else 'None'}\n" +
             f"**Taxons:** {taxon.decode('utf-8') if taxon else 'None'}\n" +
             f"**Media Type:** {media.decode('utf-8')}\n" + 
@@ -158,12 +159,10 @@ class Race(commands.Cog):
             await ctx.send("**There is already a race in session.** *Change settings/view stats with `b!race view`*")
             return
         else:
+            filters = Filter().parse(args_str)
+
             args = args_str.split(" ")
             logger.info(f"args: {args}")
-            if "bw" in args:
-                bw = "bw"
-            else:
-                bw = ""
 
             taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
             if taxon_args:
@@ -192,18 +191,6 @@ class Race(commands.Cog):
             else:
                 state = ""
 
-            female = "female" in args or "f" in args
-            juvenile = "juvenile" in args or "j" in args
-            if female and juvenile:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Please try again.*")
-                return
-            elif female:
-                addon = "female"
-            elif juvenile:
-                addon = "juvenile"
-            else:
-                addon = ""
-
             song = "song" in args or "s" in args
             image = "image" in args or "i" in args or "picture" in args or "p" in args
             if song and image:
@@ -231,7 +218,7 @@ class Race(commands.Cog):
                 await ctx.send("**Sorry, the maximum amount to win is 1 million.**")
                 limit = 1000000
 
-            logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}; media: {media}; limit: {limit}")
+            logger.info(f"adding filters: {filters}; state: {state}; media: {media}; limit: {limit}")
 
             database.hset(
                 f"race.data:{ctx.channel.id}",
@@ -239,9 +226,8 @@ class Race(commands.Cog):
                     "start": round(time.time()),
                     "stop": 0,
                     "limit": limit,
-                    "bw": bw,
+                    "filter": str(filters.to_int()),
                     "state": state,
-                    "addon": addon,
                     "media": media,
                     "taxon": taxon,
                     "strict": strict
@@ -257,12 +243,11 @@ class Race(commands.Cog):
                 database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
                 logger.info("auto sending next bird image")
-                addon, bw, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon", "state"])
+                filter_int, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["filter", "bw", "taxon", "state"])
                 birds = self.bot.get_cog("Birds")
                 await birds.send_bird_(
                     ctx,
-                    addon.decode("utf-8"),  # type: ignore
-                    bw.decode("utf-8"),  # type: ignore
+                    Filter().from_int(int(filter_int)),  # type: ignore
                     taxon.decode("utf-8"),  # type: ignore
                     state.decode("utf-8"),  # type: ignore
                 )

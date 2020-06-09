@@ -84,9 +84,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #                    "correct": 0,
 #                    "incorrect": 0,
 #                    "total": 0,
-#                    "bw": bw, - Toggles if "bw", doesn't if empty (""), default ""
 #                    "state": state,
-#                    "addon": addon,
+#                    "filter": filter (int),
 #                    "wiki": wiki, - Enables if "wiki", disables if empty (""), default "wiki"
 #                    "strict": strict - Enables strict spelling if "strict", disables if empty, default ""
 # }
@@ -97,9 +96,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #                    "start": 0
 #                    "stop": 0,
 #                    "limit": 10,
-#                    "bw": bw,
 #                    "state": state,
-#                    "addon": addon,
+#                    "filter": filter (int),
 #                    "media": media,
 #                    "taxon": taxon,
 #                    "strict": strict - Enables strict spelling if "strict", disables if empty, default ""

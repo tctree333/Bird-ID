@@ -45,8 +45,8 @@ class Other(commands.Cog):
         logger.info("command: info")
         arg = arg.lower().strip()
 
-        filters = Filter()
-        options = filters.parse(arg)
+        filters = Filter().parse(arg)
+        options = filters.display()
         arg = arg.split(" ")
         for i in reversed(range(1,6)):
             matches = get_close_matches(" ".join(arg[:i]), birdListMaster + sciBirdListMaster, n=1)

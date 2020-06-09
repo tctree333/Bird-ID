@@ -187,6 +187,7 @@ class Filter:
                     self.__dict__[key[0]] = key[1]
                     continue
                 self.__dict__[key[0]].add(key[1])
+        return self
 
     def __xor__(self, number: int):
         self.xor(number)
@@ -214,7 +215,7 @@ class Filter:
                     self.__dict__[key[0]] = key[1]
                     continue
                 self.__dict__[key[0]].add(key[1])
-        return self.display()
+        return self
 
     def display(self):
         """Return a list describing the filters."""

@@ -170,8 +170,7 @@ class Birds(commands.Cog):
     async def bird(self, ctx, *, args_str: str = ""):
         logger.info("command: bird")
 
-        filters = Filter()
-        filters.parse(args_str)
+        filters = Filter().parse(args_str)
 
         args = args_str.split(" ")
         logger.info(f"args: {args}")
@@ -214,8 +213,8 @@ class Birds(commands.Cog):
                     logger.info("no session lists")
                     roles = check_state_role(ctx)
 
-                session_add_on = int(database.hget(f"session.data:{ctx.author.id}", "addon"))
-                filters.xor(session_add_on)
+                session_filter = int(database.hget(f"session.data:{ctx.author.id}", "filter"))
+                filters.xor(session_filter)
 
             if state_args:
                 toggle_states = list(state_args)
@@ -232,8 +231,8 @@ class Birds(commands.Cog):
         else:
             logger.info("race parameters")
 
-            race_add_on = int(database.hget(f"race.data:{ctx.channel.id}", "addon"))
-            filters.xor(race_add_on)
+            race_filter = int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
+            filters.xor(race_filter)
 
             taxon = database.hget(f"race.data:{ctx.channel.id}", "taxon").decode("utf-8")
             state = database.hget(f"race.data:{ctx.channel.id}", "state").decode("utf-8")
