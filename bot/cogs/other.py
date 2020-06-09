@@ -54,7 +54,7 @@ class Other(commands.Cog):
                 bird = matches[0]
                 delete = await ctx.send("Please wait a moment.")
                 if options:
-                    await ctx.send(f"**Detected filters**: `{'`,`'.join(options)}`")
+                    await ctx.send(f"**Detected filters**: `{'`, `'.join(options)}`")
                 await send_bird(ctx, bird, filters, message=f"Here's a *{bird.lower()}* image!")
                 await send_birdsong(ctx, bird, message=f"Here's a *{bird.lower()}* call!")
                 await delete.delete()
@@ -81,7 +81,7 @@ class Other(commands.Cog):
         for title, subdict in filters.items():
             value = ""
             for name, aliases in subdict.items():
-                value += f"**{name.title()}**: `{'`,`'.join(aliases)}`\n"
+                value += f"**{name.title()}**: `{'`, `'.join(aliases)}`\n"
             embed.add_field(name=title.title(), value=value, inline=False)
         await ctx.send(embed=embed)
 
