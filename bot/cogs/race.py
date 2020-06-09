@@ -36,7 +36,7 @@ class Race(commands.Cog):
         )
         filters = Filter().from_int(int(filter_int))
         options = (
-            f"**Active Filters:** {', '.join(filters.display())}\n" +
+            f"**Active Filters:** `{'`, `'.join(filters.display())}`\n" +
             f"**Special bird list:** {state.decode('utf-8') if state else 'None'}\n" +
             f"**Taxons:** {taxon.decode('utf-8') if taxon else 'None'}\n" +
             f"**Media Type:** {media.decode('utf-8')}\n" + 
@@ -140,7 +140,7 @@ class Race(commands.Cog):
         Arguments can be passed in any taxon.
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
-        usage="[bw] [state] [female|juvenile] [taxon] [amount to win (default 10)]"
+        usage="[state] [filters] [taxon] [amount to win (default 10)]"
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def start(self, ctx, *, args_str: str = ""):
@@ -159,7 +159,7 @@ class Race(commands.Cog):
             await ctx.send("**There is already a race in session.** *Change settings/view stats with `b!race view`*")
             return
         else:
-            filters = Filter().parse(args_str)
+            filters = Filter().parse(args_str, defaults=False)
 
             args = args_str.split(" ")
             logger.info(f"args: {args}")
@@ -243,7 +243,7 @@ class Race(commands.Cog):
                 database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
                 logger.info("auto sending next bird image")
-                filter_int, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["filter", "bw", "taxon", "state"])
+                filter_int, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"])
                 birds = self.bot.get_cog("Birds")
                 await birds.send_bird_(
                     ctx,

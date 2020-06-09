@@ -50,7 +50,7 @@ class Skip(commands.Cog):
                     await race.stop_race_(ctx)
                 else:
                     logger.info("auto sending next bird image")
-                    filter_int, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["filter", "bw", "taxon", "state"])
+                    filter_int, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"])
                     birds = self.bot.get_cog("Birds")
                     await birds.send_bird_(ctx, Filter().from_int(int(filter_int)), taxon.decode("utf-8"), state.decode("utf-8"))
         else:

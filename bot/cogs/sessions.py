@@ -106,7 +106,7 @@ class Sessions(commands.Cog):
         These settings can be changed at any time with 'b!session edit', and arguments can be passed in any order. 
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
-        usage="[bw] [state] [female|juvenile] [order/family]"
+        usage="[state] [taxons] [filters]"
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def start(self, ctx, *, args_str: str = ""):
@@ -170,7 +170,7 @@ class Sessions(commands.Cog):
         "will give you stats on how your performance and also set global variables such as black and white, " +
         "state specific bird lists, specific bird taxons, or bird age/sex. ",
         aliases=["view"],
-        usage="[bw] [state] [female|juvenile]"
+        usage="[state] [taxons] [filters]"
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def edit(self, ctx, *, args_str: str = ""):
