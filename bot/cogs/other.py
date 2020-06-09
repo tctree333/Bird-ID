@@ -20,7 +20,6 @@ from difflib import get_close_matches
 import discord
 import wikipedia
 from discord.ext import commands
-from sentry_sdk import capture_exception
 
 from bot.core import get_sciname, get_taxon, send_bird, send_birdsong
 from bot.data import (birdListMaster, logger, memeList, sciBirdListMaster,
