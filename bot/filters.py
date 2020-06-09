@@ -260,7 +260,7 @@ class Filter:
                 ("unknown", "u"): ("7", "sex:unknown", "unknown sex"),
             },
             ("behavior", "behavior"): {
-                ("eating/foraging", "ef"): ("8", "eating", "foraging", "e", "ef"),
+                ("eating/foraging", "e"): ("8", "eating", "foraging", "e", "ef"),
                 ("flying", "f"): ("9", "flying", "fly"),
                 ("preening", "p"): ("10", "preening", "p"),
                 ("vocalizing", "vocalizing"): ("11", "vocalizing", "vo"),
@@ -310,7 +310,7 @@ class Filter:
                     "multiple species",
                     "mul",
                 ),
-                ("in-hand", "in"): ("28", "in-hand", "in hand"),
+                ("in-hand", "in"): ("28", "in-hand", "in hand", "in"),
                 ("nest", "nes"): ("29", "nest", "nes"),
                 ("eggs", "egg"): ("30", "egg", "eggs"),
                 ("habitat", "hab"): ("31", "habitat", "hab"),
