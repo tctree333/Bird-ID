@@ -307,7 +307,7 @@ class Filter:
                 ),
                 ("in-hand", "in"): ("28", "in-hand", "in hand"),
                 ("nest", "nes"): ("29", "nest", "nes"),
-                ("eggs", "eff"): ("30", "egg", "eggs"),
+                ("eggs", "egg"): ("30", "egg", "eggs"),
                 ("habitat", "hab"): ("31", "habitat", "hab"),
                 ("watermark", "wat"): ("32", "watermark", "wat"),
                 ("back of camera", "bac"): (
