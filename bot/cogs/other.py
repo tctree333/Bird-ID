@@ -34,22 +34,32 @@ class Other(commands.Cog):
         self.bot = bot
 
     # Info - Gives call+image of 1 bird
-    @commands.command(help="- Gives an image and call of a bird", aliases=['i'])
+    @commands.command(
+        brief="- Gives an image and call of a bird",
+        help="- Gives an image and call of a bird. The bird name must come before any options.",
+        usage="[bird] [options]",
+        aliases=['i']
+    )
     @commands.check(CustomCooldown(10.0, bucket=commands.BucketType.user))
     async def info(self, ctx, *, arg):
         logger.info("command: info")
+        arg = arg.lower().strip()
 
-        matches = get_close_matches(arg, birdListMaster + sciBirdListMaster, n=1)
-        if matches:
-            bird = matches[0]
-
-            delete = await ctx.send("Please wait a moment.")
-            await send_bird(ctx, bird, message=f"Here's a *{bird.lower()}* image!")
-            await send_birdsong(ctx, bird, message=f"Here's a *{bird.lower()}* call!")
-            await delete.delete()
-
-        else:
-            await ctx.send("Bird not found. Are you sure it's on the list?")
+        filters = Filter()
+        options = filters.parse(arg)
+        arg = arg.split(" ")
+        for i in reversed(range(1,6)):
+            matches = get_close_matches(" ".join(arg[:i]), birdListMaster + sciBirdListMaster, n=1)
+            if matches:
+                bird = matches[0]
+                delete = await ctx.send("Please wait a moment.")
+                if options:
+                    await ctx.send(f"**Detected filters**: `{'`,`'.join(options)}`")
+                await send_bird(ctx, bird, filters, message=f"Here's a *{bird.lower()}* image!")
+                await send_birdsong(ctx, bird, message=f"Here's a *{bird.lower()}* call!")
+                await delete.delete()
+                return
+        await ctx.send("Bird not found. Are you sure it's on the list?")
 
     # Filter command - lists available Macaulay Library filters and aliases
     @commands.command(help="- Lists available Macaulay Library filters.", aliases=["filter"])

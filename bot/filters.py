@@ -1,10 +1,13 @@
 from typing import Union
 from collections.abc import Iterable
 
-COUNT = 20
+# Macaulay Library URLs
+CATALOG_URL = "https://search.macaulaylibrary.org/catalog.json?searchField=species"
+COUNT = 20  # number of media items from catalog url
 
 
 class Filter:
+    _boolean_options = ("small", "bw")
     def __init__(
         self,
         age: Union[str, Iterable] = (),
@@ -16,6 +19,7 @@ class Filter:
         captive: Union[str, Iterable] = (),
         quality: Union[str, Iterable] = ("3", "4", "5"),
         small: bool = False,
+        bw: bool = False,
     ):
         """Represents Macaulay Library media filters.
 
@@ -41,6 +45,8 @@ class Filter:
             - 0 (unrated), 1 (worst) - 5 (best)
         - Small:
             - True (uses previewUrl), False (uses mediaUrl)
+        - Black & White:
+            - True (black and white), False (color)
         """
         self.age = age
         self.sex = sex
@@ -51,6 +57,7 @@ class Filter:
         self.captive = captive
         self.quality = quality
         self.small = small
+        self.bw = bw
 
         for item in self.__dict__.items():
             if isinstance(item[1], str):
@@ -68,7 +75,9 @@ class Filter:
 
     def _clear(self):
         """Clear all filters."""
-        self.__dict__ = {k: (set() if k != "small" else False) for k in self.__dict__.keys()}
+        self.__dict__ = {
+            k: (set() if k in self._boolean_options else False) for k in self.__dict__.keys()
+        }
 
     def _validate(self) -> bool:
         """Check the validity of filter values.
@@ -96,11 +105,11 @@ class Filter:
                 "non",
             },
             "captive": {"all", "yes", "no"},
-            "quality": {"0", "1", "2,", "3", "4", "5"},
+            "quality": {"0", "1", "2", "3", "4", "5"},
             "small": {True, False},
         }
         for item in self.__dict__.items():
-            if item[0] == "small":
+            if item[0] in self._boolean_options:
                 if not isinstance(item[1], bool):
                     raise TypeError(f"{item[0]} is not a boolean.")
                 continue
@@ -126,12 +135,13 @@ class Filter:
             "captive": "&cap={}",
             "quality": "&qua={}",
         }
-        url = "https://search.macaulaylibrary.org/catalog.json?searchField=species"
+        url = CATALOG_URL
         url += f"&taxonCode={taxon_code}&mediaType={media_type}&count={COUNT}"
 
         for item in self.__dict__.items():
-            if (item[0] == "sounds" and media_type == "p") or (
-                item[0] == "tags" and media_type == "a" or item[0] == "small"
+            if ((item[0] == "sounds" and media_type == "p") or (
+                item[0] == "tags" and media_type == "a") or 
+                item[0] in self._boolean_options
             ):
                 # disable invalid filters on certain media types
                 continue
@@ -146,12 +156,12 @@ class Filter:
     def to_int(self):
         """Convert filters into an integer representation.
         
-        This is calculated with a 46 digit binary number representing the 46 filter options.
+        This is calculated with a 47 digit binary number representing the 47 filter options.
         """
-        out = ["0"] * 46
+        out = ["0"] * 47
         indexes = self.aliases(num=True)
         for title, filters in self.__dict__.items():
-            if title == "small":
+            if title in self._boolean_options:
                 if filters:
                     out[indexes[title][filters] - 1] = "1"
                 continue
@@ -161,16 +171,16 @@ class Filter:
 
     def from_int(self, number: int):
         """Convert an int to a filter object."""
-        if number >= 2 ** 46 or number < 0:
+        if number >= 2 ** 47 or number < 0:
             raise ValueError("Input number out of bounds.")
 
         self._clear()  # reset existing filters to empty
-        binary = reversed("{0:0>46b}".format(number))
+        binary = reversed("{0:0>47b}".format(number))
         lookup = self.aliases(lookup=True)
         for index, value in enumerate(binary):
             if int(value):
-                key = lookup[str(index+1)]
-                if key[0] == "small":
+                key = lookup[str(index + 1)]
+                if key[0] in self._boolean_options:
                     self.__dict__[key[0]] = key[1]
                     continue
                 self.__dict__[key[0]].add(key[1])
@@ -178,27 +188,32 @@ class Filter:
     def parse(self, args: str):
         """Parse an argument string as Macaulay Library media filters."""
         self.__init__()  # reset existing filters to default
-        aliases = self.aliases(lookup=True)
+        lookup = self.aliases(lookup=True)
+        display = self.aliases(display_lookup=True)
         args = args.lower().strip()
         if "," in args:
             args = map(lambda x: x.strip(), args.split(","))
         else:
             args = map(lambda x: x.strip(), args.split(" "))
 
+        detected = []
         for arg in args:
-            key = aliases.get(arg)
+            key = lookup.get(arg)
             if key is not None:
-                if key[0] == "small":
+                detected.append(f"{key[0]}:{display[key[0]][1][key[1]]}")
+                if key[0] in self._boolean_options:
                     self.__dict__[key[0]] = key[1]
                     continue
                 self.__dict__[key[0]].add(key[1])
+        return detected
 
-    def aliases(self, lookup: bool = False, num: bool = False):
+    def aliases(self, lookup: bool = False, num: bool = False, display_lookup: bool = False):
         """Generate filter alises.
 
         If lookup, returns a dict mapping aliases to filter names,
         elif num, returns a dict mapping filter names to numbers,
-        else returns in "human readable" format.
+        elif display_lookup, returns a dict mapping internal names to display names,
+        else returns a display text.
         """
         # the keys of this dict are in the form ("display text", "internal key")
         # the first alias should be a number
@@ -216,7 +231,7 @@ class Filter:
             },
             ("behavior", "behavior"): {
                 ("eating/foraging", "ef"): ("8", "eating", "foraging", "e", "ef"),
-                ("flying", "f"): ("9", "flying", "f"),
+                ("flying", "f"): ("9", "flying", "fly"),
                 ("preening", "p"): ("10", "preening", "p"),
                 ("vocalizing", "vocalizing"): ("11", "vocalizing", "vo"),
                 ("molting", "molting"): ("12", "molting", "mo"),
@@ -283,7 +298,6 @@ class Filter:
                     "field",
                     "field notes",
                     "sketch",
-                    "fie",
                 ),
                 ("no bird", "non"): ("36", "none", "no bird", "non"),
             },
@@ -293,16 +307,19 @@ class Filter:
                 ("no", "no"): ("39", "captive:no", "not captive"),
             },
             ("quality (defaults to 3,4,5)", "quality"): {
-                ("no rating", "0"): ("40", "no rating", "q:0"),
-                ("terrible", "1"): ("41", "terrible", "q:1"),
-                ("poor", "2"): ("42", "poor", "q:2"),
-                ("average", "3"): ("43", "average", "avg", "q:3"),
-                ("good", "4"): ("44", "good", "q:4"),
-                ("excellent", "5"): ("45", "excellent", "best", "q:5"),
+                ("no rating", "0"): ("40", "no rating", "q0"),
+                ("terrible", "1"): ("41", "terrible", "q1"),
+                ("poor", "2"): ("42", "poor", "q2"),
+                ("average", "3"): ("43", "average", "avg", "q3"),
+                ("good", "4"): ("44", "good", "q4"),
+                ("excellent", "5"): ("45", "excellent", "best", "q5"),
             },
             ("smaller images (defaults to no)", "small"): {
                 ("yes", True): ("46", "small", "smaller images")
             },
+            ("black & white (defaults to no)", "bw"): {
+                ("yes", True): ("47", "bw", "b&w")
+            }
         }
         if lookup:
             return {
@@ -316,6 +333,11 @@ class Filter:
                 title[1]: {
                     name[1]: int(aliases[0]) for name, aliases in subdict.items()
                 }
+                for title, subdict in aliases.items()
+            }
+        elif display_lookup:
+            return {
+                title[1]: (title[0], {key[1]:key[0] for key in subdict.keys()})
                 for title, subdict in aliases.items()
             }
         else:

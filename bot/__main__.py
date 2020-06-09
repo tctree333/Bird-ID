@@ -31,6 +31,7 @@ from sentry_sdk import capture_exception, configure_scope
 
 from bot.core import rotate_cache, send_bird
 from bot.data import GenericError, database, logger
+from bot.filters import Filter
 from bot.functions import backup_all, channel_setup, drone_attack, user_setup
 
 # The channel id that the backups send to
@@ -162,7 +163,7 @@ if __name__ == '__main__':
         us = holidays.US()
         if now in us:
             if us.get(now) == "Thanksgiving":
-                await send_bird(ctx, "Wild Turkey")
+                await send_bird(ctx, "Wild Turkey", Filter())
                 await ctx.send("**It's Thanksgiving!**\nGo celebrate with your family.")
                 raise GenericError(code=666)
         elif now == date(now.year, 4, 1):
