@@ -214,6 +214,8 @@ class Birds(commands.Cog):
                     roles = check_state_role(ctx)
 
                 session_filter = int(database.hget(f"session.data:{ctx.author.id}", "filter"))
+                if Filter().from_int(session_filter).quality and filters.quality == Filter().quality:
+                    filters.xor(Filter()) # clear defaults
                 filters.xor(session_filter)
 
             if state_args:
@@ -232,6 +234,8 @@ class Birds(commands.Cog):
             logger.info("race parameters")
 
             race_filter = int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
+            if Filter().from_int(race_filter).quality and filters.quality == Filter().quality:
+                filters.xor(Filter()) # clear defaults
             filters.xor(race_filter)
 
             taxon = database.hget(f"race.data:{ctx.channel.id}", "taxon").decode("utf-8")
