@@ -537,7 +537,9 @@ async def _get_urls(
                 return urls
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
-        urls = [data["mediaUrl"] for data in content]
+        urls = ([data["previewUrl"] for data in content]
+                if filters.small else
+                [data["mediaUrl"] for data in content])
         return urls
 
 async def _download_helper(path, url, session, sem):
