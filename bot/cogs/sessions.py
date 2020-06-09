@@ -35,7 +35,7 @@ class Sessions(commands.Cog):
         filters = Filter().from_int(int(filter_int))
         options = textwrap.dedent(
             f"""\
-            **Active Filters:** {', '.join(filters.display())}
+            **Active Filters:** `{'`, `'.join(filters.display())}`
             **State bird list:** {state.decode('utf-8') if state else 'None'}
             **Bird taxon:** {taxon.decode('utf-8') if taxon else 'None'}
             **Wiki Embeds**: {wiki==b'wiki'}
@@ -117,7 +117,7 @@ class Sessions(commands.Cog):
             await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session edit`*")
             return
         else:
-            filters = Filter().parse(args_str)
+            filters = Filter().parse(args_str, defaults=False)
 
             args = args_str.lower().split(" ")
             logger.info(f"args: {args}")
@@ -183,6 +183,7 @@ class Sessions(commands.Cog):
             logger.info(f"args: {args}")
 
             new_filter.xor(int(database.hget(f"session.data:{ctx.author.id}", "filter")))
+            database.hset(f"session.data:{ctx.author.id}", "filter", str(new_filter.to_int()))
 
             if "wiki" in args:
                 if database.hget(f"session.data:{ctx.author.id}", "wiki"):
