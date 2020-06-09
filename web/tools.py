@@ -5,7 +5,7 @@ from io import BytesIO
 import aiohttp
 import flask
 
-from bot.core import _black_and_white, _download_helper
+from bot.core import _black_and_white
 from web.config import logger
 
 bp = flask.Blueprint('tools', __name__, url_prefix='/tools')

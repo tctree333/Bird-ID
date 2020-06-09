@@ -22,6 +22,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger, states, taxons
+from bot.filters import Filter
 from bot.functions import CustomCooldown, check_state_role
 
 
@@ -30,11 +31,11 @@ class Sessions(commands.Cog):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        bw, addon, state, taxon, wiki, strict = database.hmget(f"session.data:{ctx.author.id}", ["bw", "addon", "state", "taxon", "wiki", "strict"])
+        filter_int, state, taxon, wiki, strict = database.hmget(f"session.data:{ctx.author.id}", ["filter", "state", "taxon", "wiki", "strict"])
+        filters = Filter().from_int(int(filter_int))
         options = textwrap.dedent(
             f"""\
-            **Age/Sex:** {addon.decode('utf-8') if addon else 'default'}
-            **Black & White:** {bw==b'bw'}
+            **Active Filters:** `{'`, `'.join(filters.display())}`
             **State bird list:** {state.decode('utf-8') if state else 'None'}
             **Bird taxon:** {taxon.decode('utf-8') if taxon else 'None'}
             **Wiki Embeds**: {wiki==b'wiki'}
@@ -105,7 +106,7 @@ class Sessions(commands.Cog):
         These settings can be changed at any time with 'b!session edit', and arguments can be passed in any order. 
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
-        usage="[bw] [state] [female|juvenile] [order/family]"
+        usage="[state] [taxons] [filters]"
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def start(self, ctx, *, args_str: str = ""):
@@ -116,13 +117,10 @@ class Sessions(commands.Cog):
             await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session edit`*")
             return
         else:
+            filters = Filter().parse(args_str)
+
             args = args_str.lower().split(" ")
             logger.info(f"args: {args}")
-
-            if "bw" in args:
-                bw = "bw"
-            else:
-                bw = ""
 
             if "wiki" in args:
                 wiki = ""
@@ -146,19 +144,7 @@ class Sessions(commands.Cog):
             else:
                 taxon = ""
 
-            female = "female" in args or "f" in args
-            juvenile = "juvenile" in args or "j" in args
-            if female and juvenile:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
-                return
-            elif female:
-                addon = "female"
-            elif juvenile:
-                addon = "juvenile"
-            else:
-                addon = ""
-
-            logger.info(f"adding bw: {bw}; addon: {addon}; state: {state}; wiki: {wiki}; strict: {strict}")
+            logger.info(f"adding filters: {filters}; state: {state}; wiki: {wiki}; strict: {strict}")
 
             database.hset(
                 f"session.data:{ctx.author.id}",
@@ -168,9 +154,8 @@ class Sessions(commands.Cog):
                     "correct": 0,
                     "incorrect": 0,
                     "total": 0,
-                    "bw": bw,
+                    "filter": str(filters.to_int()),
                     "state": state,
-                    "addon": addon,
                     "taxon": taxon,
                     "wiki": wiki,
                     "strict": strict
@@ -185,23 +170,20 @@ class Sessions(commands.Cog):
         "will give you stats on how your performance and also set global variables such as black and white, " +
         "state specific bird lists, specific bird taxons, or bird age/sex. ",
         aliases=["view"],
-        usage="[bw] [state] [female|juvenile]"
+        usage="[state] [taxons] [filters]"
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def edit(self, ctx, *, args_str: str = ""):
         logger.info("command: view session")
 
         if database.exists(f"session.data:{ctx.author.id}"):
+            new_filter = Filter().parse(args_str, defaults=False)
+
             args = args_str.lower().split(" ")
             logger.info(f"args: {args}")
 
-            if "bw" in args:
-                if not database.hget(f"session.data:{ctx.author.id}", "bw"):
-                    logger.info("adding bw")
-                    database.hset(f"session.data:{ctx.author.id}", "bw", "bw")
-                else:
-                    logger.info("removing bw")
-                    database.hset(f"session.data:{ctx.author.id}", "bw", "")
+            new_filter.xor(int(database.hget(f"session.data:{ctx.author.id}", "filter")))
+            database.hset(f"session.data:{ctx.author.id}", "filter", str(new_filter.to_int()))
 
             if "wiki" in args:
                 if database.hget(f"session.data:{ctx.author.id}", "wiki"):
@@ -242,28 +224,6 @@ class Sessions(commands.Cog):
                     add_taxons.append(o)
                 logger.info(f"adding taxons: {add_taxons}")
                 database.hset(f"session.data:{ctx.author.id}", "taxon", " ".join(add_taxons).strip())
-
-            female = "female" in args or "f" in args
-            juvenile = "juvenile" in args or "j" in args
-            if female and juvenile:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
-                return
-            elif female:
-                addon = "female"
-                if not database.hget(f"session.data:{ctx.author.id}", "addon"):
-                    logger.info("adding female")
-                    database.hset(f"session.data:{ctx.author.id}", "addon", addon)
-                else:
-                    logger.info("removing female")
-                    database.hset(f"session.data:{ctx.author.id}", "addon", "")
-            elif juvenile:
-                addon = "juvenile"
-                if not database.hget(f"session.data:{ctx.author.id}", "addon"):
-                    logger.info("adding juvenile")
-                    database.hset(f"session.data:{ctx.author.id}", "addon", addon)
-                else:
-                    logger.info("removing juvenile")
-                    database.hset(f"session.data:{ctx.author.id}", "addon", "")
 
             await self._send_stats(ctx, f"**Session started previously.**\n")
         else:

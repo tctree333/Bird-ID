@@ -45,52 +45,167 @@ class TestBirds:
         asyncio.run(channel_setup(self.ctx))
         asyncio.run(user_setup(self.ctx))
 
-
     ### Bird Command Tests
     def test_bird_dm_1(self):
         self.setup(guild=True)
 
-        coroutine = self.cog.bird.callback(self.cog, self.ctx) # pylint: disable=no-member
+        coroutine = self.cog.bird.callback(
+            self.cog, self.ctx
+        )  # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[
-            2
-        ].content == "**Recognized arguments:** *Black & White*: `False`, *Female/Juvenile*: `None`, *Taxons*: `None`, *Detected State*: `None`"
-        assert self.ctx.messages[
-            4
-        ].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is an image.*"
+        for i in (
+            "Active Filters",
+            "quality: good",
+            "*Taxons*: `None`",
+            "*Detected State*: `None`",
+        ):
+            assert i in self.ctx.messages[2].content
+        for i in (
+            "Here you go!",
+            "Use `b!bird` again",
+            "b!skip",
+            "Use `b!check guess` to check your answer.",
+        ):
+            assert i in self.ctx.messages[4].content
 
     def test_bird_dm_2(self):
         self.setup(guild=True)
 
-        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="bw female") # pylint: disable=no-member
+        coroutine = self.cog.bird.callback(
+            self.cog, self.ctx, args_str="bw female"
+        )  # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[
-            2
-        ].content == "**Recognized arguments:** *Black & White*: `True`, *Female/Juvenile*: `female`, *Taxons*: `None`, *Detected State*: `None`"
-        assert self.ctx.messages[
-            4
-        ].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is a female.*"
+        for i in (
+            "Active Filters",
+            "quality: good",
+            "sex: female",
+            "bw: yes",
+            "*Taxons*: `None`",
+            "*Detected State*: `None`",
+        ):
+            assert i in self.ctx.messages[2].content
+        for i in (
+            "Here you go!",
+            "Use `b!bird` again",
+            "b!skip",
+            "Use `b!check guess` to check your answer.",
+        ):
+            assert i in self.ctx.messages[4].content
 
     def test_bird_dm_3(self):
         self.setup(guild=True)
 
-        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="passeriformes yolo bw juvenile") # pylint: disable=no-member
+        coroutine = self.cog.bird.callback(
+            self.cog, self.ctx, args_str="passeriformes yolo bw juvenile"
+        )  # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[
-            2
-        ].content == "**Recognized arguments:** *Black & White*: `True`, *Female/Juvenile*: `juvenile`, *Taxons*: `passeriformes`, *Detected State*: `None`"
-        assert self.ctx.messages[
-            4
-        ].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is a juvenile.*"
+        for i in (
+            "Active Filters",
+            "quality: good",
+            "age: juvenile",
+            "bw: yes",
+            "*Taxons*: `passeriformes`",
+            "*Detected State*: `None`",
+        ):
+            assert i in self.ctx.messages[2].content
+        for i in (
+            "Here you go!",
+            "Use `b!bird` again",
+            "b!skip",
+            "Use `b!check guess` to check your answer.",
+        ):
+            assert i in self.ctx.messages[4].content
 
     def test_bird_dm_4(self):
         self.setup(guild=True)
 
-        coroutine = self.cog.bird.callback(self.cog, self.ctx, args_str="13435 troglodytidae f")  # pylint: disable=no-member
+        coroutine = self.cog.bird.callback(
+            self.cog, self.ctx, args_str="13435 troglodytidae f"
+        )  # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[
-            2
-        ].content == "**Recognized arguments:** *Black & White*: `False`, *Female/Juvenile*: `female`, *Taxons*: `troglodytidae`, *Detected State*: `None`"
-        assert self.ctx.messages[
-            4
-        ].content == "*Here you go!* \n**Use `b!bird` again to get a new image of the same bird, or `b!skip` to get a new bird. Use `b!check guess` to check your answer. Use `b!hint` for a hint.**\n*This is a female.*"
+        for i in (
+            "Active Filters",
+            "quality: good",
+            "sex: female",
+            "*Taxons*: `troglodytidae`",
+            "*Detected State*: `None`",
+        ):
+            assert i in self.ctx.messages[2].content
+        for i in (
+            "Here you go!",
+            "Use `b!bird` again",
+            "b!skip",
+            "Use `b!check guess` to check your answer.",
+        ):
+            assert i in self.ctx.messages[4].content
+
+    def test_bird_state_na(self):
+        self.setup(guild=True)
+
+        coroutine = self.cog.bird.callback(
+            self.cog, self.ctx, args_str="na"
+        )  # pylint: disable=no-member
+        assert asyncio.run(coroutine) is None
+        for i in (
+            "Active Filters",
+            "quality: good",
+            "*Taxons*: `None`",
+            "*Detected State*: `NA`",
+        ):
+            assert i in self.ctx.messages[2].content
+        for i in (
+            "Here you go!",
+            "Use `b!bird` again",
+            "b!skip",
+            "Use `b!check guess` to check your answer.",
+        ):
+            assert i in self.ctx.messages[4].content
+
+    def test_bird_other_options(self):
+        self.setup(guild=True)
+        database.hset(f"channel:{self.ctx.channel.id}", "bird", "Canada Goose")
+        database.hset(f"channel:{self.ctx.channel.id}", "answered", "0")
+
+        coroutine = self.cog.bird.callback(
+            self.cog, self.ctx, args_str="small egg nest"
+        )  # pylint: disable=no-member
+        assert asyncio.run(coroutine) is None
+        for i in (
+            "Active Filters",
+            "tags: eggs",
+            "tags: nest",
+            "small: yes",
+            "quality: good",
+        ):
+            assert i in self.ctx.messages[2].content
+        for i in ("Taxons","Detected State"):
+            assert i not in self.ctx.messages[2].content
+        for i in (
+            "Here you go!",
+            "Use `b!bird` again",
+            "b!skip",
+            "Use `b!check guess` to check your answer.",
+        ):
+            assert i in self.ctx.messages[4].content
+
+    def test_bird_quality_option(self):
+        self.setup(guild=True)
+
+        coroutine = self.cog.bird.callback(
+            self.cog, self.ctx, args_str="q1"
+        )  # pylint: disable=no-member
+        assert asyncio.run(coroutine) is None
+        for i in (
+            "Active Filters",
+            "quality: terrible",
+        ):
+            assert i in self.ctx.messages[2].content
+        for i in ("quality: excellent","quality: average", "quality: good"):
+            assert i not in self.ctx.messages[2].content
+        for i in (
+            "Here you go!",
+            "Use `b!bird` again",
+            "b!skip",
+            "Use `b!check guess` to check your answer.",
+        ):
+            assert i in self.ctx.messages[4].content

@@ -17,6 +17,7 @@
 from discord.ext import commands
 
 from bot.data import database, get_wiki_url, logger
+from bot.filters import Filter
 from bot.functions import CustomCooldown, streak_increment
 
 
@@ -49,9 +50,9 @@ class Skip(commands.Cog):
                     await race.stop_race_(ctx)
                 else:
                     logger.info("auto sending next bird image")
-                    addon, bw, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["addon", "bw", "taxon", "state"])
+                    filter_int, taxon, state = database.hmget(f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"])
                     birds = self.bot.get_cog("Birds")
-                    await birds.send_bird_(ctx, addon.decode("utf-8"), bw.decode("utf-8"), taxon.decode("utf-8"), state.decode("utf-8"))
+                    await birds.send_bird_(ctx, Filter().from_int(int(filter_int)), taxon.decode("utf-8"), state.decode("utf-8"))
         else:
             await ctx.send("You need to ask for a bird first!")
 

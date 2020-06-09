@@ -29,16 +29,13 @@ import wikipedia
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception, configure_scope
 
-from bot.core import precache, send_bird
+from bot.core import rotate_cache, send_bird
 from bot.data import GenericError, database, logger
+from bot.filters import Filter
 from bot.functions import backup_all, channel_setup, drone_attack, user_setup
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])
-
-def start_precache():
-    """Downloads all the images/songs before they're needed."""
-    asyncio.run(precache())
 
 def start_backup():
     """Backs up the database to a discord channel."""
@@ -61,10 +58,7 @@ if __name__ == '__main__':
         logger.info(bot.user.id)
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
-
-        if os.getenv("SCIOLY_ID_BOT_ENABLE_PRECACHE") != "false":
-            refresh_cache.start()
-
+        refresh_cache.start()
         if os.getenv("SCIOLY_ID_BOT_ENABLE_BACKUPS") != "false":
             refresh_backup.start()
 
@@ -169,7 +163,7 @@ if __name__ == '__main__':
         us = holidays.US()
         if now in us:
             if us.get(now) == "Thanksgiving":
-                await send_bird(ctx, "Wild Turkey")
+                await send_bird(ctx, "Wild Turkey", Filter())
                 await ctx.send("**It's Thanksgiving!**\nGo celebrate with your family.")
                 raise GenericError(code=666)
         elif now == date(now.year, 4, 1):
@@ -341,17 +335,18 @@ if __name__ == '__main__':
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
 
-    @tasks.loop(hours=24.0)
+    @tasks.loop(hours=1.0)
     async def refresh_cache():
-        """Re-downloads all the images/songs."""
+        """Task to delete a random selection of cached birds every hour."""
+        logger.info("TASK: Refreshing some cache items")
         event_loop = asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
-            await event_loop.run_in_executor(executor, start_precache)
+            await event_loop.run_in_executor(executor, rotate_cache)
 
     @tasks.loop(hours=6.0)
     async def refresh_backup():
         """Sends a copy of the database to a discord channel (BACKUPS_CHANNEL)."""
-        logger.info("Refreshing backup")
+        logger.info("TASK: Refreshing backup")
         try:
             os.remove('backups/dump.dump')
             logger.info("Cleared backup dump")

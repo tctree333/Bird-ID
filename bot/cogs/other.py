@@ -17,13 +17,14 @@
 import random
 from difflib import get_close_matches
 
+import discord
 import wikipedia
 from discord.ext import commands
-from sentry_sdk import capture_exception
 
-from bot.core import get_sciname, get_taxon, precache, send_bird, send_birdsong
+from bot.core import get_sciname, get_taxon, send_bird, send_birdsong
 from bot.data import (birdListMaster, logger, memeList, sciBirdListMaster,
                       states, taxons)
+from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list
 
 
@@ -32,22 +33,56 @@ class Other(commands.Cog):
         self.bot = bot
 
     # Info - Gives call+image of 1 bird
-    @commands.command(help="- Gives an image and call of a bird", aliases=['i'])
+    @commands.command(
+        brief="- Gives an image and call of a bird",
+        help="- Gives an image and call of a bird. The bird name must come before any options.",
+        usage="[bird] [options]",
+        aliases=['i']
+    )
     @commands.check(CustomCooldown(10.0, bucket=commands.BucketType.user))
     async def info(self, ctx, *, arg):
         logger.info("command: info")
+        arg = arg.lower().strip()
 
-        matches = get_close_matches(arg, birdListMaster + sciBirdListMaster, n=1)
-        if matches:
-            bird = matches[0]
+        filters = Filter().parse(arg)
+        options = filters.display()
+        arg = arg.split(" ")
+        for i in reversed(range(1,6)):
+            matches = get_close_matches(" ".join(arg[:i]), birdListMaster + sciBirdListMaster, n=1)
+            if matches:
+                bird = matches[0]
+                delete = await ctx.send("Please wait a moment.")
+                if options:
+                    await ctx.send(f"**Detected filters**: `{'`, `'.join(options)}`")
+                await send_bird(ctx, bird, filters, message=f"Here's a *{bird.lower()}* image!")
+                await send_birdsong(ctx, bird, message=f"Here's a *{bird.lower()}* call!")
+                await delete.delete()
+                return
+        await ctx.send("Bird not found. Are you sure it's on the list?")
 
-            delete = await ctx.send("Please wait a moment.")
-            await send_bird(ctx, bird, message=f"Here's a *{bird.lower()}* image!")
-            await send_birdsong(ctx, bird, message=f"Here's a *{bird.lower()}* call!")
-            await delete.delete()
-
-        else:
-            await ctx.send("Bird not found. Are you sure it's on the list?")
+    # Filter command - lists available Macaulay Library filters and aliases
+    @commands.command(help="- Lists available Macaulay Library filters.", aliases=["filter"])
+    @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
+    async def filters(self, ctx):
+        logger.info("command: filters")
+        filters = Filter().aliases()
+        embed = discord.Embed(
+            title="Media Filters",
+            type="rich",
+            description="Filters can be space-seperated or comma-seperated. " +
+                        "You can use any alias to set filters. " +
+                        "Please note media will only be shown if it " +
+                        "matches all the filters, so using filters can " +
+                        "greatly reduce the number of media returned.",
+            color=discord.Color.green()
+        )
+        embed.set_author(name="Bird ID - An Ornithology Bot")
+        for title, subdict in filters.items():
+            value = ""
+            for name, aliases in subdict.items():
+                value += f"**{name.title()}**: `{'`, `'.join(aliases)}`\n"
+            embed.add_field(name=title.title(), value=value, inline=False)
+        await ctx.send(embed=embed)
 
     # List command - argument is state/bird list
     @commands.command(help="- DMs the user with the appropriate bird list.", name="list")
@@ -190,7 +225,6 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(300.0, bucket=commands.BucketType.user))
     async def meme(self, ctx):
         logger.info("command: meme")
-
         await ctx.send(random.choice(memeList))
 
     # Send command - for testing purposes only
@@ -204,52 +238,6 @@ class Other(commands.Cog):
         channel = self.bot.get_channel(channel_id)
         await channel.send(message)
         await ctx.send("Ok, sent!")
-
-    # Role command - for testing purposes only
-    @commands.command(help="- role command", hidden=True, aliases=["giverole"])
-    @commands.is_owner()
-    async def give_role(self, ctx, *, args):
-        logger.info("command: give role")
-        logger.info(f"args: {args}")
-        try:
-            guild_id = int(args.split(' ')[0])
-            role_id = int(args.split(' ')[1])
-            guild = self.bot.get_guild(guild_id)
-            role = guild.get_role(role_id)
-            await guild.get_member(ctx.author.id).add_roles(role)
-            await ctx.send("Ok, done!")
-        except Exception as e:
-            capture_exception(e)
-            logger.exception(e)
-            await ctx.send(f"Error: {e}")
-
-    # Un role command - for testing purposes only
-    @commands.command(help="- role command", hidden=True, aliases=["rmrole"])
-    @commands.is_owner()
-    async def remove_role(self, ctx, *, args):
-        logger.info("command: remove role")
-        logger.info(f"args: {args}")
-        try:
-            guild_id = int(args.split(' ')[0])
-            role_id = int(args.split(' ')[1])
-            guild = self.bot.get_guild(guild_id)
-            role = guild.get_role(role_id)
-            await guild.get_member(ctx.author.id).remove_roles(role)
-            await ctx.send("Ok, done!")
-        except Exception as e:
-            capture_exception(e)
-            logger.exception(e)
-            await ctx.send(f"Error: {e}")
-
-    # Test command - for testing purposes only
-    @commands.command(help="- test command", hidden=True, aliases=["getall", "precache"])
-    @commands.is_owner()
-    async def get_all(self, ctx):
-        logger.info("command: get_all")
-        await ctx.send(f"Caching all images.")
-        stats = await precache()
-        await ctx.send(f"Finished Cache in approx. {stats['total']} seconds. {ctx.author.mention}")
-        await ctx.send(f"```python\n{stats}```")
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)
@@ -266,14 +254,6 @@ class Other(commands.Cog):
     async def error(self, ctx):
         logger.info("command: error")
         await ctx.send(1 / 0)
-
-    # Test command - for testing purposes only
-    @commands.command(help="- test command", hidden=True)
-    @commands.check(CustomCooldown(10.0))
-    @commands.is_owner()
-    async def test(self, ctx):
-        logger.info("command: test")
-        await ctx.send("test")
 
 def setup(bot):
     bot.add_cog(Other(bot))

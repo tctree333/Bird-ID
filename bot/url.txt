@@ -1,0 +1,70 @@
+Breakdown of all Macaulay Library filter parameters.
+There are some region parameters that are available that aren't listed here.
+
+    https://search.macaulaylibrary.org/catalog.json?searchField=species
+
+    &taxonCode=cangoo
+
+            ## MEDIA TYPE
+             &mediaType=all (all, p, a, v)
+
+            ## AGE
+1            &age=a (adult)
+2            &age=i (immature)
+3            &age=j (juvenile)
+4            &age=u (unknown)
+
+            ## SEX
+5            &sex=m (male)
+6            &sex=f (female)
+7            &sex=u (unknown)
+
+            ## BEHAVIOR
+8            &beh=e (eating/foraging)
+9            &beh=f (flying)
+10           &beh=p (preening)
+11           &beh=vocalizing (vocalizing)
+12           &beh=molting (molting)
+
+            ## BREEDING
+13           &bre=cdc (courtship, display, or copulation)
+14           &bre=fy (feeding young)
+15           &bre=cf (carrying food)
+16           &bre=cfs (carrying fecal sac)
+17           &bre=nb (nest building)
+
+            ## SOUNDS
+18           &behaviors=s (song)
+19           &behaviors=c (call)
+20           &behaviors=nv (non-vocal)
+21           &behaviors=ds (dawn song)
+22           &behaviors=fs (flight song)
+23           &behaviors=fc (flight call)
+24           &behaviors=dt (duet)
+25           &tag=env (environmental)
+26           &tag=peo (people)
+
+            ## PHOTO TAGS
+27           &tag=mul (multiple species)
+28           &tag=in (in-hand)
+29           &tag=nes (nest)
+30           &tag=egg (eggs)
+31           &tag=hab (habitat)
+32           &tag=wat (watermark)
+33           &tag=bac (back of camera)
+34           &tag=dea (dead)
+35           &tag=fie (field notes/sketch)
+36           &tag=non (no bird)
+
+            ## QUALITY
+40-45        &qua=0 (0-5, 0=No rating, 1=worst, 5=best)
+
+            ## CAPTIVE (Animals in captivity)
+37, 38, 39   &cap=all (all, yes, no)
+
+            ## STATUS (Unconfirmed media are pending review by eBird.)
+             &includeUnconfirmed=T (show unconfirmed)
+             &includeUnconfirmed=O (only unconfirmed)
+
+            ## REQUEST (Limit results to media that is licensable for commercial, research, or educational use.)
+             &req=true (requestable media)

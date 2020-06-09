@@ -24,6 +24,7 @@ from bot.data import database, goatsuckers, logger, states, taxons
 from bot.functions import (CustomCooldown, bird_setup, build_id_list,
                            check_state_role, error_skip, error_skip_goat,
                            error_skip_song, session_increment)
+from bot.filters import Filter
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, " +
@@ -33,7 +34,7 @@ BASE_MESSAGE = (
 
 BIRD_MESSAGE = BASE_MESSAGE.format(
     media="image", new_cmd="bird", skip_cmd="skip", check_cmd="check", hint_cmd="hint"
-) + "\n*This is a{option}.*"
+)
 GS_MESSAGE = BASE_MESSAGE.format(
     media="image", new_cmd="gs", skip_cmd="skipgoat", check_cmd="checkgoat", hint_cmd="hintgoat"
 )
@@ -49,12 +50,7 @@ class Birds(commands.Cog):
         bird_setup(ctx, bird)
         database.zincrby("frequency.bird:global", 1, string.capwords(bird))
 
-    async def send_bird_(self, ctx, add_on: str = "", bw: bool = False, taxon_str: str = "", role_str: str = ""):
-        if add_on == "":
-            message = BIRD_MESSAGE.format(option="n image")
-        else:
-            message = BIRD_MESSAGE.format(option=f" {add_on}")
-
+    async def send_bird_(self, ctx, filters: Filter, taxon_str: str = "", role_str: str = ""):
         if taxon_str:
             taxon = taxon_str.split(" ")
         else:
@@ -65,9 +61,6 @@ class Birds(commands.Cog):
         else:
             roles = []
 
-        if not isinstance(bw, bool):
-            bw = bw == "bw"
-
         logger.info("bird: " + database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"))
 
         answered = int(database.hget(f"channel:{ctx.channel.id}", "answered"))
@@ -76,11 +69,11 @@ class Birds(commands.Cog):
         if answered:  # if yes, give a new bird
             session_increment(ctx, "total", 1)
 
-            logger.info(f"addon: {add_on}; bw: {bw}; taxon: {taxon}; roles: {roles}")
+            logger.info(f"filters: {filters}; taxon: {taxon}; roles: {roles}")
 
             await ctx.send(
-                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
-                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`, " +
+                f"**Recognized arguments:** " +
+                f"*Active Filters*: `{'`, `'.join(filters.display())}`, " +
                 f"*Taxons*: `{'None' if taxon == [] else ' '.join(taxon)}`, " +
                 f"*Detected State*: `{'None' if roles == [] else ' '.join(roles)}`"
             )
@@ -111,19 +104,17 @@ class Birds(commands.Cog):
             database.hset(f"channel:{ctx.channel.id}", "bird", str(currentBird))
             logger.info("currentBird: " + str(currentBird))
             database.hset(f"channel:{ctx.channel.id}", "answered", "0")
-            await send_bird(ctx, currentBird, on_error=error_skip, message=message, addOn=add_on, bw=bw)
+            await send_bird(ctx, currentBird, filters, on_error=error_skip, message=BIRD_MESSAGE)
         else:  # if no, give the same bird
             await ctx.send(
-                f"**Recognized arguments:** *Black & White*: `{bw}`, " +
-                f"*Female/Juvenile*: `{'None' if add_on == '' else add_on}`"
+                f"**Active Filters**: `{'`, `'.join(filters.display())}`"
             )
             await send_bird(
                 ctx,
                 database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"),
+                filters,
                 on_error=error_skip,
-                message=message,
-                addOn=add_on,
-                bw=bw
+                message=BIRD_MESSAGE,
             )
 
     async def send_song_(self, ctx):
@@ -172,7 +163,7 @@ class Birds(commands.Cog):
     # Bird command - no args
     # help text
     @commands.command(
-        help='- Sends a random bird image for you to ID', aliases=["b"], usage="[female|juvenile] [bw] [order/family]"
+        help='- Sends a random bird image for you to ID', aliases=["b"], usage="[filters] [order/family] [state]"
     )
     # 5 second cooldown
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
@@ -181,20 +172,6 @@ class Birds(commands.Cog):
 
         args = args_str.split(" ")
         logger.info(f"args: {args}")
-
-        bw = "bw" in args
-
-        female = "female" in args or "f" in args
-        juvenile = "juvenile" in args or "j" in args
-        if female and juvenile:
-            await ctx.send("**Juvenile females are not yet supported.**\n*Please try again*")
-            return
-        elif female:
-            add_on = "female"
-        elif juvenile:
-            add_on = "juvenile"
-        else:
-            add_on = ""
 
         if not database.exists(f"race.data:{ctx.channel.id}"):
             roles = check_state_role(ctx)
@@ -234,18 +211,14 @@ class Birds(commands.Cog):
                     logger.info("no session lists")
                     roles = check_state_role(ctx)
 
-                session_add_on = database.hget(f"session.data:{ctx.author.id}", "addon").decode("utf-8")
-                if add_on == "":
-                    add_on = session_add_on
-                elif add_on == session_add_on:
-                    add_on = ""
-                elif session_add_on == "":
-                    add_on = add_on
-                else:
-                    await ctx.send("**Juvenile females are not yet supported.**\n*Overriding session options...*")
-
-                if database.hget(f"session.data:{ctx.author.id}", "bw").decode("utf-8"):
-                    bw = not bw
+                session_filter = int(database.hget(f"session.data:{ctx.author.id}", "filter"))
+                filters = Filter().parse(args_str, defaults=False)
+                default_quality = Filter().quality
+                if Filter().from_int(session_filter).quality == default_quality and filters.quality and filters.quality != default_quality:
+                    filters.xor(Filter()) # clear defaults
+                filters.xor(session_filter)
+            else:
+                filters = Filter().parse(args_str)
 
             if state_args:
                 toggle_states = list(state_args)
@@ -262,25 +235,19 @@ class Birds(commands.Cog):
         else:
             logger.info("race parameters")
 
-            race_add_on = database.hget(f"race.data:{ctx.channel.id}", "addon").decode("utf-8")
-            if add_on == "":
-                add_on = race_add_on
-            elif add_on == race_add_on:
-                add_on = ""
-            elif race_add_on == "":
-                add_on = add_on
-            else:
-                await ctx.send("**Juvenile females are not yet supported.**\n*Overriding race options...*")
-
-            if database.hget(f"race.data:{ctx.channel.id}", "bw").decode("utf-8"):
-                bw = not bw
+            race_filter = int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
+            filters = Filter().parse(args_str, defaults=False)
+            default_quality = Filter().quality
+            if Filter().from_int(race_filter).quality == default_quality and filters.quality and filters.quality != default_quality:
+                filters.xor(Filter()) # clear defaults
+            filters.xor(race_filter)
 
             taxon = database.hget(f"race.data:{ctx.channel.id}", "taxon").decode("utf-8")
             state = database.hget(f"race.data:{ctx.channel.id}", "state").decode("utf-8")
 
-        logger.info(f"args: bw: {bw}; addon: {add_on}; taxon: {taxon}; state: {state}")
+        logger.info(f"args: filters: {filters}; taxon: {taxon}; state: {state}")
 
-        await self.send_bird_(ctx, add_on, bw, taxon, state)
+        await self.send_bird_(ctx, filters, taxon, state)
 
     # goatsucker command - no args
     # just for fun, no real purpose
@@ -300,11 +267,12 @@ class Birds(commands.Cog):
 
             database.hset(f"channel:{ctx.channel.id}", "goatsucker", str(currentBird))
             logger.info("currentBird: " + str(currentBird))
-            await send_bird(ctx, currentBird, on_error=error_skip_goat, message=GS_MESSAGE)
+            await send_bird(ctx, currentBird, Filter(), on_error=error_skip_goat, message=GS_MESSAGE)
         else:  # if no, give the same bird
             await send_bird(
                 ctx,
                 database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode("utf-8"),
+                Filter(),
                 on_error=error_skip_goat,
                 message=GS_MESSAGE
             )
