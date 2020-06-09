@@ -8,6 +8,7 @@ COUNT = 20  # number of media items from catalog url
 
 class Filter:
     _boolean_options = ("small", "bw")
+    _default_options = {"quality": {"3", "4", "5"}}
 
     def __init__(
         self,
@@ -200,7 +201,7 @@ class Filter:
 
     def parse(self, args: str):
         """Parse an argument string as Macaulay Library media filters."""
-        self.__init__()  # reset existing filters to default
+        self._clear()  # reset existing filters to empty
         lookup = self.aliases(lookup=True)
         args = args.lower().strip()
         if "," in args:
@@ -215,6 +216,10 @@ class Filter:
                     self.__dict__[key[0]] = key[1]
                     continue
                 self.__dict__[key[0]].add(key[1])
+        for key in self._default_options.keys():
+            if len(self.__dict__[key]) == 0:
+                self.__dict__[key] = self._default_options[key]
+
         return self
 
     def display(self):
