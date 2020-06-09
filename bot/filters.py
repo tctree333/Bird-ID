@@ -222,6 +222,8 @@ class Filter:
             for key in self._default_options.keys():
                 if len(self.__dict__[key]) == 0:
                     self.__dict__[key] = self._default_options[key]
+                elif self.__dict__[key] == self._default_options[key]:
+                    self.xor(self.__class__())
 
         return self
 

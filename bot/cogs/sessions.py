@@ -117,7 +117,7 @@ class Sessions(commands.Cog):
             await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session edit`*")
             return
         else:
-            filters = Filter().parse(args_str, defaults=False)
+            filters = Filter().parse(args_str)
 
             args = args_str.lower().split(" ")
             logger.info(f"args: {args}")
@@ -177,7 +177,7 @@ class Sessions(commands.Cog):
         logger.info("command: view session")
 
         if database.exists(f"session.data:{ctx.author.id}"):
-            new_filter = Filter().parse(args_str)
+            new_filter = Filter().parse(args_str, defaults=False)
 
             args = args_str.lower().split(" ")
             logger.info(f"args: {args}")

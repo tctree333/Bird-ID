@@ -159,7 +159,7 @@ class Race(commands.Cog):
             await ctx.send("**There is already a race in session.** *Change settings/view stats with `b!race view`*")
             return
         else:
-            filters = Filter().parse(args_str, defaults=False)
+            filters = Filter().parse(args_str)
 
             args = args_str.split(" ")
             logger.info(f"args: {args}")

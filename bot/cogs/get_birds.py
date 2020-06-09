@@ -170,8 +170,6 @@ class Birds(commands.Cog):
     async def bird(self, ctx, *, args_str: str = ""):
         logger.info("command: bird")
 
-        filters = Filter().parse(args_str)
-
         args = args_str.split(" ")
         logger.info(f"args: {args}")
 
@@ -214,9 +212,13 @@ class Birds(commands.Cog):
                     roles = check_state_role(ctx)
 
                 session_filter = int(database.hget(f"session.data:{ctx.author.id}", "filter"))
-                if Filter().from_int(session_filter).quality and filters.quality == Filter().quality:
+                filters = Filter().parse(args_str, defaults=False)
+                default_quality = Filter().quality
+                if Filter().from_int(session_filter).quality == default_quality and filters.quality and filters.quality != default_quality:
                     filters.xor(Filter()) # clear defaults
                 filters.xor(session_filter)
+            else:
+                filters = Filter().parse(args_str)
 
             if state_args:
                 toggle_states = list(state_args)
@@ -234,7 +236,9 @@ class Birds(commands.Cog):
             logger.info("race parameters")
 
             race_filter = int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
-            if Filter().from_int(race_filter).quality and filters.quality == Filter().quality:
+            filters = Filter().parse(args_str, defaults=False)
+            default_quality = Filter().quality
+            if Filter().from_int(race_filter).quality == default_quality and filters.quality and filters.quality != default_quality:
                 filters.xor(Filter()) # clear defaults
             filters.xor(race_filter)
 
