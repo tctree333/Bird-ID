@@ -8,6 +8,7 @@ COUNT = 20  # number of media items from catalog url
 
 class Filter:
     _boolean_options = ("small", "bw")
+
     def __init__(
         self,
         age: Union[str, Iterable] = (),
@@ -76,7 +77,8 @@ class Filter:
     def _clear(self):
         """Clear all filters."""
         self.__dict__ = {
-            k: (set() if k in self._boolean_options else False) for k in self.__dict__.keys()
+            k: (False if k in self._boolean_options else set())
+            for k in self.__dict__.keys()
         }
 
     def _validate(self) -> bool:
@@ -139,9 +141,10 @@ class Filter:
         url += f"&taxonCode={taxon_code}&mediaType={media_type}&count={COUNT}"
 
         for item in self.__dict__.items():
-            if ((item[0] == "sounds" and media_type == "p") or (
-                item[0] == "tags" and media_type == "a") or 
-                item[0] in self._boolean_options
+            if (
+                (item[0] == "sounds" and media_type == "p")
+                or (item[0] == "tags" and media_type == "a")
+                or item[0] in self._boolean_options
             ):
                 # disable invalid filters on certain media types
                 continue
@@ -185,29 +188,50 @@ class Filter:
                     continue
                 self.__dict__[key[0]].add(key[1])
 
+    def __xor__(self, number: int):
+        self.xor(number)
+
+    def xor(self, number: int):
+        """Combine/toggle filters by xor-ing the integer representations."""
+        if number >= 2 ** 47 or number < 0:
+            raise ValueError("Input number out of bounds.")
+        self.from_int(number ^ self.to_int())
+
     def parse(self, args: str):
         """Parse an argument string as Macaulay Library media filters."""
         self.__init__()  # reset existing filters to default
         lookup = self.aliases(lookup=True)
-        display = self.aliases(display_lookup=True)
         args = args.lower().strip()
         if "," in args:
             args = map(lambda x: x.strip(), args.split(","))
         else:
             args = map(lambda x: x.strip(), args.split(" "))
 
-        detected = []
         for arg in args:
             key = lookup.get(arg)
             if key is not None:
-                detected.append(f"{key[0]}:{display[key[0]][1][key[1]]}")
                 if key[0] in self._boolean_options:
                     self.__dict__[key[0]] = key[1]
                     continue
                 self.__dict__[key[0]].add(key[1])
-        return detected
+        return self.display()
 
-    def aliases(self, lookup: bool = False, num: bool = False, display_lookup: bool = False):
+    def display(self):
+        """Return a list describing the filters."""
+        output = []
+        display = self.aliases(display_lookup=True)
+        for title, values in self.__dict__.items():
+            if title in self._boolean_options:
+                if values:
+                    output.append(f"{title}: {display[title][1][values]}")
+                continue
+            for name in values:
+                output.append(f"{title}: {display[title][1][name]}")
+        return output
+
+    def aliases(
+        self, lookup: bool = False, num: bool = False, display_lookup: bool = False
+    ):
         """Generate filter alises.
 
         If lookup, returns a dict mapping aliases to filter names,
@@ -315,11 +339,11 @@ class Filter:
                 ("excellent", "5"): ("45", "excellent", "best", "q5"),
             },
             ("smaller images (defaults to no)", "small"): {
-                ("yes", True): ("46", "small", "smaller images")
+                ("yes", True): ("46", "small", "smaller images"),
             },
             ("black & white (defaults to no)", "bw"): {
-                ("yes", True): ("47", "bw", "b&w")
-            }
+                ("yes", True): ("47", "bw", "b&w"),
+            },
         }
         if lookup:
             return {
@@ -337,7 +361,7 @@ class Filter:
             }
         elif display_lookup:
             return {
-                title[1]: (title[0], {key[1]:key[0] for key in subdict.keys()})
+                title[1]: (title[0], {key[1]: key[0] for key in subdict.keys()})
                 for title, subdict in aliases.items()
             }
         else:
