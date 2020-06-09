@@ -190,16 +190,18 @@ class Filter:
                 self.__dict__[key[0]].add(key[1])
         return self
 
-    def __xor__(self, number: int):
-        self.xor(number)
+    def __xor__(self, other):
+        self.xor(other)
 
-    def xor(self, number: int):
+    def xor(self, other):
         """Combine/toggle filters by xor-ing the integer representations."""
-        if number >= 2 ** 47 or number < 0:
+        if isinstance(other, self.__class__):
+            other = other.to_int()
+        if other >= 2 ** 47 or other < 0:
             raise ValueError("Input number out of bounds.")
-        self.from_int(number ^ self.to_int())
+        self.from_int(other ^ self.to_int())
 
-    def parse(self, args: str):
+    def parse(self, args: str, defaults: bool = True):
         """Parse an argument string as Macaulay Library media filters."""
         self._clear()  # reset existing filters to empty
         lookup = self.aliases(lookup=True)
@@ -216,9 +218,10 @@ class Filter:
                     self.__dict__[key[0]] = key[1]
                     continue
                 self.__dict__[key[0]].add(key[1])
-        for key in self._default_options.keys():
-            if len(self.__dict__[key]) == 0:
-                self.__dict__[key] = self._default_options[key]
+        if defaults:
+            for key in self._default_options.keys():
+                if len(self.__dict__[key]) == 0:
+                    self.__dict__[key] = self._default_options[key]
 
         return self
 
@@ -233,6 +236,8 @@ class Filter:
                 continue
             for name in values:
                 output.append(f"{title}: {display[title][1][name]}")
+        if not output:
+            output.append("None")
         return output
 
     def aliases(
