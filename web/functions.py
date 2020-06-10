@@ -7,7 +7,7 @@ from flask import abort
 from sentry_sdk import capture_exception
 
 from bot.core import (_black_and_white, get_files, get_sciname,
-                      valid_audio_extensions, valid_image_extensions)
+                      valid_audio_types, valid_image_types)
 from bot.data import GenericError, birdList, database, logger, screech_owls
 from bot.filters import Filter
 from web.config import get_session_id
@@ -81,8 +81,8 @@ async def get_media(bird, media_type, filters):  # images or songs
             media_path = media[y]
             extension = media_path.split('.')[-1]
             logger.info("extension: " + str(extension))
-            if (media_type == "images" and extension.lower() in valid_image_extensions) or \
-                    (media_type == "songs" and extension.lower() in valid_audio_extensions):
+            if (media_type == "images" and extension.lower() in valid_image_types.values()) or \
+                    (media_type == "songs" and extension.lower() in valid_audio_types.values()):
                 logger.info("found one!")
                 break
             elif y == prevJ:
