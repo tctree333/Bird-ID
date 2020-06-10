@@ -1,3 +1,19 @@
+# filters.py | Macaulay Library filter representation functions
+# Copyright (C) 2019-2020  EraserBird, person_v1.32, hmmm
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 from typing import Union
 from collections.abc import Iterable
 
@@ -257,7 +273,7 @@ class Filter:
         aliases = {
             ("age", "age"): {
                 ("adult", "a"): ("1", "adult", "a"),
-                ("immature", "i"): ("2", "immature", "i"),
+                ("immature", "i"): ("2", "immature", "im"),
                 ("juvenile", "j"): ("3", "juvenile", "j"),
                 ("unknown", "u"): ("4", "age:unknown", "unknown age"),
             },
@@ -299,7 +315,7 @@ class Filter:
                 ),
             },
             ("sounds", "sounds"): {
-                ("song", "s"): ("18", "song", "s"),
+                ("song", "s"): ("18", "song", "so"),
                 ("call", "c"): ("19", "call", "c"),
                 ("non-vocal", "nv"): ("20", "non-vocal", "non vocal", "nv"),
                 ("dawn song", "ds"): ("21", "dawn", "dawn song", "ds"),
