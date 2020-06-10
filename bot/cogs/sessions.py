@@ -31,7 +31,10 @@ class Sessions(commands.Cog):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        filter_int, state, taxon, wiki, strict = database.hmget(f"session.data:{ctx.author.id}", ["filter", "state", "taxon", "wiki", "strict"])
+        filter_int, state, taxon, wiki, strict = database.hmget(
+            f"session.data:{ctx.author.id}",
+            ["filter", "state", "taxon", "wiki", "strict"],
+        )
         filters = Filter().from_int(int(filter_int))
         options = textwrap.dedent(
             f"""\
@@ -46,7 +49,11 @@ class Sessions(commands.Cog):
 
     async def _get_stats(self, ctx):
         start, correct, incorrect, total = map(
-            int, database.hmget(f"session.data:{ctx.author.id}", ["start", "correct", "incorrect", "total"])
+            int,
+            database.hmget(
+                f"session.data:{ctx.author.id}",
+                ["start", "correct", "incorrect", "total"],
+            ),
         )
         elapsed = datetime.timedelta(seconds=round(time.time()) - start)
         try:
@@ -68,20 +75,28 @@ class Sessions(commands.Cog):
     async def _send_stats(self, ctx, preamble):
         database_key = f"session.incorrect:{ctx.author.id}"
 
-        embed = discord.Embed(type="rich", colour=discord.Color.blurple(), title=preamble)
+        embed = discord.Embed(
+            type="rich", colour=discord.Color.blurple(), title=preamble
+        )
         embed.set_author(name="Bird ID - An Ornithology Bot")
 
         if database.zcard(database_key) != 0:
-            leaderboard_list = database.zrevrangebyscore(database_key, "+inf", "-inf", 0, 5, True)
+            leaderboard_list = database.zrevrangebyscore(
+                database_key, "+inf", "-inf", 0, 5, True
+            )
             leaderboard = ""
 
             for i, stats in enumerate(leaderboard_list):
-                leaderboard += f"{i+1}. **{stats[0].decode('utf-8')}** - {int(stats[1])}\n"
+                leaderboard += (
+                    f"{i+1}. **{stats[0].decode('utf-8')}** - {int(stats[1])}\n"
+                )
         else:
             logger.info(f"no birds in {database_key}")
             leaderboard = "**There are no missed birds.**"
 
-        embed.add_field(name="Options", value=await self._get_options(ctx), inline=False)
+        embed.add_field(
+            name="Options", value=await self._get_options(ctx), inline=False
+        )
         embed.add_field(name="Stats", value=await self._get_stats(ctx), inline=False)
         embed.add_field(name=f"Top Missed Birds", value=leaderboard, inline=False)
 
@@ -89,14 +104,18 @@ class Sessions(commands.Cog):
 
     @commands.group(
         brief="- Base session command",
-        help="- Base session command\n" + "Sessions will record your activity for an amount of time and " +
-        "will give you stats on how your performance and " + "also set global variables such as black and white, " +
-        "state specific bird lists, specific bird taxons, or bird age/sex. ",
-        aliases=["ses", "sesh"]
+        help="- Base session command\n"
+        + "Sessions will record your activity for an amount of time and "
+        + "will give you stats on how your performance and "
+        + "also set global variables such as black and white, "
+        + "state specific bird lists, specific bird taxons, or bird age/sex. ",
+        aliases=["ses", "sesh"],
     )
     async def session(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctx.send('**Invalid subcommand passed.**\n*Valid Subcommands:* `start, view, stop`')
+            await ctx.send(
+                "**Invalid subcommand passed.**\n*Valid Subcommands:* `start, view, stop`"
+            )
 
     # starts session
     @session.command(
@@ -106,7 +125,7 @@ class Sessions(commands.Cog):
         These settings can be changed at any time with 'b!session edit', and arguments can be passed in any order. 
         However, having both females and juveniles are not supported.""",
         aliases=["st"],
-        usage="[state] [taxons] [filters]"
+        usage="[state] [taxons] [filters]",
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def start(self, ctx, *, args_str: str = ""):
@@ -114,7 +133,9 @@ class Sessions(commands.Cog):
 
         if database.exists(f"session.data:{ctx.author.id}"):
             logger.info("already session")
-            await ctx.send("**There is already a session running.** *Change settings/view stats with `b!session edit`*")
+            await ctx.send(
+                "**There is already a session running.** *Change settings/view stats with `b!session edit`*"
+            )
             return
         else:
             filters = Filter().parse(args_str)
@@ -144,7 +165,9 @@ class Sessions(commands.Cog):
             else:
                 taxon = ""
 
-            logger.info(f"adding filters: {filters}; state: {state}; wiki: {wiki}; strict: {strict}")
+            logger.info(
+                f"adding filters: {filters}; state: {state}; wiki: {wiki}; strict: {strict}"
+            )
 
             database.hset(
                 f"session.data:{ctx.author.id}",
@@ -158,19 +181,21 @@ class Sessions(commands.Cog):
                     "state": state,
                     "taxon": taxon,
                     "wiki": wiki,
-                    "strict": strict
-                }
+                    "strict": strict,
+                },
             )
-            await ctx.send(f"**Session started with options:**\n{await self._get_options(ctx)}")
+            await ctx.send(
+                f"**Session started with options:**\n{await self._get_options(ctx)}"
+            )
 
     # views session
     @session.command(
         brief="- Views session",
-        help="- Views session\nSessions will record your activity for an amount of time and " +
-        "will give you stats on how your performance and also set global variables such as black and white, " +
-        "state specific bird lists, specific bird taxons, or bird age/sex. ",
+        help="- Views session\nSessions will record your activity for an amount of time and "
+        + "will give you stats on how your performance and also set global variables such as black and white, "
+        + "state specific bird lists, specific bird taxons, or bird age/sex. ",
         aliases=["view"],
-        usage="[state] [taxons] [filters]"
+        usage="[state] [taxons] [filters]",
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def edit(self, ctx, *, args_str: str = ""):
@@ -182,8 +207,12 @@ class Sessions(commands.Cog):
             args = args_str.lower().split(" ")
             logger.info(f"args: {args}")
 
-            new_filter.xor(int(database.hget(f"session.data:{ctx.author.id}", "filter")))
-            database.hset(f"session.data:{ctx.author.id}", "filter", str(new_filter.to_int()))
+            new_filter.xor(
+                int(database.hget(f"session.data:{ctx.author.id}", "filter"))
+            )
+            database.hset(
+                f"session.data:{ctx.author.id}", "filter", str(new_filter.to_int())
+            )
 
             if "wiki" in args:
                 if database.hget(f"session.data:{ctx.author.id}", "wiki"):
@@ -192,7 +221,7 @@ class Sessions(commands.Cog):
                 else:
                     logger.info("disabling wiki embeds")
                     database.hset(f"session.data:{ctx.author.id}", "wiki", "wiki")
-            
+
             if "strict" in args:
                 if database.hget(f"session.data:{ctx.author.id}", "strict"):
                     logger.info("disabling strict spelling")
@@ -203,31 +232,43 @@ class Sessions(commands.Cog):
 
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
-                toggle_states = list(states_args)
-                current_states = database.hget(f"session.data:{ctx.author.id}", "state").decode("utf-8").split(" ")
-                add_states = []
-                logger.info(f"toggle states: {toggle_states}")
+                current_states = set(
+                    database.hget(f"session.data:{ctx.author.id}", "state")
+                    .decode("utf-8")
+                    .split(" ")
+                )
+                logger.info(f"toggle states: {states_args}")
                 logger.info(f"current states: {current_states}")
-                for state in set(toggle_states).symmetric_difference(set(current_states)):
-                    add_states.append(state)
-                logger.info(f"adding states: {add_states}")
-                database.hset(f"session.data:{ctx.author.id}", "state", " ".join(add_states).strip())
+                states_args.symmetric_difference_update(current_states)
+                logger.info(f"new states: {states_args}")
+                database.hset(
+                    f"session.data:{ctx.author.id}",
+                    "state",
+                    " ".join(states_args).strip(),
+                )
 
             taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
             if taxon_args:
-                toggle_taxon = list(taxon_args)
-                current_taxons = database.hget(f"session.data:{ctx.author.id}", "taxon").decode("utf-8").split(" ")
-                add_taxons = []
-                logger.info(f"toggle taxons: {toggle_taxon}")
+                current_taxons = set(
+                    database.hget(f"session.data:{ctx.author.id}", "taxon")
+                    .decode("utf-8")
+                    .split(" ")
+                )
+                logger.info(f"toggle taxons: {taxon_args}")
                 logger.info(f"current taxons: {current_taxons}")
-                for o in set(toggle_taxon).symmetric_difference(set(current_taxons)):
-                    add_taxons.append(o)
-                logger.info(f"adding taxons: {add_taxons}")
-                database.hset(f"session.data:{ctx.author.id}", "taxon", " ".join(add_taxons).strip())
+                taxon_args.symmetric_difference_update(current_taxons)
+                logger.info(f"new taxons: {taxon_args}")
+                database.hset(
+                    f"session.data:{ctx.author.id}",
+                    "taxon",
+                    " ".join(taxon_args).strip(),
+                )
 
             await self._send_stats(ctx, f"**Session started previously.**\n")
         else:
-            await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
+            await ctx.send(
+                "**There is no session running.** *You can start one with `b!session start`*"
+            )
 
     # stops session
     @session.command(help="- Stops session", aliases=["stp", "end"])
@@ -242,7 +283,10 @@ class Sessions(commands.Cog):
             database.delete(f"session.data:{ctx.author.id}")
             database.delete(f"session.incorrect:{ctx.author.id}")
         else:
-            await ctx.send("**There is no session running.** *You can start one with `b!session start`*")
+            await ctx.send(
+                "**There is no session running.** *You can start one with `b!session start`*"
+            )
+
 
 def setup(bot):
     bot.add_cog(Sessions(bot))

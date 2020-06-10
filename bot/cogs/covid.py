@@ -78,7 +78,8 @@ class COVID(commands.Cog):
 
     def getLocationById(self, country_id: int, us_county: bool = False):
         data = self._request(
-            "/v2/locations/" + str(country_id), {"source": ("csbs" if us_county else "jhu")}
+            "/v2/locations/" + str(country_id),
+            {"source": ("csbs" if us_county else "jhu")},
         )
         return data["location"]
 
@@ -163,8 +164,13 @@ class COVID(commands.Cog):
             if location_matches:
                 await ctx.send(f"Fetching data for location `{location_matches[0]}`.")
                 location_id = self.covid_location_ids[location_matches[0]]
-                us_county = location_matches[0].split(", ")[-1] == "US" and location_matches[0].count(",") == 2
-                c, d, r = self.getLocationById(location_id, us_county)["latest"].values()
+                us_county = (
+                    location_matches[0].split(", ")[-1] == "US"
+                    and location_matches[0].count(",") == 2
+                )
+                c, d, r = self.getLocationById(location_id, us_county)[
+                    "latest"
+                ].values()
                 embed = self.format_data(c, d, r, location_matches[0])
                 await ctx.send(embed=embed)
                 return

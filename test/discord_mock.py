@@ -1,9 +1,5 @@
 import random
 
-import pytest
-
-from bot.data import database
-
 
 class Bot:
     def __init__(self, guilds=[]):
@@ -20,11 +16,13 @@ class User:
         self.id = user_id
         self.roles = []
 
+
 class Member(User):
     def __init__(self, guild=None, nick=None, user_id=None, username=None):
         super().__init__(user_id, username)
         self.guild = guild
         self.nick = nick
+
 
 class Guild:
     def __init__(self, guild_id=None):
@@ -32,8 +30,14 @@ class Guild:
         self.members = []
 
     def add_member(self, nick):
-        self.members.append(Member(self, nick+"_MEMBER", random.randint(999999999999990000, 999999999999999999), nick))
-
+        self.members.append(
+            Member(
+                self,
+                nick + "_MEMBER",
+                random.randint(999999999999990000, 999999999999999999),
+                nick,
+            )
+        )
 
 
 class Message:
@@ -71,11 +75,14 @@ class Message:
     async def delete(self):
         return
 
+
 class Context:
     def __init__(self, bot=None):
         self.guild = None
         self.channel = Channel(random.randint(999999999999990000, 999999999999999999))
-        self.author = User(random.randint(999999999999990000, 999999999999999999), "MOCK USER")
+        self.author = User(
+            random.randint(999999999999990000, 999999999999999999), "MOCK USER"
+        )
         self.last_message = Message()
         self.messages = []
         self.bot = bot

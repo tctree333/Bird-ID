@@ -8,12 +8,13 @@ import flask
 from bot.core import _black_and_white
 from web.config import logger
 
-bp = flask.Blueprint('tools', __name__, url_prefix='/tools')
+bp = flask.Blueprint("tools", __name__, url_prefix="/tools")
 
-valid_endpoints = ("test.cdn.download.ams.birds.cornell.edu")
+valid_endpoints = "test.cdn.download.ams.birds.cornell.edu"
 valid_content_types = ("image/png", "image/jpeg")
 
-@bp.route('/bw', methods=['GET'])
+
+@bp.route("/bw", methods=["GET"])
 def convert_bw():
     logger.info("endpoint: convert bw")
     url = flask.request.args.get("url", default=None, type=str)
@@ -32,6 +33,7 @@ def convert_bw():
     image, content_type = asyncio.run(_bw_helper(url))
     return flask.send_file(image, mimetype=content_type)
 
+
 async def _bw_helper(url):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -41,4 +43,7 @@ async def _bw_helper(url):
             if response.content_type not in valid_content_types:
                 logger.info("invalid content type")
                 flask.abort(415, "invalid content type")
-            return (_black_and_white(BytesIO(await response.read())), response.content_type)
+            return (
+                _black_and_white(BytesIO(await response.read())),
+                response.content_type,
+            )

@@ -18,12 +18,12 @@ sentry_sdk.init(
         else f"{os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}"
     ),
     dsn=os.getenv("SENTRY_API_DSN"),
-    integrations=[FlaskIntegration(), RedisIntegration()]
+    integrations=[FlaskIntegration(), RedisIntegration()],
 )
 app = Flask(__name__)
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-app.config['SESSION_COOKIE_SAMESITE'] = "Strict"
-app.config['SESSION_COOKIE_SECURE'] = True
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
+app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
+app.config["SESSION_COOKIE_SECURE"] = True
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 DATABASE_SESSION_EXPIRE = 172800  # 2 days
@@ -47,6 +47,7 @@ DATABASE_SESSION_EXPIRE = 172800  # 2 days
 #   discriminator: ""
 # }
 
+
 def web_session_setup(session_id):
     logger.info("setting up session")
     session_id = str(session_id)
@@ -62,26 +63,27 @@ def web_session_setup(session_id):
                 "prevB": "",
                 "prevJ": 20,
                 "tempScore": 0,  # not used = -1
-                "user_id": 0  # not set = 0
-            }
+                "user_id": 0,  # not set = 0
+            },
         )
         database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)
         logger.info("session set up")
 
+
 def update_web_user(user_data):
     logger.info("updating user data")
     session_id = get_session_id()
-    user_id = str(user_data['id'])
+    user_id = str(user_data["id"])
     database.hset(f"web.session:{session_id}", "user_id", user_id)
     database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)
     database.hset(
         f"web.user:{user_id}",
         mapping={
-            "avatar_hash": str(user_data['avatar']),
+            "avatar_hash": str(user_data["avatar"]),
             "avatar_url": f"https://cdn.discordapp.com/avatars/{user_id}/{user_data['avatar']}.png",
-            "username": str(user_data['username']),
-            "discriminator": str(user_data['discriminator'])
-        }
+            "username": str(user_data["username"]),
+            "discriminator": str(user_data["discriminator"]),
+        },
     )
     asyncio.run(user_setup(user_id))
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
@@ -89,6 +91,7 @@ def update_web_user(user_data):
         database.zincrby("users:global", tempScore, int(user_id))
         database.hset(f"web.session:{session_id}", "tempScore", -1)
     logger.info("updated user data")
+
 
 def get_session_id():
     if "id" not in session:
@@ -100,6 +103,7 @@ def get_session_id():
     else:
         return str(session["id"])
 
+
 def start_session():
     logger.info("creating session id")
     session_id = 0
@@ -110,6 +114,7 @@ def start_session():
     web_session_setup(session_id)
     logger.info(f"created session id: {session_id}")
     return session_id
+
 
 def verify_session(session_id):
     session_id = str(session_id)
