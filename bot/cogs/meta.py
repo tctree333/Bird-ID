@@ -125,7 +125,11 @@ class Meta(commands.Cog):
         await ctx.send(
             (f"**Ignoring:**\n{added}" if added else "")
             + (f"**Stopped ignoring:**\n{removed}" if removed else "")
-            + (f"**Ignored Channels:**\n{ignored}" if ignored else "**No channels in this server are currently ignored.**")
+            + (
+                f"**Ignored Channels:**\n{ignored}"
+                if ignored
+                else "**No channels in this server are currently ignored.**"
+            )
         )
 
     # leave command - removes itself from guild
