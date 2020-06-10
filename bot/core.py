@@ -40,8 +40,8 @@ SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 
 # Valid file types
-valid_image_extensions = {"png", "jpeg"}
-valid_audio_extensions = {"mp3", "wav"}
+valid_image_types = {"image/png": "png", "image/jpeg": "jpg"}
+valid_audio_types = {"audio/mpeg": "mp3", "audio/wav": "wav"}
 
 
 def cache(func=None):
@@ -390,7 +390,7 @@ async def get_image(ctx, bird: str, filters: Filter):
             statInfo = os.stat(image_link)
             logger.info("size: " + str(statInfo.st_size))
             if (
-                extension.lower() in valid_image_extensions
+                extension.lower() in valid_image_types.values()
                 and statInfo.st_size < 4000000
             ):  # keep files less than 4mb
                 logger.info("found one!")
@@ -438,7 +438,7 @@ async def get_song(ctx, bird):
             statInfo = os.stat(song_link)
             logger.info("size: " + str(statInfo.st_size))
             if (
-                extension.lower() in valid_audio_extensions
+                extension.lower() in valid_audio_types.values()
                 and statInfo.st_size < 4000000
             ):  # keep files less than 4mb
                 logger.info("found one!")
@@ -607,44 +607,23 @@ async def _download_helper(path, url, session, sem):
                 )
                 if content_type.partition("/")[0] == "image":
                     try:
-                        ext = (
-                            "."
-                            + (
-                                set(
-                                    ext[1:]
-                                    for ext in guess_all_extensions(content_type)
-                                ).intersection(valid_image_extensions)
-                            ).pop()
-                        )
+                        ext = valid_image_types[content_type]
                     except KeyError:
                         raise GenericError(
-                            f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}"
+                            f"No valid extensions found. Content-Type: {content_type}"
                         )
 
                 elif content_type.partition("/")[0] == "audio":
                     try:
-                        ext = (
-                            "."
-                            + (
-                                set(
-                                    ext[1:]
-                                    for ext in guess_all_extensions(content_type)
-                                ).intersection(valid_audio_extensions)
-                            ).pop()
-                        )
+                        ext = valid_audio_types[content_type]
                     except KeyError:
                         raise GenericError(
-                            f"No valid extensions found. Extensions: {guess_all_extensions(content_type)}"
+                            f"No valid extensions found. Content-Type: {content_type}"
                         )
-
                 else:
-                    ext = guess_extension(content_type)
-                    if ext is None:
-                        raise GenericError(f"No extensions found.")
-                logger.info(
-                    f"download helper - detected extension: {ext} with content type {content_type}"
-                )
-                filename = f"{path}{ext}"
+                    raise GenericError(f"Invalid content-type.")
+
+                filename = f"{path}.{ext}"
                 # from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5
                 with open(filename, "wb") as out_file:
                     block_size = 1024 * 8
@@ -656,6 +635,7 @@ async def _download_helper(path, url, session, sem):
                             break
                         out_file.write(block)
                 return filename
+
         except aiohttp.ClientError as e:
             logger.info(f"Client Error with url {url} and path {path}")
             capture_exception(e)
