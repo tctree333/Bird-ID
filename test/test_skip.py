@@ -74,7 +74,7 @@ class TestSkip:
     def test_skipgoat_bird_dm(self):
         self.setup(guild=True)
         test_word = "Common Pauraque"
-        database.hset(f"channel:{self.ctx.channel.id}", "goatsucker", test_word)
+        database.hset(f"channel:{self.ctx.channel.id}", bird, test_word)
 
         coroutine = self.cog.skipgoat.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
@@ -92,7 +92,7 @@ class TestSkip:
     def test_skipsong_bird_dm(self):
         self.setup(guild=True)
         test_word = "Northern Cardinal"
-        database.hset(f"channel:{self.ctx.channel.id}", "sBird", test_word)
+        database.hset(f"channel:{self.ctx.channel.id}", "bird", test_word)
 
         coroutine = self.cog.skipsong.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None

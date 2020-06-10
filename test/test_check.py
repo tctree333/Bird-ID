@@ -82,7 +82,7 @@ class TestCheck:
     def test_check_song_dm_1(self):
         self.setup(guild=True)
         test_word = "Northern Cardinal"
-        database.hset(f"channel:{self.ctx.channel.id}", "sBird", test_word)
+        database.hset(f"channel:{self.ctx.channel.id}", "bird", test_word)
 
         coroutine = self.cog.checksong.callback(self.cog, self.ctx, arg=test_word) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
@@ -91,7 +91,7 @@ class TestCheck:
     def test_check_song_dm_2(self):
         self.setup(guild=True)
         test_word = "Northern Cardinal"
-        database.hset(f"channel:{self.ctx.channel.id}", "sBird", test_word)
+        database.hset(f"channel:{self.ctx.channel.id}", "bird", test_word)
 
         coroutine = self.cog.checksong.callback(self.cog, self.ctx, arg=test_word*2) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
@@ -107,7 +107,7 @@ class TestCheck:
     def test_check_goat_dm_1(self):
         self.setup(guild=True)
         test_word = "Common Pauraque"
-        database.hset(f"channel:{self.ctx.channel.id}", "goatsucker", test_word)
+        database.hset(f"channel:{self.ctx.channel.id}", bird, test_word)
 
         coroutine = self.cog.checkgoat.callback(self.cog, self.ctx, arg=test_word) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
@@ -116,7 +116,7 @@ class TestCheck:
     def test_check_goat_dm_2(self):
         self.setup(guild=True)
         test_word = "Common Pauraque"
-        database.hset(f"channel:{self.ctx.channel.id}", "goatsucker", test_word)
+        database.hset(f"channel:{self.ctx.channel.id}", bird, test_word)
 
         coroutine = self.cog.checkgoat.callback(self.cog, self.ctx, arg=test_word*2) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None

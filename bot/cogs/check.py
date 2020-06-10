@@ -152,7 +152,7 @@ class Check(commands.Cog):
     async def checkgoat(self, ctx, *, arg):
         logger.info("command: checkgoat")
 
-        currentBird = database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode(
+        currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode(
             "utf-8"
         )
         if currentBird == "":  # no bird
@@ -167,8 +167,8 @@ class Check(commands.Cog):
 
             bird_setup(ctx, currentBird)
 
-            database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
-            database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
+            database.hset(f"channel:{ctx.channel.id}", "answered", "1")
+            database.hset(f"channel:{ctx.channel.id}", "bird", "")
 
             if database.hget(f"session.data:{ctx.author.id}", "strict"):
                 logger.info("strict spelling")
@@ -216,7 +216,7 @@ class Check(commands.Cog):
     async def checksong(self, ctx, *, arg):
         logger.info("command: checksong")
 
-        currentSongBird = database.hget(f"channel:{ctx.channel.id}", "sBird").decode(
+        currentSongBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode(
             "utf-8"
         )
         if currentSongBird == "":  # no bird
@@ -254,8 +254,8 @@ class Check(commands.Cog):
             if correct:
                 logger.info("correct")
 
-                database.hset(f"channel:{ctx.channel.id}", "sBird", "")
-                database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
+                database.hset(f"channel:{ctx.channel.id}", "bird", "")
+                database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
                 session_increment(ctx, "correct", 1)
                 streak_increment(ctx, 1)
@@ -315,8 +315,8 @@ class Check(commands.Cog):
                 if database.exists(f"race.data:{ctx.channel.id}"):
                     await ctx.send("Sorry, that wasn't the right answer.")
                 else:
-                    database.hset(f"channel:{ctx.channel.id}", "sBird", "")
-                    database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
+                    database.hset(f"channel:{ctx.channel.id}", "bird", "")
+                    database.hset(f"channel:{ctx.channel.id}", "answered", "1")
                     await ctx.send(
                         "Sorry, the bird was actually " + currentSongBird + "."
                     )

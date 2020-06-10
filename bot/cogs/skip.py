@@ -83,11 +83,11 @@ class Skip(commands.Cog):
     async def skipgoat(self, ctx):
         logger.info("command: skipgoat")
 
-        currentBird = database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode(
+        currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode(
             "utf-8"
         )
-        database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
-        database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
+        database.hset(f"channel:{ctx.channel.id}", "bird", "")
+        database.hset(f"channel:{ctx.channel.id}", "answered", "1")
         if currentBird != "":  # check if there is bird
             url = get_wiki_url(ctx, currentBird)
             await ctx.send(f"Ok, skipping {currentBird.lower()}")
@@ -104,11 +104,11 @@ class Skip(commands.Cog):
     async def skipsong(self, ctx):
         logger.info("command: skipsong")
 
-        currentSongBird = database.hget(f"channel:{ctx.channel.id}", "sBird").decode(
+        currentSongBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode(
             "utf-8"
         )
-        database.hset(f"channel:{ctx.channel.id}", "sBird", "")
-        database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
+        database.hset(f"channel:{ctx.channel.id}", "bird", "")
+        database.hset(f"channel:{ctx.channel.id}", "answered", "1")
         if currentSongBird != "":  # check if there is bird
             url = get_wiki_url(ctx, currentSongBird)
             await ctx.send(f"Ok, skipping {currentSongBird.lower()}")

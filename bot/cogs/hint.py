@@ -45,7 +45,7 @@ class Hint(commands.Cog):
     async def hintgoat(self, ctx):
         logger.info("command: hintgoat")
 
-        currentBird = database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode(
+        currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode(
             "utf-8"
         )
         if currentBird != "":  # check if there is bird
@@ -62,7 +62,7 @@ class Hint(commands.Cog):
     async def hintsong(self, ctx):
         logger.info("command: hintsong")
 
-        currentSongBird = database.hget(f"channel:{ctx.channel.id}", "sBird").decode(
+        currentSongBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode(
             "utf-8"
         )
         if currentSongBird != "":  # check if there is bird

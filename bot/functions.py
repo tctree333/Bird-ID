@@ -25,17 +25,8 @@ import string
 import discord
 from discord.ext import commands
 
-from bot.data import (
-    GenericError,
-    birdList,
-    birdListMaster,
-    database,
-    logger,
-    sciListMaster,
-    songBirds,
-    states,
-    taxons,
-)
+from bot.data import (GenericError, birdList, birdListMaster, database, logger,
+                      sciListMaster, songBirds, states, taxons)
 
 
 async def channel_setup(ctx):
@@ -49,18 +40,7 @@ async def channel_setup(ctx):
     else:
         database.hset(
             f"channel:{ctx.channel.id}",
-            mapping={
-                "bird": "",
-                "answered": 1,
-                "sBird": "",
-                "sAnswered": 1,
-                "goatsucker": "",
-                "gsAnswered": 1,
-                "prevJ": 20,
-                "prevB": "",
-                "prevS": "",
-                "prevK": 20,
-            },
+            mapping={"bird": "", "answered": 1, "prevB": "", "prevJ": 20, "prevK": 20,},
         )
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
         logger.info("channel data added")
@@ -232,26 +212,6 @@ def error_skip(ctx):
     logger.info("ok")
     database.hset(f"channel:{ctx.channel.id}", "bird", "")
     database.hset(f"channel:{ctx.channel.id}", "answered", "1")
-
-
-def error_skip_song(ctx):
-    """Skips the current song.
-    
-    Passed to send_birdsong() as on_error to skip the bird when an error occurs to prevent error loops.
-    """
-    logger.info("ok")
-    database.hset(f"channel:{ctx.channel.id}", "sBird", "")
-    database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
-
-
-def error_skip_goat(ctx):
-    """Skips the current goatsucker.
-    
-    Passed to send_bird() as on_error to skip the bird when an error occurs to prevent error loops.
-    """
-    logger.info("ok")
-    database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
-    database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
 
 
 def check_state_role(ctx) -> list:

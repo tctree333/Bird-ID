@@ -138,9 +138,9 @@ class Birds(commands.Cog):
             )
 
     async def send_song_(self, ctx):
-        songAnswered = int(database.hget(f"channel:{ctx.channel.id}", "sAnswered"))
+        answered = int(database.hget(f"channel:{ctx.channel.id}", "answered"))
         # check to see if previous bird was answered
-        if songAnswered:  # if yes, give a new bird
+        if answered:  # if yes, give a new bird
             roles = check_state_role(ctx)
             session_increment(ctx, "total", 1)
             if database.exists(f"session.data:{ctx.author.id}"):
@@ -167,23 +167,23 @@ class Birds(commands.Cog):
                 )
                 return
 
-            currentSongBird = random.choice(birds)
-            self.increment_bird_frequency(ctx, currentSongBird)
+            currentBird = random.choice(birds)
+            self.increment_bird_frequency(ctx, currentBird)
 
-            prevS = database.hget(f"channel:{ctx.channel.id}", "prevS").decode("utf-8")
-            while currentSongBird == prevS and len(birds) > 1:
-                currentSongBird = random.choice(birds)
-            database.hset(f"channel:{ctx.channel.id}", "prevS", str(currentSongBird))
-            database.hset(f"channel:{ctx.channel.id}", "sBird", str(currentSongBird))
-            logger.info("currentSongBird: " + str(currentSongBird))
-            database.hset(f"channel:{ctx.channel.id}", "sAnswered", "0")
+            prevB = database.hget(f"channel:{ctx.channel.id}", "prevB").decode("utf-8")
+            while currentBird == prevB and len(birds) > 1:
+                currentBird = random.choice(birds)
+            database.hset(f"channel:{ctx.channel.id}", "prevB", str(currentBird))
+            database.hset(f"channel:{ctx.channel.id}", "bird", str(currentBird))
+            logger.info("currentBird: " + str(currentBird))
+            database.hset(f"channel:{ctx.channel.id}", "answered", "0")
             await send_birdsong(
-                ctx, currentSongBird, on_error=error_skip_song, message=SONG_MESSAGE
+                ctx, currentBird, on_error=error_skip_song, message=SONG_MESSAGE
             )
         else:
             await send_birdsong(
                 ctx,
-                database.hget(f"channel:{ctx.channel.id}", "sBird").decode("utf-8"),
+                database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"),
                 on_error=error_skip_song,
                 message=SONG_MESSAGE,
             )
@@ -304,16 +304,16 @@ class Birds(commands.Cog):
     async def goatsucker(self, ctx):
         logger.info("command: goatsucker")
 
-        answered = int(database.hget(f"channel:{ctx.channel.id}", "gsAnswered"))
+        answered = int(database.hget(f"channel:{ctx.channel.id}", "answered"))
         # check to see if previous bird was answered
         if answered:  # if yes, give a new bird
             session_increment(ctx, "total", 1)
 
-            database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "0")
+            database.hset(f"channel:{ctx.channel.id}", "answered", "0")
             currentBird = random.choice(goatsuckers)
             self.increment_bird_frequency(ctx, currentBird)
 
-            database.hset(f"channel:{ctx.channel.id}", "goatsucker", str(currentBird))
+            database.hset(f"channel:{ctx.channel.id}", bird, str(currentBird))
             logger.info("currentBird: " + str(currentBird))
             await send_bird(
                 ctx, currentBird, Filter(), on_error=error_skip_goat, message=GS_MESSAGE
@@ -321,7 +321,7 @@ class Birds(commands.Cog):
         else:  # if no, give the same bird
             await send_bird(
                 ctx,
-                database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode(
+                database.hget(f"channel:{ctx.channel.id}", bird).decode(
                     "utf-8"
                 ),
                 Filter(),
@@ -337,11 +337,11 @@ class Birds(commands.Cog):
 
         logger.info(
             "bird: "
-            + database.hget(f"channel:{ctx.channel.id}", "sBird").decode("utf-8")
+            + database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
         )
         logger.info(
             "answered: "
-            + str(int(database.hget(f"channel:{ctx.channel.id}", "sAnswered")))
+            + str(int(database.hget(f"channel:{ctx.channel.id}", "answered")))
         )
 
         await self.send_song_(ctx)

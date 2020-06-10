@@ -75,7 +75,7 @@ class TestHint:
     def test_hintgoat_bird_dm(self):
         self.setup(guild=True)
         test_word = "banana_test"
-        database.hset(f"channel:{self.ctx.channel.id}", "goatsucker", test_word)
+        database.hset(f"channel:{self.ctx.channel.id}", "bird", test_word)
 
         coroutine = self.cog.hintgoat.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
@@ -93,7 +93,7 @@ class TestHint:
     def test_hintsong_bird_dm(self):
         self.setup(guild=True)
         test_word = "banana_test"
-        database.hset(f"channel:{self.ctx.channel.id}", "sBird", test_word)
+        database.hset(f"channel:{self.ctx.channel.id}", "bird", test_word)
 
         coroutine = self.cog.hintsong.callback(self.cog, self.ctx) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None

@@ -68,15 +68,13 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 
 # Database Format Definitions
 
-# prevJ - makes sure it sends a diff image
-# prevB - makes sure it sends a diff bird (img)
-# prevS - makes sure it sends a diff bird (sounds)
-# prevK - makes sure it sends a diff sound
-
-# server format = {
-# channel:channel_id : { "bird", "answered", "sBird", "sAnswered",
-#                     "goatsucker", "gsAnswered",
-#                     "prevJ", "prevB", "prevS", "prevK" }
+# server format:
+# channel:channel_id : {
+#                    "bird",
+#                    "answered",
+#                    "prevB", (makse sure it sends diff birds)
+#                    "prevJ", (makes sure it sends diff images)
+#                    "prevK" (makes sure it sends diff songs)
 # }
 
 # session format:

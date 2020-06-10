@@ -283,8 +283,8 @@ class Race(commands.Cog):
                 == "song"
             ):
                 logger.info("clearing previous bird")
-                database.hset(f"channel:{ctx.channel.id}", "sBird", "")
-                database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
+                database.hset(f"channel:{ctx.channel.id}", "bird", "")
+                database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
                 logger.info("auto sending next bird song")
                 birds = self.bot.get_cog("Birds")
