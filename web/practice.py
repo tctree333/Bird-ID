@@ -6,6 +6,7 @@ import flask
 
 from bot.core import spellcheck
 from bot.data import birdList, get_wiki_url, songBirds
+from bot.filters import Filter
 from bot.functions import (bird_setup, incorrect_increment, score_increment,
                            session_increment, streak_increment)
 from web.config import FRONTEND_URL, database, get_session_id, logger
@@ -32,9 +33,11 @@ def get_bird():
     logger.info("endpoint: get bird")
     session_id = get_session_id()
     media_type = flask.request.args.get("media", "images", str)
-    addon = flask.request.args.get("addon", "", str)
-    bw = bool(flask.request.args.get("bw", 0, int))
-    logger.info(f"args: media: {media_type}; addon: {addon}; bw: {bw};")
+
+    filters = Filter().parse(flask.request.args.get("addon", "", str))
+    if bool(flask.request.args.get("bw", 0, int)):
+        filters.bw = True
+    logger.info(f"args: media: {media_type}; filters: {filters};")
 
     logger.info(
         "bird: " + database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
@@ -68,7 +71,7 @@ def get_bird():
         database.hset(f"web.session:{session_id}", "media_type", str(media_type))
         logger.info("currentBird: " + str(currentBird))
         database.hset(f"web.session:{session_id}", "answered", "0")
-        file_object, ext = asyncio.run(send_bird(currentBird, media_type, addon, bw))
+        file_object, ext = asyncio.run(send_bird(currentBird, media_type, filters))
     else:  # if no, give the same bird
         file_object, ext = asyncio.run(
             send_bird(
@@ -76,8 +79,7 @@ def get_bird():
                 database.hget(f"web.session:{session_id}", "media_type").decode(
                     "utf-8"
                 ),
-                addon,
-                bw,
+                filters,
             )
         )
 
