@@ -22,7 +22,7 @@ import wikipedia
 from discord.ext import commands
 
 from bot.core import get_sciname, get_taxon, send_bird, send_birdsong
-from bot.data import (birdListMaster, logger, memeList, sciBirdListMaster,
+from bot.data import (birdListMaster, logger, memeList, sciListMaster,
                       states, taxons)
 from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list
@@ -48,7 +48,7 @@ class Other(commands.Cog):
         options = filters.display()
         arg = arg.split(" ")
         for i in reversed(range(1,6)):
-            matches = get_close_matches(" ".join(arg[:i]), birdListMaster + sciBirdListMaster, n=1)
+            matches = get_close_matches(" ".join(arg[:i]), birdListMaster + sciListMaster, n=1)
             if matches:
                 bird = matches[0]
                 delete = await ctx.send("Please wait a moment.")

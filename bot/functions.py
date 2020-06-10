@@ -26,7 +26,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import (GenericError, birdList, birdListMaster, database, logger,
-                      sciBirdListMaster, songBirds, states, taxons)
+                      sciListMaster, songBirds, states, taxons)
 
 
 async def channel_setup(ctx):
@@ -486,7 +486,7 @@ async def drone_attack(ctx):
 
     elif str(ctx.command) in ("check", "checkgoat", "checksong"):
         args = ctx.message.content.split(" ")[1:]
-        matches = difflib.get_close_matches(" ".join(args), birdListMaster + sciBirdListMaster, n=1)
+        matches = difflib.get_close_matches(" ".join(args), birdListMaster + sciListMaster, n=1)
         if "drone" in args:
             await ctx.send("SHHHHHH! Birds are **NOT** government drones! You'll blow our cover, and we'll need to get rid of you.")
         elif matches:
