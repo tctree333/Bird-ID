@@ -222,21 +222,16 @@ class Birds(commands.Cog):
                 logger.info("session parameters")
 
                 if taxon_args:
-                    toggle_taxon = list(taxon_args)
-                    current_taxons = (
+                    current_taxons = set(
                         database.hget(f"session.data:{ctx.author.id}", "taxon")
                         .decode("utf-8")
                         .split(" ")
                     )
-                    add_taxons = []
-                    logger.info(f"toggle taxons: {toggle_taxon}")
+                    logger.info(f"toggle taxons: {taxon_args}")
                     logger.info(f"current taxons: {current_taxons}")
-                    for o in set(toggle_taxon).symmetric_difference(
-                        set(current_taxons)
-                    ):
-                        add_taxons.append(o)
-                    logger.info(f"adding taxons: {add_taxons}")
-                    taxon = " ".join(add_taxons).strip()
+                    taxon_args.symmetric_difference_update(current_taxons)
+                    logger.info(f"new taxons: {taxon_args}")
+                    taxon = " ".join(taxon_args).strip()
                 else:
                     taxon = database.hget(
                         f"session.data:{ctx.author.id}", "taxon"
@@ -269,14 +264,11 @@ class Birds(commands.Cog):
                 filters = Filter().parse(args_str)
 
             if state_args:
-                toggle_states = list(state_args)
-                add_states = []
-                logger.info(f"toggle states: {toggle_states}")
+                logger.info(f"toggle states: {state_args}")
                 logger.info(f"current states: {roles}")
-                for s in set(toggle_states).symmetric_difference(set(roles)):
-                    add_states.append(s)
-                logger.info(f"adding states: {add_states}")
-                state = " ".join(add_states).strip()
+                state_args.symmetric_difference_update(set(roles))
+                logger.info(f"new states: {state_args}")
+                state = " ".join(state_args).strip()
             else:
                 state = " ".join(roles).strip()
 

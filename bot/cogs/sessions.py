@@ -232,44 +232,36 @@ class Sessions(commands.Cog):
 
             states_args = set(states.keys()).intersection({arg.upper() for arg in args})
             if states_args:
-                toggle_states = list(states_args)
-                current_states = (
+                current_states = set(
                     database.hget(f"session.data:{ctx.author.id}", "state")
                     .decode("utf-8")
                     .split(" ")
                 )
-                add_states = []
-                logger.info(f"toggle states: {toggle_states}")
+                logger.info(f"toggle states: {states_args}")
                 logger.info(f"current states: {current_states}")
-                for state in set(toggle_states).symmetric_difference(
-                    set(current_states)
-                ):
-                    add_states.append(state)
-                logger.info(f"adding states: {add_states}")
+                states_args.symmetric_difference_update(current_states)
+                logger.info(f"new states: {states_args}")
                 database.hset(
                     f"session.data:{ctx.author.id}",
                     "state",
-                    " ".join(add_states).strip(),
+                    " ".join(states_args).strip(),
                 )
 
             taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
             if taxon_args:
-                toggle_taxon = list(taxon_args)
-                current_taxons = (
+                current_taxons = set(
                     database.hget(f"session.data:{ctx.author.id}", "taxon")
                     .decode("utf-8")
                     .split(" ")
                 )
-                add_taxons = []
-                logger.info(f"toggle taxons: {toggle_taxon}")
+                logger.info(f"toggle taxons: {taxon_args}")
                 logger.info(f"current taxons: {current_taxons}")
-                for o in set(toggle_taxon).symmetric_difference(set(current_taxons)):
-                    add_taxons.append(o)
-                logger.info(f"adding taxons: {add_taxons}")
+                taxon_args.symmetric_difference_update(current_taxons)
+                logger.info(f"new taxons: {taxon_args}")
                 database.hset(
                     f"session.data:{ctx.author.id}",
                     "taxon",
-                    " ".join(add_taxons).strip(),
+                    " ".join(taxon_args).strip(),
                 )
 
             await self._send_stats(ctx, f"**Session started previously.**\n")
