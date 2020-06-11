@@ -49,107 +49,107 @@ class Check(commands.Cog):
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
             return
-            # if there is a bird, it checks answer
-            sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
-            arg = arg.lower().replace("-", " ")
-            currentBird = currentBird.lower().replace("-", " ")
-            logger.info("currentBird: " + currentBird)
-            logger.info("arg: " + arg)
+        # if there is a bird, it checks answer
+        sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
+        arg = arg.lower().replace("-", " ")
+        currentBird = currentBird.lower().replace("-", " ")
+        logger.info("currentBird: " + currentBird)
+        logger.info("arg: " + arg)
 
-            bird_setup(ctx, currentBird)
+        bird_setup(ctx, currentBird)
+
+        if database.exists(f"race.data:{ctx.channel.id}"):
+            logger.info("race in session")
+            if database.hget(f"race.data:{ctx.channel.id}", "strict"):
+                logger.info("strict spelling")
+                correct = arg == currentBird or arg == sciBird
+            else:
+                logger.info("spelling leniency")
+                correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
+        else:
+            logger.info("no race")
+            if database.hget(f"session.data:{ctx.author.id}", "strict"):
+                logger.info("strict spelling")
+                correct = arg == currentBird or arg == sciBird
+            else:
+                logger.info("spelling leniency")
+                correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
+
+        if correct:
+            logger.info("correct")
+
+            database.hset(f"channel:{ctx.channel.id}", "bird", "")
+            database.hset(f"channel:{ctx.channel.id}", "answered", "1")
+
+            session_increment(ctx, "correct", 1)
+            streak_increment(ctx, 1)
+
+            await ctx.send(
+                "Correct! Good job!"
+                if not database.exists(f"race.data:{ctx.channel.id}")
+                else f"**{ctx.author.mention}**, you are correct!"
+            )
+            url = get_wiki_url(ctx, currentBird)
+            await ctx.send(
+                url
+                if not database.exists(f"race.data:{ctx.channel.id}")
+                else f"<{url}>"
+            )
+            score_increment(ctx, 1)
+            if (
+                int(database.zscore("users:global", str(ctx.author.id)))
+                in achievement
+            ):
+                number = str(
+                    int(database.zscore("users:global", str(ctx.author.id)))
+                )
+                await ctx.send(f"Wow! You have answered {number} birds correctly!")
+                filename = f"bot/media/achievements/{number}.PNG"
+                with open(filename, "rb") as img:
+                    await ctx.send(file=discord.File(img, filename="award.png"))
 
             if database.exists(f"race.data:{ctx.channel.id}"):
-                logger.info("race in session")
-                if database.hget(f"race.data:{ctx.channel.id}", "strict"):
-                    logger.info("strict spelling")
-                    correct = arg == currentBird or arg == sciBird
+                media = database.hget(
+                    f"race.data:{ctx.channel.id}", "media"
+                ).decode("utf-8")
+
+                limit = int(database.hget(f"race.data:{ctx.channel.id}", "limit"))
+                first = database.zrevrange(
+                    f"race.scores:{ctx.channel.id}", 0, 0, True
+                )[0]
+                if int(first[1]) >= limit:
+                    logger.info("race ending")
+                    race = self.bot.get_cog("Race")
+                    await race.stop_race_(ctx)
                 else:
-                    logger.info("spelling leniency")
-                    correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
+                    logger.info(f"auto sending next bird {media}")
+                    filter_int, taxon, state = database.hmget(
+                        f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"]
+                    )
+                    birds = self.bot.get_cog("Birds")
+                    await birds.send_bird_(
+                        ctx,
+                        media,
+                        Filter().from_int(int(filter_int)),
+                        taxon.decode("utf-8"),
+                        state.decode("utf-8"),
+                    )
+
+        else:
+            logger.info("incorrect")
+
+            streak_increment(ctx, None)  # reset streak
+            session_increment(ctx, "incorrect", 1)
+            incorrect_increment(ctx, str(currentBird), 1)
+
+            if database.exists(f"race.data:{ctx.channel.id}"):
+                await ctx.send("Sorry, that wasn't the right answer.")
             else:
-                logger.info("no race")
-                if database.hget(f"session.data:{ctx.author.id}", "strict"):
-                    logger.info("strict spelling")
-                    correct = arg == currentBird or arg == sciBird
-                else:
-                    logger.info("spelling leniency")
-                    correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
-
-            if correct:
-                logger.info("correct")
-
                 database.hset(f"channel:{ctx.channel.id}", "bird", "")
                 database.hset(f"channel:{ctx.channel.id}", "answered", "1")
-
-                session_increment(ctx, "correct", 1)
-                streak_increment(ctx, 1)
-
-                await ctx.send(
-                    "Correct! Good job!"
-                    if not database.exists(f"race.data:{ctx.channel.id}")
-                    else f"**{ctx.author.mention}**, you are correct!"
-                )
+                await ctx.send("Sorry, the bird was actually " + currentBird + ".")
                 url = get_wiki_url(ctx, currentBird)
-                await ctx.send(
-                    url
-                    if not database.exists(f"race.data:{ctx.channel.id}")
-                    else f"<{url}>"
-                )
-                score_increment(ctx, 1)
-                if (
-                    int(database.zscore("users:global", str(ctx.author.id)))
-                    in achievement
-                ):
-                    number = str(
-                        int(database.zscore("users:global", str(ctx.author.id)))
-                    )
-                    await ctx.send(f"Wow! You have answered {number} birds correctly!")
-                    filename = f"bot/media/achievements/{number}.PNG"
-                    with open(filename, "rb") as img:
-                        await ctx.send(file=discord.File(img, filename="award.png"))
-
-                if database.exists(f"race.data:{ctx.channel.id}"):
-                    media = database.hget(
-                        f"race.data:{ctx.channel.id}", "media"
-                    ).decode("utf-8")
-
-                    limit = int(database.hget(f"race.data:{ctx.channel.id}", "limit"))
-                    first = database.zrevrange(
-                        f"race.scores:{ctx.channel.id}", 0, 0, True
-                    )[0]
-                    if int(first[1]) >= limit:
-                        logger.info("race ending")
-                        race = self.bot.get_cog("Race")
-                        await race.stop_race_(ctx)
-                    else:
-                        logger.info(f"auto sending next bird {media}")
-                        filter_int, taxon, state = database.hmget(
-                            f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"]
-                        )
-                        birds = self.bot.get_cog("Birds")
-                        await birds.send_bird_(
-                            ctx,
-                            media,
-                            Filter().from_int(int(filter_int)),
-                            taxon.decode("utf-8"),
-                            state.decode("utf-8"),
-                        )
-
-            else:
-                logger.info("incorrect")
-
-                streak_increment(ctx, None)  # reset streak
-                session_increment(ctx, "incorrect", 1)
-                incorrect_increment(ctx, str(currentBird), 1)
-
-                if database.exists(f"race.data:{ctx.channel.id}"):
-                    await ctx.send("Sorry, that wasn't the right answer.")
-                else:
-                    database.hset(f"channel:{ctx.channel.id}", "bird", "")
-                    database.hset(f"channel:{ctx.channel.id}", "answered", "1")
-                    await ctx.send("Sorry, the bird was actually " + currentBird + ".")
-                    url = get_wiki_url(ctx, currentBird)
-                    await ctx.send(url)
+                await ctx.send(url)
 
 
 def setup(bot):
