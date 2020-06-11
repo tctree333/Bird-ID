@@ -25,8 +25,17 @@ import string
 import discord
 from discord.ext import commands
 
-from bot.data import (GenericError, birdList, birdListMaster, database, logger,
-                      sciListMaster, songBirds, states, taxons)
+from bot.data import (
+    GenericError,
+    birdList,
+    birdListMaster,
+    database,
+    logger,
+    sciListMaster,
+    songBirds,
+    states,
+    taxons,
+)
 
 
 async def channel_setup(ctx):
@@ -55,7 +64,7 @@ async def channel_setup(ctx):
     if ctx.guild is not None:
         if (
             database.zadd("channels:global", {f"{ctx.guild.id}:{ctx.channel.id}": 0})
-            is not 0
+            != 0
         ):
             logger.info("server lookup ok")
         else:
@@ -239,7 +248,7 @@ async def send_leaderboard(ctx, title, page, database_key=None, data=None):
 
     if database_key is None and data is None:
         raise GenericError("database_key and data are both NoneType", 990)
-    elif database_key is not None and data is not None:
+    if database_key is not None and data is not None:
         raise GenericError("database_key and data are both set", 990)
 
     if page < 1:
@@ -513,7 +522,7 @@ async def drone_attack(ctx):
         logger.info("Passthrough Command")
         return True
 
-    elif str(ctx.command) in ("bird", "song", "goatsucker"):
+    if str(ctx.command) in ("bird", "song", "goatsucker"):
         images = os.listdir("bot/media/images/drone")
         path = f"bot/media/images/drone/{images[random.randint(0,len(images)-1)]}"
         BASE_MESSAGE = (
@@ -538,9 +547,9 @@ async def drone_attack(ctx):
                 BASE_MESSAGE.format(
                     media="image",
                     new_cmd="gs",
-                    skip_cmd="skipgoat",
-                    check_cmd="checkgoat",
-                    hint_cmd="hintgoat",
+                    skip_cmd="skip",
+                    check_cmd="check",
+                    hint_cmd="hint",
                 )
             )
         elif str(ctx.command) == "bird":
@@ -548,16 +557,16 @@ async def drone_attack(ctx):
                 BASE_MESSAGE.format(
                     media="song",
                     new_cmd="song",
-                    skip_cmd="skipsong",
-                    check_cmd="checksong",
-                    hint_cmd="hintsong",
+                    skip_cmd="skip",
+                    check_cmd="check",
+                    hint_cmd="hint",
                 )
             )
 
         file_obj = discord.File(path, filename=f"bird.{path.split('.')[-1]}")
         await ctx.send(file=file_obj)
 
-    elif str(ctx.command) in ("check", "checkgoat", "checksong"):
+    elif str(ctx.command) in ("check",):
         args = ctx.message.content.split(" ")[1:]
         matches = difflib.get_close_matches(
             " ".join(args), birdListMaster + sciListMaster, n=1
@@ -573,11 +582,11 @@ async def drone_attack(ctx):
             await ctx.send("Sorry, the bird was actually **definitely a real bird.**")
             await ctx.send(embed=video_embed())
 
-    elif str(ctx.command) in ("skip", "skipgoat", "skipsong"):
+    elif str(ctx.command) in ("skip",):
         await ctx.send("Ok, skipping **definitely a real bird.**")
         await ctx.send(embed=video_embed())
 
-    elif str(ctx.command) in ("hint", "hintgoat", "hintsong"):
+    elif str(ctx.command) in ("hint",):
         await ctx.send("This is definitely a real bird, **NOT** a government drone.")
 
     elif str(ctx.command) in ("info",):

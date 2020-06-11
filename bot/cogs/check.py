@@ -58,7 +58,7 @@ class Check(commands.Cog):
             logger.info("race in session")
             if database.hget(f"race.data:{ctx.channel.id}", "strict"):
                 logger.info("strict spelling")
-                correct = arg == currentBird or arg == sciBird
+                correct = arg in (currentBird, sciBird)
             else:
                 logger.info("spelling leniency")
                 correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
@@ -66,7 +66,7 @@ class Check(commands.Cog):
             logger.info("no race")
             if database.hget(f"session.data:{ctx.author.id}", "strict"):
                 logger.info("strict spelling")
-                correct = arg == currentBird or arg == sciBird
+                correct = arg in (currentBird, sciBird)
             else:
                 logger.info("spelling leniency")
                 correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
@@ -117,7 +117,7 @@ class Check(commands.Cog):
                     await birds.send_bird_(
                         ctx,
                         media,
-                        Filter().from_int(int(filter_int)),
+                        Filter.from_int(int(filter_int)),
                         taxon.decode("utf-8"),
                         state.decode("utf-8"),
                     )

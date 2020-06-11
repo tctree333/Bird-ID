@@ -28,7 +28,8 @@ class Stats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def generate_series(self, database_key):
+    @staticmethod
+    def generate_series(database_key):
         """Generates a pandas.Series from a Redis sorted set."""
         logger.info("generating series")
         data = database.zrevrangebyscore(database_key, "+inf", "-inf", withscores=True)
@@ -36,7 +37,8 @@ class Stats(commands.Cog):
             {e[0]: e[1] for e in map(lambda x: (x[0].decode("utf-8"), int(x[1])), data)}
         )
 
-    def generate_dataframe(self, database_keys, titles):
+    @staticmethod
+    def generate_dataframe(database_keys, titles):
         """Generates a pandas.DataFrame from multiple Redis sorted sets."""
         pipe = database.pipeline()
         for key in database_keys:

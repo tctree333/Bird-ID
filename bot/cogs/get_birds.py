@@ -20,16 +20,11 @@ import string
 from discord.ext import commands
 
 from bot.core import send_bird
-from bot.data import GenericError, database, goatsuckers, logger, states, taxons
+from bot.data import (GenericError, database, goatsuckers, logger, states,
+                      taxons)
 from bot.filters import Filter
-from bot.functions import (
-    CustomCooldown,
-    bird_setup,
-    build_id_list,
-    check_state_role,
-    error_skip,
-    session_increment,
-)
+from bot.functions import (CustomCooldown, bird_setup, build_id_list,
+                           check_state_role, error_skip, session_increment)
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, "
@@ -52,7 +47,8 @@ class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def increment_bird_frequency(self, ctx, bird):
+    @staticmethod
+    def increment_bird_frequency(ctx, bird):
         bird_setup(ctx, bird)
         database.zincrby("frequency.bird:global", 1, string.capwords(bird))
 
@@ -153,7 +149,8 @@ class Birds(commands.Cog):
                 message=(SONG_MESSAGE if media_type == "songs" else BIRD_MESSAGE),
             )
 
-    def parse(self, ctx, args_str: str):
+    @staticmethod
+    def parse(ctx, args_str: str):
         """Parse arguments for options."""
 
         args = args_str.split(" ")
@@ -207,17 +204,17 @@ class Birds(commands.Cog):
                 session_filter = int(
                     database.hget(f"session.data:{ctx.author.id}", "filter")
                 )
-                filters = Filter().parse(args_str, defaults=False)
+                filters = Filter.parse(args_str, defaults=False)
                 default_quality = Filter().quality
                 if (
-                    Filter().from_int(session_filter).quality == default_quality
+                    Filter.from_int(session_filter).quality == default_quality
                     and filters.quality
                     and filters.quality != default_quality
                 ):
                     filters.xor(Filter())  # clear defaults
                 filters.xor(session_filter)
             else:
-                filters = Filter().parse(args_str)
+                filters = Filter.parse(args_str)
 
             if state_args:
                 logger.info(f"toggle states: {state_args}")
@@ -232,10 +229,10 @@ class Birds(commands.Cog):
             logger.info("race parameters")
 
             race_filter = int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
-            filters = Filter().parse(args_str, defaults=False)
+            filters = Filter.parse(args_str, defaults=False)
             default_quality = Filter().quality
             if (
-                Filter().from_int(race_filter).quality == default_quality
+                Filter.from_int(race_filter).quality == default_quality
                 and filters.quality
                 and filters.quality != default_quality
             ):

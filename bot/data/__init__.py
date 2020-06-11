@@ -299,7 +299,7 @@ def _nats_lists():
             lists.append(
                 [
                     string.capwords(line.strip().replace("-", " "))
-                    if filename is not "memeList"
+                    if filename != "memeList"
                     else line.strip()
                     for line in f
                 ]
@@ -340,7 +340,7 @@ def _state_lists():
             with open(f"bot/data/state/{state}/{filename}.txt", "r") as f:
                 states_[state][filename] = [
                     string.capwords(line.strip().replace("-", " "))
-                    if filename is not "aliases"
+                    if filename != "aliases"
                     else line.strip()
                     for line in f
                     if line != "EMPTY"

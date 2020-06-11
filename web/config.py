@@ -97,11 +97,10 @@ def get_session_id():
     if "id" not in session:
         session["id"] = start_session()
         return str(session["id"])
-    elif not verify_session(session["id"]):
+    if not verify_session(session["id"]):
         session["id"] = start_session()
         return str(session["id"])
-    else:
-        return str(session["id"])
+    return str(session["id"])
 
 
 def start_session():
@@ -122,9 +121,8 @@ def verify_session(session_id):
     if not database.exists(f"web.session:{session_id}"):
         logger.info("doesn't exist")
         return False
-    elif int(database.hget(f"web.session:{session_id}", "user_id")) == 0:
+    if int(database.hget(f"web.session:{session_id}", "user_id")) == 0:
         logger.info("exists, no user id")
         return True
-    else:
-        logger.info("exists with user id")
-        return int(database.hget(f"web.session:{session_id}", "user_id"))
+    logger.info("exists with user id")
+    return int(database.hget(f"web.session:{session_id}", "user_id"))

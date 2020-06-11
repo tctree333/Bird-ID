@@ -6,6 +6,7 @@ import flask
 from sentry_sdk import capture_exception
 
 from bot.data import birdList
+from bot.filters import Filter
 from web import practice, user
 from web.config import app, logger
 from web.functions import get_media, get_sciname
@@ -36,13 +37,13 @@ def bird_info():
 
 @app.route("/image/<string:bird>")
 def bird_image(bird):
-    path = asyncio.run(get_media(bird, "images"))
+    path = asyncio.run(get_media(bird, "images", Filter()))
     return flask.send_file(f"../{path[0]}")
 
 
 @app.route("/song/<string:bird>")
 def bird_song(bird):
-    path = asyncio.run(get_media(bird, "songs"))
+    path = asyncio.run(get_media(bird, "songs", Filter()))
     return flask.send_file(f"../{path[0]}")
 
 

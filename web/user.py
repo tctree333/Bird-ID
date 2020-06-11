@@ -141,9 +141,10 @@ def profile():
             "max_streak": max_streak,
             "missed": missed_birds,
         }
-    else:
-        logger.info("not logged in")
-        abort(403, "Sign in to continue")
+
+    logger.info("not logged in")
+    abort(403, "Sign in to continue")
+    return None
 
 
 @app.errorhandler(authlib.common.errors.AuthlibBaseError)

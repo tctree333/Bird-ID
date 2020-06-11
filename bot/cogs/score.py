@@ -29,7 +29,8 @@ class Score(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def _server_total(self, ctx):
+    @staticmethod
+    def _server_total(ctx):
         logger.info("fetching server totals")
         channels = map(
             lambda x: x.decode("utf-8").split(":")[1],
@@ -43,7 +44,8 @@ class Score(commands.Cog):
         scores = pipe.execute()
         return int(sum(scores))
 
-    def _monthly_lb(self, category):
+    @staticmethod
+    def _monthly_lb(category):
         logger.info("generating monthly leaderboard")
         if category == "scores":
             key = "daily.score"
@@ -75,7 +77,7 @@ class Score(commands.Cog):
     async def user_lb(self, ctx, title, page, database_key=None, data=None):
         if database_key is None and data is None:
             raise GenericError("database_key and data are both NoneType", 990)
-        elif database_key is not None and data is not None:
+        if database_key is not None and data is not None:
             raise GenericError("database_key and data are both set", 990)
 
         if page < 1:

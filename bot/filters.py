@@ -47,7 +47,8 @@ class Filter:
         - Sex:
             - m (male), f (female), u (unknown)
         - Behavior:
-            - e (eating/foraging), f (flying), p (preening), vocalizing (vocalizing), molting (molting)
+            - e (eating/foraging), f (flying), p (preening)
+            - vocalizing (vocalizing), molting (molting)
         - Breeding:
             - fy (feeding young), cdc (courtship, display, or copulation)
             - cf (carrying food), cfs (carrying fecal sac), nb (nest building)
@@ -55,8 +56,9 @@ class Filter:
             - s (song), c (call), nv (non-vocal), ds (dawn song), fs (flight song)
             - fc (flight call), dt (duet), env (environmental), peo (people)
         - Photo Tags:
-            - mul (multiple species), in (in-hand), nes (nest), egg (eggs), hab (habitat),
-            - wat (watermark), bac (back of camera), dea (dead), fie (field notes/sketch), non (no bird)
+            - mul (multiple species), in (in-hand), nes (nest), egg (eggs), hab (habitat)
+            - wat (watermark), bac (back of camera), dea (dead)
+            - fie (field notes/sketch), non (no bird)
         - Captive (animals in captivity):
             - all, yes, no
         - Quality:
@@ -189,22 +191,24 @@ class Filter:
                 out[indexes[title][name] - 1] = "1"
         return int("".join(reversed(out)), 2)
 
-    def from_int(self, number: int):
+    @classmethod
+    def from_int(cls, number: int):
         """Convert an int to a filter object."""
         if number >= 2 ** 47 or number < 0:
             raise ValueError("Input number out of bounds.")
+        me = cls()
 
-        self._clear()  # reset existing filters to empty
+        me._clear()  # reset existing filters to empty
         binary = reversed("{0:0>47b}".format(number))
-        lookup = self.aliases(lookup=True)
+        lookup = me.aliases(lookup=True)
         for index, value in enumerate(binary):
             if int(value):
                 key = lookup[str(index + 1)]
-                if key[0] in self._boolean_options:
-                    self.__dict__[key[0]] = key[1]
+                if key[0] in me._boolean_options:
+                    me.__dict__[key[0]] = key[1]
                     continue
-                self.__dict__[key[0]].add(key[1])
-        return self
+                me.__dict__[key[0]].add(key[1])
+        return me
 
     def __xor__(self, other):
         self.xor(other)
@@ -217,10 +221,12 @@ class Filter:
             raise ValueError("Input number out of bounds.")
         self.from_int(other ^ self.to_int())
 
-    def parse(self, args: str, defaults: bool = True):
+    @classmethod
+    def parse(cls, args: str, defaults: bool = True):
         """Parse an argument string as Macaulay Library media filters."""
-        self._clear()  # reset existing filters to empty
-        lookup = self.aliases(lookup=True)
+        me = cls()
+        me._clear()  # reset existing filters to empty
+        lookup = me.aliases(lookup=True)
         args = args.lower().strip()
         if "," in args:
             args = map(lambda x: x.strip(), args.split(","))
@@ -230,18 +236,17 @@ class Filter:
         for arg in args:
             key = lookup.get(arg)
             if key is not None:
-                if key[0] in self._boolean_options:
-                    self.__dict__[key[0]] = key[1]
+                if key[0] in me._boolean_options:
+                    me.__dict__[key[0]] = key[1]
                     continue
-                self.__dict__[key[0]].add(key[1])
+                me.__dict__[key[0]].add(key[1])
         if defaults:
-            for key in self._default_options.keys():
-                if len(self.__dict__[key]) == 0:
-                    self.__dict__[key] = self._default_options[key]
-                elif self.__dict__[key] == self._default_options[key]:
-                    self.xor(self.__class__())
-
-        return self
+            for key in me._default_options:
+                if len(me.__dict__[key]) == 0:
+                    me.__dict__[key] = me._default_options[key]
+                elif me.__dict__[key] == me._default_options[key]:
+                    me.xor(me.__class__())
+        return me
 
     def display(self):
         """Return a list describing the filters."""
@@ -258,8 +263,9 @@ class Filter:
             output.append("None")
         return output
 
+    @classmethod
     def aliases(
-        self, lookup: bool = False, num: bool = False, display_lookup: bool = False
+        cls, lookup: bool = False, num: bool = False, display_lookup: bool = False
     ):
         """Generate filter alises.
 
@@ -381,20 +387,20 @@ class Filter:
                 for name, aliases in subdict.items()
                 for alias in aliases
             }
-        elif num:
+        if num:
             return {
                 title[1]: {
                     name[1]: int(aliases[0]) for name, aliases in subdict.items()
                 }
                 for title, subdict in aliases.items()
             }
-        elif display_lookup:
+        if display_lookup:
             return {
                 title[1]: (title[0], {key[1]: key[0] for key in subdict.keys()})
                 for title, subdict in aliases.items()
             }
-        else:
-            return {
-                title[0]: {name[0]: aliases for name, aliases in subdict.items()}
-                for title, subdict in aliases.items()
-            }
+
+        return {
+            title[0]: {name[0]: aliases for name, aliases in subdict.items()}
+            for title, subdict in aliases.items()
+        }

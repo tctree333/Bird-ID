@@ -87,8 +87,7 @@ def cache(func=None):
 
     if func:
         return wrapper(func)
-    else:
-        return wrapper
+    return wrapper
 
 
 @cache()
@@ -124,11 +123,11 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
                         + f" while fetching {sciname_url} for {bird}",
                         code=201,
                     )
-                else:
-                    logger.info(f"An HTTP error occurred; Retries: {retries}")
-                    retries += 1
-                    sciname = await get_sciname(bird, session, retries)
-                    return sciname
+                logger.info(f"An HTTP error occurred; Retries: {retries}")
+                retries += 1
+                sciname = await get_sciname(bird, session, retries)
+                return sciname
+
             sciname_data = await sciname_response.json()
             try:
                 sciname = sciname_data[0]["sciName"]
@@ -166,11 +165,11 @@ async def get_taxon(bird: str, session=None, retries=0) -> str:
                         + f" while fetching {taxon_code_url} for {bird}",
                         code=201,
                     )
-                else:
-                    logger.info(f"An HTTP error occurred; Retries: {retries}")
-                    retries += 1
-                    taxon_code = (await get_taxon(bird, session, retries))[0]
-                    return taxon_code
+                logger.info(f"An HTTP error occurred; Retries: {retries}")
+                retries += 1
+                taxon_code = (await get_taxon(bird, session, retries))[0]
+                return taxon_code
+
             taxon_code_data = await taxon_code_response.json()
             try:
                 logger.info(f"raw data: {taxon_code_data}")
@@ -353,8 +352,7 @@ async def get_media(ctx, bird: str, media_type: str, filters: Filter):
             ):  # keep files less than 4mb
                 logger.info("found one!")
                 break
-            elif y == prevJ:
-                raise GenericError(f"No Valid {media_type.title()} Found", code=999)
+            raise GenericError(f"No Valid {media_type.title()} Found", code=999)
 
         database.hset(f"channel:{ctx.channel.id}", "prevJ", str(j))
     else:
@@ -392,8 +390,8 @@ async def get_files(sciBird: str, media_type: str, filters: Filter, retries: int
             if retries < 3:
                 retries += 1
                 return await get_files(sciBird, media_type, filters, retries)
-            else:
-                logger.info("More than 3 retries")
+            logger.info("More than 3 retries")
+
         return filenames
 
 
@@ -474,11 +472,11 @@ async def _get_urls(
                     + f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}",
                     code=201,
                 )
-            else:
-                retries += 1
-                logger.info(f"An HTTP error occurred; Retries: {retries}")
-                urls = await _get_urls(session, bird, media_type, filters, retries)
-                return urls
+            retries += 1
+            logger.info(f"An HTTP error occurred; Retries: {retries}")
+            urls = await _get_urls(session, bird, media_type, filters, retries)
+            return urls
+
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
         urls = (

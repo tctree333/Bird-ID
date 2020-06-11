@@ -311,25 +311,24 @@ class States(commands.Cog):
                     + "You can also delete or replace your list with `b!custom [delete|replace]`"
                 )
                 return
-            elif next_step == "confirm":
+            if next_step == "confirm":
                 await ctx.send(
                     "You need to confirm your list. Use `b!custom confirm` to do so. "
                     + "You can also delete or replace your list with `b!custom [delete|replace]`"
                 )
                 return
-            elif next_step == "delete":
+            if next_step == "delete":
                 await ctx.send(
                     "You're in the process of deleting your list. Use `b!custom delete` to do so. "
                     + "You can also replace your list with `b!custom replace`"
                 )
                 return
-            else:
-                capture_message(f"custom.confirm database invalid with {next_step}")
-                await ctx.send(
-                    "Whoops, something went wrong. Please report this incident "
-                    + "in the support server below.\nhttps://discord.gg/fXxYyDJ"
-                )
-                return
+            capture_message(f"custom.confirm database invalid with {next_step}")
+            await ctx.send(
+                "Whoops, something went wrong. Please report this incident "
+                + "in the support server below.\nhttps://discord.gg/fXxYyDJ"
+            )
+            return
 
         await ctx.send(
             "Use `b!custom view` to view your bird list or `b!custom replace` to replace your bird list."
@@ -413,7 +412,7 @@ class States(commands.Cog):
             if error.code == 192:
                 # channel is ignored
                 return
-            elif error.code == 842:
+            if error.code == 842:
                 await ctx.send("**Sorry, you cannot use this command.**")
             elif error.code == 666:
                 logger.info("GenericError 666")

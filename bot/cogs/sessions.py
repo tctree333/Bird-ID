@@ -35,7 +35,7 @@ class Sessions(commands.Cog):
             f"session.data:{ctx.author.id}",
             ["filter", "state", "taxon", "wiki", "strict"],
         )
-        filters = Filter().from_int(int(filter_int))
+        filters = Filter.from_int(int(filter_int))
         options = textwrap.dedent(
             f"""\
             **Active Filters:** `{'`, `'.join(filters.display())}`
@@ -137,56 +137,56 @@ class Sessions(commands.Cog):
                 "**There is already a session running.** *Change settings/view stats with `b!session edit`*"
             )
             return
+
+        filters = Filter.parse(args_str)
+
+        args = args_str.lower().split(" ")
+        logger.info(f"args: {args}")
+
+        if "wiki" in args:
+            wiki = ""
         else:
-            filters = Filter().parse(args_str)
+            wiki = "wiki"
 
-            args = args_str.lower().split(" ")
-            logger.info(f"args: {args}")
+        if "strict" in args:
+            strict = "strict"
+        else:
+            strict = ""
 
-            if "wiki" in args:
-                wiki = ""
-            else:
-                wiki = "wiki"
+        states_args = set(states.keys()).intersection({arg.upper() for arg in args})
+        if states_args:
+            state = " ".join(states_args).strip()
+        else:
+            state = " ".join(check_state_role(ctx))
 
-            if "strict" in args:
-                strict = "strict"
-            else:
-                strict = ""
+        taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
+        if taxon_args:
+            taxon = " ".join(taxon_args).strip()
+        else:
+            taxon = ""
 
-            states_args = set(states.keys()).intersection({arg.upper() for arg in args})
-            if states_args:
-                state = " ".join(states_args).strip()
-            else:
-                state = " ".join(check_state_role(ctx))
+        logger.info(
+            f"adding filters: {filters}; state: {state}; wiki: {wiki}; strict: {strict}"
+        )
 
-            taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
-            if taxon_args:
-                taxon = " ".join(taxon_args).strip()
-            else:
-                taxon = ""
-
-            logger.info(
-                f"adding filters: {filters}; state: {state}; wiki: {wiki}; strict: {strict}"
-            )
-
-            database.hset(
-                f"session.data:{ctx.author.id}",
-                mapping={
-                    "start": round(time.time()),
-                    "stop": 0,
-                    "correct": 0,
-                    "incorrect": 0,
-                    "total": 0,
-                    "filter": str(filters.to_int()),
-                    "state": state,
-                    "taxon": taxon,
-                    "wiki": wiki,
-                    "strict": strict,
-                },
-            )
-            await ctx.send(
-                f"**Session started with options:**\n{await self._get_options(ctx)}"
-            )
+        database.hset(
+            f"session.data:{ctx.author.id}",
+            mapping={
+                "start": round(time.time()),
+                "stop": 0,
+                "correct": 0,
+                "incorrect": 0,
+                "total": 0,
+                "filter": str(filters.to_int()),
+                "state": state,
+                "taxon": taxon,
+                "wiki": wiki,
+                "strict": strict,
+            },
+        )
+        await ctx.send(
+            f"**Session started with options:**\n{await self._get_options(ctx)}"
+        )
 
     # views session
     @session.command(
@@ -202,7 +202,7 @@ class Sessions(commands.Cog):
         logger.info("command: view session")
 
         if database.exists(f"session.data:{ctx.author.id}"):
-            new_filter = Filter().parse(args_str, defaults=False)
+            new_filter = Filter.parse(args_str, defaults=False)
 
             args = args_str.lower().split(" ")
             logger.info(f"args: {args}")

@@ -43,7 +43,7 @@ class Other(commands.Cog):
         logger.info("command: info")
         arg = arg.lower().strip()
 
-        filters = Filter().parse(arg)
+        filters = Filter.parse(arg)
         options = filters.display()
         arg = arg.split(" ")
         for i in reversed(range(1, 6)):
@@ -72,7 +72,7 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
     async def filters(self, ctx):
         logger.info("command: filters")
-        filters = Filter().aliases()
+        filters = Filter.aliases()
         embed = discord.Embed(
             title="Media Filters",
             type="rich",
@@ -221,7 +221,7 @@ class Other(commands.Cog):
             f"**The `{taxon}` in the `{state}` bird songs:**"
         )
         for birds in songLists:
-            await ctx.author.dm_channel.send(f"```\n{birds}```")
+            await ctx.author.dm_channel.send(f"```\n{birds}me")
 
         await ctx.send(
             f"The `{taxon}` in the `{state}` bird list has **{len(bird_list)}** birds.\n"

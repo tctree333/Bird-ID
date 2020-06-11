@@ -63,7 +63,7 @@ class Skip(commands.Cog):
                     await birds.send_bird_(
                         ctx,
                         media,
-                        Filter().from_int(int(filter_int)),
+                        Filter.from_int(int(filter_int)),
                         taxon.decode("utf-8"),
                         state.decode("utf-8"),
                     )

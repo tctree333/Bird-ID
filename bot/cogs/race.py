@@ -34,7 +34,7 @@ class Race(commands.Cog):
             f"race.data:{ctx.channel.id}",
             ["filter", "state", "media", "limit", "taxon", "strict"],
         )
-        filters = Filter().from_int(int(filter_int))
+        filters = Filter.from_int(int(filter_int))
         options = (
             f"**Active Filters:** `{'`, `'.join(filters.display())}`\n"
             + f"**Special bird list:** {state.decode('utf-8') if state else 'None'}\n"
@@ -172,111 +172,111 @@ class Race(commands.Cog):
                 "**There is already a race in session.** *Change settings/view stats with `b!race view`*"
             )
             return
+
+        filters = Filter.parse(args_str)
+
+        args = args_str.split(" ")
+        logger.info(f"args: {args}")
+
+        taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
+        if taxon_args:
+            taxon = " ".join(taxon_args).strip()
         else:
-            filters = Filter().parse(args_str)
+            taxon = ""
 
-            args = args_str.split(" ")
-            logger.info(f"args: {args}")
+        if "strict" in args:
+            strict = "strict"
+        else:
+            strict = ""
 
-            taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
-            if taxon_args:
-                taxon = " ".join(taxon_args).strip()
-            else:
-                taxon = ""
+        states_args = set(states.keys()).intersection({arg.upper() for arg in args})
+        if states_args:
+            if {"CUSTOM"}.issubset(states_args):
+                if database.exists(
+                    f"custom.list:{ctx.author.id}"
+                ) and not database.exists(f"custom.confirm:{ctx.author.id}"):
+                    states_args.discard("CUSTOM")
+                    states_args.add(f"CUSTOM:{ctx.author.id}")
+                else:
+                    states_args.discard("CUSTOM")
+                    await ctx.send(
+                        "**You don't have a custom list set.**\n*Ignoring the argument.*"
+                    )
+            state = " ".join(states_args).strip()
+        else:
+            state = ""
 
-            if "strict" in args:
-                strict = "strict"
-            else:
-                strict = ""
-
-            states_args = set(states.keys()).intersection({arg.upper() for arg in args})
-            if states_args:
-                if {"CUSTOM"}.issubset(states_args):
-                    if database.exists(
-                        f"custom.list:{ctx.author.id}"
-                    ) and not database.exists(f"custom.confirm:{ctx.author.id}"):
-                        states_args.discard("CUSTOM")
-                        states_args.add(f"CUSTOM:{ctx.author.id}")
-                    else:
-                        states_args.discard("CUSTOM")
-                        await ctx.send(
-                            "**You don't have a custom list set.**\n*Ignoring the argument.*"
-                        )
-                state = " ".join(states_args).strip()
-            else:
-                state = ""
-
-            song = "song" in args or "s" in args
-            image = "image" in args or "i" in args or "picture" in args or "p" in args
-            if song and image:
-                await ctx.send(
-                    "**Songs and images are not yet supported.**\n*Please try again*"
-                )
-                return
-            elif song:
-                media = "song"
-            elif image:
-                media = "image"
-            else:
-                media = "image"
-
-            ints = []
-            for n in args:
-                try:
-                    ints.append(int(n))
-                except ValueError:
-                    continue
-            if ints:
-                limit = int(ints[0])
-            else:
-                limit = 10
-
-            if limit > 1000000:
-                await ctx.send("**Sorry, the maximum amount to win is 1 million.**")
-                limit = 1000000
-
-            logger.info(
-                f"adding filters: {filters}; state: {state}; media: {media}; limit: {limit}"
-            )
-
-            database.hset(
-                f"race.data:{ctx.channel.id}",
-                mapping={
-                    "start": round(time.time()),
-                    "stop": 0,
-                    "limit": limit,
-                    "filter": str(filters.to_int()),
-                    "state": state,
-                    "media": media,
-                    "taxon": taxon,
-                    "strict": strict,
-                },
-            )
-
-            database.zadd(f"race.scores:{ctx.channel.id}", {str(ctx.author.id): 0})
+        song = "song" in args or "s" in args
+        image = "image" in args or "i" in args or "picture" in args or "p" in args
+        if song and image:
             await ctx.send(
-                f"**Race started with options:**\n{await self._get_options(ctx)}"
+                "**Songs and images are not yet supported.**\n*Please try again*"
             )
+            return
+        if song:
+            media = "song"
+        elif image:
+            media = "image"
+        else:
+            media = "image"
 
-            media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
-                "utf-8"
-            )
-            logger.info("clearing previous bird")
-            database.hset(f"channel:{ctx.channel.id}", "bird", "")
-            database.hset(f"channel:{ctx.channel.id}", "answered", "1")
+        ints = []
+        for n in args:
+            try:
+                ints.append(int(n))
+            except ValueError:
+                continue
+        if ints:
+            limit = int(ints[0])
+        else:
+            limit = 10
 
-            logger.info(f"auto sending next bird {media}")
-            filter_int, taxon, state = database.hmget(
-                f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"]
-            )
-            birds = self.bot.get_cog("Birds")
-            await birds.send_bird_(
-                ctx,
-                media,
-                Filter().from_int(int(filter_int)),  # type: ignore
-                taxon.decode("utf-8"),  # type: ignore
-                state.decode("utf-8"),  # type: ignore
-            )
+        if limit > 1000000:
+            await ctx.send("**Sorry, the maximum amount to win is 1 million.**")
+            limit = 1000000
+
+        logger.info(
+            f"adding filters: {filters}; state: {state}; media: {media}; limit: {limit}"
+        )
+
+        database.hset(
+            f"race.data:{ctx.channel.id}",
+            mapping={
+                "start": round(time.time()),
+                "stop": 0,
+                "limit": limit,
+                "filter": str(filters.to_int()),
+                "state": state,
+                "media": media,
+                "taxon": taxon,
+                "strict": strict,
+            },
+        )
+
+        database.zadd(f"race.scores:{ctx.channel.id}", {str(ctx.author.id): 0})
+        await ctx.send(
+            f"**Race started with options:**\n{await self._get_options(ctx)}"
+        )
+
+        media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
+            "utf-8"
+        )
+        logger.info("clearing previous bird")
+        database.hset(f"channel:{ctx.channel.id}", "bird", "")
+        database.hset(f"channel:{ctx.channel.id}", "answered", "1")
+
+        logger.info(f"auto sending next bird {media}")
+        filter_int, taxon, state = database.hmget(
+            f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"]
+        )
+        birds = self.bot.get_cog("Birds")
+        await birds.send_bird_(
+            ctx,
+            media,
+            Filter.from_int(int(filter_int)),  # type: ignore
+            taxon.decode("utf-8"),  # type: ignore
+            state.decode("utf-8"),  # type: ignore
+        )
 
     @race.command(
         brief="- Views race",
