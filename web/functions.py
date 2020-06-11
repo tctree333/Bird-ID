@@ -7,12 +7,13 @@ from flask import abort
 from sentry_sdk import capture_exception
 
 from bot.core import (_black_and_white, get_files, get_sciname,
-                      valid_audio_extensions, valid_image_extensions)
+                      valid_audio_types, valid_image_types)
 from bot.data import GenericError, birdList, database, logger, screech_owls
+from bot.filters import Filter
 from web.config import get_session_id
 
 
-async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = False):
+async def send_bird(bird: str, media_type: str, filters: Filter):
     if bird == "":
         logger.error("error - bird is blank")
         abort(406, "Bird is blank")
@@ -31,7 +32,7 @@ async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = Fals
         bird = random.choice(screech_owls)
 
     try:
-        filename, ext = await get_media(bird, media_type, addOn)
+        filename, ext = await get_media(bird, media_type, filters)
     except GenericError as e:
         logger.info(e)
         capture_exception(e)
@@ -39,7 +40,7 @@ async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = Fals
         return
 
     if media_type == "images":
-        if bw:
+        if filters.bw:
             loop = asyncio.get_running_loop()
             file_stream = await loop.run_in_executor(None, partial(_black_and_white, filename))
         else:
@@ -54,7 +55,7 @@ async def send_bird(bird: str, media_type: str, addOn: str = "", bw: bool = Fals
 
     return file_stream, ext
 
-async def get_media(bird, media_type, addOn=""):  # images or songs
+async def get_media(bird, media_type, filters):  # images or songs
     if bird not in birdList + screech_owls:
         raise GenericError("Invalid Bird", code=990)
 
@@ -67,7 +68,7 @@ async def get_media(bird, media_type, addOn=""):  # images or songs
     session_id = get_session_id()
     database_key = f"web.session:{session_id}"
 
-    media = await get_files(sciBird, media_type, addOn)
+    media = await get_files(sciBird, media_type, filters)
     logger.info(f"fetched {media_type}: {media}")
     prevJ = int(database.hget(database_key, "prevJ").decode("utf-8"))
     if media:
@@ -80,8 +81,8 @@ async def get_media(bird, media_type, addOn=""):  # images or songs
             media_path = media[y]
             extension = media_path.split('.')[-1]
             logger.info("extension: " + str(extension))
-            if (media_type == "images" and extension.lower() in valid_image_extensions) or \
-                    (media_type == "songs" and extension.lower() in valid_audio_extensions):
+            if (media_type == "images" and extension.lower() in valid_image_types.values()) or \
+                    (media_type == "songs" and extension.lower() in valid_audio_types.values()):
                 logger.info("found one!")
                 break
             elif y == prevJ:
