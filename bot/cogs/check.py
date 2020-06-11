@@ -20,14 +20,9 @@ from discord.ext import commands
 from bot.core import get_sciname, spellcheck
 from bot.data import database, get_wiki_url, logger
 from bot.filters import Filter
-from bot.functions import (
-    CustomCooldown,
-    bird_setup,
-    incorrect_increment,
-    score_increment,
-    session_increment,
-    streak_increment,
-)
+from bot.functions import (CustomCooldown, bird_setup, incorrect_increment,
+                           score_increment, session_increment,
+                           streak_increment)
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
@@ -58,7 +53,8 @@ class Check(commands.Cog):
 
         bird_setup(ctx, currentBird)
 
-        if database.exists(f"race.data:{ctx.channel.id}"):
+        race_in_session = bool(database.exists(f"race.data:{ctx.channel.id}"))
+        if race_in_session:
             logger.info("race in session")
             if database.hget(f"race.data:{ctx.channel.id}", "strict"):
                 logger.info("strict spelling")
@@ -86,37 +82,28 @@ class Check(commands.Cog):
 
             await ctx.send(
                 "Correct! Good job!"
-                if not database.exists(f"race.data:{ctx.channel.id}")
+                if not race_in_session
                 else f"**{ctx.author.mention}**, you are correct!"
             )
             url = get_wiki_url(ctx, currentBird)
-            await ctx.send(
-                url
-                if not database.exists(f"race.data:{ctx.channel.id}")
-                else f"<{url}>"
-            )
+            await ctx.send(url)
             score_increment(ctx, 1)
-            if (
-                int(database.zscore("users:global", str(ctx.author.id)))
-                in achievement
-            ):
-                number = str(
-                    int(database.zscore("users:global", str(ctx.author.id)))
-                )
+            if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
+                number = str(int(database.zscore("users:global", str(ctx.author.id))))
                 await ctx.send(f"Wow! You have answered {number} birds correctly!")
                 filename = f"bot/media/achievements/{number}.PNG"
                 with open(filename, "rb") as img:
                     await ctx.send(file=discord.File(img, filename="award.png"))
 
-            if database.exists(f"race.data:{ctx.channel.id}"):
-                media = database.hget(
-                    f"race.data:{ctx.channel.id}", "media"
-                ).decode("utf-8")
+            if race_in_session:
+                media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
+                    "utf-8"
+                )
 
                 limit = int(database.hget(f"race.data:{ctx.channel.id}", "limit"))
-                first = database.zrevrange(
-                    f"race.scores:{ctx.channel.id}", 0, 0, True
-                )[0]
+                first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[
+                    0
+                ]
                 if int(first[1]) >= limit:
                     logger.info("race ending")
                     race = self.bot.get_cog("Race")
@@ -142,7 +129,7 @@ class Check(commands.Cog):
             session_increment(ctx, "incorrect", 1)
             incorrect_increment(ctx, str(currentBird), 1)
 
-            if database.exists(f"race.data:{ctx.channel.id}"):
+            if race_in_session:
                 await ctx.send("Sorry, that wasn't the right answer.")
             else:
                 database.hset(f"channel:{ctx.channel.id}", "bird", "")

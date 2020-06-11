@@ -37,11 +37,7 @@ class Skip(commands.Cog):
         if currentBird != "":  # check if there is bird
             url = get_wiki_url(ctx, currentBird)
             await ctx.send(f"Ok, skipping {currentBird.lower()}")
-            await ctx.send(
-                url
-                if not database.exists(f"race.data:{ctx.channel.id}")
-                else f"<{url}>"
-            )  # sends wiki page
+            await ctx.send(url)  # sends wiki page
 
             streak_increment(ctx, None)  # reset streak
 
