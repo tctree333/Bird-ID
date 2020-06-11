@@ -55,7 +55,9 @@ class Score(commands.Cog):
             raise GenericError("Invalid category", 990)
 
         today = datetime.datetime.now(datetime.timezone.utc).date()
-        past_month = pd.date_range(today - datetime.timedelta(29), today).date
+        past_month = pd.date_range(  # pylint: disable=no-member
+            today - datetime.timedelta(29), today
+        ).date
         pipe = database.pipeline()
         for day in past_month:
             pipe.zrevrangebyscore(f"{key}:{day}", "+inf", "-inf", withscores=True)

@@ -26,6 +26,7 @@ class TestScore:
             database.delete(f"incorrect.server:{self.ctx.guild.id}")
 
     def setup(self, guild=False):
+        # pylint: disable=attribute-defined-outside-init
         self.bot = mock.Bot()
         self.cog = score.Score(self.bot)
         self.ctx = mock.Context(self.bot)
@@ -78,7 +79,7 @@ class TestScore:
     def test_userscore_bad_input(self):
         self.setup(guild=True)
         test_input = "banana"
-        
+
         coroutine = self.cog.userscore.callback(self.cog, self.ctx, user=test_input) # pylint: disable=no-member
         assert asyncio.run(coroutine) is None
         assert self.ctx.messages[2].content == "Not a user!"

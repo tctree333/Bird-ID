@@ -365,7 +365,12 @@ def _all_birds():
     return birds
 
 
-birdList, songBirds, sciListMaster, memeList = _nats_lists()
+(  # pylint: disable=unbalanced-tuple-unpacking
+    birdList,
+    songBirds,
+    sciListMaster,
+    memeList,
+) = _nats_lists()
 states = _state_lists()
 birdListMaster = _all_birds()
 taxons = _taxons()
