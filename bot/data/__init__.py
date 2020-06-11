@@ -68,15 +68,12 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 
 # Database Format Definitions
 
-# prevJ - makes sure it sends a diff image
-# prevB - makes sure it sends a diff bird (img)
-# prevS - makes sure it sends a diff bird (sounds)
-# prevK - makes sure it sends a diff sound
-
-# server format = {
-# channel:channel_id : { "bird", "answered", "sBird", "sAnswered",
-#                     "goatsucker", "gsAnswered",
-#                     "prevJ", "prevB", "prevS", "prevK" }
+# server format:
+# channel:channel_id : {
+#                    "bird",
+#                    "answered",
+#                    "prevB", (makse sure it sends diff birds)
+#                    "prevJ" (makes sure it sends diff media)
 # }
 
 # session format:
@@ -255,7 +252,7 @@ sci_screech_owls = ["Megascops trichopsis", "Megascops kennicottii", "Megascops 
 def _wiki_urls():
     logger.info("Working on wiki urls")
     urls = {}
-    with open(f"bot/data/wikipedia.txt", "r") as f:
+    with open("bot/data/wikipedia.txt", "r") as f:
         r = csv.reader(f)
         for bird, url in r:
             urls[string.capwords(bird.replace("-", " "))] = url
@@ -273,7 +270,9 @@ def get_wiki_url(ctx, bird=None):
     try:
         bird = string.capwords(bird.replace("-", " "))
         url = wikipedia_urls[bird]
-        if database.hget(f"session.data:{user_id}", "wiki") == b"":
+        if database.hget(f"session.data:{user_id}", "wiki") == b"" or database.exists(
+            f"race.data:{ctx.channel.id}"
+        ):
             logger.info("found in cache, disabling preview")
             return f"<{url}>"
         logger.info("found in cache")
@@ -281,7 +280,9 @@ def get_wiki_url(ctx, bird=None):
     except KeyError:
         logger.info(f"{bird} not found in wikipedia url cache, falling back")
         page = wikipedia.page(bird)
-        if database.hget(f"session.data:{user_id}", "wiki") == b"":
+        if database.hget(f"session.data:{user_id}", "wiki") == b"" or database.exists(
+            f"race.data:{ctx.channel.id}"
+        ):
             logger.info("disabling preview")
             return f"<{page.url}>"
         return page.url
@@ -298,7 +299,7 @@ def _nats_lists():
             lists.append(
                 [
                     string.capwords(line.strip().replace("-", " "))
-                    if filename is not "memeList"
+                    if filename != "memeList"
                     else line.strip()
                     for line in f
                 ]
@@ -329,17 +330,17 @@ def _taxons():
 def _state_lists():
     """Converts txt files of state data into lists."""
     filenames = ("birdList", "songBirds", "aliases")
-    states = {}
+    states_ = {}
     state_names = os.listdir("bot/data/state")
     for state in state_names:
-        states[state] = {}
+        states_[state] = {}
         logger.info(f"Working on {state}")
         for filename in filenames:
             logger.info(f"Working on {filename}")
             with open(f"bot/data/state/{state}/{filename}.txt", "r") as f:
-                states[state][filename] = [
+                states_[state][filename] = [
                     string.capwords(line.strip().replace("-", " "))
-                    if filename is not "aliases"
+                    if filename != "aliases"
                     else line.strip()
                     for line in f
                     if line != "EMPTY"
@@ -347,7 +348,7 @@ def _state_lists():
             logger.info(f"Done with {filename}")
         logger.info(f"Done with {state}")
     logger.info("Done with states list!")
-    return states
+    return states_
 
 
 def _all_birds():
@@ -364,7 +365,12 @@ def _all_birds():
     return birds
 
 
-birdList, songBirds, sciListMaster, memeList = _nats_lists()
+(  # pylint: disable=unbalanced-tuple-unpacking
+    birdList,
+    songBirds,
+    sciListMaster,
+    memeList,
+) = _nats_lists()
 states = _state_lists()
 birdListMaster = _all_birds()
 taxons = _taxons()

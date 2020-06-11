@@ -29,7 +29,8 @@ class Score(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def _server_total(self, ctx):
+    @staticmethod
+    def _server_total(ctx):
         logger.info("fetching server totals")
         channels = map(
             lambda x: x.decode("utf-8").split(":")[1],
@@ -43,7 +44,8 @@ class Score(commands.Cog):
         scores = pipe.execute()
         return int(sum(scores))
 
-    def _monthly_lb(self, ctx, category):
+    @staticmethod
+    def _monthly_lb(category):
         logger.info("generating monthly leaderboard")
         if category == "scores":
             key = "daily.score"
@@ -53,7 +55,9 @@ class Score(commands.Cog):
             raise GenericError("Invalid category", 990)
 
         today = datetime.datetime.now(datetime.timezone.utc).date()
-        past_month = pd.date_range(today - datetime.timedelta(29), today).date
+        past_month = pd.date_range(  # pylint: disable=no-member
+            today - datetime.timedelta(29), today
+        ).date
         pipe = database.pipeline()
         for day in past_month:
             pipe.zrevrangebyscore(f"{key}:{day}", "+inf", "-inf", withscores=True)
@@ -75,7 +79,7 @@ class Score(commands.Cog):
     async def user_lb(self, ctx, title, page, database_key=None, data=None):
         if database_key is None and data is None:
             raise GenericError("database_key and data are both NoneType", 990)
-        elif database_key is not None and data is not None:
+        if database_key is not None and data is not None:
             raise GenericError("database_key and data are both set", 990)
 
         if page < 1:
@@ -272,8 +276,8 @@ class Score(commands.Cog):
         embed.set_author(name="Bird ID - An Ornithology Bot")
         current_streak = f"{user} has answered `{streak}` in a row!"
         max_streak = f"{user}'s max was `{max_streak}` in a row!"
-        embed.add_field(name=f"**Current Streak**", value=current_streak, inline=False)
-        embed.add_field(name=f"**Max Streak**", value=max_streak, inline=False)
+        embed.add_field(name="**Current Streak**", value=current_streak, inline=False)
+        embed.add_field(name="**Max Streak**", value=max_streak, inline=False)
 
         await ctx.send(embed=embed)
 
@@ -362,7 +366,7 @@ class Score(commands.Cog):
         elif scope in ("month", "monthly", "m"):
             database_key = None
             scope = "Last 30 Days"
-            data = self._monthly_lb(ctx, "scores")
+            data = self._monthly_lb("scores")
         else:
             database_key = "users:global"
             scope = "global"
@@ -427,7 +431,7 @@ class Score(commands.Cog):
             database_key = f"incorrect.user:{ctx.author.id}"
             scope = "me"
         elif scope in ("month", "monthly", "mo"):
-            data = self._monthly_lb(ctx, "missed")
+            data = self._monthly_lb("missed")
             database_key = None
             scope = "Last 30 days"
         else:

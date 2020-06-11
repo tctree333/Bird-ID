@@ -24,7 +24,6 @@ import shutil
 import string
 import urllib
 from io import BytesIO
-from mimetypes import guess_all_extensions, guess_extension
 
 import aiohttp
 import discord
@@ -39,9 +38,13 @@ from bot.filters import Filter
 SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 
+MAX_FILESIZE = 6000000 # limit media to 6mb
+
 # Valid file types
-valid_image_types = {"image/png": "png", "image/jpeg": "jpg"}
-valid_audio_types = {"audio/mpeg": "mp3", "audio/wav": "wav"}
+valid_types = {
+    "images": {"image/png": "png", "image/jpeg": "jpg"},
+    "songs": {"audio/mpeg": "mp3", "audio/wav": "wav"},
+}
 
 
 def cache(func=None):
@@ -54,10 +57,10 @@ def cache(func=None):
     def wrapper(func):
         sentinel = object()
 
-        cache = {}
+        cache_ = {}
         hits = misses = 0
-        cache_get = cache.get
-        cache_len = cache.__len__
+        cache_get = cache_.get
+        cache_len = cache_.__len__
 
         async def wrapped(*args, **kwds):
             # Simple caching without ordering or size limit
@@ -72,7 +75,7 @@ def cache(func=None):
             logger.info(f"did not find {args[0]} in cache")
             misses += 1
             result = await func(*args, **kwds)
-            cache[key] = result
+            cache_[key] = result
             return result
 
         def cache_info():
@@ -84,8 +87,7 @@ def cache(func=None):
 
     if func:
         return wrapper(func)
-    else:
-        return wrapper
+    return wrapper
 
 
 @cache()
@@ -121,11 +123,11 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
                         + f" while fetching {sciname_url} for {bird}",
                         code=201,
                     )
-                else:
-                    logger.info(f"An HTTP error occurred; Retries: {retries}")
-                    retries += 1
-                    sciname = await get_sciname(bird, session, retries)
-                    return sciname
+                logger.info(f"An HTTP error occurred; Retries: {retries}")
+                retries += 1
+                sciname = await get_sciname(bird, session, retries)
+                return sciname
+
             sciname_data = await sciname_response.json()
             try:
                 sciname = sciname_data[0]["sciName"]
@@ -163,11 +165,11 @@ async def get_taxon(bird: str, session=None, retries=0) -> str:
                         + f" while fetching {taxon_code_url} for {bird}",
                         code=201,
                     )
-                else:
-                    logger.info(f"An HTTP error occurred; Retries: {retries}")
-                    retries += 1
-                    taxon_code = (await get_taxon(bird, session, retries))[0]
-                    return taxon_code
+                logger.info(f"An HTTP error occurred; Retries: {retries}")
+                retries += 1
+                taxon_code = (await get_taxon(bird, session, retries))[0]
+                return taxon_code
+
             taxon_code_data = await taxon_code_response.json()
             try:
                 logger.info(f"raw data: {taxon_code_data}")
@@ -235,14 +237,17 @@ def _black_and_white(input_image_path) -> BytesIO:
     return final_buffer
 
 
-async def send_bird(ctx, bird: str, filters: Filter, on_error=None, message=None):
-    """Gets a bird picture and sends it to the user.
+async def send_bird(
+    ctx, bird: str, media_type: str, filters: Filter, on_error=None, message=None
+):
+    """Gets bird media and sends it to the user.
 
     `ctx` - Discord context object\n
-    `bird` (str) - bird picture to send\n
-    `filters` (bot.filters Filter) - string to append to search for female/juvenile birds\n
+    `bird` (str) - bird to send\n
+    `media_type` (str) - type of media (images/songs)\n
+    `filters` (bot.filters Filter)\n
     `on_error` (function)- function to run when an error occurs\n
-    `message` (str) - text message to send before bird picture\n
+    `message` (str) - text message to send before bird\n
     """
     if bird == "":
         logger.error("error - bird is blank")
@@ -263,100 +268,51 @@ async def send_bird(ctx, bird: str, filters: Filter, on_error=None, message=None
     await ctx.trigger_typing()
 
     try:
-        response = await get_image(ctx, bird, filters)
+        filename, extension = await get_media(ctx, bird, media_type, filters)
     except GenericError as e:
         await delete.delete()
         if e.code == 100:
             await ctx.send(
-                f"**This combination of filters has no valid images for the current bird.**\n*Please try again.*"
+                f"**This combination of filters has no valid {media_type} for the current bird.**\n*Please try again.*"
             )
         else:
             await ctx.send(
-                f"**An error has occurred while fetching images.**\n*Please try again.*\n**Reason:** {e}"
+                f"**An error has occurred while fetching {media_type}.**\n*Please try again.*\n**Reason:** {e}"
             )
             logger.exception(e)
         if on_error is not None:
             on_error(ctx)
         return
 
-    filename = str(response[0])
-    extension = str(response[1])
-    statInfo = os.stat(filename)
-    if statInfo.st_size > 4000000:  # another filesize check (4mb)
+    if os.stat(filename).st_size > MAX_FILESIZE:  # another filesize check (4mb)
         await delete.delete()
         await ctx.send("**Oops! File too large :(**\n*Please try again.*")
-    else:
+        return
+
+    if media_type == "images":
         if filters.bw:
             # prevent the black and white conversion from blocking
             loop = asyncio.get_running_loop()
             fn = functools.partial(_black_and_white, filename)
-            file_stream = await loop.run_in_executor(None, fn)
-        else:
-            file_stream = filename
+            filename = await loop.run_in_executor(None, fn)
 
-        if message is not None:
-            await ctx.send(message)
+    elif media_type == "songs":
+        # remove spoilers in tag metadata
+        audioFile = eyed3.load(filename)
+        if audioFile is not None and audioFile.tag is not None:
+            audioFile.tag.remove(filename)
 
-        # change filename to avoid spoilers
-        file_obj = discord.File(file_stream, filename=f"bird.{extension}")
-        await ctx.send(file=file_obj)
-        await delete.delete()
+    if message is not None:
+        await ctx.send(message)
 
-
-async def send_birdsong(ctx, bird: str, on_error=None, message=None):
-    """Gets a bird sound and sends it to the user.
-
-    `ctx` - Discord context object\n
-    `bird` (str) - bird picture to send\n
-    `on_error` (function) - function to run when an error occurs\n
-    `message` (str) - text message to send before bird picture
-    """
-    if bird == "":
-        logger.error("error - bird is blank")
-        await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
-        if on_error is not None:
-            on_error(ctx)
-        return
-
-    delete = await ctx.send("**Fetching.** This may take a while.")
-    # trigger "typing" discord message
-    await ctx.trigger_typing()
-
-    try:
-        response = await get_song(ctx, bird)
-    except GenericError as e:
-        await delete.delete()
-        await ctx.send(
-            f"**An error has occurred while fetching songs.**\n*Please try again.*\n**Reason:** {e}"
-        )
-        logger.exception(e)
-        if on_error is not None:
-            on_error(ctx)
-        return
-
-    filename = str(response[0])
-    extension = str(response[1])
-
-    # remove spoilers in tag metadata
-    audioFile = eyed3.load(filename)
-    if audioFile is not None and audioFile.tag is not None:
-        audioFile.tag.remove(filename)
-
-    statInfo = os.stat(filename)
-    if statInfo.st_size > 4000000:  # another filesize check (4mb)
-        await delete.delete()
-        await ctx.send("**Oops! File too large :(**\n*Please try again.*")
-    else:
-        with open(filename, "rb") as img:
-            if message is not None:
-                await ctx.send(message)
-            # change filename to avoid spoilers
-            await ctx.send(file=discord.File(img, filename="bird." + extension))
-            await delete.delete()
+    # change filename to avoid spoilers
+    file_obj = discord.File(filename, filename=f"bird.{extension}")
+    await ctx.send(file=file_obj)
+    await delete.delete()
 
 
-async def get_image(ctx, bird: str, filters: Filter):
-    """Chooses an image from a list of images.
+async def get_media(ctx, bird: str, media_type: str, filters: Filter):
+    """Chooses media from a list of filenames.
 
     This function chooses a valid image to pass to send_bird().
     Valid images are based on file extension and size. (8mb discord limit)
@@ -364,7 +320,8 @@ async def get_image(ctx, bird: str, filters: Filter):
     Returns a list containing the file path and extension type.
 
     `ctx` - Discord context object\n
-    `bird` (str) - bird to get image of\n
+    `bird` (str) - bird to get media of\n
+    `media_type` (str) - type of media (images/songs)\n
     `filters` (bot.filters Filter)\n
     """
 
@@ -373,84 +330,35 @@ async def get_image(ctx, bird: str, filters: Filter):
         sciBird = await get_sciname(bird)
     except GenericError:
         sciBird = bird
-    images = await get_files(sciBird, "images", filters)
-    logger.info("images: " + str(images))
+    media = await get_files(sciBird, media_type, filters)
+    logger.info("media: " + str(media))
     prevJ = int(database.hget(f"channel:{ctx.channel.id}", "prevJ"))
     # Randomize start (choose beginning 4/5ths in case it fails checks)
-    if images:
-        j = (prevJ + 1) % len(images)
+    if media:
+        j = (prevJ + 1) % len(media)
         logger.info("prevJ: " + str(prevJ))
         logger.info("j: " + str(j))
 
-        for x in range(0, len(images)):  # check file type and size
-            y = (x + j) % len(images)
-            image_link = images[y]
-            extension = image_link.split(".")[-1]
+        for x in range(0, len(media)):  # check file type and size
+            y = (x + j) % len(media)
+            path = media[y]
+            extension = path.split(".")[-1]
             logger.info("extension: " + str(extension))
-            statInfo = os.stat(image_link)
+            statInfo = os.stat(path)
             logger.info("size: " + str(statInfo.st_size))
             if (
-                extension.lower() in valid_image_types.values()
-                and statInfo.st_size < 4000000
+                extension.lower() in valid_types[media_type].values()
+                and statInfo.st_size < MAX_FILESIZE
             ):  # keep files less than 4mb
                 logger.info("found one!")
                 break
-            elif y == prevJ:
-                raise GenericError("No Valid Images Found", code=999)
+            raise GenericError(f"No Valid {media_type.title()} Found", code=999)
 
         database.hset(f"channel:{ctx.channel.id}", "prevJ", str(j))
     else:
-        raise GenericError("No Images Found", code=100)
+        raise GenericError(f"No {media_type.title()} Found", code=100)
 
-    return [image_link, extension]
-
-
-async def get_song(ctx, bird):
-    """Chooses a song from a list of songs.
-
-    This function chooses a valid song to pass to send_birdsong().
-    Valid songs are based on file extension and size. (8mb discord limit)
-
-    Returns a list containing the file path and extension type.
-
-    `ctx` - Discord context object\n
-    `bird` (str) - bird to get song of
-    """
-
-    # fetch scientific names of birds
-    try:
-        sciBird = await get_sciname(bird)
-    except GenericError:
-        sciBird = bird
-    songs = await get_files(sciBird, "songs", Filter())
-    logger.info("songs: " + str(songs))
-    prevK = int(database.hget(f"channel:{ctx.channel.id}", "prevK"))
-    if songs:
-        k = (prevK + 1) % len(songs)
-        logger.info("prevK: " + str(prevK))
-        logger.info("k: " + str(k))
-
-        for x in range(0, len(songs)):  # check file type and size
-            y = (x + k) % len(songs)
-            song_link = songs[y]
-            extension = song_link.split(".")[-1]
-            logger.info("extension: " + str(extension))
-            statInfo = os.stat(song_link)
-            logger.info("size: " + str(statInfo.st_size))
-            if (
-                extension.lower() in valid_audio_types.values()
-                and statInfo.st_size < 4000000
-            ):  # keep files less than 4mb
-                logger.info("found one!")
-                break
-            elif y == prevK:
-                raise GenericError("No Valid Songs Found", code=999)
-
-        database.hset(f"channel:{ctx.channel.id}", "prevK", str(k))
-    else:
-        raise GenericError("No Songs Found", code=100)
-
-    return [song_link, extension]
+    return [path, extension]
 
 
 async def get_files(sciBird: str, media_type: str, filters: Filter, retries: int = 0):
@@ -482,14 +390,14 @@ async def get_files(sciBird: str, media_type: str, filters: Filter, retries: int
             if retries < 3:
                 retries += 1
                 return await get_files(sciBird, media_type, filters, retries)
-            else:
-                logger.info("More than 3 retries")
+            logger.info("More than 3 retries")
+
         return filenames
 
 
 async def download_media(bird, media_type, filters, directory=None, session=None):
     """Returns a list of filenames downloaded from Macaulay Library.
-    
+
     This function manages the download helpers to fetch images from Macaulay.
 
     `bird` (str) - scientific name of bird\n
@@ -541,10 +449,10 @@ async def _get_urls(
 ):
     """Returns a list of urls to Macaulay Library media.
 
-    The amount of urls returned is specified in `COUNT`. 
-    Media URLs are fetched using Macaulay Library's internal JSON API, 
+    The amount of urls returned is specified in `COUNT`.
+    Media URLs are fetched using Macaulay Library's internal JSON API,
     with `CATALOG_URL`. Raises a `GenericError` if fails.\n
-    Some urls may return an error code of 476 (because it is still being processed), 
+    Some urls may return an error code of 476 (because it is still being processed),
     if so, ignore that url.
 
     `session` (aiohttp ClientSession)\n
@@ -564,11 +472,11 @@ async def _get_urls(
                     + f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}",
                     code=201,
                 )
-            else:
-                retries += 1
-                logger.info(f"An HTTP error occurred; Retries: {retries}")
-                urls = await _get_urls(session, bird, media_type, filters, retries)
-                return urls
+            retries += 1
+            logger.info(f"An HTTP error occurred; Retries: {retries}")
+            urls = await _get_urls(session, bird, media_type, filters, retries)
+            return urls
+
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
         urls = (
@@ -595,7 +503,7 @@ async def _download_helper(path, url, session, sem):
                 if (
                     response.status != 200
                     or media_size is None
-                    or int(media_size) > 4000000
+                    or int(media_size) > MAX_FILESIZE
                 ):
                     logger.info(f"FAIL: status: {response.status}; size: {media_size}")
                     logger.info(url)
@@ -607,7 +515,7 @@ async def _download_helper(path, url, session, sem):
                 )
                 if content_type.partition("/")[0] == "image":
                     try:
-                        ext = valid_image_types[content_type]
+                        ext = valid_types["images"][content_type]
                     except KeyError:
                         raise GenericError(
                             f"No valid extensions found. Content-Type: {content_type}"
@@ -615,13 +523,13 @@ async def _download_helper(path, url, session, sem):
 
                 elif content_type.partition("/")[0] == "audio":
                     try:
-                        ext = valid_audio_types[content_type]
+                        ext = valid_types["songs"][content_type]
                     except KeyError:
                         raise GenericError(
                             f"No valid extensions found. Content-Type: {content_type}"
                         )
                 else:
-                    raise GenericError(f"Invalid content-type.")
+                    raise GenericError("Invalid content-type.")
 
                 filename = f"{path}.{ext}"
                 # from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5
@@ -661,7 +569,7 @@ def rotate_cache():
 
 def spellcheck(worda, wordb, cutoff=3):
     """Checks if two words are close to each other.
-    
+
     `worda` (str) - first word to compare
     `wordb` (str) - second word to compare
     `cutoff` (int) - allowed difference amount

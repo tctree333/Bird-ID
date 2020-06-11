@@ -40,7 +40,7 @@ from bot.data import (
 
 async def channel_setup(ctx):
     """Sets up a new discord channel.
-    
+
     `ctx` - Discord context object
     """
     logger.info("checking channel setup")
@@ -49,18 +49,7 @@ async def channel_setup(ctx):
     else:
         database.hset(
             f"channel:{ctx.channel.id}",
-            mapping={
-                "bird": "",
-                "answered": 1,
-                "sBird": "",
-                "sAnswered": 1,
-                "goatsucker": "",
-                "gsAnswered": 1,
-                "prevJ": 20,
-                "prevB": "",
-                "prevS": "",
-                "prevK": 20,
-            },
+            mapping={"bird": "", "answered": 1, "prevB": "", "prevJ": 20},
         )
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
         logger.info("channel data added")
@@ -75,7 +64,7 @@ async def channel_setup(ctx):
     if ctx.guild is not None:
         if (
             database.zadd("channels:global", {f"{ctx.guild.id}:{ctx.channel.id}": 0})
-            is not 0
+            != 0
         ):
             logger.info("server lookup ok")
         else:
@@ -84,7 +73,7 @@ async def channel_setup(ctx):
 
 async def user_setup(ctx):
     """Sets up a new discord user for score tracking.
-    
+
     `ctx` - Discord context object or user id
     """
     if isinstance(ctx, (str, int)):
@@ -158,7 +147,7 @@ async def user_setup(ctx):
 
 def bird_setup(ctx, bird: str):
     """Sets up a new bird for incorrect tracking.
-    
+
     `ctx` - Discord context object or user id\n
     `bird` - bird to setup
     """
@@ -226,7 +215,7 @@ def bird_setup(ctx, bird: str):
 
 def error_skip(ctx):
     """Skips the current bird.
-    
+
     Passed to send_bird() as on_error to skip the bird when an error occurs to prevent error loops.
     """
     logger.info("ok")
@@ -234,29 +223,9 @@ def error_skip(ctx):
     database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
 
-def error_skip_song(ctx):
-    """Skips the current song.
-    
-    Passed to send_birdsong() as on_error to skip the bird when an error occurs to prevent error loops.
-    """
-    logger.info("ok")
-    database.hset(f"channel:{ctx.channel.id}", "sBird", "")
-    database.hset(f"channel:{ctx.channel.id}", "sAnswered", "1")
-
-
-def error_skip_goat(ctx):
-    """Skips the current goatsucker.
-    
-    Passed to send_bird() as on_error to skip the bird when an error occurs to prevent error loops.
-    """
-    logger.info("ok")
-    database.hset(f"channel:{ctx.channel.id}", "goatsucker", "")
-    database.hset(f"channel:{ctx.channel.id}", "gsAnswered", "1")
-
-
 def check_state_role(ctx) -> list:
     """Returns a list of state roles a user has.
-    
+
     `ctx` - Discord context object
     """
     logger.info("checking roles")
@@ -279,7 +248,7 @@ async def send_leaderboard(ctx, title, page, database_key=None, data=None):
 
     if database_key is None and data is None:
         raise GenericError("database_key and data are both NoneType", 990)
-    elif database_key is not None and data is not None:
+    if database_key is not None and data is not None:
         raise GenericError("database_key and data are both set", 990)
 
     if page < 1:
@@ -320,14 +289,16 @@ async def send_leaderboard(ctx, title, page, database_key=None, data=None):
     await ctx.send(embed=embed)
 
 
-def build_id_list(user_id=None, taxon=[], roles=[], state=[], media="images") -> list:
+def build_id_list(
+    user_id=None, taxon=None, roles=None, state=None, media="images"
+) -> list:
     """Generates an ID list based on given arguments
 
     - `user_id`: User ID of custom list
     - `taxon`: taxon string/list
     - `roles`: role list
     - `state`: state string/list
-    - `media`: image/song
+    - `media`: images/songs
     """
     logger.info("building id list")
     if isinstance(taxon, str):
@@ -335,13 +306,15 @@ def build_id_list(user_id=None, taxon=[], roles=[], state=[], media="images") ->
     if isinstance(state, str):
         state = state.split(" ")
 
-    state_roles = state + roles
+    state_roles = (state if state else []) + (roles if roles else [])
     if media in ("songs", "song", "s", "a"):
         state_list = "songBirds"
         default = songBirds
-    else:
+    elif media in ("images", "image", "i", "p"):
         state_list = "birdList"
         default = birdList
+    else:
+        raise GenericError("Invalid media type", code=990)
 
     custom_list = []
     if (
@@ -549,7 +522,7 @@ async def drone_attack(ctx):
         logger.info("Passthrough Command")
         return True
 
-    elif str(ctx.command) in ("bird", "song", "goatsucker"):
+    if str(ctx.command) in ("bird", "song", "goatsucker"):
         images = os.listdir("bot/media/images/drone")
         path = f"bot/media/images/drone/{images[random.randint(0,len(images)-1)]}"
         BASE_MESSAGE = (
@@ -574,9 +547,9 @@ async def drone_attack(ctx):
                 BASE_MESSAGE.format(
                     media="image",
                     new_cmd="gs",
-                    skip_cmd="skipgoat",
-                    check_cmd="checkgoat",
-                    hint_cmd="hintgoat",
+                    skip_cmd="skip",
+                    check_cmd="check",
+                    hint_cmd="hint",
                 )
             )
         elif str(ctx.command) == "bird":
@@ -584,16 +557,16 @@ async def drone_attack(ctx):
                 BASE_MESSAGE.format(
                     media="song",
                     new_cmd="song",
-                    skip_cmd="skipsong",
-                    check_cmd="checksong",
-                    hint_cmd="hintsong",
+                    skip_cmd="skip",
+                    check_cmd="check",
+                    hint_cmd="hint",
                 )
             )
 
         file_obj = discord.File(path, filename=f"bird.{path.split('.')[-1]}")
         await ctx.send(file=file_obj)
 
-    elif str(ctx.command) in ("check", "checkgoat", "checksong"):
+    elif str(ctx.command) in ("check",):
         args = ctx.message.content.split(" ")[1:]
         matches = difflib.get_close_matches(
             " ".join(args), birdListMaster + sciListMaster, n=1
@@ -609,14 +582,14 @@ async def drone_attack(ctx):
             await ctx.send("Sorry, the bird was actually **definitely a real bird.**")
             await ctx.send(embed=video_embed())
 
-    elif str(ctx.command) in ("skip", "skipgoat", "skipsong"):
+    elif str(ctx.command) in ("skip",):
         await ctx.send("Ok, skipping **definitely a real bird.**")
         await ctx.send(embed=video_embed())
 
-    elif str(ctx.command) in ("hint", "hintgoat", "hintsong"):
+    elif str(ctx.command) in ("hint",):
         await ctx.send("This is definitely a real bird, **NOT** a government drone.")
 
-    elif str(ctx.command) in ("info"):
+    elif str(ctx.command) in ("info",):
         await ctx.send(
             "Birds are real. Don't believe what others may say. **BIRDS ARE VERY REAL!**"
         )
@@ -645,7 +618,7 @@ async def drone_attack(ctx):
 
 async def backup_all():
     """Backs up the database to a file.
-    
+
     This function serializes all data in the REDIS database
     into a file in the `backups` directory.
 

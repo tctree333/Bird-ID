@@ -99,8 +99,7 @@ if __name__ == "__main__":
                 logger.exception(f"Failed to load extension {extension}.", e)
                 capture_exception(e)
                 raise e
-            else:
-                logger.error(f"Failed to load extension {extension}.", e)
+            logger.error(f"Failed to load extension {extension}.", e)
 
     if sys.platform == "win32":
         asyncio.set_event_loop(asyncio.ProactorEventLoop())
@@ -135,10 +134,9 @@ if __name__ == "__main__":
         logger.info("global check: checking banned")
         if database.zscore("ignore:global", str(ctx.channel.id)) is not None:
             raise GenericError(code=192)
-        elif database.zscore("banned:global", str(ctx.author.id)) is not None:
+        if database.zscore("banned:global", str(ctx.author.id)) is not None:
             raise GenericError(code=842)
-        else:
-            return True
+        return True
 
     @bot.check
     def bot_has_permissions(ctx):
@@ -161,13 +159,10 @@ if __name__ == "__main__":
                 for perm, value in perms.items()
                 if getattr(permissions, perm, None) != value
             ]
-
             if not missing:
                 return True
-
             raise commands.BotMissingPermissions(missing)
-        else:
-            return True
+        return True
 
     @bot.check
     async def database_setup(ctx):
@@ -181,7 +176,7 @@ if __name__ == "__main__":
     @bot.check
     async def is_holiday(ctx):
         """Sends a picture of a turkey on Thanksgiving.
-        
+
         Can be extended to other holidays as well.
         """
         logger.info("global check: checking holiday")
@@ -190,7 +185,7 @@ if __name__ == "__main__":
         us = holidays.US()
         if now in us:
             if us.get(now) == "Thanksgiving":
-                await send_bird(ctx, "Wild Turkey", Filter())
+                await send_bird(ctx, "Wild Turkey", "images", Filter())
                 await ctx.send("**It's Thanksgiving!**\nGo celebrate with your family.")
                 raise GenericError(code=666)
         elif now == date(now.year, 4, 1):
@@ -253,7 +248,7 @@ if __name__ == "__main__":
             if error.code == 192:
                 # channel is ignored
                 return
-            elif error.code == 842:
+            if error.code == 842:
                 await ctx.send("**Sorry, you cannot use this command.**")
             elif error.code == 666:
                 logger.info("GenericError 666")

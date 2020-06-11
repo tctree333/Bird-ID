@@ -29,7 +29,8 @@ class COVID(commands.Cog):
         self.bot = bot
         self.update_covid()
 
-    def _request(self, endpoint, params=None):
+    @staticmethod
+    def _request(endpoint, params=None):
         url = "https://coronavirus-tracker-api.herokuapp.com"
         response = requests.get(url + endpoint, params)
         response.raise_for_status()
@@ -89,7 +90,8 @@ class COVID(commands.Cog):
             for x in self.getLocations()
         }
 
-    def format_data(self, confirmed: int, died: int, recovered: int, location="Global"):
+    @staticmethod
+    def format_data(confirmed: int, died: int, recovered: int, location="Global"):
         embed = discord.Embed(
             title="COVID-19 Data:",
             description="Latest data on the COVID-19 pandemic.",
@@ -105,7 +107,8 @@ class COVID(commands.Cog):
         embed.add_field(name=location, value=data, inline=False)
         return embed
 
-    def format_leaderboard(self, data, ranked):
+    @staticmethod
+    def format_leaderboard(data, ranked):
         embed = discord.Embed(
             title="COVID-19 Top:",
             description="Latest data on the COVID-19 pandemic.",
@@ -174,9 +177,9 @@ class COVID(commands.Cog):
                 embed = self.format_data(c, d, r, location_matches[0])
                 await ctx.send(embed=embed)
                 return
-            else:
-                await ctx.send(f"No location `{location}` found.")
-                return
+
+            await ctx.send(f"No location `{location}` found.")
+            return
 
     # top countries
     @covid.command(

@@ -34,7 +34,7 @@ def get_bird():
     session_id = get_session_id()
     media_type = flask.request.args.get("media", "images", str)
 
-    filters = Filter().parse(flask.request.args.get("addon", "", str))
+    filters = Filter.parse(flask.request.args.get("addon", "", str))
     if bool(flask.request.args.get("bw", 0, int)):
         filters.bw = True
     logger.info(f"args: media: {media_type}; filters: {filters};")
@@ -48,10 +48,9 @@ def get_bird():
         logger.info("trial maxed")
         flask.abort(403, "Sign in to continue")
 
-    if media_type != "images" and media_type != "songs":
+    if media_type in ("images", "songs"):
         logger.error(f"invalid media type {media_type}")
         flask.abort(406, "Invalid media type")
-        return
 
     answered = int(database.hget(f"web.session:{session_id}", "answered"))
     logger.info(f"answered: {answered}")
@@ -103,61 +102,58 @@ def check_bird():
     elif bird_guess == "":
         logger.info("empty guess")
         flask.abort(406, "Empty guess")
-    else:  # if there is a bird, it checks answer
-        logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
-        logger.info("args: " + str(bird_guess.lower().replace("-", " ")))
 
-        sciBird = asyncio.run(get_sciname(currentBird))
-        if spellcheck(bird_guess, currentBird) or spellcheck(bird_guess, sciBird):
-            logger.info("correct")
+    # if there is a bird, it checks answer
+    logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
+    logger.info("args: " + str(bird_guess.lower().replace("-", " ")))
 
-            database.hset(f"web.session:{session_id}", "bird", "")
-            database.hset(f"web.session:{session_id}", "answered", "1")
+    sciBird = asyncio.run(get_sciname(currentBird))
+    if spellcheck(bird_guess, currentBird) or spellcheck(bird_guess, sciBird):
+        logger.info("correct")
 
-            tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
-            if user_id != 0:
-                bird_setup(user_id, currentBird)
-                score_increment(user_id, 1)
-                session_increment(user_id, "correct", 1)
-                streak_increment(user_id, 1)
-            elif tempScore >= 10:
-                logger.info("trial maxed")
-                flask.abort(403, "Sign in to continue")
-            else:
-                database.hset(
-                    f"web.session:{session_id}", "tempScore", str(tempScore + 1)
-                )
+        database.hset(f"web.session:{session_id}", "bird", "")
+        database.hset(f"web.session:{session_id}", "answered", "1")
 
-            url = get_wiki_url(currentBird)
-            return {
-                "guess": bird_guess,
-                "answer": currentBird,
-                "sciname": sciBird,
-                "status": "correct",
-                "wiki": url,
-            }
-
+        tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
+        if user_id != 0:
+            bird_setup(user_id, currentBird)
+            score_increment(user_id, 1)
+            session_increment(user_id, "correct", 1)
+            streak_increment(user_id, 1)
+        elif tempScore >= 10:
+            logger.info("trial maxed")
+            flask.abort(403, "Sign in to continue")
         else:
-            logger.info("incorrect")
+            database.hset(f"web.session:{session_id}", "tempScore", str(tempScore + 1))
 
-            database.hset(f"web.session:{session_id}", "bird", "")
-            database.hset(f"web.session:{session_id}", "answered", "1")
-            database.zincrby("incorrect:global", 1, currentBird)
+        url = get_wiki_url(currentBird)
+        return {
+            "guess": bird_guess,
+            "answer": currentBird,
+            "sciname": sciBird,
+            "status": "correct",
+            "wiki": url,
+        }
 
-            if user_id != 0:
-                bird_setup(user_id, currentBird)
-                incorrect_increment(user_id, currentBird, 1)
-                session_increment(user_id, "incorrect", 1)
-                streak_increment(user_id, None)  # reset streak
+    logger.info("incorrect")
+    database.hset(f"web.session:{session_id}", "bird", "")
+    database.hset(f"web.session:{session_id}", "answered", "1")
+    database.zincrby("incorrect:global", 1, currentBird)
 
-            url = get_wiki_url(currentBird)
-            return {
-                "guess": bird_guess,
-                "answer": currentBird,
-                "sciname": sciBird,
-                "status": "incorrect",
-                "wiki": url,
-            }
+    if user_id != 0:
+        bird_setup(user_id, currentBird)
+        incorrect_increment(user_id, currentBird, 1)
+        session_increment(user_id, "incorrect", 1)
+        streak_increment(user_id, None)  # reset streak
+
+    url = get_wiki_url(currentBird)
+    return {
+        "guess": bird_guess,
+        "answer": currentBird,
+        "sciname": sciBird,
+        "status": "incorrect",
+        "wiki": url,
+    }
 
 
 @bp.route("/skip", methods=["GET"])
@@ -188,6 +184,7 @@ def hint_bird():
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird != "":  # check if there is bird
         return {"hint": currentBird[0]}
-    else:
-        logger.info("bird is blank")
-        flask.abort(406, "Bird is blank")
+
+    logger.info("bird is blank")
+    flask.abort(406, "Bird is blank")
+    return None

@@ -36,40 +36,6 @@ class Hint(commands.Cog):
         else:
             await ctx.send("You need to ask for a bird first!")
 
-    # give hint for goat
-    @commands.command(
-        help="- Gives first letter of current goatsucker",
-        aliases=["goathint", "hg", "gh"],
-    )
-    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    async def hintgoat(self, ctx):
-        logger.info("command: hintgoat")
-
-        currentBird = database.hget(f"channel:{ctx.channel.id}", "goatsucker").decode(
-            "utf-8"
-        )
-        if currentBird != "":  # check if there is bird
-            await ctx.send(f"The first letter is {currentBird[0]}")
-        else:
-            await ctx.send("You need to ask for a bird first!")
-
-    # give hint for song
-    @commands.command(
-        help="- Gives first letter of current bird call",
-        aliases=["songhint", "hs", "sh"],
-    )
-    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    async def hintsong(self, ctx):
-        logger.info("command: hintsong")
-
-        currentSongBird = database.hget(f"channel:{ctx.channel.id}", "sBird").decode(
-            "utf-8"
-        )
-        if currentSongBird != "":  # check if there is bird
-            await ctx.send(f"The first letter is {currentSongBird[0]}")
-        else:
-            await ctx.send("You need to ask for a bird first!")
-
 
 def setup(bot):
     bot.add_cog(Hint(bot))

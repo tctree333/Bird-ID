@@ -21,7 +21,7 @@ import discord
 import wikipedia
 from discord.ext import commands
 
-from bot.core import get_sciname, get_taxon, send_bird, send_birdsong
+from bot.core import get_sciname, get_taxon, send_bird
 from bot.data import birdListMaster, logger, memeList, sciListMaster, states, taxons
 from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list
@@ -43,7 +43,7 @@ class Other(commands.Cog):
         logger.info("command: info")
         arg = arg.lower().strip()
 
-        filters = Filter().parse(arg)
+        filters = Filter.parse(arg)
         options = filters.display()
         arg = arg.split(" ")
         for i in reversed(range(1, 6)):
@@ -56,10 +56,10 @@ class Other(commands.Cog):
                 if options:
                     await ctx.send(f"**Detected filters**: `{'`, `'.join(options)}`")
                 await send_bird(
-                    ctx, bird, filters, message=f"Here's a *{bird.lower()}* image!"
+                    ctx, bird, "images", filters, message=f"Here's a *{bird.lower()}* image!"
                 )
-                await send_birdsong(
-                    ctx, bird, message=f"Here's a *{bird.lower()}* call!"
+                await send_bird(
+                    ctx, bird, "songs", filters, message=f"Here's a *{bird.lower()}* image!"
                 )
                 await delete.delete()
                 return
@@ -72,7 +72,7 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
     async def filters(self, ctx):
         logger.info("command: filters")
-        filters = Filter().aliases()
+        filters = Filter.aliases()
         embed = discord.Embed(
             title="Media Filters",
             type="rich",
@@ -186,7 +186,7 @@ class Other(commands.Cog):
         if not bird_list and not song_bird_list:
             logger.info("no birds for taxon/state")
             await ctx.send(
-                f"**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*"
+                "**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*"
             )
             return
 
@@ -221,7 +221,7 @@ class Other(commands.Cog):
             f"**The `{taxon}` in the `{state}` bird songs:**"
         )
         for birds in songLists:
-            await ctx.author.dm_channel.send(f"```\n{birds}```")
+            await ctx.author.dm_channel.send(f"```\n{birds}me")
 
         await ctx.send(
             f"The `{taxon}` in the `{state}` bird list has **{len(bird_list)}** birds.\n"

@@ -25,6 +25,7 @@ class TestBirds:
             database.delete(f"incorrect.server:{self.ctx.guild.id}")
 
     def setup(self, guild=False):
+        # pylint: disable=attribute-defined-outside-init
         self.bot = mock.Bot()
         self.cog = get_birds.Birds(self.bot)
         self.ctx = mock.Context(self.bot)
@@ -49,9 +50,9 @@ class TestBirds:
     def test_bird_dm_1(self):
         self.setup(guild=True)
 
-        coroutine = self.cog.bird.callback(
+        coroutine = self.cog.bird.callback(  # pylint: disable=no-member
             self.cog, self.ctx
-        )  # pylint: disable=no-member
+        )
         assert asyncio.run(coroutine) is None
         for i in (
             "Active Filters",
@@ -71,9 +72,9 @@ class TestBirds:
     def test_bird_dm_2(self):
         self.setup(guild=True)
 
-        coroutine = self.cog.bird.callback(
+        coroutine = self.cog.bird.callback(  # pylint: disable=no-member
             self.cog, self.ctx, args_str="bw female"
-        )  # pylint: disable=no-member
+        )
         assert asyncio.run(coroutine) is None
         for i in (
             "Active Filters",
@@ -95,9 +96,9 @@ class TestBirds:
     def test_bird_dm_3(self):
         self.setup(guild=True)
 
-        coroutine = self.cog.bird.callback(
+        coroutine = self.cog.bird.callback(  # pylint: disable=no-member
             self.cog, self.ctx, args_str="passeriformes yolo bw juvenile"
-        )  # pylint: disable=no-member
+        )
         assert asyncio.run(coroutine) is None
         for i in (
             "Active Filters",
@@ -119,9 +120,9 @@ class TestBirds:
     def test_bird_dm_4(self):
         self.setup(guild=True)
 
-        coroutine = self.cog.bird.callback(
+        coroutine = self.cog.bird.callback(  # pylint: disable=no-member
             self.cog, self.ctx, args_str="13435 troglodytidae f"
-        )  # pylint: disable=no-member
+        )
         assert asyncio.run(coroutine) is None
         for i in (
             "Active Filters",
@@ -142,9 +143,9 @@ class TestBirds:
     def test_bird_state_na(self):
         self.setup(guild=True)
 
-        coroutine = self.cog.bird.callback(
+        coroutine = self.cog.bird.callback(  # pylint: disable=no-member
             self.cog, self.ctx, args_str="na"
-        )  # pylint: disable=no-member
+        )
         assert asyncio.run(coroutine) is None
         for i in (
             "Active Filters",
@@ -166,9 +167,9 @@ class TestBirds:
         database.hset(f"channel:{self.ctx.channel.id}", "bird", "Canada Goose")
         database.hset(f"channel:{self.ctx.channel.id}", "answered", "0")
 
-        coroutine = self.cog.bird.callback(
+        coroutine = self.cog.bird.callback(  # pylint: disable=no-member
             self.cog, self.ctx, args_str="small egg nest"
-        )  # pylint: disable=no-member
+        )
         assert asyncio.run(coroutine) is None
         for i in (
             "Active Filters",
@@ -178,7 +179,7 @@ class TestBirds:
             "quality: good",
         ):
             assert i in self.ctx.messages[2].content
-        for i in ("Taxons","Detected State"):
+        for i in ("Taxons", "Detected State"):
             assert i not in self.ctx.messages[2].content
         for i in (
             "Here you go!",
@@ -191,16 +192,16 @@ class TestBirds:
     def test_bird_quality_option(self):
         self.setup(guild=True)
 
-        coroutine = self.cog.bird.callback(
+        coroutine = self.cog.bird.callback(  # pylint: disable=no-member
             self.cog, self.ctx, args_str="q1"
-        )  # pylint: disable=no-member
+        )
         assert asyncio.run(coroutine) is None
         for i in (
             "Active Filters",
             "quality: terrible",
         ):
             assert i in self.ctx.messages[2].content
-        for i in ("quality: excellent","quality: average", "quality: good"):
+        for i in ("quality: excellent", "quality: average", "quality: good"):
             assert i not in self.ctx.messages[2].content
         for i in (
             "Here you go!",
