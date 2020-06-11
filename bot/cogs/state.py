@@ -405,7 +405,7 @@ class States(commands.Cog):
             await ctx.send("**This command is unavaliable in DMs!**")
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
-                f"**The bot does not have enough permissions to fully function.**\n"
+                "**The bot does not have enough permissions to fully function.**\n"
                 + f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n"
                 + "*Please try again once the correct permissions are set.*"
             )

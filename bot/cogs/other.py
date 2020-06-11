@@ -186,7 +186,7 @@ class Other(commands.Cog):
         if not bird_list and not song_bird_list:
             logger.info("no birds for taxon/state")
             await ctx.send(
-                f"**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*"
+                "**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*"
             )
             return
 

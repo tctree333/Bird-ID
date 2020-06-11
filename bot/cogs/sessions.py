@@ -98,7 +98,7 @@ class Sessions(commands.Cog):
             name="Options", value=await self._get_options(ctx), inline=False
         )
         embed.add_field(name="Stats", value=await self._get_stats(ctx), inline=False)
-        embed.add_field(name=f"Top Missed Birds", value=leaderboard, inline=False)
+        embed.add_field(name="Top Missed Birds", value=leaderboard, inline=False)
 
         await ctx.send(embed=embed)
 
@@ -264,7 +264,7 @@ class Sessions(commands.Cog):
                     " ".join(taxon_args).strip(),
                 )
 
-            await self._send_stats(ctx, f"**Session started previously.**\n")
+            await self._send_stats(ctx, "**Session started previously.**\n")
         else:
             await ctx.send(
                 "**There is no session running.** *You can start one with `b!session start`*"
