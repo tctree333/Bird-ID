@@ -20,11 +20,16 @@ import string
 from discord.ext import commands
 
 from bot.core import send_bird
-from bot.data import (GenericError, database, goatsuckers, logger, states,
-                      taxons)
+from bot.data import GenericError, database, goatsuckers, logger, states, taxons
 from bot.filters import Filter
-from bot.functions import (CustomCooldown, bird_setup, build_id_list,
-                           check_state_role, error_skip, session_increment)
+from bot.functions import (
+    CustomCooldown,
+    bird_setup,
+    build_id_list,
+    check_state_role,
+    error_skip,
+    session_increment,
+)
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, "
@@ -261,7 +266,12 @@ class Birds(commands.Cog):
         logger.info("command: bird")
 
         filters, taxon, state = self.parse(ctx, args_str)
-        await self.send_bird_(ctx, "images", filters, taxon, state)
+        media = "images"
+        if database.exists(f"race.data:{ctx.channel.id}"):
+            media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
+                "utf-8"
+            )
+        await self.send_bird_(ctx, media, filters, taxon, state)
 
     # goatsucker command - no args
     # just for fun, no real purpose
@@ -269,6 +279,10 @@ class Birds(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def goatsucker(self, ctx):
         logger.info("command: goatsucker")
+
+        if database.exists(f"race.data:{ctx.channel.id}"):
+            await ctx.send("This command is disabled during races.")
+            return
 
         answered = int(database.hget(f"channel:{ctx.channel.id}", "answered"))
         # check to see if previous bird was answered
@@ -310,7 +324,12 @@ class Birds(commands.Cog):
         logger.info("command: song")
 
         filters, taxon, state = self.parse(ctx, args_str)
-        await self.send_bird_(ctx, "songs", filters, taxon, state)
+        media = "songs"
+        if database.exists(f"race.data:{ctx.channel.id}"):
+            media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
+                "utf-8"
+            )
+        await self.send_bird_(ctx, media, filters, taxon, state)
 
 
 def setup(bot):

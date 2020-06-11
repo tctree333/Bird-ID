@@ -258,37 +258,25 @@ class Race(commands.Cog):
                 f"**Race started with options:**\n{await self._get_options(ctx)}"
             )
 
-            if (
-                database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8")
-                == "image"
-            ):
-                logger.info("clearing previous bird")
-                database.hset(f"channel:{ctx.channel.id}", "bird", "")
-                database.hset(f"channel:{ctx.channel.id}", "answered", "1")
+            media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
+                "utf-8"
+            )
+            logger.info("clearing previous bird")
+            database.hset(f"channel:{ctx.channel.id}", "bird", "")
+            database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
-                logger.info("auto sending next bird image")
-                filter_int, taxon, state = database.hmget(
-                    f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"]
-                )
-                birds = self.bot.get_cog("Birds")
-                await birds.send_bird_(
-                    ctx,
-                    Filter().from_int(int(filter_int)),  # type: ignore
-                    taxon.decode("utf-8"),  # type: ignore
-                    state.decode("utf-8"),  # type: ignore
-                )
-
-            if (
-                database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8")
-                == "song"
-            ):
-                logger.info("clearing previous bird")
-                database.hset(f"channel:{ctx.channel.id}", "bird", "")
-                database.hset(f"channel:{ctx.channel.id}", "answered", "1")
-
-                logger.info("auto sending next bird song")
-                birds = self.bot.get_cog("Birds")
-                await birds.send_song_(ctx)
+            logger.info(f"auto sending next bird {media}")
+            filter_int, taxon, state = database.hmget(
+                f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"]
+            )
+            birds = self.bot.get_cog("Birds")
+            await birds.send_bird_(
+                ctx,
+                media,
+                Filter().from_int(int(filter_int)),  # type: ignore
+                taxon.decode("utf-8"),  # type: ignore
+                state.decode("utf-8"),  # type: ignore
+            )
 
     @race.command(
         brief="- Views race",
