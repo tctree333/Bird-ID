@@ -253,7 +253,7 @@ class Birds(commands.Cog):
         logger.info("command: bird")
 
         filters, taxon, state = self.parse(ctx, args_str)
-        self.send_bird_(ctx, "images", filters, taxon, state)
+        await self.send_bird_(ctx, "images", filters, taxon, state)
 
 
     # goatsucker command - no args
@@ -298,7 +298,7 @@ class Birds(commands.Cog):
         logger.info("command: song")
 
         filters, taxon, state = self.parse(ctx, args_str)
-        self.send_bird_(ctx, "songs", filters, taxon, state)
+        await self.send_bird_(ctx, "songs", filters, taxon, state)
 
 
 def setup(bot):

@@ -280,7 +280,9 @@ async def send_leaderboard(ctx, title, page, database_key=None, data=None):
     await ctx.send(embed=embed)
 
 
-def build_id_list(user_id=None, taxon=(), roles=(), state=(), media="images") -> list:
+def build_id_list(
+    user_id=None, taxon=None, roles=None, state=None, media="images"
+) -> list:
     """Generates an ID list based on given arguments
 
     - `user_id`: User ID of custom list
@@ -295,13 +297,15 @@ def build_id_list(user_id=None, taxon=(), roles=(), state=(), media="images") ->
     if isinstance(state, str):
         state = state.split(" ")
 
-    state_roles = state + roles
+    state_roles = (state if state else []) + (roles if roles else [])
     if media in ("songs", "song", "s", "a"):
         state_list = "songBirds"
         default = songBirds
-    else:
+    elif media in ("images", "image", "i", "p"):
         state_list = "birdList"
         default = birdList
+    else:
+        raise GenericError("Invalid media type", code=990)
 
     custom_list = []
     if (

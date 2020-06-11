@@ -24,7 +24,6 @@ import shutil
 import string
 import urllib
 from io import BytesIO
-from mimetypes import guess_all_extensions, guess_extension
 
 import aiohttp
 import discord
@@ -40,8 +39,10 @@ SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 
 # Valid file types
-valid_image_types = {"image/png": "png", "image/jpeg": "jpg"}
-valid_audio_types = {"audio/mpeg": "mp3", "audio/wav": "wav"}
+valid_types = {
+    "images": {"image/png": "png", "image/jpeg": "jpg"},
+    "songs": {"audio/mpeg": "mp3", "audio/wav": "wav"},
+}
 
 
 def cache(func=None):
@@ -247,8 +248,14 @@ async def send_bird(
     `on_error` (function)- function to run when an error occurs\n
     `message` (str) - text message to send before bird\n
     """
-    if bird == "":
-        logger.error("error - bird is blank")
+    media_type = (
+        "images"
+        if media_type in ("images", "image", "i", "p")
+        else ("songs" if media_type in ("songs", "song", "s", "a") else None)
+    )
+
+    if bird == "" or not media_type:
+        logger.error("error - bird is blank" if media_type else "error - invalid media type")
         await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
         if on_error is not None:
             on_error(ctx)
@@ -345,7 +352,7 @@ async def get_media(ctx, bird: str, media_type: str, filters: Filter):
             statInfo = os.stat(path)
             logger.info("size: " + str(statInfo.st_size))
             if (
-                extension.lower() in valid_image_types.values()
+                extension.lower() in valid_types[media_type].values()
                 and statInfo.st_size < 4000000
             ):  # keep files less than 4mb
                 logger.info("found one!")
@@ -514,7 +521,7 @@ async def _download_helper(path, url, session, sem):
                 )
                 if content_type.partition("/")[0] == "image":
                     try:
-                        ext = valid_image_types[content_type]
+                        ext = valid_types["images"][content_type]
                     except KeyError:
                         raise GenericError(
                             f"No valid extensions found. Content-Type: {content_type}"
@@ -522,13 +529,13 @@ async def _download_helper(path, url, session, sem):
 
                 elif content_type.partition("/")[0] == "audio":
                     try:
-                        ext = valid_audio_types[content_type]
+                        ext = valid_types["songs"][content_type]
                     except KeyError:
                         raise GenericError(
                             f"No valid extensions found. Content-Type: {content_type}"
                         )
                 else:
-                    raise GenericError(f"Invalid content-type.")
+                    raise GenericError("Invalid content-type.")
 
                 filename = f"{path}.{ext}"
                 # from https://stackoverflow.com/questions/38358521/alternative-of-urllib-urlretrieve-in-python-3-5
