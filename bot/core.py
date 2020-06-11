@@ -248,14 +248,8 @@ async def send_bird(
     `on_error` (function)- function to run when an error occurs\n
     `message` (str) - text message to send before bird\n
     """
-    media_type = (
-        "images"
-        if media_type in ("images", "image", "i", "p")
-        else ("songs" if media_type in ("songs", "song", "s", "a") else None)
-    )
-
-    if bird == "" or not media_type:
-        logger.error("error - bird is blank" if media_type else "error - invalid media type")
+    if bird == "":
+        logger.error("error - bird is blank")
         await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
         if on_error is not None:
             on_error(ctx)

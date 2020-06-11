@@ -20,7 +20,8 @@ import string
 from discord.ext import commands
 
 from bot.core import send_bird
-from bot.data import database, goatsuckers, logger, states, taxons
+from bot.data import (GenericError, database, goatsuckers, logger, states,
+                      taxons)
 from bot.filters import Filter
 from bot.functions import (CustomCooldown, bird_setup, build_id_list,
                            check_state_role, error_skip, session_increment)
@@ -58,6 +59,14 @@ class Birds(commands.Cog):
         taxon_str: str = "",
         role_str: str = "",
     ):
+        media_type = (
+            "images"
+            if media_type in ("images", "image", "i", "p")
+            else ("songs" if media_type in ("songs", "song", "s", "a") else None)
+        )
+        if not media_type:
+            raise GenericError("Invalid media type", code=990)
+
         if taxon_str:
             taxon = taxon_str.split(" ")
         else:
@@ -139,7 +148,7 @@ class Birds(commands.Cog):
                 message=(SONG_MESSAGE if media_type == "songs" else BIRD_MESSAGE),
             )
 
-    def parse(self, ctx, args_str:str):
+    def parse(self, ctx, args_str: str):
         """Parse arguments for options."""
 
         args = args_str.split(" ")
@@ -239,7 +248,6 @@ class Birds(commands.Cog):
 
         return (filters, taxon, state)
 
-
     # Bird command - no args
     # help text
     @commands.command(
@@ -254,7 +262,6 @@ class Birds(commands.Cog):
 
         filters, taxon, state = self.parse(ctx, args_str)
         await self.send_bird_(ctx, "images", filters, taxon, state)
-
 
     # goatsucker command - no args
     # just for fun, no real purpose
@@ -275,7 +282,12 @@ class Birds(commands.Cog):
             database.hset(f"channel:{ctx.channel.id}", "bird", str(currentBird))
             logger.info("currentBird: " + str(currentBird))
             await send_bird(
-                ctx, currentBird, "images", Filter(), on_error=error_skip, message=GS_MESSAGE
+                ctx,
+                currentBird,
+                "images",
+                Filter(),
+                on_error=error_skip,
+                message=GS_MESSAGE,
             )
         else:  # if no, give the same bird
             await send_bird(
