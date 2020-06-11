@@ -38,6 +38,8 @@ from bot.filters import Filter
 SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 
+MAX_FILESIZE = 6000000 # limit media to 6mb
+
 # Valid file types
 valid_types = {
     "images": {"image/png": "png", "image/jpeg": "jpg"},
@@ -283,7 +285,7 @@ async def send_bird(
             on_error(ctx)
         return
 
-    if os.stat(filename).st_size > 4000000:  # another filesize check (4mb)
+    if os.stat(filename).st_size > MAX_FILESIZE:  # another filesize check (4mb)
         await delete.delete()
         await ctx.send("**Oops! File too large :(**\n*Please try again.*")
         return
@@ -347,7 +349,7 @@ async def get_media(ctx, bird: str, media_type: str, filters: Filter):
             logger.info("size: " + str(statInfo.st_size))
             if (
                 extension.lower() in valid_types[media_type].values()
-                and statInfo.st_size < 4000000
+                and statInfo.st_size < MAX_FILESIZE
             ):  # keep files less than 4mb
                 logger.info("found one!")
                 break
@@ -503,7 +505,7 @@ async def _download_helper(path, url, session, sem):
                 if (
                     response.status != 200
                     or media_size is None
-                    or int(media_size) > 4000000
+                    or int(media_size) > MAX_FILESIZE
                 ):
                     logger.info(f"FAIL: status: {response.status}; size: {media_size}")
                     logger.info(url)
