@@ -140,7 +140,7 @@ class Filter:
 
     def url(self, taxon_code: str, media_type: str) -> str:
         """Generate the search url based on the filters.
-        
+
         `media_type` is all, p (pictures), a (audio), v (video)
         """
         self._validate()
@@ -175,7 +175,7 @@ class Filter:
 
     def to_int(self):
         """Convert filters into an integer representation.
-        
+
         This is calculated with a 47 digit binary number representing the 47 filter options.
         """
         out = ["0"] * 47

@@ -31,7 +31,7 @@ from bot.data import (GenericError, birdList, birdListMaster, database, logger,
 
 async def channel_setup(ctx):
     """Sets up a new discord channel.
-    
+
     `ctx` - Discord context object
     """
     logger.info("checking channel setup")
@@ -64,7 +64,7 @@ async def channel_setup(ctx):
 
 async def user_setup(ctx):
     """Sets up a new discord user for score tracking.
-    
+
     `ctx` - Discord context object or user id
     """
     if isinstance(ctx, (str, int)):
@@ -138,7 +138,7 @@ async def user_setup(ctx):
 
 def bird_setup(ctx, bird: str):
     """Sets up a new bird for incorrect tracking.
-    
+
     `ctx` - Discord context object or user id\n
     `bird` - bird to setup
     """
@@ -206,7 +206,7 @@ def bird_setup(ctx, bird: str):
 
 def error_skip(ctx):
     """Skips the current bird.
-    
+
     Passed to send_bird() as on_error to skip the bird when an error occurs to prevent error loops.
     """
     logger.info("ok")
@@ -216,7 +216,7 @@ def error_skip(ctx):
 
 def check_state_role(ctx) -> list:
     """Returns a list of state roles a user has.
-    
+
     `ctx` - Discord context object
     """
     logger.info("checking roles")
@@ -280,7 +280,7 @@ async def send_leaderboard(ctx, title, page, database_key=None, data=None):
     await ctx.send(embed=embed)
 
 
-def build_id_list(user_id=None, taxon=[], roles=[], state=[], media="images") -> list:
+def build_id_list(user_id=None, taxon=(), roles=(), state=(), media="images") -> list:
     """Generates an ID list based on given arguments
 
     - `user_id`: User ID of custom list
@@ -576,7 +576,7 @@ async def drone_attack(ctx):
     elif str(ctx.command) in ("hint", "hintgoat", "hintsong"):
         await ctx.send("This is definitely a real bird, **NOT** a government drone.")
 
-    elif str(ctx.command) in ("info"):
+    elif str(ctx.command) in ("info",):
         await ctx.send(
             "Birds are real. Don't believe what others may say. **BIRDS ARE VERY REAL!**"
         )
@@ -605,7 +605,7 @@ async def drone_attack(ctx):
 
 async def backup_all():
     """Backs up the database to a file.
-    
+
     This function serializes all data in the REDIS database
     into a file in the `backups` directory.
 

@@ -94,9 +94,9 @@ def authorize():
     redirect_uri = url_for("user.authorize", _external=True, _scheme="https")
     oauth.discord.authorize_access_token(redirect_uri=redirect_uri)
     resp = oauth.discord.get("users/@me")
-    profile = resp.json()
+    profile_ = resp.json()
     # do something with the token and profile
-    update_web_user(profile)
+    update_web_user(profile_)
     redirect_cookie = str(request.cookies.get("redirect"))
     if relative_url_regex.fullmatch(redirect_cookie) is not None:
         redirection = FRONTEND_URL + redirect_cookie

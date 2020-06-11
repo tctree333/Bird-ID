@@ -181,7 +181,7 @@ if __name__ == "__main__":
     @bot.check
     async def is_holiday(ctx):
         """Sends a picture of a turkey on Thanksgiving.
-        
+
         Can be extended to other holidays as well.
         """
         logger.info("global check: checking holiday")

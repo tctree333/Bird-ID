@@ -54,10 +54,10 @@ def cache(func=None):
     def wrapper(func):
         sentinel = object()
 
-        cache = {}
+        cache_ = {}
         hits = misses = 0
-        cache_get = cache.get
-        cache_len = cache.__len__
+        cache_get = cache_.get
+        cache_len = cache_.__len__
 
         async def wrapped(*args, **kwds):
             # Simple caching without ordering or size limit
@@ -72,7 +72,7 @@ def cache(func=None):
             logger.info(f"did not find {args[0]} in cache")
             misses += 1
             result = await func(*args, **kwds)
-            cache[key] = result
+            cache_[key] = result
             return result
 
         def cache_info():
@@ -268,7 +268,7 @@ async def send_bird(ctx, bird: str, filters: Filter, on_error=None, message=None
         await delete.delete()
         if e.code == 100:
             await ctx.send(
-                f"**This combination of filters has no valid images for the current bird.**\n*Please try again.*"
+                "**This combination of filters has no valid images for the current bird.**\n*Please try again.*"
             )
         else:
             await ctx.send(
@@ -489,7 +489,7 @@ async def get_files(sciBird: str, media_type: str, filters: Filter, retries: int
 
 async def download_media(bird, media_type, filters, directory=None, session=None):
     """Returns a list of filenames downloaded from Macaulay Library.
-    
+
     This function manages the download helpers to fetch images from Macaulay.
 
     `bird` (str) - scientific name of bird\n
@@ -541,10 +541,10 @@ async def _get_urls(
 ):
     """Returns a list of urls to Macaulay Library media.
 
-    The amount of urls returned is specified in `COUNT`. 
-    Media URLs are fetched using Macaulay Library's internal JSON API, 
+    The amount of urls returned is specified in `COUNT`.
+    Media URLs are fetched using Macaulay Library's internal JSON API,
     with `CATALOG_URL`. Raises a `GenericError` if fails.\n
-    Some urls may return an error code of 476 (because it is still being processed), 
+    Some urls may return an error code of 476 (because it is still being processed),
     if so, ignore that url.
 
     `session` (aiohttp ClientSession)\n
@@ -640,7 +640,7 @@ async def _download_helper(path, url, session, sem):
                 else:
                     ext = guess_extension(content_type)
                     if ext is None:
-                        raise GenericError(f"No extensions found.")
+                        raise GenericError("No extensions found.")
                 logger.info(
                     f"download helper - detected extension: {ext} with content type {content_type}"
                 )
@@ -681,7 +681,7 @@ def rotate_cache():
 
 def spellcheck(worda, wordb, cutoff=3):
     """Checks if two words are close to each other.
-    
+
     `worda` (str) - first word to compare
     `wordb` (str) - second word to compare
     `cutoff` (int) - allowed difference amount

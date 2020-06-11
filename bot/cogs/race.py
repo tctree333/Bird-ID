@@ -299,7 +299,7 @@ class Race(commands.Cog):
         logger.info("command: view race")
 
         if database.exists(f"race.data:{ctx.channel.id}"):
-            await self._send_stats(ctx, f"**Race In Progress**")
+            await self._send_stats(ctx, "**Race In Progress**")
         else:
             await ctx.send(
                 "**There is no race in session.** *You can start one with `b!race start`*"

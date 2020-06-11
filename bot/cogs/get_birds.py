@@ -23,8 +23,7 @@ from bot.core import send_bird, send_birdsong
 from bot.data import database, goatsuckers, logger, states, taxons
 from bot.filters import Filter
 from bot.functions import (CustomCooldown, bird_setup, build_id_list,
-                           check_state_role, error_skip, error_skip_goat,
-                           error_skip_song, session_increment)
+                           check_state_role, error_skip, session_increment)
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, "
@@ -86,7 +85,7 @@ class Birds(commands.Cog):
             logger.info(f"filters: {filters}; taxon: {taxon}; roles: {roles}")
 
             await ctx.send(
-                f"**Recognized arguments:** "
+                "**Recognized arguments:** "
                 + f"*Active Filters*: `{'`, `'.join(filters.display())}`, "
                 + f"*Taxons*: `{'None' if taxon == [] else ' '.join(taxon)}`, "
                 + f"*Detected State*: `{'None' if roles == [] else ' '.join(roles)}`"
@@ -110,7 +109,7 @@ class Birds(commands.Cog):
             if not birds:
                 logger.info("no birds for taxon/state")
                 await ctx.send(
-                    f"**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*"
+                    "**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*"
                 )
                 return
 
@@ -163,7 +162,7 @@ class Birds(commands.Cog):
             if not birds:
                 logger.info("no birds for taxon/state")
                 await ctx.send(
-                    f"**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*"
+                    "**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*"
                 )
                 return
 
@@ -178,13 +177,13 @@ class Birds(commands.Cog):
             logger.info("currentBird: " + str(currentBird))
             database.hset(f"channel:{ctx.channel.id}", "answered", "0")
             await send_birdsong(
-                ctx, currentBird, on_error=error_skip_song, message=SONG_MESSAGE
+                ctx, currentBird, on_error=error_skip, message=SONG_MESSAGE
             )
         else:
             await send_birdsong(
                 ctx,
                 database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"),
-                on_error=error_skip_song,
+                on_error=error_skip,
                 message=SONG_MESSAGE,
             )
 
@@ -313,19 +312,19 @@ class Birds(commands.Cog):
             currentBird = random.choice(goatsuckers)
             self.increment_bird_frequency(ctx, currentBird)
 
-            database.hset(f"channel:{ctx.channel.id}", bird, str(currentBird))
+            database.hset(f"channel:{ctx.channel.id}", "bird", str(currentBird))
             logger.info("currentBird: " + str(currentBird))
             await send_bird(
-                ctx, currentBird, Filter(), on_error=error_skip_goat, message=GS_MESSAGE
+                ctx, currentBird, Filter(), on_error=error_skip, message=GS_MESSAGE
             )
         else:  # if no, give the same bird
             await send_bird(
                 ctx,
-                database.hget(f"channel:{ctx.channel.id}", bird).decode(
+                database.hget(f"channel:{ctx.channel.id}", "bird").decode(
                     "utf-8"
                 ),
                 Filter(),
-                on_error=error_skip_goat,
+                on_error=error_skip,
                 message=GS_MESSAGE,
             )
 

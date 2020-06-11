@@ -20,9 +20,14 @@ from discord.ext import commands
 from bot.core import get_sciname, spellcheck
 from bot.data import database, get_wiki_url, goatsuckers, logger, sciGoat
 from bot.filters import Filter
-from bot.functions import (CustomCooldown, bird_setup, incorrect_increment,
-                           score_increment, session_increment,
-                           streak_increment)
+from bot.functions import (
+    CustomCooldown,
+    bird_setup,
+    incorrect_increment,
+    score_increment,
+    session_increment,
+    streak_increment,
+)
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
@@ -152,9 +157,7 @@ class Check(commands.Cog):
     async def checkgoat(self, ctx, *, arg):
         logger.info("command: checkgoat")
 
-        currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode(
-            "utf-8"
-        )
+        currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
         if currentBird == "":  # no bird
             await ctx.send("You must ask for a bird first!")
         else:  # if there is a bird, it checks answer
