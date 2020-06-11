@@ -190,7 +190,7 @@ if __name__ == "__main__":
         us = holidays.US()
         if now in us:
             if us.get(now) == "Thanksgiving":
-                await send_bird(ctx, "Wild Turkey", Filter())
+                await send_bird(ctx, "Wild Turkey", "images", Filter())
                 await ctx.send("**It's Thanksgiving!**\nGo celebrate with your family.")
                 raise GenericError(code=666)
         elif now == date(now.year, 4, 1):

@@ -40,7 +40,7 @@ async def channel_setup(ctx):
     else:
         database.hset(
             f"channel:{ctx.channel.id}",
-            mapping={"bird": "", "answered": 1, "prevB": "", "prevJ": 20, "prevK": 20,},
+            mapping={"bird": "", "answered": 1, "prevB": "", "prevJ": 20},
         )
         # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
         logger.info("channel data added")
@@ -287,7 +287,7 @@ def build_id_list(user_id=None, taxon=(), roles=(), state=(), media="images") ->
     - `taxon`: taxon string/list
     - `roles`: role list
     - `state`: state string/list
-    - `media`: image/song
+    - `media`: images/songs
     """
     logger.info("building id list")
     if isinstance(taxon, str):

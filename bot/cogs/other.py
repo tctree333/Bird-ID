@@ -21,7 +21,7 @@ import discord
 import wikipedia
 from discord.ext import commands
 
-from bot.core import get_sciname, get_taxon, send_bird, send_birdsong
+from bot.core import get_sciname, get_taxon, send_bird
 from bot.data import birdListMaster, logger, memeList, sciListMaster, states, taxons
 from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list
@@ -56,10 +56,10 @@ class Other(commands.Cog):
                 if options:
                     await ctx.send(f"**Detected filters**: `{'`, `'.join(options)}`")
                 await send_bird(
-                    ctx, bird, filters, message=f"Here's a *{bird.lower()}* image!"
+                    ctx, bird, "images", filters, message=f"Here's a *{bird.lower()}* image!"
                 )
-                await send_birdsong(
-                    ctx, bird, message=f"Here's a *{bird.lower()}* call!"
+                await send_bird(
+                    ctx, bird, "songs", filters, message=f"Here's a *{bird.lower()}* image!"
                 )
                 await delete.delete()
                 return

@@ -73,8 +73,7 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #                    "bird",
 #                    "answered",
 #                    "prevB", (makse sure it sends diff birds)
-#                    "prevJ", (makes sure it sends diff images)
-#                    "prevK" (makes sure it sends diff songs)
+#                    "prevJ" (makes sure it sends diff media)
 # }
 
 # session format:
