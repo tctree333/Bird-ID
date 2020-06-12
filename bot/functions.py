@@ -213,16 +213,6 @@ def bird_setup(ctx, bird: str):
         logger.info("no session")
 
 
-def error_skip(ctx):
-    """Skips the current bird.
-
-    Passed to send_bird() as on_error to skip the bird when an error occurs to prevent error loops.
-    """
-    logger.info("ok")
-    database.hset(f"channel:{ctx.channel.id}", "bird", "")
-    database.hset(f"channel:{ctx.channel.id}", "answered", "1")
-
-
 def check_state_role(ctx) -> list:
     """Returns a list of state roles a user has.
 

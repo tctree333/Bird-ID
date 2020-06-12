@@ -24,7 +24,7 @@ from bot.data import (GenericError, database, goatsuckers, logger, states,
                       taxons)
 from bot.filters import Filter
 from bot.functions import (CustomCooldown, bird_setup, build_id_list,
-                           check_state_role, error_skip, session_increment)
+                           check_state_role, session_increment)
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, "
@@ -47,6 +47,46 @@ class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    def error_handle(
+        self, ctx, media_type: str, filters: Filter, taxon_str, role_str, retries,
+    ):
+        """Return a function to pass to send_bird() as on_error."""
+        # pylint: disable=unused-argument
+
+        async def inner(error):
+            nonlocal retries
+
+            # skip current bird
+            database.hset(f"channel:{ctx.channel.id}", "bird", "")
+            database.hset(f"channel:{ctx.channel.id}", "answered", "1")
+
+            if retries >= 2:  # only retry twice
+                await ctx.send("**Too many retries.**\n*Please try again.*")
+                return
+
+            if isinstance(error, GenericError) and error.code == 100:
+                retries += 1
+                await ctx.send("**Retrying...**")
+                await self.send_bird_(
+                    ctx, media_type, filters, taxon_str, role_str, retries
+                )
+            else:
+                await ctx.send("*Please try again.*")
+
+        return inner
+
+    @staticmethod
+    def error_skip(ctx):
+        async def inner(error):
+            # pylint: disable=unused-argument
+
+            # skip current bird
+            database.hset(f"channel:{ctx.channel.id}", "bird", "")
+            database.hset(f"channel:{ctx.channel.id}", "answered", "1")
+            await ctx.send("*Please try again.*")
+
+        return inner
+
     @staticmethod
     def increment_bird_frequency(ctx, bird):
         bird_setup(ctx, bird)
@@ -59,6 +99,7 @@ class Birds(commands.Cog):
         filters: Filter,
         taxon_str: str = "",
         role_str: str = "",
+        retries=0,
     ):
         media_type = (
             "images"
@@ -91,12 +132,13 @@ class Birds(commands.Cog):
 
             logger.info(f"filters: {filters}; taxon: {taxon}; roles: {roles}")
 
-            await ctx.send(
-                "**Recognized arguments:** "
-                + f"*Active Filters*: `{'`, `'.join(filters.display())}`, "
-                + f"*Taxons*: `{'None' if taxon == [] else ' '.join(taxon)}`, "
-                + f"*Detected State*: `{'None' if roles == [] else ' '.join(roles)}`"
-            )
+            if retries == 0:
+                await ctx.send(
+                    "**Recognized arguments:** "
+                    + f"*Active Filters*: `{'`, `'.join(filters.display())}`, "
+                    + f"*Taxons*: `{'None' if taxon == [] else ' '.join(taxon)}`, "
+                    + f"*Detected State*: `{'None' if roles == [] else ' '.join(roles)}`"
+                )
 
             custom_role = {i if i.startswith("CUSTOM:") else "" for i in roles}
             custom_role.discard("")
@@ -135,7 +177,9 @@ class Birds(commands.Cog):
                 currentBird,
                 media_type,
                 filters,
-                on_error=error_skip,
+                on_error=self.error_handle(
+                    ctx, media_type, filters, taxon_str, role_str, retries
+                ),
                 message=(SONG_MESSAGE if media_type == "songs" else BIRD_MESSAGE),
             )
         else:  # if no, give the same bird
@@ -145,7 +189,9 @@ class Birds(commands.Cog):
                 database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"),
                 media_type,
                 filters,
-                on_error=error_skip,
+                on_error=self.error_handle(
+                    ctx, media_type, filters, taxon_str, role_str, retries
+                ),
                 message=(SONG_MESSAGE if media_type == "songs" else BIRD_MESSAGE),
             )
 
@@ -297,7 +343,7 @@ class Birds(commands.Cog):
                 currentBird,
                 "images",
                 Filter(),
-                on_error=error_skip,
+                on_error=self.error_skip(ctx),
                 message=GS_MESSAGE,
             )
         else:  # if no, give the same bird
@@ -306,7 +352,7 @@ class Birds(commands.Cog):
                 database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"),
                 "images",
                 Filter(),
-                on_error=error_skip,
+                on_error=self.error_skip(ctx),
                 message=GS_MESSAGE,
             )
 

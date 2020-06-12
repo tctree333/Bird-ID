@@ -246,14 +246,16 @@ async def send_bird(
     `bird` (str) - bird to send\n
     `media_type` (str) - type of media (images/songs)\n
     `filters` (bot.filters Filter)\n
-    `on_error` (function)- function to run when an error occurs\n
+    `on_error` (function) - async function to run when an error occurs, passes error as argument\n
     `message` (str) - text message to send before bird\n
     """
     if bird == "":
         logger.error("error - bird is blank")
-        await ctx.send("**There was an error fetching birds.**\n*Please try again.*")
+        await ctx.send("**There was an error fetching birds.**")
         if on_error is not None:
-            on_error(ctx)
+            await on_error(GenericError("bird is blank", code=100))
+        else:
+            await ctx.send("*Please try again.*")
         return
 
     # add special condition for screech owls
@@ -273,15 +275,17 @@ async def send_bird(
         await delete.delete()
         if e.code == 100:
             await ctx.send(
-                f"**This combination of filters has no valid {media_type} for the current bird.**\n*Please try again.*"
+                f"**This combination of filters has no valid {media_type} for the current bird.**"
             )
         else:
             await ctx.send(
-                f"**An error has occurred while fetching {media_type}.**\n*Please try again.*\n**Reason:** {e}"
+                f"**An error has occurred while fetching {media_type}.**\n**Reason:** {e}"
             )
             logger.exception(e)
         if on_error is not None:
-            on_error(ctx)
+            await on_error(e)
+        else:
+            await ctx.send("*Please try again.*")
         return
 
     if os.stat(filename).st_size > MAX_FILESIZE:  # another filesize check (4mb)
@@ -484,6 +488,8 @@ async def _get_urls(
             if filters.small
             else [data["mediaUrl"] for data in content]
         )
+        if not urls:
+            raise GenericError("No urls found.", code=100)
         return urls
 
 
