@@ -211,8 +211,8 @@ class Birds(commands.Cog):
                     and filters.quality
                     and filters.quality != default_quality
                 ):
-                    filters.xor(Filter())  # clear defaults
-                filters.xor(session_filter)
+                    filters ^= Filter()  # clear defaults
+                filters ^= session_filter
             else:
                 filters = Filter.parse(args_str)
 
@@ -236,8 +236,8 @@ class Birds(commands.Cog):
                 and filters.quality
                 and filters.quality != default_quality
             ):
-                filters.xor(Filter())  # clear defaults
-            filters.xor(race_filter)
+                filters ^= Filter()  # clear defaults
+            filters ^= race_filter
 
             taxon = database.hget(f"race.data:{ctx.channel.id}", "taxon").decode(
                 "utf-8"

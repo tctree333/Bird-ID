@@ -207,9 +207,7 @@ class Sessions(commands.Cog):
             args = args_str.lower().split(" ")
             logger.info(f"args: {args}")
 
-            new_filter.xor(
-                int(database.hget(f"session.data:{ctx.author.id}", "filter"))
-            )
+            new_filter ^= int(database.hget(f"session.data:{ctx.author.id}", "filter"))
             database.hset(
                 f"session.data:{ctx.author.id}", "filter", str(new_filter.to_int())
             )

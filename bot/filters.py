@@ -101,10 +101,10 @@ class Filter:
         }
 
     def _validate(self) -> bool:
-        """Check the validity of filter values.
+        """Check the validity of Filter values.
 
-        Return True if filter values are valid.
-        Raises a ValueError if filter values are invalid.
+        Return True if Filter values are valid.
+        Raises a ValueError if Filter values are invalid.
         Raises a TypeError if values are not iterables.
         """
         valid_values = {
@@ -211,7 +211,7 @@ class Filter:
         return me
 
     def __xor__(self, other):
-        self.xor(other)
+        return self.xor(other)
 
     def xor(self, other):
         """Combine/toggle filters by xor-ing the integer representations."""
@@ -219,7 +219,7 @@ class Filter:
             other = other.to_int()
         if other >= 2 ** 47 or other < 0:
             raise ValueError("Input number out of bounds.")
-        self.from_int(other ^ self.to_int())
+        return self.from_int(other ^ self.to_int())
 
     @classmethod
     def parse(cls, args: str, defaults: bool = True):
@@ -245,7 +245,7 @@ class Filter:
                 if len(me.__dict__[key]) == 0:
                     me.__dict__[key] = me._default_options[key]
                 elif me.__dict__[key] == me._default_options[key]:
-                    me.xor(me.__class__())
+                    me ^= me.__class__()
         return me
 
     def display(self):
@@ -263,9 +263,9 @@ class Filter:
             output.append("None")
         return output
 
-    @classmethod
+    @staticmethod
     def aliases(
-        cls, lookup: bool = False, num: bool = False, display_lookup: bool = False
+        lookup: bool = False, num: bool = False, display_lookup: bool = False
     ):
         """Generate filter alises.
 
