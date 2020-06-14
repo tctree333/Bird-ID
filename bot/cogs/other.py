@@ -59,7 +59,7 @@ class Other(commands.Cog):
                     ctx, bird, "images", filters, message=f"Here's a *{bird.lower()}* image!"
                 )
                 await send_bird(
-                    ctx, bird, "songs", filters, message=f"Here's a *{bird.lower()}* image!"
+                    ctx, bird, "songs", filters, message=f"Here's a *{bird.lower()}* song!"
                 )
                 await delete.delete()
                 return
