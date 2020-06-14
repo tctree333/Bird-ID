@@ -48,7 +48,7 @@ def get_bird():
         logger.info("trial maxed")
         flask.abort(403, "Sign in to continue")
 
-    if media_type in ("images", "songs"):
+    if media_type not in ("images", "songs"):
         logger.error(f"invalid media type {media_type}")
         flask.abort(406, "Invalid media type")
 
