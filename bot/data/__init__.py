@@ -265,13 +265,16 @@ def get_wiki_url(ctx, bird=None):
     if bird is None:
         bird = ctx
         user_id = 0
+        channel_id = 0
     else:
         user_id = ctx.author.id
+        channel_id = ctx.channel.id
+
     try:
         bird = string.capwords(bird.replace("-", " "))
         url = wikipedia_urls[bird]
         if database.hget(f"session.data:{user_id}", "wiki") == b"" or database.exists(
-            f"race.data:{ctx.channel.id}"
+            f"race.data:{channel_id}"
         ):
             logger.info("found in cache, disabling preview")
             return f"<{url}>"
@@ -281,7 +284,7 @@ def get_wiki_url(ctx, bird=None):
         logger.info(f"{bird} not found in wikipedia url cache, falling back")
         page = wikipedia.page(bird)
         if database.hget(f"session.data:{user_id}", "wiki") == b"" or database.exists(
-            f"race.data:{ctx.channel.id}"
+            f"race.data:{channel_id}"
         ):
             logger.info("disabling preview")
             return f"<{page.url}>"
