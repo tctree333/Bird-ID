@@ -11,4 +11,4 @@ sentry-sdk==0.14.4
 blinker==1.4
 python-dotenv==0.13.0
 hiredis==1.0.1
-pandas==1.0.4
+pandas==1.0.5
