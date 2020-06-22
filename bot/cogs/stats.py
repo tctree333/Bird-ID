@@ -195,13 +195,13 @@ class Stats(commands.Cog):
                 name="Last Week",
                 inline=False,
                 value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
-                    len(month)
+                    len(week)
                 ),
             ).add_field(
                 name="Last Month",
                 inline=False,
                 value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
-                    len(week)
+                    len(month)
                 ),
             ).add_field(
                 name="Total",
