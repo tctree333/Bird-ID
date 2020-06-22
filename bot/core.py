@@ -306,11 +306,10 @@ async def send_bird(
         if audioFile is not None and audioFile.tag is not None:
             audioFile.tag.remove(filename)
 
-    if message is not None:
-        await ctx.send(message)
-
     # change filename to avoid spoilers
     file_obj = discord.File(filename, filename=f"bird.{extension}")
+    if message is not None:
+        await ctx.send(message)
     await ctx.send(file=file_obj)
     await delete.delete()
 
