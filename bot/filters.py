@@ -23,7 +23,7 @@ COUNT = 20  # number of media items from catalog url
 
 
 class Filter:
-    _boolean_options = ("small", "bw")
+    _boolean_options = ("large", "bw")
     _default_options = {"quality": {"3", "4", "5"}}
 
     def __init__(
@@ -36,7 +36,7 @@ class Filter:
         tags: Union[str, Iterable] = (),
         captive: Union[str, Iterable] = (),
         quality: Union[str, Iterable] = ("3", "4", "5"),
-        small: bool = False,
+        large: bool = False,
         bw: bool = False,
     ):
         """Represents Macaulay Library media filters.
@@ -63,7 +63,7 @@ class Filter:
             - all, yes, no
         - Quality:
             - 0 (unrated), 1 (worst) - 5 (best)
-        - Small:
+        - Large:
             - True (uses previewUrl), False (uses mediaUrl)
         - Black & White:
             - True (black and white), False (color)
@@ -76,7 +76,7 @@ class Filter:
         self.tags = tags
         self.captive = captive
         self.quality = quality
-        self.small = small
+        self.large = large
         self.bw = bw
 
         for item in self.__dict__.items():
@@ -127,7 +127,6 @@ class Filter:
             },
             "captive": {"all", "yes", "no"},
             "quality": {"0", "1", "2", "3", "4", "5"},
-            "small": {True, False},
         }
         for item in self.__dict__.items():
             if item[0] in self._boolean_options:
@@ -373,8 +372,8 @@ class Filter:
                 ("good", "4"): ("44", "good", "q4"),
                 ("excellent", "5"): ("45", "excellent", "best", "q5"),
             },
-            ("smaller images (defaults to no)", "small"): {
-                ("yes", True): ("46", "small", "smaller images"),
+            ("larger images (defaults to no)", "large"): {
+                ("yes", True): ("46", "large", "larger images"),
             },
             ("black & white (defaults to no)", "bw"): {
                 ("yes", True): ("47", "bw", "b&w"),

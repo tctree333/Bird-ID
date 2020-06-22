@@ -483,9 +483,9 @@ async def _get_urls(
         catalog_data = await catalog_response.json()
         content = catalog_data["results"]["content"]
         urls = (
-            [data["previewUrl"] for data in content]
-            if filters.small
-            else [data["mediaUrl"] for data in content]
+            [data["mediaUrl"] for data in content]
+            if filters.large
+            else [data["previewUrl"] for data in content]
         )
         if not urls:
             raise GenericError("No urls found.", code=100)

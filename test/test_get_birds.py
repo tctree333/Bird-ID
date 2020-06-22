@@ -168,14 +168,14 @@ class TestBirds:
         database.hset(f"channel:{self.ctx.channel.id}", "answered", "0")
 
         coroutine = self.cog.bird.callback(  # pylint: disable=no-member
-            self.cog, self.ctx, args_str="small egg nest"
+            self.cog, self.ctx, args_str="large egg nest"
         )
         assert asyncio.run(coroutine) is None
         for i in (
             "Active Filters",
             "tags: eggs",
             "tags: nest",
-            "small: yes",
+            "large: yes",
             "quality: good",
         ):
             assert i in self.ctx.messages[2].content
