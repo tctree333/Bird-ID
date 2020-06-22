@@ -1,4 +1,4 @@
-name: "Deploy"
+name: "Deploy to Dokku"
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  pipeline:
+  Deploy Pipeline:
     runs-on: ubuntu-latest
 
     services:
