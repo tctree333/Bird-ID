@@ -30,7 +30,7 @@ class Meta(commands.Cog):
     # bot info command - gives info on bot
     @commands.command(
         help="- Gives info on bot, support server invite, stats",
-        aliases=["bot_info", "support", "stats"],
+        aliases=["bot_info", "support"],
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def botinfo(self, ctx):
@@ -57,12 +57,20 @@ class Meta(commands.Cog):
         embed.add_field(
             name="Stats",
             value=f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. "
-            + f"There are {int(database.zcard('users:global'))} active users in {int(database.zcard('score:global'))} channels. "
             + f"The WebSocket latency is {round((self.bot.latency*1000))} ms.",
             inline=False,
         )
         await ctx.send(embed=embed)
         await ctx.send("https://discord.gg/fXxYyDJ")
+
+    # ping command - gives bot latency
+    @commands.command(help="- Pings the bot and displays latency",)
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
+    async def ping(self, ctx):
+        logger.info("command: ping")
+        lat = round(self.bot.latency * 1000)
+        logger.info(f"latency: {lat}")
+        await ctx.send(f"**Pong!** The WebSocket latency is `{lat}` ms.")
 
     # invite command - sends invite link
     @commands.command(help="- Get the invite link for this bot")

@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import datetime
 from io import BytesIO, StringIO
 
 import discord
+import numpy as np
 import pandas as pd
 from discord.ext import commands
 
@@ -93,6 +95,130 @@ class Stats(commands.Cog):
             return
 
         await send_leaderboard(ctx, title, page, database_key)
+
+    # give bot stats
+    @commands.command(
+        help="- Gives statistics on different topics",
+        usage="[topic]",
+        aliases=["stat"],
+    )
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
+    async def stats(self, ctx, topic="help"):
+        logger.info("command: stats")
+
+        if topic in ("scores", "score", "s"):
+            topic = "scores"
+        elif topic in ("usage", "u"):
+            topic = "usage"
+        elif topic in ("help", ""):
+            topic = "help"
+        else:
+            valid_topics = ("help", "scores", "usage")
+            await ctx.send(
+                f"**`{topic}` is not a valid topic!**\nValid Topics: `{'`, `'.join(valid_topics)}`"
+            )
+            return
+
+        embed = discord.Embed(
+            title="Bot Stats", type="rich", color=discord.Color.blue(),
+        )
+
+        if topic == "help":
+            embed.description = (
+                "**Available statistic topics.**\n"
+                + "This command is in progress and more stats may be added. "
+                + "If there is a statistic you would like to see here, "
+                + "please let us know in the support server."
+            )
+            embed.add_field(
+                name="Scores",
+                value="`b!stats [scores|score|s]`\n*Displays stats about scores.*",
+            ).add_field(
+                name="Usage",
+                value="`b!stats [usage|u]`\n*Displays stats about usage.*",
+            )
+
+        elif topic == "scores":
+            embed.description = "**Score Statistics**"
+            scores = self.generate_series("users:global")
+            scores = scores[scores > 0]
+            c, d = np.histogram(scores, bins=range(0, 1100, 100), range=(0, 1000))
+            c = (c / len(scores) * 100).round(1)
+            embed.add_field(
+                name="Totals",
+                inline=False,
+                value="**Sum of top 10 user scores:** `{:,}`\n".format(
+                    scores.nlargest(n=10).sum()
+                )
+                + "**Sum of all positive user scores:** `{:,}`\n".format(scores.sum()),
+            ).add_field(
+                name="Computations",
+                inline=False,
+                value="**Mean of all positive user scores:** `{:,.2f}`\n".format(
+                    scores.mean()
+                )
+                + "**Median of all positive user scores:** `{:,.1f}`\n".format(
+                    scores.median()
+                ),
+            ).add_field(
+                name="Distributions",
+                inline=False,
+                value=f"**Number of users with scores over mean:** `{len(scores[scores > scores.mean()])}`\n"
+                + "**Percentage of users with scores over mean:** `{:.1%}`".format(
+                    len(scores[scores > scores.mean()]) / len(scores)
+                )
+                + "\n**Percentage of users with scores between:**\n"
+                + "".join(
+                    f"\u2192 *{d[i]}-{d[i+1]-1}*: `{c[i]}%`\n"  # \u2192 is the "Rightwards Arrow"
+                    for i in range(len(c))
+                ),
+            )
+
+        elif topic == "usage":
+            embed.description = "**Usage Statistics**"
+
+            today = datetime.datetime.now(datetime.timezone.utc).date()
+            past_month = pd.date_range(  # pylint: disable=no-member
+                today - datetime.timedelta(29), today
+            ).date
+            keys = tuple(f"daily.score:{str(date)}" for date in past_month)
+            titles = tuple(
+                reversed(range(1, 31))
+            )  # label columns by # days ago, today is 1 day ago
+            month = self.generate_dataframe(keys, titles)
+            week = month.loc[:, 7:1]  # generate week from month
+            week = week.loc[(week != 0).any(1)]  # remove all 0
+
+            total = self.generate_series("users:global")
+
+            embed.add_field(
+                name="Last Week",
+                inline=False,
+                value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
+                    len(month)
+                ),
+            ).add_field(
+                name="Last Month",
+                inline=False,
+                value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
+                    len(week)
+                ),
+            ).add_field(
+                name="Total",
+                inline=False,
+                value="**Channels that have used the bot at least once:** `{:,}`\n".format(
+                    int(database.zcard("score:global"))
+                )
+                + "**Accounts that have used the bot at least once:** `{:,}`\n".format(
+                    len(total)
+                )
+                + "**Accounts that answered at least 1 correctly:** `{:,} ({:,.1%})`\n".format(
+                    len(total[total > 0]), len(total[total > 0]) / len(total)
+                ),
+            )
+
+        await ctx.send(embed=embed)
+        return
 
     # export data as csv
     @commands.command(help="- Exports bot data as a csv")
