@@ -6,7 +6,8 @@ on:
       - master
 
 jobs:
-  Deploy:
+  deploy:
+    name: "Deploy Pipeline"
     runs-on: ubuntu-latest
 
     services:
