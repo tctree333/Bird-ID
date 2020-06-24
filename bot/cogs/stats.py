@@ -186,8 +186,9 @@ class Stats(commands.Cog):
                 reversed(range(1, 31))
             )  # label columns by # days ago, today is 1 day ago
             month = self.generate_dataframe(keys, titles)
+            month = month.loc[(month != 0).any(1)]  # remove all 0
             week = month.loc[:, 7:1]  # generate week from month
-            week = week.loc[(week != 0).any(1)]  # remove all 0
+            week = week.loc[(week != 0).any(1)]
 
             total = self.generate_series("users:global")
 
