@@ -186,36 +186,63 @@ class Stats(commands.Cog):
                 reversed(range(1, 31))
             )  # label columns by # days ago, today is 1 day ago
             month = self.generate_dataframe(keys, titles)
-            month = month.loc[(month != 0).any(1)]  # remove all 0
+            month = month.loc[(month != 0).any(1)]  # remove users with all 0s
             week = month.loc[:, 7:1]  # generate week from month
             week = week.loc[(week != 0).any(1)]
+            today = week.loc[:, 1]  # generate today from week
+            today = today.loc[today != 0]
 
             total = self.generate_series("users:global")
 
+            channels_see = len(list(self.bot.get_all_channels()))
+            channels_used = int(database.zcard("score:global"))
+
             embed.add_field(
-                name="Last Week",
+                name="Today (Since midnight UTC)",
+                inline=False,
+                value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
+                    len(today)
+                )
+                + "**Total birds answered correctly:** `{:,}`\n".format(today.sum()),
+            ).add_field(
+                name="Last 7 Days",
                 inline=False,
                 value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
                     len(week)
+                )
+                + "**Total birds answered correctly:** `{:,}`\n".format(
+                    week.sum().sum()
                 ),
             ).add_field(
-                name="Last Month",
+                name="Last 30 Days",
                 inline=False,
                 value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
                     len(month)
+                )
+                + "**Total birds answered correctly:** `{:,}`\n".format(
+                    month.sum().sum()
                 ),
             ).add_field(
                 name="Total",
                 inline=False,
-                value="**Channels that have used the bot at least once:** `{:,}`\n".format(
-                    int(database.zcard("score:global"))
+                value="**Channels the bot can see:** `{:,}`\n".format(channels_see)
+                + "**Channels that have used the bot at least once:** `{:,} ({:,.1%})`\n".format(
+                    channels_used, channels_used / channels_see
                 )
-                + "**Accounts that have used the bot at least once:** `{:,}`\n".format(
+                + "*(Note: Deleted channels or channels that the bot can't see anymore are still counted).*\n"
+                + "**Accounts that have used any command at least once:** `{:,}`\n".format(
                     len(total)
                 )
                 + "**Accounts that answered at least 1 correctly:** `{:,} ({:,.1%})`\n".format(
                     len(total[total > 0]), len(total[total > 0]) / len(total)
-                ),
+                )
+                + "**Users the bot can see:** `{:,}`\n".format(
+                    len(self.bot.users)
+                )
+                + "**Percentage of users the bot can see that have used the bot:** `{:,.1%}`\n".format(
+                    len(total) / len(self.bot.users)
+                )
+                + "*(Note: There may be users the bot can't see anymore).*\n",
             )
 
         await ctx.send(embed=embed)
