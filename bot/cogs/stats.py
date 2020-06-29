@@ -181,18 +181,19 @@ class Stats(commands.Cog):
             past_month = pd.date_range(  # pylint: disable=no-member
                 today - datetime.timedelta(29), today
             ).date
-            keys = tuple(f"daily.score:{str(date)}" for date in past_month)
-            titles = tuple(
-                reversed(range(1, 31))
+            keys = list(f"daily.score:{str(date)}" for date in past_month)
+            keys = ["users:global"] + keys
+            titles = list(
+                reversed(range(1, 32))
             )  # label columns by # days ago, today is 1 day ago
             month = self.generate_dataframe(keys, titles)
+            total = month.loc[:, 31]
+            month = month.loc[:, 30:1]  # remove totals column
             month = month.loc[(month != 0).any(1)]  # remove users with all 0s
             week = month.loc[:, 7:1]  # generate week from month
             week = week.loc[(week != 0).any(1)]
             today = week.loc[:, 1]  # generate today from week
             today = today.loc[today != 0]
-
-            total = self.generate_series("users:global")
 
             channels_see = len(list(self.bot.get_all_channels()))
             channels_used = int(database.zcard("score:global"))
