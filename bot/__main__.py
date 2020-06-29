@@ -315,6 +315,7 @@ if __name__ == "__main__":
 
             elif isinstance(error.original, discord.HTTPException):
                 if error.original.status == 502:
+                    capture_exception(error.original)
                     await ctx.send(
                         "**An error has occured with discord. :(**\n*Please try again.*"
                     )
@@ -330,6 +331,7 @@ if __name__ == "__main__":
 
             elif isinstance(error.original, aiohttp.ClientOSError):
                 if error.original.errno == errno.ECONNRESET:
+                    capture_exception(error.original)
                     await ctx.send(
                         "**An error has occured with discord. :(**\n*Please try again.*"
                     )
