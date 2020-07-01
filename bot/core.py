@@ -484,7 +484,7 @@ async def _get_urls(
         content = catalog_data["results"]["content"]
         urls = (
             [data["mediaUrl"] for data in content]
-            if filters.large
+            if filters.large or media_type == "a"
             else [data["previewUrl"] for data in content]
         )
         if not urls:
