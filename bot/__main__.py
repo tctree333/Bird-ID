@@ -180,13 +180,26 @@ if __name__ == "__main__":
         Can be extended to other holidays as well.
         """
         logger.info("global check: checking holiday")
-        now = datetime.now(tz=timezone(-timedelta(hours=4)))
-        now = date(now.year, now.month, now.day)
+        now = datetime.now(tz=timezone(-timedelta(hours=4))).date()
         us = holidays.US()
         if now in us:
             if us.get(now) == "Thanksgiving":
-                await send_bird(ctx, "Wild Turkey", "images", Filter())
-                await ctx.send("**It's Thanksgiving!**\nGo celebrate with your family.")
+                await send_bird(
+                    ctx,
+                    "Wild Turkey",
+                    "images",
+                    Filter(),
+                    message="**It's Thanksgiving!**\nGo celebrate with your family.",
+                )
+                raise GenericError(code=666)
+            if us.get(now) == "Independence Day":
+                await send_bird(
+                    ctx,
+                    "Bald Eagle",
+                    "images",
+                    Filter(),
+                    message="**It's Independence Day!**\nEnjoy this birb responsibly.",
+                )
                 raise GenericError(code=666)
         elif now == date(now.year, 4, 1):
             return await drone_attack(ctx)
