@@ -221,11 +221,14 @@ class Filter:
         return self.from_int(other ^ self.to_int())
 
     @classmethod
-    def parse(cls, args: str, defaults: bool = True):
+    def parse(cls, args: str, defaults: bool = True, use_numbers: bool = True):
         """Parse an argument string as Macaulay Library media filters."""
         me = cls()
         me._clear()  # reset existing filters to empty
         lookup = me.aliases(lookup=True)
+        if not use_numbers:
+            lookup = {k if not isinstance(k, int) else None :i for k, i in lookup}
+            lookup.pop(None)
         args = args.lower().strip()
         if "," in args:
             args = map(lambda x: x.strip(), args.split(","))
@@ -383,8 +386,8 @@ class Filter:
             return {
                 alias: (title[1], name[1])
                 for title, subdict in aliases.items()
-                for name, aliases in subdict.items()
-                for alias in aliases
+                for name, alias_tuple in subdict.items()
+                for alias in alias_tuple
             }
         if num:
             return {
