@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, Dict, Tuple
 from collections.abc import Iterable
 
 # Macaulay Library URLs
@@ -231,11 +231,11 @@ class Filter:
             lookup.pop(None)
         args = args.lower().strip()
         if "," in args:
-            args = map(lambda x: x.strip(), args.split(","))
+            inputs = map(lambda x: x.strip(), args.split(","))
         else:
-            args = map(lambda x: x.strip(), args.split(" "))
+            inputs = map(lambda x: x.strip(), args.split(" "))
 
-        for arg in args:
+        for arg in inputs:
             key = lookup.get(arg)
             if key is not None:
                 if key[0] in me._boolean_options:
@@ -278,7 +278,7 @@ class Filter:
         """
         # the keys of this dict are in the form ("display text", "internal key")
         # the first alias should be a number
-        aliases = {
+        aliases: Dict[Tuple[str, str], Dict[Tuple[str, Union[str, bool]], Tuple[str, ...]]] = {
             ("age", "age"): {
                 ("adult", "a"): ("1", "adult", "a"),
                 ("immature", "i"): ("2", "immature", "im"),
@@ -392,7 +392,7 @@ class Filter:
         if num:
             return {
                 title[1]: {
-                    name[1]: int(aliases[0]) for name, aliases in subdict.items()
+                    name[1]: int(alias[0]) for name, alias in subdict.items()
                 }
                 for title, subdict in aliases.items()
             }
@@ -403,6 +403,6 @@ class Filter:
             }
 
         return {
-            title[0]: {name[0]: aliases for name, aliases in subdict.items()}
+            title[0]: {name[0]: alias for name, alias in subdict.items()}
             for title, subdict in aliases.items()
         }
