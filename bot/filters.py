@@ -227,8 +227,7 @@ class Filter:
         me._clear()  # reset existing filters to empty
         lookup = me.aliases(lookup=True)
         if not use_numbers:
-            lookup = {k if not isinstance(k, int) else None :i for k, i in lookup.items()}
-            lookup.pop(None)
+            lookup = {k:i for k, i in lookup.items() if not k.isdecimal()}
         args = args.lower().strip()
         if "," in args:
             inputs = map(lambda x: x.strip(), args.split(","))
