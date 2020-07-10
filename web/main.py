@@ -55,7 +55,6 @@ def not_allowed(e):
 
 @app.errorhandler(404)
 def not_found(e):
-    capture_exception(e)
     return flask.jsonify(error=str(e)), 404
 
 
