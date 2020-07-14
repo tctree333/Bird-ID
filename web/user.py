@@ -38,14 +38,6 @@ oauth.register(
 discord = oauth.discord
 
 
-@bp.after_request  # enable CORS
-def after_request(response):
-    header = response.headers
-    header["Access-Control-Allow-Origin"] = FRONTEND_URL
-    header["Access-Control-Allow-Credentials"] = "true"
-    return response
-
-
 @bp.route("/login", methods=["GET"])
 def login():
     logger.info("endpoint: login")
