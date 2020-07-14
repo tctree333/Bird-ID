@@ -43,7 +43,7 @@ MAX_FILESIZE = 6000000 # limit media to 6mb
 
 # Valid file types
 valid_types = {
-    "images": {"image/png": "png", "image/jpeg": "jpg"},
+    "images": {"image/png": "png", "image/jpeg": "jpg", "image/gif": "gif"},
     "songs": {"audio/mpeg": "mp3", "audio/wav": "wav"},
 }
 
