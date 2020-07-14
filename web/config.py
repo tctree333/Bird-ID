@@ -28,6 +28,13 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 DATABASE_SESSION_EXPIRE = 172800  # 2 days
 
+@app.after_request  # enable CORS
+def after_request(response):
+    header = response.headers
+    header["Access-Control-Allow-Origin"] = FRONTEND_URL
+    header["Access-Control-Allow-Credentials"] = "true"
+    return response
+
 # Web Database Keys
 
 # web.session:session_id : {

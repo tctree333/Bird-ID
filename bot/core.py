@@ -24,6 +24,7 @@ import shutil
 import string
 import urllib
 from io import BytesIO
+from typing import Tuple
 
 import aiohttp
 import discord
@@ -138,7 +139,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
 
 
 @cache()
-async def get_taxon(bird: str, session=None, retries=0) -> str:
+async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
     """Returns the taxonomic code of a bird.
 
     Taxonomic codes are used by the Cornell Lab of Ornithology to identify species of birds.
@@ -195,7 +196,7 @@ async def get_taxon(bird: str, session=None, retries=0) -> str:
     return (taxon_code, item_name)
 
 
-async def valid_bird(bird: str, session=None):
+async def valid_bird(bird: str, session=None) -> Tuple[str, bool, str, str]:
     """Checks if a bird is valid.
 
     This checks first if Macaulay has a valid taxon code for the bird,
@@ -484,7 +485,7 @@ async def _get_urls(
         content = catalog_data["results"]["content"]
         urls = (
             [data["mediaUrl"] for data in content]
-            if filters.large
+            if filters.large or media_type == "a"
             else [data["previewUrl"] for data in content]
         )
         if not urls:

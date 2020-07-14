@@ -173,7 +173,7 @@ class Race(commands.Cog):
             )
             return
 
-        filters = Filter.parse(args_str)
+        filters = Filter.parse(args_str, use_numbers=False)
 
         args = args_str.split(" ")
         logger.info(f"args: {args}")
