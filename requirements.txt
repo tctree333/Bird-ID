@@ -7,7 +7,7 @@ holidays==0.10.2
 Flask==1.1.2
 gunicorn==20.0.4
 Authlib==0.14.1
+python-dotenv==0.14.0
 sentry-sdk==0.16.1
-python-dotenv==0.13.0
 hiredis==1.0.1
 pandas==1.0.5
