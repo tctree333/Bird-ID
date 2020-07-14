@@ -15,14 +15,6 @@ from web.functions import get_sciname, send_bird
 bp = flask.Blueprint("practice", __name__, url_prefix="/practice")
 
 
-@bp.after_request  # enable CORS
-def after_request(response):
-    header = response.headers
-    header["Access-Control-Allow-Origin"] = FRONTEND_URL
-    header["Access-Control-Allow-Credentials"] = "true"
-    return response
-
-
 def increment_bird_frequency(bird, user_id):
     bird_setup(user_id, bird)
     database.zincrby("frequency.bird:global", 1, string.capwords(bird))
