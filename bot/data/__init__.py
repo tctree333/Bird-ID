@@ -238,14 +238,14 @@ class GenericError(commands.CommandError):
 # 666 - No output error
 
 # Lists of birds, memes, and other info
-goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
+goatsuckers = ["Common Pauraque", "Chuck Will's Widow", "Eastern Whip Poor Will"]
 sciGoat = [
     "Nyctidromus albicollis",
     "Antrostomus carolinensis",
     "Antrostomus vociferus",
 ]
 
-screech_owls = ["Whiskered Screech-Owl", "Western Screech-Owl", "Eastern Screech-Owl"]
+screech_owls = ["Whiskered Screech Owl", "Western Screech Owl", "Eastern Screech Owl"]
 sci_screech_owls = ["Megascops trichopsis", "Megascops kennicottii", "Megascops asio"]
 
 
