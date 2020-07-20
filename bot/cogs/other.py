@@ -22,7 +22,8 @@ import wikipedia
 from discord.ext import commands
 
 from bot.core import get_sciname, get_taxon, send_bird
-from bot.data import birdListMaster, logger, memeList, sciListMaster, states, taxons
+from bot.data import (alpha_codes, birdListMaster, logger, memeList,
+                      sciListMaster, states, taxons)
 from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list
 
@@ -46,24 +47,37 @@ class Other(commands.Cog):
         filters = Filter.parse(arg)
         options = filters.display()
         arg = arg.split(" ")
-        for i in reversed(range(1, 6)):
-            matches = get_close_matches(
-                " ".join(arg[:i]), birdListMaster + sciListMaster, n=1
-            )
-            if matches:
-                bird = matches[0]
-                delete = await ctx.send("Please wait a moment.")
-                if options:
-                    await ctx.send(f"**Detected filters**: `{'`, `'.join(options)}`")
-                await send_bird(
-                    ctx, bird, "images", filters, message=f"Here's a *{bird.lower()}* image!"
+
+        bird = None
+
+        if len(arg[0]) == 4:
+            bird = alpha_codes.get(arg[0].upper())
+
+        if not bird:
+            for i in reversed(range(1, 6)):
+                # try the first 6 words, then first 5, etc. looking for a match
+                matches = get_close_matches(
+                    " ".join(arg[:i]), birdListMaster + sciListMaster, n=1
                 )
-                await send_bird(
-                    ctx, bird, "songs", filters, message=f"Here's a *{bird.lower()}* song!"
-                )
-                await delete.delete()
-                return
-        await ctx.send("Bird not found. Are you sure it's on the list?")
+                if matches:
+                    bird = matches[0]
+                    break
+
+        if not bird:
+            await ctx.send("Bird not found. Are you sure it's on the list?")
+            return
+
+        delete = await ctx.send("Please wait a moment.")
+        if options:
+            await ctx.send(f"**Detected filters**: `{'`, `'.join(options)}`")
+        await send_bird(
+            ctx, bird, "images", filters, message=f"Here's a *{bird.lower()}* image!"
+        )
+        await send_bird(
+            ctx, bird, "songs", filters, message=f"Here's a *{bird.lower()}* song!"
+        )
+        await delete.delete()
+        return
 
     # Filter command - lists available Macaulay Library filters and aliases
     @commands.command(

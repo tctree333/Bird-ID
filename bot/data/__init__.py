@@ -55,9 +55,9 @@ def before_sentry_send(event, hint):
 # add sentry logging
 if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
     sentry_sdk.init(
-        release=f"{os.getenv('CURRENT_PLATFORM')} Release "
+        release=f"{os.getenv('CURRENT_PLATFORM', 'LOCAL')} Release "
         + (
-            f"{os.getenv('GIT_REV')[:8]}"
+            f"{os.getenv('GIT_REV', '')[:8]}"
             if os.getenv("CURRENT_PLATFORM") != "Heroku"
             else f"{os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}"
         ),
@@ -291,6 +291,20 @@ def get_wiki_url(ctx, bird=None):
         return page.url
 
 
+def _alpha_codes():
+    logger.info("Working on alpha codes")
+    lookup = {}
+    with open("bot/data/alpha.txt", "r") as f:
+        r = csv.reader(f)
+        for bird, code in r:
+            bird = string.capwords(bird.strip().replace("-", " "))
+            code = code.strip().upper()
+            lookup[bird] = code
+            lookup[code] = bird
+    logger.info("Done with alpha codes")
+    return lookup
+
+
 def _nats_lists():
     """Converts txt files of national bird data into lists."""
     filenames = ("birdList", "songBirds", "sciListMaster", "memeList")
@@ -378,6 +392,7 @@ states = _state_lists()
 birdListMaster = _all_birds()
 taxons = _taxons()
 wikipedia_urls = _wiki_urls()
+alpha_codes = _alpha_codes()
 logger.info(f"National Lengths: {len(birdList)}, {len(songBirds)}")
 logger.info(f"Master Lengths: {len(birdListMaster)}, {len(sciListMaster)}")
 logger.info("Done importing data!")
