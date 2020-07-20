@@ -99,7 +99,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #                    "filter": filter (int),
 #                    "media": media,
 #                    "taxon": taxon,
-#                    "strict": strict - Enables strict spelling if "strict", disables if empty, default ""
+#                    "strict": strict - Enables strict spelling if "strict", disables if empty, default "",
+#                    "alpha": alpha - Enables alpha codes if "alpha", disables if empty, default ""
 # }
 # race.scores:ctx.channel.id : [ctx.author.id, #correct]
 

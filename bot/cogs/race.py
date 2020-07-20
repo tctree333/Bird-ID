@@ -30,9 +30,9 @@ class Race(commands.Cog):
         self.bot = bot
 
     async def _get_options(self, ctx):
-        filter_int, state, media, limit, taxon, strict = database.hmget(
+        filter_int, state, media, limit, taxon, strict, alpha = database.hmget(
             f"race.data:{ctx.channel.id}",
-            ["filter", "state", "media", "limit", "taxon", "strict"],
+            ["filter", "state", "media", "limit", "taxon", "strict", "alpha"],
         )
         filters = Filter.from_int(int(filter_int))
         options = (
@@ -41,7 +41,8 @@ class Race(commands.Cog):
             + f"**Taxons:** {taxon.decode('utf-8') if taxon else 'None'}\n"
             + f"**Media Type:** {media.decode('utf-8')}\n"
             + f"**Amount to Win:** {limit.decode('utf-8')}\n"
-            + f"**Strict Spelling:** {strict == b'strict'}"
+            + f"**Strict Spelling:** {strict == b'strict'}\n"
+            + f"**Alpha Codes:** {'Enabled' if alpha == b'alpha' else 'Disabled'}"
         )
         return options
 
@@ -189,6 +190,11 @@ class Race(commands.Cog):
         else:
             strict = ""
 
+        if "alpha" in args:
+            alpha = "alpha"
+        else:
+            alpha = ""
+
         states_args = set(states.keys()).intersection({arg.upper() for arg in args})
         if states_args:
             if {"CUSTOM"}.issubset(states_args):
@@ -250,6 +256,7 @@ class Race(commands.Cog):
                 "media": media,
                 "taxon": taxon,
                 "strict": strict,
+                "alpha": alpha,
             },
         )
 

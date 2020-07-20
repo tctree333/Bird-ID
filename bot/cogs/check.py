@@ -18,7 +18,7 @@ import discord
 from discord.ext import commands
 
 from bot.core import get_sciname, spellcheck
-from bot.data import database, get_wiki_url, logger
+from bot.data import alpha_codes, database, get_wiki_url, logger
 from bot.filters import Filter
 from bot.functions import (CustomCooldown, bird_setup, incorrect_increment,
                            score_increment, session_increment,
@@ -48,6 +48,7 @@ class Check(commands.Cog):
         sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
         arg = arg.lower().replace("-", " ")
         currentBird = currentBird.lower().replace("-", " ")
+        alpha_code = alpha_codes.get(currentBird.title())
         logger.info("currentBird: " + currentBird)
         logger.info("arg: " + arg)
 
@@ -62,6 +63,10 @@ class Check(commands.Cog):
             else:
                 logger.info("spelling leniency")
                 correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
+
+            if not correct and database.hget(f"race.data:{ctx.channel.id}", "alpha"):
+                logger.info("checking alpha codes")
+                correct = arg.upper() == alpha_code
         else:
             logger.info("no race")
             if database.hget(f"session.data:{ctx.author.id}", "strict"):
@@ -69,7 +74,11 @@ class Check(commands.Cog):
                 correct = arg in (currentBird, sciBird)
             else:
                 logger.info("spelling leniency")
-                correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
+                correct = (
+                    spellcheck(arg, currentBird)
+                    or spellcheck(arg, sciBird)
+                    or arg.upper() == alpha_code
+                )
 
         if correct:
             logger.info("correct")
