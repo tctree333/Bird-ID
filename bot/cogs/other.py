@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import contextlib
+import os
 import random
 from difflib import get_close_matches
 
@@ -283,9 +285,15 @@ class Other(commands.Cog):
     @commands.is_owner()
     async def cache(self, ctx):
         logger.info("command: cache stats")
+        items = []
+        with contextlib.suppress(FileNotFoundError):
+            items += os.listdir("cache/images/")
+        with contextlib.suppress(FileNotFoundError):
+            items += os.listdir("cache/songs/")
         stats = {
             "sciname_cache": get_sciname.cache_info(),
             "taxon_cache": get_taxon.cache_info(),
+            "num_downloaded_birds": len(items),
         }
         await ctx.send(f"```python\n{stats}```")
 
