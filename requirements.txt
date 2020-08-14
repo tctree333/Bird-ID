@@ -8,7 +8,7 @@ Flask==1.1.2
 gunicorn==20.0.4
 Authlib==0.14.1
 python-dotenv==0.14.0
-sentry-sdk==0.16.1
+sentry-sdk==0.16.4
 hiredis==1.0.1
 pandas==1.0.5
 blinker==1.4
