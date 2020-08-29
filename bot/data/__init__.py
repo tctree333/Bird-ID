@@ -55,9 +55,9 @@ def before_sentry_send(event, hint):
 # add sentry logging
 if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
     sentry_sdk.init(
-        release=f"{os.getenv('CURRENT_PLATFORM')} Release "
+        release=f"{os.getenv('CURRENT_PLATFORM', 'LOCAL')} Release "
         + (
-            f"{os.getenv('GIT_REV')[:8]}"
+            f"{os.getenv('GIT_REV', '')[:8]}"
             if os.getenv("CURRENT_PLATFORM") != "Heroku"
             else f"{os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}"
         ),
@@ -99,7 +99,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #                    "filter": filter (int),
 #                    "media": media,
 #                    "taxon": taxon,
-#                    "strict": strict - Enables strict spelling if "strict", disables if empty, default ""
+#                    "strict": strict - Enables strict spelling if "strict", disables if empty, default "",
+#                    "alpha": alpha - Enables alpha codes if "alpha", disables if empty, default ""
 # }
 # race.scores:ctx.channel.id : [ctx.author.id, #correct]
 
@@ -238,14 +239,14 @@ class GenericError(commands.CommandError):
 # 666 - No output error
 
 # Lists of birds, memes, and other info
-goatsuckers = ["Common Pauraque", "Chuck-will's-widow", "Whip-poor-will"]
+goatsuckers = ["Common Pauraque", "Chuck Will's Widow", "Eastern Whip Poor Will"]
 sciGoat = [
     "Nyctidromus albicollis",
     "Antrostomus carolinensis",
     "Antrostomus vociferus",
 ]
 
-screech_owls = ["Whiskered Screech-Owl", "Western Screech-Owl", "Eastern Screech-Owl"]
+screech_owls = ["Whiskered Screech Owl", "Western Screech Owl", "Eastern Screech Owl"]
 sci_screech_owls = ["Megascops trichopsis", "Megascops kennicottii", "Megascops asio"]
 
 
@@ -289,6 +290,20 @@ def get_wiki_url(ctx, bird=None):
             logger.info("disabling preview")
             return f"<{page.url}>"
         return page.url
+
+
+def _alpha_codes():
+    logger.info("Working on alpha codes")
+    lookup = {}
+    with open("bot/data/alpha.txt", "r") as f:
+        r = csv.reader(f)
+        for bird, code in r:
+            bird = string.capwords(bird.strip().replace("-", " "))
+            code = code.strip().upper()
+            lookup[bird] = code
+            lookup[code] = bird
+    logger.info("Done with alpha codes")
+    return lookup
 
 
 def _nats_lists():
@@ -378,6 +393,7 @@ states = _state_lists()
 birdListMaster = _all_birds()
 taxons = _taxons()
 wikipedia_urls = _wiki_urls()
+alpha_codes = _alpha_codes()
 logger.info(f"National Lengths: {len(birdList)}, {len(songBirds)}")
 logger.info(f"Master Lengths: {len(birdListMaster)}, {len(sciListMaster)}")
 logger.info("Done importing data!")

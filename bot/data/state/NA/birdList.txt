@@ -35,6 +35,7 @@ Laysan Duck
 Hawaiian Duck
 Eastern Spot-billed Duck
 Mallard
+Mexican Duck
 American Black Duck
 Mottled Duck
 White-cheeked Pintail
@@ -75,29 +76,29 @@ Scaled Quail
 California Quail
 Gambel's Quail
 Montezuma Quail
-Chukar
-Gray Francolin
-Black Francolin
-Erckel's Francolin
-Himalayan Snowcock
-Gray Partridge
-Red Junglefowl
-Kalij Pheasant
-Ring-necked Pheasant
-Indian Peafowl
+Wild Turkey
 Ruffed Grouse
-Greater Sage-Grouse
-Gunnison Sage-Grouse
 Spruce Grouse
 Willow Ptarmigan
 Rock Ptarmigan
 White-tailed Ptarmigan
+Greater Sage-Grouse
+Gunnison Sage-Grouse
 Dusky Grouse
 Sooty Grouse
 Sharp-tailed Grouse
 Greater Prairie-Chicken
 Lesser Prairie-Chicken
-Wild Turkey
+Gray Partridge
+Ring-necked Pheasant
+Kalij Pheasant
+Indian Peafowl
+Gray Francolin
+Black Francolin
+Red Junglefowl
+Himalayan Snowcock
+Chukar
+Erckel's Francolin
 American Flamingo
 Least Grebe
 Pied-billed Grebe
@@ -108,6 +109,7 @@ Western Grebe
 Clark's Grebe
 Chestnut-bellied Sandgrouse
 Rock Pigeon
+Common Wood-Pigeon
 Scaly-naped Pigeon
 White-crowned Pigeon
 Red-billed Pigeon
@@ -168,38 +170,38 @@ Black-chinned Hummingbird
 Bahama Woodstar
 Anna's Hummingbird
 Costa's Hummingbird
-Bumblebee Hummingbird
-Broad-tailed Hummingbird
+Calliope Hummingbird
 Rufous Hummingbird
 Allen's Hummingbird
-Calliope Hummingbird
+Broad-tailed Hummingbird
+Bumblebee Hummingbird
 Broad-billed Hummingbird
-Berylline Hummingbird
-Buff-bellied Hummingbird
-Cinnamon Hummingbird
-Violet-crowned Hummingbird
 White-eared Hummingbird
 Xantus's Hummingbird
-Yellow Rail
-Black Rail
-Corn Crake
+Violet-crowned Hummingbird
+Berylline Hummingbird
+Cinnamon Hummingbird
+Buff-bellied Hummingbird
+Paint-billed Crake
+Spotted Rail
+Rufous-necked Wood-Rail
 Ridgway's Rail
 Clapper Rail
 King Rail
 Virginia Rail
-Rufous-necked Wood-Rail
+Corn Crake
 Sora
-Laysan Rail
-Hawaiian Rail
-Paint-billed Crake
-Spotted Rail
-Purple Gallinule
-Purple Swamphen
 Common Gallinule
 Common Moorhen
 Eurasian Coot
 Hawaiian Coot
 American Coot
+Purple Gallinule
+Purple Swamphen
+Yellow Rail
+Black Rail
+Laysan Rail
+Hawaiian Rail
 Sungrebe
 Limpkin
 Sandhill Crane
@@ -337,6 +339,7 @@ Little Gull
 Ross's Gull
 Laughing Gull
 Franklin's Gull
+Pallas's Gull
 Belcher's Gull
 Black-tailed Gull
 Heermann's Gull
@@ -464,13 +467,13 @@ Blue-footed Booby
 Brown Booby
 Red-footed Booby
 Northern Gannet
+Anhinga
 Brandt's Cormorant
-Neotropic Cormorant
-Double-crested Cormorant
-Great Cormorant
 Red-faced Cormorant
 Pelagic Cormorant
-Anhinga
+Great Cormorant
+Double-crested Cormorant
+Neotropic Cormorant
 American White Pelican
 Brown Pelican
 American Bittern
@@ -498,9 +501,9 @@ Scarlet Ibis
 Glossy Ibis
 White-faced Ibis
 Roseate Spoonbill
+California Condor
 Black Vulture
 Turkey Vulture
-California Condor
 Osprey
 White-tailed Kite
 Hook-billed Kite
@@ -538,9 +541,9 @@ Long-legged Buzzard
 Barn Owl
 Oriental Scops-Owl
 Flammulated Owl
+Whiskered Screech-Owl
 Western Screech-Owl
 Eastern Screech-Owl
-Whiskered Screech-Owl
 Great Horned Owl
 Snowy Owl
 Northern Hawk Owl
@@ -661,8 +664,8 @@ Black Phoebe
 Eastern Phoebe
 Say's Phoebe
 Vermilion Flycatcher
-Red-backed Shrike
 Brown Shrike
+Red-backed Shrike
 Loggerhead Shrike
 Northern Shrike
 Black-capped Vireo
@@ -698,7 +701,6 @@ Black-billed Magpie
 Yellow-billed Magpie
 Eurasian Jackdaw
 American Crow
-Northwestern Crow
 Tamaulipas Crow
 Fish Crow
 Hawaiian Crow
@@ -717,9 +719,9 @@ Mangrove Swallow
 Northern Rough-winged Swallow
 Brown-chested Martin
 Purple Martin
-Cuban Martin
-Gray-breasted Martin
 Southern Martin
+Gray-breasted Martin
+Cuban Martin
 Barn Swallow
 Common House-Martin
 Cliff Swallow
@@ -774,7 +776,7 @@ Arctic Warbler
 Kamchatka Leaf Warbler
 Lesser Whitethroat
 Wrentit
-Japanese White-eye
+Warbling White-eye
 Greater Necklaced Laughingthrush
 Hwamei
 Red-billed Leiothrix
@@ -782,9 +784,10 @@ Thick-billed Warbler
 Millerbird
 Sedge Warbler
 Blyth's Reed Warbler
+Pallas's Grasshopper-Warbler
 Middendorff's Grasshopper-Warbler
-River Warbler
 Lanceolated Warbler
+River Warbler
 Gray-streaked Flycatcher
 Asian Brown Flycatcher
 Spotted Flycatcher
@@ -865,6 +868,7 @@ Red Avadavat
 African Silverbill
 Java Sparrow
 Scaly-breasted Munia
+Tricolored Munia
 Chestnut Munia
 House Sparrow
 Eurasian Tree Sparrow
