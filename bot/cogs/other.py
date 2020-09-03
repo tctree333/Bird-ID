@@ -237,7 +237,7 @@ class Other(commands.Cog):
             f"**The `{taxon}` in the `{state}` bird songs:**"
         )
         for birds in songLists:
-            await ctx.author.dm_channel.send(f"```\n{birds}me")
+            await ctx.author.dm_channel.send(f"```\n{birds}```")
 
         await ctx.send(
             f"The `{taxon}` in the `{state}` bird list has **{len(bird_list)}** birds.\n"
