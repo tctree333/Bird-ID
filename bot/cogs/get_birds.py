@@ -16,6 +16,7 @@
 
 import random
 import string
+from typing import Optional
 
 from discord.ext import commands
 
@@ -95,7 +96,7 @@ class Birds(commands.Cog):
     async def send_bird_(
         self,
         ctx,
-        media_type: str,
+        media_type: Optional[str],
         filters: Filter,
         taxon_str: str = "",
         role_str: str = "",
@@ -140,10 +141,10 @@ class Birds(commands.Cog):
                     + f"*Detected State*: `{'None' if roles == [] else ' '.join(roles)}`"
                 )
 
-            custom_role = {i if i.startswith("CUSTOM:") else "" for i in roles}
-            custom_role.discard("")
-            if database.exists(f"race.data:{ctx.channel.id}") and len(custom_role) == 1:
-                custom_role = custom_role.pop()
+            find_custom_role = {i if i.startswith("CUSTOM:") else "" for i in roles}
+            find_custom_role.discard("")
+            if database.exists(f"race.data:{ctx.channel.id}") and len(find_custom_role) == 1:
+                custom_role = find_custom_role.pop()
                 roles.remove(custom_role)
                 roles.append("CUSTOM")
                 user_id = custom_role.split(":")[1]
