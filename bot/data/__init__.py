@@ -175,10 +175,10 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # setup logging
 logger = logging.getLogger("bird-id")
 logger.setLevel(logging.DEBUG)
-os.makedirs("logs", exist_ok=True)
+os.makedirs("bot_files/logs", exist_ok=True)
 
 file_handler = logging.handlers.TimedRotatingFileHandler(
-    "logs/log.txt", backupCount=4, when="midnight"
+    "bot_files/logs/log.txt", backupCount=4, when="midnight"
 )
 file_handler.setLevel(logging.DEBUG)
 stream_handler = logging.StreamHandler()

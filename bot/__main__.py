@@ -405,12 +405,12 @@ if __name__ == "__main__":
         """Sends a copy of the database to a discord channel (BACKUPS_CHANNEL)."""
         logger.info("TASK: Refreshing backup")
         try:
-            os.remove("backups/dump.dump")
+            os.remove("bot_files/backups/dump.dump")
             logger.info("Cleared backup dump")
         except FileNotFoundError:
             logger.info("Already cleared backup dump")
         try:
-            os.remove("backups/keys.txt")
+            os.remove("bot_files/backups/keys.txt")
             logger.info("Cleared backup keys")
         except FileNotFoundError:
             logger.info("Already cleared backup keys")
@@ -421,9 +421,9 @@ if __name__ == "__main__":
 
         logger.info("Sending backup files")
         channel = bot.get_channel(int(BACKUPS_CHANNEL))
-        with open("backups/dump.dump", "rb") as f:
+        with open("bot_files/backups/dump.dump", "rb") as f:
             await channel.send(file=discord.File(f, filename="dump"))
-        with open("backups/keys.txt", "r") as f:
+        with open("bot_files/backups/keys.txt", "r") as f:
             await channel.send(file=discord.File(f, filename="keys.txt"))
         logger.info("Backup Files Sent!")
 

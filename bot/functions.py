@@ -621,13 +621,9 @@ async def backup_all():
     dump = ((database.dump(key), key) for key in keys)
     logger.info("Finished Dump")
     logger.info("Writing To File")
-    try:
-        os.mkdir("backups")
-        logger.info("Created backups directory")
-    except FileExistsError:
-        logger.info("Backups directory exists")
-    with open("backups/dump.dump", "wb") as f:
-        with open("backups/keys.txt", "w") as k:
+    os.makedirs("bot_files/backups", exist_ok=True)
+    with open("bot_files/backups/dump.dump", "wb") as f:
+        with open("bot_files/backups/keys.txt", "w") as k:
             for item, key in dump:
                 pickle.dump(item, f)
                 k.write(f"{key}\n")

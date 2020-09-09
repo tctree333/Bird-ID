@@ -14,9 +14,7 @@ setup.sh
 .env
 
 # Bot generated
-logs/
-cache/
-backups/
+bot_files/
 
 # Local Redis generated
 dump.rdb

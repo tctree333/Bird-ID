@@ -287,9 +287,9 @@ class Other(commands.Cog):
         logger.info("command: cache stats")
         items = []
         with contextlib.suppress(FileNotFoundError):
-            items += os.listdir("cache/images/")
+            items += os.listdir("bot_files/cache/images/")
         with contextlib.suppress(FileNotFoundError):
-            items += os.listdir("cache/songs/")
+            items += os.listdir("bot_files/cache/songs/")
         stats = {
             "sciname_cache": get_sciname.cache_info(),
             "taxon_cache": get_taxon.cache_info(),

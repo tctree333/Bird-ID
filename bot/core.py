@@ -377,7 +377,7 @@ async def get_files(sciBird: str, media_type: str, filters: Filter, retries: int
     `filters` (bot.filters Filter)\n
     """
     logger.info(f"get_files retries: {retries}")
-    directory = f"cache/{media_type}/{sciBird}{filters.to_int()}/"
+    directory = f"bot_files/cache/{media_type}/{sciBird}{filters.to_int()}/"
     try:
         logger.info("trying")
         files_dir = os.listdir(directory)
@@ -411,7 +411,7 @@ async def download_media(bird, media_type, filters, directory=None, session=None
     `session` (aiohttp ClientSession)
     """
     if directory is None:
-        directory = f"cache/{media_type}/{bird}{filters.to_int()}/"
+        directory = f"bot_files/cache/{media_type}/{bird}{filters.to_int()}/"
 
     if media_type == "images":
         media = "p"
@@ -561,9 +561,9 @@ def rotate_cache():
     logger.info("Rotating cache items")
     items = []
     with contextlib.suppress(FileNotFoundError):
-        items += map(lambda x: f"cache/images/{x}/", os.listdir("cache/images/"))
+        items += map(lambda x: f"bot_files/cache/images/{x}/", os.listdir("bot_files/cache/images/"))
     with contextlib.suppress(FileNotFoundError):
-        items += map(lambda x: f"cache/songs/{x}/", os.listdir("cache/songs/"))
+        items += map(lambda x: f"bot_files/cache/songs/{x}/", os.listdir("bot_files/cache/songs/"))
     logger.info(f"num birds: {len(items)}")
     delete = random.choices(
         items, k=round(len(items) * 0.1)
