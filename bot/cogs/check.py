@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import string
+
 import discord
 from discord.ext import commands
 
@@ -88,6 +90,9 @@ class Check(commands.Cog):
 
             session_increment(ctx, "correct", 1)
             streak_increment(ctx, 1)
+            database.zincrby(
+                f"correct.user:{ctx.author.id}", 1, string.capwords(str(currentBird))
+            )
 
             await ctx.send(
                 "Correct! Good job!"

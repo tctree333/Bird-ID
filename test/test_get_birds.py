@@ -19,6 +19,7 @@ class TestBirds:
         database.zrem("streak:global", str(self.ctx.author.id))
         database.zrem("streak.max:global", str(self.ctx.author.id))
         database.delete(f"incorrect.user:{self.ctx.author.id}")
+        database.delete(f"correct.user:{self.ctx.author.id}")
 
         if self.ctx.guild is not None:
             database.delete(f"users.server:{self.ctx.guild.id}")

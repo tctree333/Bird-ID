@@ -20,7 +20,7 @@ import discord
 from discord.ext import commands
 
 from bot.data import database, logger
-from bot.functions import CustomCooldown
+from bot.functions import CustomCooldown, send_leaderboard
 
 
 class Meta(commands.Cog):
@@ -198,6 +198,18 @@ class Meta(commands.Cog):
         logger.info(f"user-id: {user.id}")
         database.zrem("banned:global", str(user.id))
         await ctx.send(f"Ok, {user.name} can use the bot!")
+
+    # unban command - prevents certain users from using the bot
+    @commands.command(help="- see answered birds command", hidden=True)
+    @commands.is_owner()
+    async def correct(self, ctx, *, user: typing.Optional[discord.Member] = None):
+        logger.info("command: correct")
+        if user is None:
+            logger.info("no args")
+            await ctx.send("Invalid User!")
+            return
+        logger.info(f"user-id: {user.id}")
+        await send_leaderboard(ctx, f"Top Correct Birds ({user.name})", 1, database_key=f"correct.user:{user.id}", items_per_page=25)
 
 
 def setup(bot):

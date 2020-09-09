@@ -166,10 +166,16 @@ def bird_setup(ctx, bird: str):
         logger.info("bird global added")
 
     if database.zscore(f"incorrect.user:{user_id}", string.capwords(bird)) is not None:
-        logger.info("bird user ok")
+        logger.info("incorrect bird user ok")
     else:
         database.zadd(f"incorrect.user:{user_id}", {string.capwords(bird): 0})
-        logger.info("bird user added")
+        logger.info("incorrect bird user added")
+
+    if database.zscore(f"correct.user:{user_id}", string.capwords(bird)) is not None:
+        logger.info("correct bird user ok")
+    else:
+        database.zadd(f"correct.user:{user_id}", {string.capwords(bird): 0})
+        logger.info("correct bird user added")
 
     date = str(datetime.datetime.now(datetime.timezone.utc).date())
     if database.zscore(f"daily.incorrect:{date}", string.capwords(bird)) is not None:
@@ -233,7 +239,7 @@ def check_state_role(ctx) -> list:
     return user_states
 
 
-async def send_leaderboard(ctx, title, page, database_key=None, data=None):
+async def send_leaderboard(ctx, title, page, database_key=None, data=None, items_per_page=10):
     logger.info("building/sending leaderboard")
 
     if database_key is None and data is None:
@@ -257,7 +263,6 @@ async def send_leaderboard(ctx, title, page, database_key=None, data=None):
     if page > entry_count:
         page = entry_count - (entry_count % 10)
 
-    items_per_page = 10
     leaderboard_list = (
         map(
             lambda x: (x[0].decode("utf-8"), x[1]),

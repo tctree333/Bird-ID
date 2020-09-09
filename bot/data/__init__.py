@@ -120,6 +120,10 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #    incorrect.user:user_id: : [bird name, # incorrect]
 # }
 
+# correct birds format = {
+#    correct.user:user_id : [bird name, # correct]
+# }
+
 # bird frequency format = {
 #   frequency.bird:global : [bird name, # displayed]
 # }
