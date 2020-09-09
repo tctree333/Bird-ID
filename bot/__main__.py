@@ -257,6 +257,10 @@ if __name__ == "__main__":
         elif isinstance(error, commands.PrivateMessageOnly):
             await ctx.send("**This command is only available in DMs!**")
 
+        elif isinstance(error, commands.NotOwner):
+            logger.info("not owner")
+            await ctx.send("Sorry, the command was not found.")
+
         elif isinstance(error, GenericError):
             if error.code == 192:
                 # channel is ignored
