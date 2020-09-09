@@ -92,7 +92,7 @@ class Other(commands.Cog):
         embed = discord.Embed(
             title="Media Filters",
             type="rich",
-            description="Filters can be space-seperated or comma-seperated. "
+            description="Filters can be space-separated or comma-separated. "
             + "You can use any alias to set filters. "
             + "Please note media will only be shown if it "
             + "matches all the filters, so using filters can "

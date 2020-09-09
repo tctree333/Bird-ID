@@ -6,7 +6,7 @@ A discord bot for young ornithologists. This bot is designed to help people prac
 
 ## Usage
 
-The prefix for this bot is `b!`. Use `b!help` to get a list of commands, and `b!help [command]` for help with a specific command. A demo of the bot is avaliable [here](example.mp4).
+The prefix for this bot is `b!`. Use `b!help` to get a list of commands, and `b!help [command]` for help with a specific command. A demo of the bot is available [here](example.mp4).
 
 ## Server
 
@@ -43,7 +43,7 @@ If you need help or have any questions, let us know in our [Discord support serv
 ## Troubleshooting
 If you are having issues running the bot locally, here are some tips and common issues people run into.
 
-* Make sure you're on Python 3.7, since we're using some language features only avaliable in version 3.7.
+* Make sure you're on Python 3.7, since we're using some language features only available in version 3.7.
 * If you're having issues with Redis, make sure you're on version 4.0.14 or later. If you're still having issues, see the Redis [documentation](https://redis.io/documentation).
 * Common Redis errors include:
   * `ValueError: Redis URL must specify one of the followingschemes (redis://, rediss://, unix://)` - Make sure the `SCIOLY_ID_BOT_LOCAL_REDIS` environment variable is set to `true` if you're using a local Redis server. If you're using a remote Redis server, or a server with a different address, make sure `SCIOLY_ID_BOT_LOCAL_REDIS` is `false` and the `SCIOLY_ID_BOT_REDIS_URL` environment variable is set correctly.

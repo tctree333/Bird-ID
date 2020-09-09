@@ -186,7 +186,7 @@ class States(commands.Cog):
             and database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8")
             == "confirm"
         ):
-            # list was validated by server and user, making permament
+            # list was validated by server and user, making permanent
             logger.info("user confirmed")
             database.persist(f"custom.list:{ctx.author.id}")
             database.delete(f"custom.confirm:{ctx.author.id}")
@@ -401,7 +401,7 @@ class States(commands.Cog):
                 delete_after=5.0,
             )
         elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.send("**This command is unavaliable in DMs!**")
+            await ctx.send("**This command is unavailable in DMs!**")
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
                 "**The bot does not have enough permissions to fully function.**\n"

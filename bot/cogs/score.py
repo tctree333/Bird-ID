@@ -358,7 +358,7 @@ class Score(commands.Cog):
             else:
                 logger.info("dm context")
                 await ctx.send(
-                    "**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*"
+                    "**Server scopes are not available in DMs.**\n*Showing global leaderboard instead.*"
                 )
                 scope = "global"
                 database_key = "users:global"
@@ -422,7 +422,7 @@ class Score(commands.Cog):
             else:
                 logger.info("dm context")
                 await ctx.send(
-                    "**Server scopes are not avaliable in DMs.**\n*Showing global leaderboard instead.*"
+                    "**Server scopes are not available in DMs.**\n*Showing global leaderboard instead.*"
                 )
                 scope = "global"
                 database_key = "incorrect:global"

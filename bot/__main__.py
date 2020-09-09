@@ -252,10 +252,10 @@ if __name__ == "__main__":
             )
 
         elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.send("**This command is unavaliable in DMs!**")
+            await ctx.send("**This command is unavailable in DMs!**")
 
         elif isinstance(error, commands.PrivateMessageOnly):
-            await ctx.send("**This command is only avaliable in DMs!**")
+            await ctx.send("**This command is only available in DMs!**")
 
         elif isinstance(error, GenericError):
             if error.code == 192:
@@ -306,7 +306,7 @@ if __name__ == "__main__":
 
             elif isinstance(error.original, wikipedia.exceptions.WikipediaException):
                 capture_exception(error.original)
-                await ctx.send("Wikipedia page unavaliable. Try again later.")
+                await ctx.send("Wikipedia page unavailable. Try again later.")
 
             elif isinstance(error.original, discord.Forbidden):
                 if error.original.code == 50007:
@@ -330,7 +330,7 @@ if __name__ == "__main__":
                 if error.original.status == 502:
                     capture_exception(error.original)
                     await ctx.send(
-                        "**An error has occured with discord. :(**\n*Please try again.*"
+                        "**An error has occurred with discord. :(**\n*Please try again.*"
                     )
                 else:
                     capture_exception(error.original)
@@ -346,7 +346,7 @@ if __name__ == "__main__":
                 if error.original.errno == errno.ECONNRESET:
                     capture_exception(error.original)
                     await ctx.send(
-                        "**An error has occured with discord. :(**\n*Please try again.*"
+                        "**An error has occurred with discord. :(**\n*Please try again.*"
                     )
                 else:
                     capture_exception(error.original)

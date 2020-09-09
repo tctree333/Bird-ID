@@ -162,7 +162,7 @@ class Race(commands.Cog):
         if not str(ctx.channel.name).startswith("racing"):
             logger.info("not race channel")
             await ctx.send(
-                "**Sorry, racing is not availiable in this channel.**\n"
+                "**Sorry, racing is not available in this channel.**\n"
                 + "*Set the channel name to start with `racing` to enable it.*"
             )
             return

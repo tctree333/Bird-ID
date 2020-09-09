@@ -120,7 +120,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
                 if retries >= 3:
                     logger.info("Retried more than 3 times. Aborting...")
                     raise GenericError(
-                        f"An http error code of {sciname_response.status} occured"
+                        f"An http error code of {sciname_response.status} occurred"
                         + f" while fetching {sciname_url} for {bird}",
                         code=201,
                     )
@@ -162,7 +162,7 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
                 if retries >= 3:
                     logger.info("Retried more than 3 times. Aborting...")
                     raise GenericError(
-                        f"An http error code of {taxon_code_response.status} occured"
+                        f"An http error code of {taxon_code_response.status} occurred"
                         + f" while fetching {taxon_code_url} for {bird}",
                         code=201,
                     )
@@ -472,7 +472,7 @@ async def _get_urls(
             if retries >= 3:
                 logger.info("Retried more than 3 times. Aborting...")
                 raise GenericError(
-                    f"An http error code of {catalog_response.status} occured "
+                    f"An http error code of {catalog_response.status} occurred "
                     + f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}",
                     code=201,
                 )
