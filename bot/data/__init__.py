@@ -72,8 +72,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # channel:channel_id : {
 #                    "bird",
 #                    "answered",
-#                    "prevB", (makse sure it sends diff birds)
-#                    "prevJ" (makes sure it sends diff media)
+#                    "prevB", (make sure it sends diff birds)
+#                    "prevJ" (make sure it sends diff media)
 # }
 
 # session format:

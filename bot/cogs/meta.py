@@ -87,7 +87,7 @@ class Meta(commands.Cog):
             + "**Orni-Bot:** https://discord.com/api/oauth2/authorize?client_id=601755752410906644&permissions=268486656&scope=bot\n\n"
             + "**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.\n"
             + "<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>, <https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>\n\n"
-            + "Unfotunately, Orni-Bot is currently unavaliable. For more information, visit our support server below.",
+            + "Unfortunately, Orni-Bot is currently unavailable. For more information, visit our support server below.",
             inline=False,
         )
         await ctx.send(embed=embed)
