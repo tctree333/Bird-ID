@@ -205,7 +205,7 @@ class Score(commands.Cog):
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def userscore(
-        self, ctx, *, user: typing.Optional[typing.Union[discord.Member, str]] = None
+        self, ctx, *, user: typing.Optional[typing.Union[discord.Member, discord.User, str]] = None
     ):
         logger.info("command: userscore")
 
