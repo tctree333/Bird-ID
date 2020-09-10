@@ -50,7 +50,7 @@ class Check(commands.Cog):
         sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
         arg = arg.lower().replace("-", " ")
         currentBird = currentBird.lower().replace("-", " ")
-        alpha_code = alpha_codes.get(currentBird.title())
+        alpha_code = alpha_codes.get(string.capwords(currentBird))
         logger.info("currentBird: " + currentBird)
         logger.info("arg: " + arg)
 
