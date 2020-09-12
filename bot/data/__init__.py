@@ -173,8 +173,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #          }
 
 # state birds are picked from state/[state]/birdList or songBirds
-# sci lists are only for new, state specific birds
-# either lists can be in any taxon
+# either list can be in any taxon
+
 
 # setup logging
 logger = logging.getLogger("bird-id")
