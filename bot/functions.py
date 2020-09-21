@@ -25,17 +25,8 @@ import string
 import discord
 from discord.ext import commands
 
-from bot.data import (
-    GenericError,
-    birdList,
-    birdListMaster,
-    database,
-    logger,
-    sciListMaster,
-    songBirds,
-    states,
-    taxons,
-)
+from bot.data import (GenericError, birdList, birdListMaster, database, logger,
+                      sciListMaster, songBirds, states, taxons)
 
 
 async def channel_setup(ctx):
@@ -239,7 +230,9 @@ def check_state_role(ctx) -> list:
     return user_states
 
 
-async def send_leaderboard(ctx, title, page, database_key=None, data=None, items_per_page=10):
+async def send_leaderboard(
+    ctx, title, page, database_key=None, data=None, items_per_page=10
+):
     logger.info("building/sending leaderboard")
 
     if database_key is None and data is None:
@@ -324,7 +317,10 @@ def build_id_list(
 
     birds = []
     if taxon:
-        birds_in_taxon = set(itertools.chain.from_iterable(taxons[o] for o in taxon))
+        birds_in_taxon = set(
+            itertools.chain.from_iterable(taxons.get(o, None) for o in taxon)
+        )
+        birds_in_taxon.discard(None)
         if state_roles:
             birds_in_state = set(
                 itertools.chain(
