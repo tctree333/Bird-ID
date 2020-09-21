@@ -230,6 +230,7 @@ class Birds(commands.Cog):
                     logger.info(f"toggle taxons: {taxon_args}")
                     logger.info(f"current taxons: {current_taxons}")
                     taxon_args.symmetric_difference_update(current_taxons)
+                    taxon_args.discard("")
                     logger.info(f"new taxons: {taxon_args}")
                     taxon = " ".join(taxon_args).strip()
                 else:
@@ -267,6 +268,7 @@ class Birds(commands.Cog):
                 logger.info(f"toggle states: {state_args}")
                 logger.info(f"current states: {roles}")
                 state_args.symmetric_difference_update(set(roles))
+                state_args.discard("")
                 logger.info(f"new states: {state_args}")
                 state = " ".join(state_args).strip()
             else:

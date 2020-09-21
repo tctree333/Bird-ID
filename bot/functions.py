@@ -318,9 +318,8 @@ def build_id_list(
     birds = []
     if taxon:
         birds_in_taxon = set(
-            itertools.chain.from_iterable(taxons.get(o, None) for o in taxon)
+            itertools.chain.from_iterable(taxons.get(o, []) for o in taxon)
         )
-        birds_in_taxon.discard(None)
         if state_roles:
             birds_in_state = set(
                 itertools.chain(

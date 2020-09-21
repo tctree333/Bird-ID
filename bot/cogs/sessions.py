@@ -238,6 +238,7 @@ class Sessions(commands.Cog):
                 logger.info(f"toggle states: {states_args}")
                 logger.info(f"current states: {current_states}")
                 states_args.symmetric_difference_update(current_states)
+                states_args.discard("")
                 logger.info(f"new states: {states_args}")
                 database.hset(
                     f"session.data:{ctx.author.id}",
@@ -255,6 +256,7 @@ class Sessions(commands.Cog):
                 logger.info(f"toggle taxons: {taxon_args}")
                 logger.info(f"current taxons: {current_taxons}")
                 taxon_args.symmetric_difference_update(current_taxons)
+                taxon_args.discard("")
                 logger.info(f"new taxons: {taxon_args}")
                 database.hset(
                     f"session.data:{ctx.author.id}",
