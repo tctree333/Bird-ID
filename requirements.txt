@@ -6,7 +6,7 @@ redis==3.5.3
 holidays==0.10.3
 Flask==1.1.2
 gunicorn==20.0.4
-Authlib==0.14.1
+Authlib==0.15.1
 python-dotenv==0.14.0
 hiredis==1.1.0
 sentry-sdk==0.18.0
