@@ -75,6 +75,7 @@ if __name__ == "__main__":
         "bot.cogs.state",
         "bot.cogs.sessions",
         "bot.cogs.race",
+        "bot.cogs.voice",
         "bot.cogs.meta",
         "bot.cogs.other",
     ]
