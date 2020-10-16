@@ -27,40 +27,55 @@ class Voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def get_voice_client(self, ctx):
+    async def get_voice_client(self, ctx, connect=False):
         voice = ctx.author.voice
         if voice is None or voice.channel is None:
-            await ctx.send("Please join a voice channel to connect the bot!")
+            await ctx.send("**Please join a voice channel to connect the bot!**")
             return None
         client = next(
-            filter(lambda x: x.channel == voice.channel, self.bot.voice_clients), None
+            filter(lambda x: x.guild == voice.channel.guild, self.bot.voice_clients), None
         )
         if client is None:
-            await ctx.send("You must be in the same voice channel as the bot!")
+            if connect:
+                try:
+                    client = await voice.channel.connect()
+                    await ctx.send(f"Connected to {voice.channel.mention}")
+                    return client
+                except asyncio.TimeoutError:
+                    await ctx.send(
+                        "**Could not connect to voice channel in time.**\n*Please try again.*"
+                    )
+                except discord.ClientException:
+                    await ctx.send("**I'm already connected to another voice channel!**")
+                return None
+            await ctx.send("**The bot isn't in a voice channel!**")
+            return None
+        if client.channel != voice.channel:
+            await ctx.send("**You need to be in the same voice channel as the bot!**")
             return None
         return client
 
-    @commands.command(help="- Connects to a voice channel")
-    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    @commands.guild_only()
-    async def connect(self, ctx):
-        logger.info("command: connect")
+    # @commands.command(help="- Connects to a voice channel")
+    # @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
+    # @commands.guild_only()
+    # async def connect(self, ctx):
+    #     logger.info("command: connect")
 
-        voice = ctx.author.voice
-        if voice is None or voice.channel is None:
-            await ctx.send("Please join a voice channel to connect the bot!")
-            return
-        try:
-            await voice.channel.connect()
-            await ctx.send(f"Connected to {voice.channel.mention}")
-        except asyncio.TimeoutError:
-            await ctx.send(
-                "**Could not connect to voice channel in time.**\n*Please try again.*"
-            )
-            return
-        except discord.ClientException:
-            await ctx.send("**I'm already connected to another voice channel!**")
-            return
+    #     voice = ctx.author.voice
+    #     if voice is None or voice.channel is None:
+    #         await ctx.send("Please join a voice channel to connect the bot!")
+    #         return
+    #     try:
+    #         await voice.channel.connect()
+    #         await ctx.send(f"Connected to {voice.channel.mention}")
+    #     except asyncio.TimeoutError:
+    #         await ctx.send(
+    #             "**Could not connect to voice channel in time.**\n*Please try again.*"
+    #         )
+    #         return
+    #     except discord.ClientException:
+    #         await ctx.send("**I'm already connected to another voice channel!**")
+    #         return
 
     @commands.command(help="- Play a sound")
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
@@ -68,7 +83,7 @@ class Voice(commands.Cog):
     async def play(self, ctx):
         logger.info("command: play")
 
-        client = await self.get_voice_client(ctx)
+        client = await self.get_voice_client(ctx, connect=True)
         if client is None:
             return
         if client.is_paused():
