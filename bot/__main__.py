@@ -45,11 +45,22 @@ def start_backup():
 
 if __name__ == "__main__":
     # Initialize bot
+    intent: discord.Intents = discord.Intents.none()
+    intent.guilds = True
+    intent.members = True
+    intent.messages = True
+    intent.voice_states = True
+
+    cache_flags: discord.MemberCacheFlags = discord.MemberCacheFlags.none()
+    cache_flags.voice = True
+
     bot = commands.Bot(
         command_prefix=["b!", "b.", "b#", "B!", "B.", "B#", "o>", "O>"],
         case_insensitive=True,
         description="BirdID - Your Very Own Ornithologist",
         help_command=commands.DefaultHelpCommand(verify_checks=False),
+        intents=intent,
+        member_cache_flags=cache_flags,
     )
 
     @bot.event
@@ -75,6 +86,7 @@ if __name__ == "__main__":
         "bot.cogs.state",
         "bot.cogs.sessions",
         "bot.cogs.race",
+        "bot.cogs.voice",
         "bot.cogs.meta",
         "bot.cogs.other",
     ]
@@ -142,27 +154,12 @@ if __name__ == "__main__":
     def bot_has_permissions(ctx):
         """Checks if the bot has correct permissions."""
         logger.info("global check: checking permissions")
-        # code copied from @commands.bot_has_permissions(send_messages=True, embed_links=True, attach_files=True)
-        if ctx.guild is not None:
-            perms = {
-                "send_messages": True,
-                "embed_links": True,
-                "attach_files": True,
-                "manage_roles": True,
-            }
-            guild = ctx.guild
-            me = guild.me if guild is not None else ctx.bot.user
-            permissions = ctx.channel.permissions_for(me)
-
-            missing = [
-                perm
-                for perm, value in perms.items()
-                if getattr(permissions, perm, None) != value
-            ]
-            if not missing:
-                return True
-            raise commands.BotMissingPermissions(missing)
-        return True
+        return commands.bot_has_permissions(
+            send_messages=True,
+            embed_links=True,
+            attach_files=True,
+            manage_roles=True
+        ).predicate(ctx)
 
     @bot.check
     async def database_setup(ctx):
