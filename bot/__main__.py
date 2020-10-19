@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # Initialize bot
     intent: discord.Intents = discord.Intents.none()
     intent.guilds = True
-    intent.members = True
+    # intent.members = True
     intent.messages = True
     intent.voice_states = True
 
