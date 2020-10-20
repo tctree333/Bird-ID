@@ -23,7 +23,7 @@ COUNT = 20  # number of media items from catalog url
 
 
 class Filter:
-    _boolean_options = ("large", "bw")
+    _boolean_options = ("large", "bw", "vc")
     _default_options = {"quality": {"3", "4", "5"}}
 
     def __init__(
@@ -38,6 +38,8 @@ class Filter:
         quality: Union[str, Iterable] = ("3", "4", "5"),
         large: bool = False,
         bw: bool = False,
+        vc: bool = False
+
     ):
         """Represents Macaulay Library media filters.
 
@@ -67,6 +69,8 @@ class Filter:
             - True (uses previewUrl), False (uses mediaUrl)
         - Black & White:
             - True (black and white), False (color)
+        - Voice Channel:
+            - True (send songs in voice), False (send songs as files)
         """
         self.age = age
         self.sex = sex
@@ -78,6 +82,7 @@ class Filter:
         self.quality = quality
         self.large = large
         self.bw = bw
+        self.vc = vc
 
         for item in self.__dict__.items():
             if isinstance(item[1], str):
@@ -177,9 +182,9 @@ class Filter:
     def to_int(self):
         """Convert filters into an integer representation.
 
-        This is calculated with a 47 digit binary number representing the 47 filter options.
+        This is calculated with a 48 digit binary number representing the 48 filter options.
         """
-        out = ["0"] * 47
+        out = ["0"] * 48
         indexes = self.aliases(num=True)
         for title, filters in self.__dict__.items():
             if title in self._boolean_options:
@@ -193,12 +198,12 @@ class Filter:
     @classmethod
     def from_int(cls, number: int):
         """Convert an int to a filter object."""
-        if number >= 2 ** 47 or number < 0:
+        if number >= 2 ** 48 or number < 0:
             raise ValueError("Input number out of bounds.")
         me = cls()
 
         me._clear()  # reset existing filters to empty
-        binary = reversed("{0:0>47b}".format(number))
+        binary = reversed("{0:0>48b}".format(number))
         lookup = me.aliases(lookup=True)
         for index, value in enumerate(binary):
             if int(value):
@@ -216,7 +221,7 @@ class Filter:
         """Combine/toggle filters by xor-ing the integer representations."""
         if isinstance(other, self.__class__):
             other = other.to_int()
-        if other >= 2 ** 47 or other < 0:
+        if other >= 2 ** 48 or other < 0:
             raise ValueError("Input number out of bounds.")
         return self.from_int(other ^ self.to_int())
 
@@ -379,6 +384,9 @@ class Filter:
             },
             ("black & white (defaults to no)", "bw"): {
                 ("yes", True): ("47", "bw", "b&w"),
+            },
+            ("voice channel (defaults to no)", "vc"): {
+                ("yes", True): ("48", "vc", "voice", "voice channel"),
             },
         }
         if lookup:
