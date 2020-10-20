@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # Initialize bot
     intent: discord.Intents = discord.Intents.none()
     intent.guilds = True
-    intent.members = True
+    # intent.members = True
     intent.messages = True
     intent.voice_states = True
 
@@ -154,7 +154,7 @@ if __name__ == "__main__":
         """Checks if the bot has correct permissions."""
         logger.info("global check: checking permissions")
         return commands.bot_has_permissions(
-            send_messages=True, embed_links=True, attach_files=True, manage_roles=True
+            send_messages=True, embed_links=True, attach_files=True
         ).predicate(ctx)
 
     @bot.check
