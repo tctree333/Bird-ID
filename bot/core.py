@@ -32,6 +32,7 @@ import eyed3
 from PIL import Image
 from sentry_sdk import capture_exception
 
+import bot.voice as voice_functions
 from bot.data import GenericError, database, logger, screech_owls
 from bot.filters import Filter
 
@@ -39,7 +40,7 @@ from bot.filters import Filter
 SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
 TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
 
-MAX_FILESIZE = 6000000 # limit media to 6mb
+MAX_FILESIZE = 6000000  # limit media to 6mb
 
 # Valid file types
 valid_types = {
@@ -307,11 +308,15 @@ async def send_bird(
         if audioFile is not None and audioFile.tag is not None:
             audioFile.tag.remove(filename)
 
-    # change filename to avoid spoilers
-    file_obj = discord.File(filename, filename=f"bird.{extension}")
     if message is not None:
         await ctx.send(message)
-    await ctx.send(file=file_obj)
+
+    if media_type == "songs" and filters.vc:
+        await voice_functions.play(ctx, filename)
+    else:
+        # change filename to avoid spoilers
+        file_obj = discord.File(filename, filename=f"bird.{extension}")
+        await ctx.send(file=file_obj)
     await delete.delete()
 
 
@@ -561,9 +566,15 @@ def rotate_cache():
     logger.info("Rotating cache items")
     items = []
     with contextlib.suppress(FileNotFoundError):
-        items += map(lambda x: f"bot_files/cache/images/{x}/", os.listdir("bot_files/cache/images/"))
+        items += map(
+            lambda x: f"bot_files/cache/images/{x}/",
+            os.listdir("bot_files/cache/images/"),
+        )
     with contextlib.suppress(FileNotFoundError):
-        items += map(lambda x: f"bot_files/cache/songs/{x}/", os.listdir("bot_files/cache/songs/"))
+        items += map(
+            lambda x: f"bot_files/cache/songs/{x}/",
+            os.listdir("bot_files/cache/songs/"),
+        )
     logger.info(f"num birds: {len(items)}")
     delete = random.choices(
         items, k=round(len(items) * 0.1)
