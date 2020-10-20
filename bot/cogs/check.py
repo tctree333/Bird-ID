@@ -19,12 +19,18 @@ import string
 import discord
 from discord.ext import commands
 
+import bot.voice as voice_functions
 from bot.core import get_sciname, spellcheck
 from bot.data import alpha_codes, database, get_wiki_url, logger
 from bot.filters import Filter
-from bot.functions import (CustomCooldown, bird_setup, incorrect_increment,
-                           score_increment, session_increment,
-                           streak_increment)
+from bot.functions import (
+    CustomCooldown,
+    bird_setup,
+    incorrect_increment,
+    score_increment,
+    session_increment,
+    streak_increment,
+)
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
@@ -93,6 +99,14 @@ class Check(commands.Cog):
             database.zincrby(
                 f"correct.user:{ctx.author.id}", 1, string.capwords(str(currentBird))
             )
+
+            if (
+                race_in_session
+                and Filter.from_int(
+                    int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
+                ).vc
+            ):
+                await voice_functions.stop(ctx, silent=True)
 
             await ctx.send(
                 "Correct! Good job!"

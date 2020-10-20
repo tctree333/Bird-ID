@@ -20,6 +20,7 @@ import time
 import discord
 from discord.ext import commands
 
+import bot.voice as voice_functions
 from bot.data import database, logger, states, taxons
 from bot.filters import Filter
 from bot.functions import CustomCooldown
@@ -103,6 +104,11 @@ class Race(commands.Cog):
         await ctx.send(embed=embed)
 
     async def stop_race_(self, ctx):
+        if Filter.from_int(
+            int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
+        ).vc:
+            await voice_functions.disconnect(ctx, silent=True)
+
         first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]
         if ctx.guild is not None:
             user = ctx.guild.get_member(int(first[0]))
@@ -175,6 +181,10 @@ class Race(commands.Cog):
             return
 
         filters = Filter.parse(args_str, use_numbers=False)
+        if filters.vc:
+            client = await voice_functions.get_voice_client(ctx, connect=True)
+            if client is None:
+                return
 
         args = args_str.split(" ")
         logger.info(f"args: {args}")
@@ -212,7 +222,7 @@ class Race(commands.Cog):
         else:
             state = ""
 
-        song = "song" in args or "s" in args
+        song = "song" in args or "s" in args or filters.vc
         image = "image" in args or "i" in args or "picture" in args or "p" in args
         if song and image:
             await ctx.send(
@@ -265,9 +275,7 @@ class Race(commands.Cog):
             f"**Race started with options:**\n{await self._get_options(ctx)}"
         )
 
-        media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
-            "utf-8"
-        )
+        media = database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8")
         logger.info("clearing previous bird")
         database.hset(f"channel:{ctx.channel.id}", "bird", "")
         database.hset(f"channel:{ctx.channel.id}", "answered", "1")
