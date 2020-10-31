@@ -18,8 +18,9 @@ import asyncio
 from typing import Optional
 
 import discord
+import discord.utils
 
-from bot.data import logger
+from bot.data import logger, database
 
 
 async def _send(ctx, silent, message: str):
@@ -30,15 +31,36 @@ async def _send(ctx, silent, message: str):
 async def get_voice_client(
     ctx, connect: bool = False, silent: bool = False
 ) -> Optional[discord.VoiceClient]:
-    voice = ctx.author.voice
-    if voice is None or voice.channel is None:
-        await _send(ctx, silent, "**Please join a voice channel to connect the bot!**")
+    logger.info("fetching voice client")
+
+    voice = None
+    if ctx.author:
+        voice = ctx.author.voice
+        if voice is None or voice.channel is None or voice.channel.guild != ctx.guild:
+            await _send(ctx, silent, "**Please join a voice channel to connect the bot!**")
+            return None
+
+    current_voice = database.get(f"voice.server:{ctx.guild.id}")
+    if current_voice is not None and current_voice.decode("utf-8") != str(
+        ctx.channel.id
+    ):
+        logger.info("already vc race")
+        bound_channel = ctx.guild.get_channel(int(current_voice))
+        await ctx.send(
+            "**The voice channel is currently in use!**"
+            + (
+                f"\n*Use {bound_channel.mention} for vc settings!*"
+                if bound_channel
+                else ""
+            )
+        )
         return None
-    client: discord.VoiceClient = next(
-        filter(lambda x: x.guild == voice.channel.guild, ctx.bot.voice_clients), None
+
+    client: discord.VoiceClient = discord.utils.find(
+        lambda x: x.guild == ctx.guild, ctx.bot.voice_clients
     )
     if client is None:
-        if connect:
+        if connect and voice:
             try:
                 client = await voice.channel.connect()
                 await _send(ctx, silent, f"Connected to {voice.channel.mention}")
@@ -56,7 +78,8 @@ async def get_voice_client(
         else:
             await _send(ctx, silent, "**The bot isn't in a voice channel!**")
         return None
-    if client.channel != voice.channel:
+
+    if voice and client.channel != voice.channel:
         await _send(
             ctx, silent, "**You need to be in the same voice channel as the bot!**"
         )
@@ -123,3 +146,26 @@ async def disconnect(ctx, silent: bool = False):
     client.cleanup()
     await _send(ctx, silent, "Bye!")
     return True
+
+class FauxContext:
+    def __init__(self, channel, bot):
+        self.channel = channel
+        self.bot = bot
+
+    def __getattr__(self, name):
+        return getattr(self.channel, name, None)
+
+async def cleanup(bot):
+    logger.info("cleaning up empty channels")
+    for client in bot.voice_clients:
+        if len(client.channel.voice_states) == 1:
+            logger.info("found empty")
+            current_voice = database.get(f"voice.server:{client.guild.id}")
+            if current_voice is not None:
+                logger.info("vc race")
+                bound_channel = client.guild.get_channel(int(current_voice))
+                race = bot.get_cog("Race")
+                await race.stop_race_(FauxContext(bound_channel, bot))
+            else:
+                await client.disconnect()
+    logger.info("done cleaning!")

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 import bot.voice as voice_functions
 from bot.data import logger
@@ -24,6 +24,10 @@ from bot.functions import CustomCooldown
 class Voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.cleanup.start()
+
+    def cog_unload(self):
+        self.cleanup.cancel()
 
     @commands.command(help="- Play a sound")
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
@@ -52,6 +56,11 @@ class Voice(commands.Cog):
     async def disconnect(self, ctx):
         logger.info("command: disconnect")
         await voice_functions.disconnect(ctx)
+
+    @tasks.loop(minutes=10)
+    async def cleanup(self):
+        logger.info("running cleanup task")
+        await voice_functions.cleanup(self.bot)
 
 
 def setup(bot):

@@ -21,8 +21,7 @@ from typing import Optional
 from discord.ext import commands
 
 from bot.core import send_bird
-from bot.data import (GenericError, database, goatsuckers, logger, states,
-                      taxons)
+from bot.data import GenericError, database, goatsuckers, logger, states, taxons
 from bot.filters import Filter
 from bot.functions import (CustomCooldown, bird_setup, build_id_list,
                            check_state_role, session_increment)
@@ -37,10 +36,18 @@ BIRD_MESSAGE = BASE_MESSAGE.format(
     media="image", new_cmd="bird", skip_cmd="skip", check_cmd="check", hint_cmd="hint"
 )
 GS_MESSAGE = BASE_MESSAGE.format(
-    media="image", new_cmd="gs", skip_cmd="skip", check_cmd="check", hint_cmd="hint",
+    media="image",
+    new_cmd="gs",
+    skip_cmd="skip",
+    check_cmd="check",
+    hint_cmd="hint",
 )
 SONG_MESSAGE = BASE_MESSAGE.format(
-    media="song", new_cmd="song", skip_cmd="skip", check_cmd="check", hint_cmd="hint",
+    media="song",
+    new_cmd="song",
+    skip_cmd="skip",
+    check_cmd="check",
+    hint_cmd="hint",
 )
 
 
@@ -49,7 +56,13 @@ class Birds(commands.Cog):
         self.bot = bot
 
     def error_handle(
-        self, ctx, media_type: str, filters: Filter, taxon_str, role_str, retries,
+        self,
+        ctx,
+        media_type: str,
+        filters: Filter,
+        taxon_str,
+        role_str,
+        retries,
     ):
         """Return a function to pass to send_bird() as on_error."""
         # pylint: disable=unused-argument
@@ -110,6 +123,15 @@ class Birds(commands.Cog):
         if not media_type:
             raise GenericError("Invalid media type", code=990)
 
+        if media_type == "songs" and filters.vc:
+            current_voice = database.get(f"voice.server:{ctx.guild.id}")
+            if current_voice is not None and current_voice.decode("utf-8") != str(
+                ctx.channel.id
+            ):
+                logger.info("already vc race")
+                await ctx.send("**The voice channel is currently in use!**")
+                return
+
         if taxon_str:
             taxon = taxon_str.split(" ")
         else:
@@ -143,7 +165,10 @@ class Birds(commands.Cog):
 
             find_custom_role = {i if i.startswith("CUSTOM:") else "" for i in roles}
             find_custom_role.discard("")
-            if database.exists(f"race.data:{ctx.channel.id}") and len(find_custom_role) == 1:
+            if (
+                database.exists(f"race.data:{ctx.channel.id}")
+                and len(find_custom_role) == 1
+            ):
                 custom_role = find_custom_role.pop()
                 roles.remove(custom_role)
                 roles.append("CUSTOM")
@@ -319,6 +344,24 @@ class Birds(commands.Cog):
             )
         await self.send_bird_(ctx, media, filters, taxon, state)
 
+    # picks a random bird call to send
+    @commands.command(
+        help="- Sends a random bird song for you to ID",
+        aliases=["s"],
+        usage="[filters] [order/family] [state]",
+    )
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
+    async def song(self, ctx, *, args_str: str = ""):
+        logger.info("command: song")
+
+        filters, taxon, state = self.parse(ctx, args_str)
+        media = "songs"
+        if database.exists(f"race.data:{ctx.channel.id}"):
+            media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
+                "utf-8"
+            )
+        await self.send_bird_(ctx, media, filters, taxon, state)
+
     # goatsucker command - no args
     # just for fun, no real purpose
     @commands.command(help="- Sends a random goatsucker to ID", aliases=["gs"])
@@ -358,24 +401,6 @@ class Birds(commands.Cog):
                 on_error=self.error_skip(ctx),
                 message=GS_MESSAGE,
             )
-
-    # picks a random bird call to send
-    @commands.command(
-        help="- Sends a random bird song for you to ID",
-        aliases=["s"],
-        usage="[filters] [order/family] [state]",
-    )
-    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def song(self, ctx, *, args_str: str = ""):
-        logger.info("command: song")
-
-        filters, taxon, state = self.parse(ctx, args_str)
-        media = "songs"
-        if database.exists(f"race.data:{ctx.channel.id}"):
-            media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
-                "utf-8"
-            )
-        await self.send_bird_(ctx, media, filters, taxon, state)
 
 
 def setup(bot):
