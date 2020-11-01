@@ -19,6 +19,7 @@ from typing import Optional
 
 import discord
 import discord.utils
+import pydub
 
 from bot.data import logger, database
 
@@ -87,7 +88,7 @@ async def get_voice_client(
     return client
 
 
-async def play(ctx, file: str, silent: bool = False):
+async def play(ctx, filename: str, silent: bool = False):
     logger.info("voice: playing")
 
     client: discord.VoiceClient = await get_voice_client(ctx, connect=True)
@@ -97,7 +98,8 @@ async def play(ctx, file: str, silent: bool = False):
         client.resume()
         await _send(ctx, silent, "Resumed playing.")
         return
-    source = await discord.FFmpegOpusAudio.from_probe(file)
+    # source = await discord.FFmpegOpusAudio.from_probe(filename)
+    source = CustomAudio(filename)
     if client.is_playing():
         client.stop()
     client.play(source)
@@ -147,6 +149,7 @@ async def disconnect(ctx, silent: bool = False):
     await _send(ctx, silent, "Bye!")
     return True
 
+
 class FauxContext:
     def __init__(self, channel, bot):
         self.channel = channel
@@ -169,3 +172,21 @@ async def cleanup(bot):
             else:
                 await client.disconnect()
     logger.info("done cleaning!")
+
+
+class CustomAudio(discord.AudioSource):
+    def __init__(self, filename):
+        self.filename = filename
+        self.cursor = 0
+        self.segment = pydub.AudioSegment.from_file(filename, format=filename.split(".")[-1])
+        # .set_frame_rate(48000)
+
+    def read(self):
+        self.cursor += 20
+        return self.segment[self.cursor-20:self.cursor].raw_data
+
+    def is_opus(self):
+        return False
+
+    def cleanup(self):
+        pass
