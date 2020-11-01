@@ -29,28 +29,28 @@ class Voice(commands.Cog):
     def cog_unload(self):
         self.cleanup.cancel()
 
-    @commands.command(help="- Play a sound")
+    @commands.command(help="- Play a sound", hidden=True)
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def play(self, ctx):
         logger.info("command: play")
         await voice_functions.play(ctx, "rick.mp3")
 
-    @commands.command(help="- Pause playing")
+    @commands.command(help="- Pause playing", hidden=True)
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def pause(self, ctx):
         logger.info("command: pause")
         await voice_functions.pause(ctx)
 
-    @commands.command(help="- Stop playing")
+    @commands.command(help="- Stop playing", hidden=True)
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def stop(self, ctx):
         logger.info("command: stop")
         await voice_functions.stop(ctx)
 
-    @commands.command(help="- Disconnect from voice", aliases=["dc"])
+    @commands.command(help="- Disconnect from voice", aliases=["dc"], hidden=True)
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def disconnect(self, ctx):
