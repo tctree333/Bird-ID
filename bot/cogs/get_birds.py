@@ -222,7 +222,7 @@ class Birds(commands.Cog):
             )
 
     @staticmethod
-    def parse(ctx, args_str: str):
+    async def parse(ctx, args_str: str):
         """Parse arguments for options."""
 
         args = args_str.split(" ")
@@ -278,6 +278,10 @@ class Birds(commands.Cog):
                     database.hget(f"session.data:{ctx.author.id}", "filter")
                 )
                 filters = Filter.parse(args_str, defaults=False)
+                if filters.vc:
+                    filters.vc = False
+                    await ctx.send("**The VC filter is not allowed inline!**")
+
                 default_quality = Filter().quality
                 if (
                     Filter.from_int(session_filter).quality == default_quality
@@ -288,6 +292,9 @@ class Birds(commands.Cog):
                 filters ^= session_filter
             else:
                 filters = Filter.parse(args_str)
+                if filters.vc:
+                    filters.vc = False
+                    await ctx.send("**The VC filter is not allowed inline!**")
 
             if state_args:
                 logger.info(f"toggle states: {state_args}")
@@ -304,6 +311,10 @@ class Birds(commands.Cog):
 
             race_filter = int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
             filters = Filter.parse(args_str, defaults=False)
+            if filters.vc:
+                filters.vc = False
+                await ctx.send("**The VC filter is not allowed inline!**")
+
             default_quality = Filter().quality
             if (
                 Filter.from_int(race_filter).quality == default_quality
@@ -336,7 +347,7 @@ class Birds(commands.Cog):
     async def bird(self, ctx, *, args_str: str = ""):
         logger.info("command: bird")
 
-        filters, taxon, state = self.parse(ctx, args_str)
+        filters, taxon, state = await self.parse(ctx, args_str)
         media = "images"
         if database.exists(f"race.data:{ctx.channel.id}"):
             media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
@@ -354,7 +365,7 @@ class Birds(commands.Cog):
     async def song(self, ctx, *, args_str: str = ""):
         logger.info("command: song")
 
-        filters, taxon, state = self.parse(ctx, args_str)
+        filters, taxon, state = await self.parse(ctx, args_str)
         media = "songs"
         if database.exists(f"race.data:{ctx.channel.id}"):
             media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(

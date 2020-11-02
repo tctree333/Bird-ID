@@ -139,6 +139,9 @@ class Sessions(commands.Cog):
             return
 
         filters = Filter.parse(args_str)
+        if filters.vc:
+            filters.vc = False
+            await ctx.send("**The VC filter is not allowed in sessions!**")
 
         args = args_str.lower().split(" ")
         logger.info(f"args: {args}")
@@ -203,6 +206,9 @@ class Sessions(commands.Cog):
 
         if database.exists(f"session.data:{ctx.author.id}"):
             new_filter = Filter.parse(args_str, defaults=False)
+            if new_filter.vc:
+                new_filter.vc = False
+                await ctx.send("**The VC filter is not allowed in sessions!**")
 
             args = args_str.lower().split(" ")
             logger.info(f"args: {args}")
