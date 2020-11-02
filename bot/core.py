@@ -302,7 +302,7 @@ async def send_bird(
             fn = functools.partial(_black_and_white, filename)
             filename = await loop.run_in_executor(None, fn)
 
-    elif media_type == "songs":
+    elif media_type == "songs" and not filters.vc:
         # remove spoilers in tag metadata
         audioFile = eyed3.load(filename)
         if audioFile is not None and audioFile.tag is not None:

@@ -38,7 +38,9 @@ async def get_voice_client(
     if ctx.author:
         voice = ctx.author.voice
         if voice is None or voice.channel is None or voice.channel.guild != ctx.guild:
-            await _send(ctx, silent, "**Please join a voice channel to connect the bot!**")
+            await _send(
+                ctx, silent, "**Please join a voice channel to connect the bot!**"
+            )
             return None
 
     current_voice = database.get(f"voice.server:{ctx.guild.id}")
@@ -149,6 +151,18 @@ async def disconnect(ctx, silent: bool = False):
     await _send(ctx, silent, "Bye!")
     return True
 
+async def rel_seek(ctx, seconds: int, silent: bool = False):
+    logger.info("voice: seeking")
+
+    client: discord.VoiceClient = await get_voice_client(ctx)
+    if client is None:
+        return False
+
+    if client.source:
+        client.source.jump(seconds)
+        await _send(ctx, silent, f"Skipped {'forward' if seconds > 0 else 'back'} {abs(seconds)} seconds!")
+    else:
+        await _send(ctx, silent, "There's nothing playing!")
 
 class FauxContext:
     def __init__(self, channel, bot):
@@ -157,6 +171,7 @@ class FauxContext:
 
     def __getattr__(self, name):
         return getattr(self.channel, name, None)
+
 
 async def cleanup(bot):
     logger.info("cleaning up empty channels")
@@ -178,15 +193,24 @@ class CustomAudio(discord.AudioSource):
     def __init__(self, filename):
         self.filename = filename
         self.cursor = 0
-        self.segment = pydub.AudioSegment.from_file(filename, format=filename.split(".")[-1])
-        # .set_frame_rate(48000)
+        self.segment = pydub.AudioSegment.from_file(
+            filename, format=filename.split(".")[-1]
+        ).set_frame_rate(48000)
 
     def read(self):
         self.cursor += 20
-        return self.segment[self.cursor-20:self.cursor].raw_data
+        return self.segment[self.cursor - 20 : self.cursor].raw_data
+
+    def jump(self, seconds: int):
+        seconds *= 1000
+        if self.cursor + seconds < 0:
+            self.cursor = 0
+        elif self.cursor + seconds > len(self.segment):
+            self.cursor = len(self.segment)
+        else:
+            self.cursor += seconds
+        return self
 
     def is_opus(self):
         return False
 
-    def cleanup(self):
-        pass
