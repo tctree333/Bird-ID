@@ -385,7 +385,7 @@ class Filter:
             ("black & white (defaults to no)", "bw"): {
                 ("yes", True): ("47", "bw", "b&w"),
             },
-            ("voice channel (defaults to no)", "vc"): {
+            ("voice channel (defaults to no) (RACES ONLY)", "vc"): {
                 ("yes", True): ("48", "vc", "voice", "voice channel"),
             },
         }
