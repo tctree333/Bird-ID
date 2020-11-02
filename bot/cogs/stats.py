@@ -120,7 +120,9 @@ class Stats(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="Bot Stats", type="rich", color=discord.Color.blue(),
+            title="Bot Stats",
+            type="rich",
+            color=discord.Color.blue(),
         )
 
         if topic == "help":
@@ -237,9 +239,7 @@ class Stats(commands.Cog):
                 + "**Accounts that answered at least 1 correctly:** `{:,} ({:,.1%})`\n".format(
                     len(total[total > 0]), len(total[total > 0]) / len(total)
                 )
-                + "**Users the bot can see:** `{:,}`\n".format(
-                    len(self.bot.users)
-                )
+                + "**Users the bot can see:** `{:,}`\n".format(len(self.bot.users))
                 + "**Percentage of users the bot can see that have used the bot:** `{:,.1%}`\n".format(
                     len(total) / len(self.bot.users)
                 )

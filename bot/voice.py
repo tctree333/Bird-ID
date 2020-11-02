@@ -151,6 +151,7 @@ async def disconnect(ctx, silent: bool = False):
     await _send(ctx, silent, "Bye!")
     return True
 
+
 async def rel_seek(ctx, seconds: int, silent: bool = False):
     logger.info("voice: seeking")
 
@@ -160,9 +161,14 @@ async def rel_seek(ctx, seconds: int, silent: bool = False):
 
     if client.source:
         client.source.jump(seconds)
-        await _send(ctx, silent, f"Skipped {'forward' if seconds > 0 else 'back'} {abs(seconds)} seconds!")
+        await _send(
+            ctx,
+            silent,
+            f"Skipped {'forward' if seconds > 0 else 'back'} {abs(seconds)} seconds!",
+        )
     else:
         await _send(ctx, silent, "There's nothing playing!")
+
 
 class FauxContext:
     def __init__(self, channel, bot):
@@ -213,4 +219,3 @@ class CustomAudio(discord.AudioSource):
 
     def is_opus(self):
         return False
-

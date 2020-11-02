@@ -38,8 +38,7 @@ class Filter:
         quality: Union[str, Iterable] = ("3", "4", "5"),
         large: bool = False,
         bw: bool = False,
-        vc: bool = False
-
+        vc: bool = False,
     ):
         """Represents Macaulay Library media filters.
 
@@ -232,7 +231,7 @@ class Filter:
         me._clear()  # reset existing filters to empty
         lookup = me.aliases(lookup=True)
         if not use_numbers:
-            lookup = {k:i for k, i in lookup.items() if not k.isdecimal()}
+            lookup = {k: i for k, i in lookup.items() if not k.isdecimal()}
         args = args.lower().strip()
         if "," in args:
             inputs = map(lambda x: x.strip(), args.split(","))
@@ -270,9 +269,7 @@ class Filter:
         return output
 
     @staticmethod
-    def aliases(
-        lookup: bool = False, num: bool = False, display_lookup: bool = False
-    ):
+    def aliases(lookup: bool = False, num: bool = False, display_lookup: bool = False):
         """Generate filter alises.
 
         If lookup, returns a dict mapping aliases to filter names,
@@ -282,7 +279,9 @@ class Filter:
         """
         # the keys of this dict are in the form ("display text", "internal key")
         # the first alias should be a number
-        aliases: Dict[Tuple[str, str], Dict[Tuple[str, Union[str, bool]], Tuple[str, ...]]] = {
+        aliases: Dict[
+            Tuple[str, str], Dict[Tuple[str, Union[str, bool]], Tuple[str, ...]]
+        ] = {
             ("age", "age"): {
                 ("adult", "a"): ("1", "adult", "a"),
                 ("immature", "i"): ("2", "immature", "im"),
@@ -398,9 +397,7 @@ class Filter:
             }
         if num:
             return {
-                title[1]: {
-                    name[1]: int(alias[0]) for name, alias in subdict.items()
-                }
+                title[1]: {name[1]: int(alias[0]) for name, alias in subdict.items()}
                 for title, subdict in aliases.items()
             }
         if display_lookup:

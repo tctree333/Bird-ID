@@ -50,7 +50,7 @@ class TestSkip:
     ### Skip Command Tests
     def test_skip_nobird_dm(self):
         self.setup(guild=True)
-        coroutine = self.cog.skip.callback( # pylint: disable=no-member
+        coroutine = self.cog.skip.callback(  # pylint: disable=no-member
             self.cog, self.ctx
         )
         assert asyncio.run(coroutine) is None

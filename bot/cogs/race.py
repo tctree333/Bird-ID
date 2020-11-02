@@ -98,9 +98,13 @@ class Race(commands.Cog):
         if ctx.author:
             if database.zscore(database_key, str(ctx.author.id)) is not None:
                 placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
-                embed.add_field(name="You:", value=f"You are #{placement}.", inline=False)
+                embed.add_field(
+                    name="You:", value=f"You are #{placement}.", inline=False
+                )
             else:
-                embed.add_field(name="You:", value="You haven't answered any correctly.")
+                embed.add_field(
+                    name="You:", value="You haven't answered any correctly."
+                )
 
         await ctx.send(embed=embed)
 
