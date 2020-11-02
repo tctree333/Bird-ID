@@ -47,6 +47,10 @@ class Other(commands.Cog):
         arg = arg.lower().strip()
 
         filters = Filter.parse(arg)
+        if filters.vc:
+            filters.vc = False
+            await ctx.send("**The VC filter is not allowed here!**")
+
         options = filters.display()
         arg = arg.split(" ")
 
