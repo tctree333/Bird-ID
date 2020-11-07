@@ -146,7 +146,12 @@ async def disconnect(ctx, silent: bool = False):
     if client is None:
         return False
     client.stop()
-    await client.disconnect()
+    current_voice = database.get(f"voice.server:{client.guild.id}")
+    if current_voice is not None:
+        race = ctx.bot.get_cog("Race")
+        await race.stop_race_(ctx)
+    else:
+        await client.disconnect()
     client.cleanup()
     await _send(ctx, silent, "Bye!")
     return True
