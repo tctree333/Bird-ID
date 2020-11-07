@@ -21,8 +21,7 @@ from typing import Optional
 from discord.ext import commands
 
 from bot.core import send_bird
-from bot.data import (GenericError, database, goatsuckers, logger, states,
-                      taxons)
+from bot.data import GenericError, database, goatsuckers, logger, states, taxons
 from bot.filters import Filter
 from bot.functions import (CustomCooldown, bird_setup, build_id_list,
                            check_state_role, session_increment)
@@ -37,10 +36,18 @@ BIRD_MESSAGE = BASE_MESSAGE.format(
     media="image", new_cmd="bird", skip_cmd="skip", check_cmd="check", hint_cmd="hint"
 )
 GS_MESSAGE = BASE_MESSAGE.format(
-    media="image", new_cmd="gs", skip_cmd="skip", check_cmd="check", hint_cmd="hint",
+    media="image",
+    new_cmd="gs",
+    skip_cmd="skip",
+    check_cmd="check",
+    hint_cmd="hint",
 )
 SONG_MESSAGE = BASE_MESSAGE.format(
-    media="song", new_cmd="song", skip_cmd="skip", check_cmd="check", hint_cmd="hint",
+    media="song",
+    new_cmd="song",
+    skip_cmd="skip",
+    check_cmd="check",
+    hint_cmd="hint",
 )
 
 
@@ -49,7 +56,13 @@ class Birds(commands.Cog):
         self.bot = bot
 
     def error_handle(
-        self, ctx, media_type: str, filters: Filter, taxon_str, role_str, retries,
+        self,
+        ctx,
+        media_type: str,
+        filters: Filter,
+        taxon_str,
+        role_str,
+        retries,
     ):
         """Return a function to pass to send_bird() as on_error."""
         # pylint: disable=unused-argument
@@ -110,6 +123,15 @@ class Birds(commands.Cog):
         if not media_type:
             raise GenericError("Invalid media type", code=990)
 
+        if media_type == "songs" and filters.vc:
+            current_voice = database.get(f"voice.server:{ctx.guild.id}")
+            if current_voice is not None and current_voice.decode("utf-8") != str(
+                ctx.channel.id
+            ):
+                logger.info("already vc race")
+                await ctx.send("**The voice channel is currently in use!**")
+                return
+
         if taxon_str:
             taxon = taxon_str.split(" ")
         else:
@@ -143,7 +165,10 @@ class Birds(commands.Cog):
 
             find_custom_role = {i if i.startswith("CUSTOM:") else "" for i in roles}
             find_custom_role.discard("")
-            if database.exists(f"race.data:{ctx.channel.id}") and len(find_custom_role) == 1:
+            if (
+                database.exists(f"race.data:{ctx.channel.id}")
+                and len(find_custom_role) == 1
+            ):
                 custom_role = find_custom_role.pop()
                 roles.remove(custom_role)
                 roles.append("CUSTOM")
@@ -197,7 +222,7 @@ class Birds(commands.Cog):
             )
 
     @staticmethod
-    def parse(ctx, args_str: str):
+    async def parse(ctx, args_str: str):
         """Parse arguments for options."""
 
         args = args_str.split(" ")
@@ -253,6 +278,10 @@ class Birds(commands.Cog):
                     database.hget(f"session.data:{ctx.author.id}", "filter")
                 )
                 filters = Filter.parse(args_str, defaults=False)
+                if filters.vc:
+                    filters.vc = False
+                    await ctx.send("**The VC filter is not allowed inline!**")
+
                 default_quality = Filter().quality
                 if (
                     Filter.from_int(session_filter).quality == default_quality
@@ -263,6 +292,9 @@ class Birds(commands.Cog):
                 filters ^= session_filter
             else:
                 filters = Filter.parse(args_str)
+                if filters.vc:
+                    filters.vc = False
+                    await ctx.send("**The VC filter is not allowed inline!**")
 
             if state_args:
                 logger.info(f"toggle states: {state_args}")
@@ -279,6 +311,10 @@ class Birds(commands.Cog):
 
             race_filter = int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
             filters = Filter.parse(args_str, defaults=False)
+            if filters.vc:
+                filters.vc = False
+                await ctx.send("**The VC filter is not allowed inline!**")
+
             default_quality = Filter().quality
             if (
                 Filter.from_int(race_filter).quality == default_quality
@@ -311,8 +347,26 @@ class Birds(commands.Cog):
     async def bird(self, ctx, *, args_str: str = ""):
         logger.info("command: bird")
 
-        filters, taxon, state = self.parse(ctx, args_str)
+        filters, taxon, state = await self.parse(ctx, args_str)
         media = "images"
+        if database.exists(f"race.data:{ctx.channel.id}"):
+            media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
+                "utf-8"
+            )
+        await self.send_bird_(ctx, media, filters, taxon, state)
+
+    # picks a random bird call to send
+    @commands.command(
+        help="- Sends a random bird song for you to ID",
+        aliases=["s"],
+        usage="[filters] [order/family] [state]",
+    )
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
+    async def song(self, ctx, *, args_str: str = ""):
+        logger.info("command: song")
+
+        filters, taxon, state = await self.parse(ctx, args_str)
+        media = "songs"
         if database.exists(f"race.data:{ctx.channel.id}"):
             media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
                 "utf-8"
@@ -358,24 +412,6 @@ class Birds(commands.Cog):
                 on_error=self.error_skip(ctx),
                 message=GS_MESSAGE,
             )
-
-    # picks a random bird call to send
-    @commands.command(
-        help="- Sends a random bird song for you to ID",
-        aliases=["s"],
-        usage="[filters] [order/family] [state]",
-    )
-    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def song(self, ctx, *, args_str: str = ""):
-        logger.info("command: song")
-
-        filters, taxon, state = self.parse(ctx, args_str)
-        media = "songs"
-        if database.exists(f"race.data:{ctx.channel.id}"):
-            media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
-                "utf-8"
-            )
-        await self.send_bird_(ctx, media, filters, taxon, state)
 
 
 def setup(bot):

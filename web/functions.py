@@ -38,7 +38,9 @@ async def send_bird(bird: str, media_type: str, filters: Filter):
     if media_type == "images":
         if filters.bw:
             loop = asyncio.get_running_loop()
-            file_stream = await loop.run_in_executor(None, partial(_black_and_white, filename))
+            file_stream = await loop.run_in_executor(
+                None, partial(_black_and_white, filename)
+            )
         else:
             file_stream = f"../{filename}"
     elif media_type == "songs":
@@ -50,6 +52,7 @@ async def send_bird(bird: str, media_type: str, filters: Filter):
         file_stream = f"../{filename}"
 
     return file_stream, ext
+
 
 async def get_media(bird, media_type, filters):  # images or songs
     if bird not in birdList + screech_owls:
@@ -75,10 +78,15 @@ async def get_media(bird, media_type, filters):  # images or songs
         for x in range(0, len(media)):  # check file type and size
             y = (x + j) % len(media)
             media_path = media[y]
-            extension = media_path.split('.')[-1]
+            extension = media_path.split(".")[-1]
             logger.info("extension: " + str(extension))
-            if (media_type == "images" and extension.lower() in valid_types["images"].values()) or \
-                    (media_type == "songs" and extension.lower() in valid_types["songs"].values()):
+            if (
+                media_type == "images"
+                and extension.lower() in valid_types["images"].values()
+            ) or (
+                media_type == "songs"
+                and extension.lower() in valid_types["songs"].values()
+            ):
                 logger.info("found one!")
                 break
             if y == prevJ:

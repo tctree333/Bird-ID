@@ -104,43 +104,38 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # }
 # race.scores:ctx.channel.id : [ctx.author.id, #correct]
 
-# leaderboard format = {
+# voice formats:
+# voice.server:guild_id : channel_id
+
+# leaderboard formats:
 #    users:global : [user id, # of correct]
 #    users.server:guild_id : [user id, # of correct]
-# }
 
-# streaks format = {
+# streaks format:
 #    streak:global : [user id, current streak]
 #    streak.max:global : [user id, max streak]
-# }
 
-# incorrect birds format = {
+# incorrect birds format:
 #    incorrect:global : [bird name, # incorrect]
 #    incorrect.server:guild_id : [bird name, # incorrect]
 #    incorrect.user:user_id: : [bird name, # incorrect]
-# }
 
-# correct birds format = {
+# correct birds format:
 #    correct.user:user_id : [bird name, # correct]
-# }
 
-# bird frequency format = {
+# bird frequency format:
 #   frequency.bird:global : [bird name, # displayed]
-# }
 
-# command frequency format = {
+# command frequency format:
 #   frequency.command:global : [command, # used]
-# }
 
-# channel score format = {
+# channel score format:
 #   score:global : [channel id, # of correct]
 #   channels:global : ["guild id:channel id", 0]
-# }
 
-# daily update format = {
+# daily update format:
 #     daily.score:YYYY-MM-DD : [user id, # correct today]
 #     daily.incorrect:YYYY-MM-DD : [bird name, # incorrect today]
-# }
 
 # ban format:
 #   banned:global : [user id, 0]
@@ -163,7 +158,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #   custom.list:user_id : [validated birds, ...]
 
 
-#  states = { state name:
+#  states = {
+#          state name:
 #               {
 #               aliases: [alias1, alias2...],
 #               birdList: [bird1, bird2...],

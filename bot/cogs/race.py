@@ -20,6 +20,7 @@ import time
 import discord
 from discord.ext import commands
 
+import bot.voice as voice_functions
 from bot.data import database, logger, states, taxons
 from bot.filters import Filter
 from bot.functions import CustomCooldown
@@ -94,15 +95,26 @@ class Race(commands.Cog):
         )
         embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
 
-        if database.zscore(database_key, str(ctx.author.id)) is not None:
-            placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
-            embed.add_field(name="You:", value=f"You are #{placement}.", inline=False)
-        else:
-            embed.add_field(name="You:", value="You haven't answered any correctly.")
+        if ctx.author:
+            if database.zscore(database_key, str(ctx.author.id)) is not None:
+                placement = int(database.zrevrank(database_key, str(ctx.author.id))) + 1
+                embed.add_field(
+                    name="You:", value=f"You are #{placement}.", inline=False
+                )
+            else:
+                embed.add_field(
+                    name="You:", value="You haven't answered any correctly."
+                )
 
         await ctx.send(embed=embed)
 
     async def stop_race_(self, ctx):
+        if Filter.from_int(
+            int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
+        ).vc:
+            await voice_functions.disconnect(ctx, silent=True)
+            database.delete(f"voice.server:{ctx.guild.id}")
+
         first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]
         if ctx.guild is not None:
             user = ctx.guild.get_member(int(first[0]))
@@ -175,6 +187,17 @@ class Race(commands.Cog):
             return
 
         filters = Filter.parse(args_str, use_numbers=False)
+        if filters.vc:
+            if database.get(f"voice.server:{ctx.guild.id}") is not None:
+                logger.info("already vc race")
+                await ctx.send(
+                    "**There is already a VC race in session in this server!**"
+                )
+                return
+            client = await voice_functions.get_voice_client(ctx, connect=True)
+            if client is None:
+                return
+            database.set(f"voice.server:{ctx.guild.id}", str(ctx.channel.id))
 
         args = args_str.split(" ")
         logger.info(f"args: {args}")
@@ -212,8 +235,15 @@ class Race(commands.Cog):
         else:
             state = ""
 
-        song = "song" in args or "s" in args
-        image = "image" in args or "i" in args or "picture" in args or "p" in args
+        song = "song" in args or "songs" in args or "s" in args or filters.vc
+        image = (
+            "image" in args
+            or "images" in args
+            or "i" in args
+            or "picture" in args
+            or "pictures" in args
+            or "p" in args
+        )
         if song and image:
             await ctx.send(
                 "**Songs and images are not yet supported.**\n*Please try again*"
@@ -265,9 +295,7 @@ class Race(commands.Cog):
             f"**Race started with options:**\n{await self._get_options(ctx)}"
         )
 
-        media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
-            "utf-8"
-        )
+        media = database.hget(f"race.data:{ctx.channel.id}", "media").decode("utf-8")
         logger.info("clearing previous bird")
         database.hset(f"channel:{ctx.channel.id}", "bird", "")
         database.hset(f"channel:{ctx.channel.id}", "answered", "1")

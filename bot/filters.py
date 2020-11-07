@@ -23,7 +23,7 @@ COUNT = 20  # number of media items from catalog url
 
 
 class Filter:
-    _boolean_options = ("large", "bw")
+    _boolean_options = ("large", "bw", "vc")
     _default_options = {"quality": {"3", "4", "5"}}
 
     def __init__(
@@ -38,6 +38,7 @@ class Filter:
         quality: Union[str, Iterable] = ("3", "4", "5"),
         large: bool = False,
         bw: bool = False,
+        vc: bool = False,
     ):
         """Represents Macaulay Library media filters.
 
@@ -67,6 +68,8 @@ class Filter:
             - True (uses previewUrl), False (uses mediaUrl)
         - Black & White:
             - True (black and white), False (color)
+        - Voice Channel:
+            - True (send songs in voice), False (send songs as files)
         """
         self.age = age
         self.sex = sex
@@ -78,6 +81,7 @@ class Filter:
         self.quality = quality
         self.large = large
         self.bw = bw
+        self.vc = vc
 
         for item in self.__dict__.items():
             if isinstance(item[1], str):
@@ -177,9 +181,9 @@ class Filter:
     def to_int(self):
         """Convert filters into an integer representation.
 
-        This is calculated with a 47 digit binary number representing the 47 filter options.
+        This is calculated with a 48 digit binary number representing the 48 filter options.
         """
-        out = ["0"] * 47
+        out = ["0"] * 48
         indexes = self.aliases(num=True)
         for title, filters in self.__dict__.items():
             if title in self._boolean_options:
@@ -193,12 +197,12 @@ class Filter:
     @classmethod
     def from_int(cls, number: int):
         """Convert an int to a filter object."""
-        if number >= 2 ** 47 or number < 0:
+        if number >= 2 ** 48 or number < 0:
             raise ValueError("Input number out of bounds.")
         me = cls()
 
         me._clear()  # reset existing filters to empty
-        binary = reversed("{0:0>47b}".format(number))
+        binary = reversed("{0:0>48b}".format(number))
         lookup = me.aliases(lookup=True)
         for index, value in enumerate(binary):
             if int(value):
@@ -216,7 +220,7 @@ class Filter:
         """Combine/toggle filters by xor-ing the integer representations."""
         if isinstance(other, self.__class__):
             other = other.to_int()
-        if other >= 2 ** 47 or other < 0:
+        if other >= 2 ** 48 or other < 0:
             raise ValueError("Input number out of bounds.")
         return self.from_int(other ^ self.to_int())
 
@@ -227,7 +231,7 @@ class Filter:
         me._clear()  # reset existing filters to empty
         lookup = me.aliases(lookup=True)
         if not use_numbers:
-            lookup = {k:i for k, i in lookup.items() if not k.isdecimal()}
+            lookup = {k: i for k, i in lookup.items() if not k.isdecimal()}
         args = args.lower().strip()
         if "," in args:
             inputs = map(lambda x: x.strip(), args.split(","))
@@ -265,9 +269,7 @@ class Filter:
         return output
 
     @staticmethod
-    def aliases(
-        lookup: bool = False, num: bool = False, display_lookup: bool = False
-    ):
+    def aliases(lookup: bool = False, num: bool = False, display_lookup: bool = False):
         """Generate filter alises.
 
         If lookup, returns a dict mapping aliases to filter names,
@@ -277,7 +279,9 @@ class Filter:
         """
         # the keys of this dict are in the form ("display text", "internal key")
         # the first alias should be a number
-        aliases: Dict[Tuple[str, str], Dict[Tuple[str, Union[str, bool]], Tuple[str, ...]]] = {
+        aliases: Dict[
+            Tuple[str, str], Dict[Tuple[str, Union[str, bool]], Tuple[str, ...]]
+        ] = {
             ("age", "age"): {
                 ("adult", "a"): ("1", "adult", "a"),
                 ("immature", "i"): ("2", "immature", "im"),
@@ -380,6 +384,9 @@ class Filter:
             ("black & white (defaults to no)", "bw"): {
                 ("yes", True): ("47", "bw", "b&w"),
             },
+            ("voice channel (defaults to no) (RACES ONLY)", "vc"): {
+                ("yes", True): ("48", "vc", "voice", "voice channel"),
+            },
         }
         if lookup:
             return {
@@ -390,9 +397,7 @@ class Filter:
             }
         if num:
             return {
-                title[1]: {
-                    name[1]: int(alias[0]) for name, alias in subdict.items()
-                }
+                title[1]: {name[1]: int(alias[0]) for name, alias in subdict.items()}
                 for title, subdict in aliases.items()
             }
         if display_lookup:

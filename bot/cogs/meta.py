@@ -64,7 +64,9 @@ class Meta(commands.Cog):
         await ctx.send("https://discord.gg/fXxYyDJ")
 
     # ping command - gives bot latency
-    @commands.command(help="- Pings the bot and displays latency",)
+    @commands.command(
+        help="- Pings the bot and displays latency",
+    )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     async def ping(self, ctx):
         logger.info("command: ping")
@@ -176,7 +178,12 @@ class Meta(commands.Cog):
     # ban command - prevents certain users from using the bot
     @commands.command(help="- ban command", hidden=True)
     @commands.is_owner()
-    async def ban(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, discord.User]] = None):
+    async def ban(
+        self,
+        ctx,
+        *,
+        user: typing.Optional[typing.Union[discord.Member, discord.User]] = None,
+    ):
         logger.info("command: ban")
         if user is None:
             logger.info("no args")
@@ -189,7 +196,12 @@ class Meta(commands.Cog):
     # unban command - prevents certain users from using the bot
     @commands.command(help="- unban command", hidden=True)
     @commands.is_owner()
-    async def unban(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, discord.User]] = None):
+    async def unban(
+        self,
+        ctx,
+        *,
+        user: typing.Optional[typing.Union[discord.Member, discord.User]] = None,
+    ):
         logger.info("command: unban")
         if user is None:
             logger.info("no args")
@@ -202,14 +214,25 @@ class Meta(commands.Cog):
     # unban command - prevents certain users from using the bot
     @commands.command(help="- see answered birds command", hidden=True)
     @commands.is_owner()
-    async def correct(self, ctx, *, user: typing.Optional[typing.Union[discord.Member, discord.User]] = None):
+    async def correct(
+        self,
+        ctx,
+        *,
+        user: typing.Optional[typing.Union[discord.Member, discord.User]] = None,
+    ):
         logger.info("command: correct")
         if user is None:
             logger.info("no args")
             await ctx.send("Invalid User!")
             return
         logger.info(f"user-id: {user.id}")
-        await send_leaderboard(ctx, f"Top Correct Birds ({user.name})", 1, database_key=f"correct.user:{user.id}", items_per_page=25)
+        await send_leaderboard(
+            ctx,
+            f"Top Correct Birds ({user.name})",
+            1,
+            database_key=f"correct.user:{user.id}",
+            items_per_page=25,
+        )
 
 
 def setup(bot):

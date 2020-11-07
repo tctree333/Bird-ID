@@ -16,6 +16,7 @@
 
 from discord.ext import commands
 
+import bot.voice as voice_functions
 from bot.data import database, get_wiki_url, logger
 from bot.filters import Filter
 from bot.functions import CustomCooldown, streak_increment
@@ -42,6 +43,11 @@ class Skip(commands.Cog):
             streak_increment(ctx, None)  # reset streak
 
             if database.exists(f"race.data:{ctx.channel.id}"):
+                if Filter.from_int(
+                    int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
+                ).vc:
+                    await voice_functions.stop(ctx, silent=True)
+
                 media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
                     "utf-8"
                 )
