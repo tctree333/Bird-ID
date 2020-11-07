@@ -27,7 +27,7 @@ import holidays
 import redis
 import wikipedia
 from discord.ext import commands, tasks
-from sentry_sdk import capture_exception, configure_scope
+from sentry_sdk import capture_exception
 
 from bot.core import rotate_cache, send_bird
 from bot.data import GenericError, database, logger
@@ -120,50 +120,27 @@ if __name__ == "__main__":
     ######
 
     @bot.check
-    def log_command_frequency(ctx):
-        """Logs the command used to the database."""
-        logger.info("global check: logging command frequency")
-        database.zincrby("frequency.command:global", 1, str(ctx.command))
-        return True
+    async def prechecks(ctx):
+        await ctx.trigger_typing()
 
-    @bot.check
-    def set_sentry_tag(ctx):
-        """Tags sentry errors with current command."""
-        logger.info("global check: setting sentry tag")
-        with configure_scope() as scope:
-            scope.set_tag("command", ctx.command.name)
-        return True
+        logger.info("global check: checking permissions")
+        await commands.bot_has_permissions(
+            send_messages=True, embed_links=True, attach_files=True
+        ).predicate(ctx)
 
-    @bot.check
-    def moderation_check(ctx):
-        """Checks different moderation checks.
-
-        Disallows:
-        - Users that are banned from the bot,
-        - Channels that are ignored
-        """
         logger.info("global check: checking banned")
         if database.zscore("ignore:global", str(ctx.channel.id)) is not None:
             raise GenericError(code=192)
         if database.zscore("banned:global", str(ctx.author.id)) is not None:
             raise GenericError(code=842)
-        return True
 
-    @bot.check
-    def bot_has_permissions(ctx):
-        """Checks if the bot has correct permissions."""
-        logger.info("global check: checking permissions")
-        return commands.bot_has_permissions(
-            send_messages=True, embed_links=True, attach_files=True
-        ).predicate(ctx)
+        logger.info("global check: logging command frequency")
+        database.zincrby("frequency.command:global", 1, str(ctx.command))
 
-    @bot.check
-    async def database_setup(ctx):
-        """Ensures database consistency before commands run."""
         logger.info("global check: database setup")
-        await ctx.trigger_typing()
         await channel_setup(ctx)
         await user_setup(ctx)
+
         return True
 
     @bot.check
