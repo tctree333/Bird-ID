@@ -35,9 +35,7 @@ async def channel_setup(ctx):
     `ctx` - Discord context object
     """
     logger.info("checking channel setup")
-    if database.exists(f"channel:{ctx.channel.id}"):
-        logger.info("channel data ok")
-    else:
+    if not database.exists(f"channel:{ctx.channel.id}"):
         database.hset(
             f"channel:{ctx.channel.id}",
             mapping={"bird": "", "answered": 1, "prevB": "", "prevJ": 20},
@@ -46,20 +44,12 @@ async def channel_setup(ctx):
         logger.info("channel data added")
         await ctx.send("Ok, setup! I'm all ready to use!")
 
-    if database.zscore("score:global", str(ctx.channel.id)) is not None:
-        logger.info("channel score ok")
-    else:
+    if database.zscore("score:global", str(ctx.channel.id)) is None:
         database.zadd("score:global", {str(ctx.channel.id): 0})
         logger.info("channel score added")
 
     if ctx.guild is not None:
-        if (
-            database.zadd("channels:global", {f"{ctx.guild.id}:{ctx.channel.id}": 0})
-            != 0
-        ):
-            logger.info("server lookup ok")
-        else:
-            logger.info("server lookup added")
+        database.zadd("channels:global", {f"{ctx.guild.id}:{ctx.channel.id}": 0})
 
 
 async def user_setup(ctx):
@@ -76,64 +66,42 @@ async def user_setup(ctx):
         guild = ctx.guild
 
     logger.info("checking user data")
-    if database.zscore("users:global", user_id) is not None:
-        logger.info("user global ok")
-    else:
+    if database.zscore("users:global", user_id) is None:
         database.zadd("users:global", {user_id: 0})
         logger.info("user global added")
         if ctx is not None:
             await ctx.send("Welcome <@" + user_id + ">!")
 
     date = str(datetime.datetime.now(datetime.timezone.utc).date())
-    if database.zscore(f"daily.score:{date}", user_id) is not None:
-        logger.info("user daily ok")
-    else:
+    if database.zscore(f"daily.score:{date}", user_id) is None:
         database.zadd(f"daily.score:{date}", {user_id: 0})
         logger.info("user daily added")
 
     # Add streak
-    if (database.zscore("streak:global", user_id) is not None) and (
-        database.zscore("streak.max:global", user_id) is not None
+    if (database.zscore("streak:global", user_id) is None) or (
+        database.zscore("streak.max:global", user_id) is None
     ):
-        logger.info("user streak in already")
-    else:
         database.zadd("streak:global", {user_id: 0})
         database.zadd("streak.max:global", {user_id: 0})
         logger.info("added streak")
 
     if guild is not None:
-        logger.info("no dm")
-        if (
-            database.zscore(f"users.server:{ctx.guild.id}", str(ctx.author.id))
-            is not None
-        ):
-            server_score = database.zscore(
-                f"users.server:{ctx.guild.id}", str(ctx.author.id)
-            )
-            global_score = database.zscore("users:global", str(ctx.author.id))
-            if server_score == global_score:
-                logger.info("user server ok")
-            else:
-                database.zadd(
-                    f"users.server:{ctx.guild.id}", {str(ctx.author.id): global_score}
-                )
-        else:
-            score = int(database.zscore("users:global", str(ctx.author.id)))
-            database.zadd(f"users.server:{ctx.guild.id}", {str(ctx.author.id): score})
-            logger.info("user server added")
+        global_score = database.zscore("users:global", str(ctx.author.id))
+        database.zadd(
+            f"users.server:{ctx.guild.id}", {str(ctx.author.id): global_score}
+        )
+        logger.info("synced scores")
 
-        role_ids = [role.id for role in ctx.author.roles]
-        role_names = [role.name.lower() for role in ctx.author.roles]
-        if set(role_names).intersection(
-            set(states["CUSTOM"]["aliases"])
-        ) and not database.exists(f"custom.list:{ctx.author.id}"):
-            index = role_names.index(states["CUSTOM"]["aliases"][0].lower())
-            role = ctx.guild.get_role(role_ids[index])
-            await ctx.author.remove_roles(
-                role, reason="Remove state role for bird list"
-            )
-    else:
-        logger.info("dm context")
+        if not database.exists(f"custom.list:{ctx.author.id}"):
+            role_ids = [role.id for role in ctx.author.roles]
+            role_names = [role.name.lower() for role in ctx.author.roles]
+            if set(role_names).intersection(set(states["CUSTOM"]["aliases"])):
+                index = role_names.index(states["CUSTOM"]["aliases"][0].lower())
+                role = ctx.guild.get_role(role_ids[index])
+                await ctx.author.remove_roles(
+                    role, reason="Remove state role for bird list"
+                )
+                logger.info("synced roles")
 
 
 def bird_setup(ctx, bird: str):
