@@ -29,28 +29,28 @@ class Voice(commands.Cog):
     def cog_unload(self):
         self.cleanup.cancel()
 
-    @commands.command(help="- Play a sound", hidden=True)
+    @commands.command(help="- Play a sound")
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def play(self, ctx):
         logger.info("command: play")
         await voice_functions.play(ctx, "rick.mp3")
 
-    @commands.command(help="- Pause playing", hidden=True)
+    @commands.command(help="- Pause playing")
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def pause(self, ctx):
         logger.info("command: pause")
         await voice_functions.pause(ctx)
 
-    @commands.command(help="- Stop playing", hidden=True)
+    @commands.command(help="- Stop playing")
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def stop(self, ctx):
         logger.info("command: stop")
         await voice_functions.stop(ctx)
 
-    @commands.command(help="- Skip forward 5 seconds", aliases=["fw"], hidden=True)
+    @commands.command(help="- Skip forward 5 seconds", aliases=["fw"])
     @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def forward(self, ctx, seconds: int = 5):
@@ -60,7 +60,7 @@ class Voice(commands.Cog):
             return
         await voice_functions.rel_seek(ctx, seconds)
 
-    @commands.command(help="- Skip back 5 seconds", aliases=["bk"], hidden=True)
+    @commands.command(help="- Skip back 5 seconds", aliases=["bk"])
     @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def back(self, ctx, seconds: int = 5):
@@ -70,7 +70,7 @@ class Voice(commands.Cog):
             return
         await voice_functions.rel_seek(ctx, seconds * -1)
 
-    @commands.command(help="- Disconnect from voice", aliases=["dc"], hidden=True)
+    @commands.command(help="- Disconnect from voice", aliases=["dc"])
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def disconnect(self, ctx):
