@@ -98,14 +98,16 @@ async def play(ctx, filename: str, silent: bool = False):
         return False
     if client.is_paused():
         client.resume()
-        await _send(ctx, silent, "Resumed playing.")
+        t = client.source.remaining
+        await _send(ctx, silent, f"**Resumed playing.** `{t//3600}:{(t//60)%60}:{t%60} remaining`")
         return
     # source = await discord.FFmpegOpusAudio.from_probe(filename)
     source = CustomAudio(filename)
     if client.is_playing():
         client.stop()
     client.play(source)
-    await _send(ctx, silent, "Playing...")
+    t = source.length
+    await _send(ctx, silent, f"**Playing...** `{t//3600}:{(t//60)%60}:{t%60} remaining`")
     return True
 
 
@@ -117,11 +119,11 @@ async def pause(ctx, silent: bool = False):
         return False
     if client.is_playing():
         client.pause()
-        await _send(ctx, silent, "Paused.")
+        await _send(ctx, silent, "**Paused.**")
     elif client.is_paused():
-        await _send(ctx, silent, "Already paused.")
+        await _send(ctx, silent, "**Already paused.**")
     else:
-        await _send(ctx, silent, "There's nothing playing!")
+        await _send(ctx, silent, "**There's nothing playing!**")
     return True
 
 
@@ -133,13 +135,13 @@ async def stop(ctx, silent: bool = False):
         return False
     if client.is_playing() or client.is_paused():
         client.stop()
-        await _send(ctx, silent, "Stopped playing.")
+        await _send(ctx, silent, "**Stopped playing.**")
     else:
-        await _send(ctx, silent, "There's nothing playing!")
+        await _send(ctx, silent, "**There's nothing playing!**")
     return True
 
 
-async def disconnect(ctx, silent: bool = False):
+async def disconnect(ctx, ignore_race: bool = False, silent: bool = False):
     logger.info("voice: disconnecting")
 
     client: discord.VoiceClient = await get_voice_client(ctx)
@@ -147,32 +149,37 @@ async def disconnect(ctx, silent: bool = False):
         return False
     client.stop()
     current_voice = database.get(f"voice.server:{client.guild.id}")
-    if current_voice is not None:
+    if current_voice is not None and not ignore_race:
         race = ctx.bot.get_cog("Race")
         await race.stop_race_(ctx)
     else:
         await client.disconnect()
-    client.cleanup()
-    await _send(ctx, silent, "Bye!")
+    await _send(ctx, silent, "**Bye!**")
     return True
 
 
-async def rel_seek(ctx, seconds: int, silent: bool = False):
+async def rel_seek(ctx, seconds: Optional[int], silent: bool = False):
     logger.info("voice: seeking")
 
     client: discord.VoiceClient = await get_voice_client(ctx)
     if client is None:
         return False
 
-    if client.source:
+    if client.source and (client.is_playing() or client.is_paused()):
         client.source.jump(seconds)
+        if not (client.is_playing() or client.is_paused):
+            client.play(client.source)
         await _send(
             ctx,
             silent,
-            f"Skipped {'forward' if seconds > 0 else 'back'} {abs(seconds)} seconds!",
+            (
+                f"**Skipped {'forward' if seconds > 0 else 'back'} {abs(seconds)} seconds!**"
+                if seconds
+                else "**Restarted from beginning.**"
+            ),
         )
     else:
-        await _send(ctx, silent, "There's nothing playing!")
+        await _send(ctx, silent, "**There's nothing playing!**")
 
 
 class FauxContext:
@@ -208,11 +215,23 @@ class CustomAudio(discord.AudioSource):
             filename, format=filename.split(".")[-1]
         ).set_frame_rate(48000)
 
+    @property
+    def length(self):
+        return round(len(self.segment)/1000)
+
+    @property
+    def remaining(self):
+        return round((len(self.segment) - self.cursor)/1000)
+
     def read(self):
         self.cursor += 20
         return self.segment[self.cursor - 20 : self.cursor].raw_data
 
-    def jump(self, seconds: int):
+    def jump(self, seconds: Optional[int]):
+        if seconds is None:
+            self.cursor = 0
+            return self
+
         seconds *= 1000
         if self.cursor + seconds < 0:
             self.cursor = 0

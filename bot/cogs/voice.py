@@ -50,7 +50,7 @@ class Voice(commands.Cog):
         logger.info("command: stop")
         await voice_functions.stop(ctx)
 
-    @commands.command(help="- Skip forward 5 seconds", aliases=["fw"])
+    @commands.command(help="- Skip forward 5 seconds", aliases=["fw", "forwards"])
     @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def forward(self, ctx, seconds: int = 5):
@@ -60,7 +60,7 @@ class Voice(commands.Cog):
             return
         await voice_functions.rel_seek(ctx, seconds)
 
-    @commands.command(help="- Skip back 5 seconds", aliases=["bk"])
+    @commands.command(help="- Skip back 5 seconds", aliases=["bk", "backward", "backwards"])
     @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def back(self, ctx, seconds: int = 5):
@@ -69,6 +69,13 @@ class Voice(commands.Cog):
             await ctx.send("Invalid number of seconds!")
             return
         await voice_functions.rel_seek(ctx, seconds * -1)
+
+    @commands.command(help="- Replay", aliases=["rp", "re"])
+    @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
+    @commands.guild_only()
+    async def replay(self, ctx):
+        logger.info("command: replay")
+        await voice_functions.rel_seek(ctx, None)
 
     @commands.command(help="- Disconnect from voice", aliases=["dc"])
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
