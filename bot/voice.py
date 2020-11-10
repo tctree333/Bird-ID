@@ -99,7 +99,7 @@ async def play(ctx, filename: str, silent: bool = False):
     if client.is_paused():
         client.resume()
         t = client.source.remaining
-        await _send(ctx, silent, f"**Resumed playing.** `{t//3600}:{(t//60)%60}:{t%60} remaining`")
+        await _send(ctx, silent, f"**Resumed playing.** `{t//3600:0>2}:{(t//60)%60:0>2}:{t%60:0>2} remaining`")
         return
     # source = await discord.FFmpegOpusAudio.from_probe(filename)
     source = CustomAudio(filename)
@@ -107,7 +107,7 @@ async def play(ctx, filename: str, silent: bool = False):
         client.stop()
     client.play(source)
     t = source.length
-    await _send(ctx, silent, f"**Playing...** `{t//3600}:{(t//60)%60}:{t%60} remaining`")
+    await _send(ctx, silent, f"**Playing...** `{t//3600:0>2}:{(t//60)%60:0>2}:{t%60:0>2} remaining`")
     return True
 
 
