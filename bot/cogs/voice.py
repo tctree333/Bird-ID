@@ -17,7 +17,7 @@
 from discord.ext import commands, tasks
 
 import bot.voice as voice_functions
-from bot.data import logger
+from bot.data import logger, database
 from bot.functions import CustomCooldown
 
 
@@ -82,7 +82,12 @@ class Voice(commands.Cog):
     @commands.guild_only()
     async def disconnect(self, ctx):
         logger.info("command: disconnect")
-        await voice_functions.disconnect(ctx)
+        current_voice = database.get(f"voice.server:{ctx.guild.id}")
+        if current_voice is not None:
+            race = ctx.bot.get_cog("Race")
+            await race.stop_race_(ctx)
+        else:
+            await voice_functions.disconnect(ctx)
 
     @tasks.loop(minutes=10)
     async def cleanup(self):

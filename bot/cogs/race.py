@@ -112,7 +112,7 @@ class Race(commands.Cog):
         if Filter.from_int(
             int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
         ).vc:
-            await voice_functions.disconnect(ctx, ignore_race=True ,silent=True)
+            await voice_functions.disconnect(ctx, silent=True)
             database.delete(f"voice.server:{ctx.guild.id}")
 
         first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]

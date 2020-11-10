@@ -141,19 +141,14 @@ async def stop(ctx, silent: bool = False):
     return True
 
 
-async def disconnect(ctx, ignore_race: bool = False, silent: bool = False):
+async def disconnect(ctx, silent: bool = False):
     logger.info("voice: disconnecting")
 
     client: discord.VoiceClient = await get_voice_client(ctx)
     if client is None:
         return False
     client.stop()
-    current_voice = database.get(f"voice.server:{client.guild.id}")
-    if current_voice is not None and not ignore_race:
-        race = ctx.bot.get_cog("Race")
-        await race.stop_race_(ctx)
-    else:
-        await client.disconnect()
+    await client.disconnect()
     await _send(ctx, silent, "**Bye!**")
     return True
 
