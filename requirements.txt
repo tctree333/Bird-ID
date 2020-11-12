@@ -10,6 +10,6 @@ Authlib==0.14.1
 python-dotenv==0.15.0
 hiredis==1.1.0
 pydub==0.24.1
-sentry-sdk==0.19.2
+sentry-sdk==0.19.3
 pandas==1.1.4
 blinker==1.4
