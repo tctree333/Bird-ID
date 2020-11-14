@@ -34,7 +34,7 @@ class Voice(commands.Cog):
     @commands.guild_only()
     async def play(self, ctx):
         logger.info("command: play")
-        await voice_functions.play(ctx, "rick.mp3")
+        await voice_functions.play(ctx, None)
 
     @commands.command(help="- Pause playing")
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))

@@ -90,7 +90,7 @@ async def get_voice_client(
     return client
 
 
-async def play(ctx, filename: str, silent: bool = False):
+async def play(ctx, filename: Optional[str], silent: bool = False):
     logger.info("voice: playing")
 
     client: discord.VoiceClient = await get_voice_client(ctx, connect=True)
@@ -104,19 +104,22 @@ async def play(ctx, filename: str, silent: bool = False):
             silent,
             f"**Resumed playing.** `{t//3600:0>2}:{(t//60)%60:0>2}:{t%60:0>2} remaining`",
         )
-        return
-    # source = await discord.FFmpegOpusAudio.from_probe(filename)
-    # source = CustomAudio(filename)
-    source = await CustomFFmpegAudio.from_probe(filename)
-    if client.is_playing():
-        client.stop()
-    client.play(source)
-    t = source.length
-    await _send(
-        ctx,
-        silent,
-        f"**Playing...** `{t//3600:0>2}:{(t//60)%60:0>2}:{t%60:0>2} remaining`",
-    )
+        return True
+    if filename:
+        # source = await discord.FFmpegOpusAudio.from_probe(filename)
+        # source = CustomAudio(filename)
+        source = await CustomFFmpegAudio.from_probe(filename)
+        if client.is_playing():
+            client.stop()
+        client.play(source)
+        t = source.length
+        await _send(
+            ctx,
+            silent,
+            f"**Playing...** `{t//3600:0>2}:{(t//60)%60:0>2}:{t%60:0>2} remaining`",
+        )
+    else:
+        await _send(ctx, silent, "**There's nothing playing!**")
     return True
 
 
@@ -264,7 +267,7 @@ class CustomAudio(discord.AudioSource):
 
     def read(self):
         self._cursor += 20
-        return self.segment[self.cursor - 20 : self._cursor].raw_data
+        return self.segment[self._cursor - 20 : self._cursor].raw_data
 
     def jump(self, seconds: Optional[int]):
         if seconds is None:
