@@ -19,7 +19,7 @@ from collections.abc import Iterable
 
 # Macaulay Library URLs
 CATALOG_URL = "https://search.macaulaylibrary.org/catalog.json?searchField=species"
-COUNT = 20  # number of media items from catalog url
+COUNT = 10  # number of media items from catalog url
 
 
 class Filter:
