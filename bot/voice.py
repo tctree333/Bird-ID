@@ -19,7 +19,6 @@ from typing import Optional
 
 import discord
 import discord.utils
-import pydub
 
 from bot.data import logger, database
 
@@ -247,41 +246,3 @@ class CustomFFmpegAudio(discord.FFmpegOpusAudio):
     def read(self):
         self._cursor += 1
         return self._data_list_[self._cursor - 1]
-
-
-class CustomAudio(discord.AudioSource):
-    def __init__(self, filename):
-        self.filename = filename
-        self._cursor = 0
-        self.segment = pydub.AudioSegment.from_file(
-            filename, format=filename.split(".")[-1]
-        ).set_frame_rate(48000)
-
-    @property
-    def length(self):
-        return round(len(self.segment) / 1000)
-
-    @property
-    def remaining(self):
-        return round((len(self.segment) - self._cursor) / 1000)
-
-    def read(self):
-        self._cursor += 20
-        return self.segment[self._cursor - 20 : self._cursor].raw_data
-
-    def jump(self, seconds: Optional[int]):
-        if seconds is None:
-            self._cursor = 0
-            return self
-
-        seconds *= 1000  # convert to milliseconds
-        if self._cursor + seconds < 0:
-            self._cursor = 0
-        elif self._cursor + seconds > len(self.segment):
-            self._cursor = len(self.segment)
-        else:
-            self._cursor += seconds
-        return self
-
-    def is_opus(self):
-        return False
