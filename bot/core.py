@@ -18,6 +18,7 @@ import asyncio
 import contextlib
 import difflib
 import functools
+import math
 import os
 import random
 import shutil
@@ -577,8 +578,8 @@ def rotate_cache():
         )
     logger.info(f"num birds: {len(items)}")
     delete = random.choices(
-        items, k=round(len(items) * 0.1)
-    )  # choose 10% of the items to delete
+        items, k=math.ceil(len(items) * 0.05)
+    )  # choose 5% of the items to delete
     for directory in delete:
         shutil.rmtree(directory)
         logger.info(f"{directory} removed")
