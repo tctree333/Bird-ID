@@ -69,7 +69,10 @@ class Stats(commands.Cog):
             if self.bot.intents.members:
                 user = self.bot.get_user(int(user_id))
             else:
-                user = await self.bot.fetch_user(int(user_id))
+                try:
+                    user = await self.bot.fetch_user(int(user_id))
+                except discord.HTTPException:
+                    user = None
 
             if user is None:
                 new_index.append("User Unavailable")
@@ -298,7 +301,7 @@ class Stats(commands.Cog):
         )
 
         logger.info("exporting streaks")
-        await export_helper(
+        await _export_helper(
             ["streak:global", "streak.max:global"],
             "username#discrim,current streak,max streak\n",
             "streaks.csv",

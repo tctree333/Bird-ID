@@ -118,17 +118,27 @@ class Score(commands.Cog):
                 if self.bot.intents.members:
                     user = ctx.guild.get_member(int(stats[0]))
                 else:
-                    user = await ctx.guild.fetch_member(int(stats[0]))
-                user_info = f"**{user.name}#{user.discriminator}** ({user.mention})"
+                    try:
+                        user = await ctx.guild.fetch_member(int(stats[0]))
+                    except discord.HTTPException:
+                        user = None
             else:
+                user = None
+
+            if user is None:
                 if self.bot.intents.members:
                     user = self.bot.get_user(int(stats[0]))
                 else:
-                    user = await self.bot.fetch_user(int(stats[0]))
+                    try:
+                        user = await self.bot.fetch_user(int(stats[0]))
+                    except discord.HTTPException:
+                        user = None
                 if user is None:
                     user_info = "**Deleted**"
                 else:
                     user_info = f"**{user.name}#{user.discriminator}**"
+            else:
+                user_info = f"**{user.name}#{user.discriminator}** ({user.mention})"
 
             leaderboard += f"{i+1+page}. {user_info} - {int(stats[1])}\n"
 
