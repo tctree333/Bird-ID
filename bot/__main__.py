@@ -252,8 +252,7 @@ if __name__ == "__main__":
                 await ctx.send(
                     "**An uncaught generic error has occurred.**\n"
                     + "*Please log this message in #support in the support server below, or try again.*\n"
-                    + "**Error:** "
-                    + str(error)
+                    + f"**Error code:** `{error.code}`"
                 )
                 await ctx.send("https://discord.gg/fXxYyDJ")
                 raise error
@@ -265,8 +264,6 @@ if __name__ == "__main__":
                     await ctx.send(
                         "**An unexpected ResponseError has occurred.**\n"
                         + "*Please log this message in #support in the support server below, or try again.*\n"
-                        + "**Error:** "
-                        + str(error)
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
                 else:
@@ -296,40 +293,36 @@ if __name__ == "__main__":
                     capture_exception(error)
                     await ctx.send(
                         "**An unexpected Forbidden error has occurred.**\n"
-                        "*Please log this message in #support in the support server below, or try again.*\n"
-                        "**Error:** " + str(error)
+                        + "*Please log this message in #support in the support server below, or try again.*\n"
+                        + f"**Error code:** `{error.original.code}`"
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
 
             elif isinstance(error.original, discord.HTTPException):
+                capture_exception(error.original)
                 if error.original.status == 502:
-                    capture_exception(error.original)
                     await ctx.send(
                         "**An error has occurred with discord. :(**\n*Please try again.*"
                     )
                 else:
-                    capture_exception(error.original)
                     await ctx.send(
                         "**An unexpected HTTPException has occurred.**\n"
                         + "*Please log this message in #support in the support server below, or try again*\n"
-                        + "**Error:** "
-                        + str(error.original)
+                        + f"**Reponse Code:** `{error.original.status}`"
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
 
             elif isinstance(error.original, aiohttp.ClientOSError):
+                capture_exception(error.original)
                 if error.original.errno == errno.ECONNRESET:
-                    capture_exception(error.original)
                     await ctx.send(
                         "**An error has occurred with discord. :(**\n*Please try again.*"
                     )
                 else:
-                    capture_exception(error.original)
                     await ctx.send(
                         "**An unexpected ClientOSError has occurred.**\n"
                         + "*Please log this message in #support in the support server below, or try again.*\n"
-                        + "**Error:** "
-                        + str(error.original)
+                        + f"**Error code:** `{error.original.errno}`"
                     )
                     await ctx.send("https://discord.gg/fXxYyDJ")
 
@@ -343,14 +336,28 @@ if __name__ == "__main__":
                     "**The request timed out.**\n*Please try again in a bit.*"
                 )
 
+            elif isinstance(error.original, OSError):
+                capture_exception(error.original)
+                if error.original.errno == errno.ENOSPC:
+                    await ctx.send(
+                        "**No space is left on the server!**\n"
+                        + "*Please report this message in #support in the support server below!*\n"
+                    )
+                    await ctx.send("https://discord.gg/fXxYyDJ")
+                else:
+                    await ctx.send(
+                        "**An unexpected OSError has occurred.**\n"
+                        + "*Please log this message in #support in the support server below, or try again.*\n"
+                        + f"**Error code:** `{error.original.errno}`"
+                    )
+                    await ctx.send("https://discord.gg/fXxYyDJ")
+
             else:
                 logger.info("uncaught command error")
                 capture_exception(error.original)
                 await ctx.send(
                     "**An uncaught command error has occurred.**\n"
                     + "*Please log this message in #support in the support server below, or try again.*\n"
-                    + "**Error:**  "
-                    + str(error)
                 )
                 await ctx.send("https://discord.gg/fXxYyDJ")
                 raise error
@@ -361,8 +368,6 @@ if __name__ == "__main__":
             await ctx.send(
                 "**An uncaught non-command error has occurred.**\n"
                 + "*Please log this message in #support in the support server below, or try again.*\n"
-                + "**Error:** "
-                + str(error)
             )
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
