@@ -302,7 +302,7 @@ class Score(commands.Cog):
         help="- Top streaks, either current (default) or max.",
         usage="[max|m] [page]",
         name="leaderboard",
-        aliases=["lb"],
+        aliases=["lb", "top"],
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def streak_leaderboard(self, ctx, scope="", page=1):
