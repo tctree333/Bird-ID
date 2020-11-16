@@ -308,6 +308,24 @@ class Other(commands.Cog):
         logger.info("command: error")
         await ctx.send(1 / 0)
 
+    import typing
+
+    # Test command - for testing purposes only
+    @commands.command(help="- test command", hidden=True)
+    @commands.is_owner()
+    async def test(
+        self,
+        ctx,
+        *,
+        user: typing.Optional[typing.Union[discord.Member, discord.User, str]] = None,
+    ):
+        logger.info("command: test")
+        await ctx.send(
+            f"```\nMembers Intent: {self.bot.intents.members}\n"
+            + f"Message Mentions: {ctx.message.mentions}\n"
+            + f"User: {user}\nType: {type(user)}```"
+        )
+
 
 def setup(bot):
     bot.add_cog(Other(bot))
