@@ -61,12 +61,16 @@ class Stats(commands.Cog):
         df = df.fillna(value=0).astype(int)
         return df
 
-    def convert_users(self, df):
+    async def convert_users(self, df):
         """Converts discord user ids in DataFrames or Series indexes to usernames."""
         current_ids = df.index
         new_index = []
         for user_id in current_ids:
-            user = self.bot.get_user(int(user_id))
+            if self.bot.intents.members:
+                user = self.bot.get_user(int(user_id))
+            else:
+                user = await self.bot.fetch_user(int(user_id))
+
             if user is None:
                 new_index.append("User Unavailable")
             else:
@@ -257,7 +261,7 @@ class Stats(commands.Cog):
 
         files = []
 
-        def _export_helper(database_keys, header, filename, users=False):
+        async def _export_helper(database_keys, header, filename, users=False):
             if not isinstance(database_keys, str) and len(database_keys) > 1:
                 data = self.generate_dataframe(
                     database_keys, header.strip().split(",")[1:]
@@ -270,7 +274,7 @@ class Stats(commands.Cog):
                 )
                 data = self.generate_series(key)
             if users:
-                data = self.convert_users(data)
+                data = await self.convert_users(data)
             with StringIO() as f:
                 f.write(header)
                 data.to_csv(f, mode="wb", header=False)
@@ -278,7 +282,7 @@ class Stats(commands.Cog):
                     files.append(discord.File(b, filename))
 
         logger.info("exporting freq command")
-        _export_helper(
+        await _export_helper(
             "frequency.command:global",
             "command,amount used\n",
             "command_frequency.csv",
@@ -286,7 +290,7 @@ class Stats(commands.Cog):
         )
 
         logger.info("exporting freq bird")
-        _export_helper(
+        await _export_helper(
             "frequency.bird:global",
             "bird,amount seen\n",
             "bird_frequency.csv",
@@ -294,7 +298,7 @@ class Stats(commands.Cog):
         )
 
         logger.info("exporting streaks")
-        _export_helper(
+        await export_helper(
             ["streak:global", "streak.max:global"],
             "username#discrim,current streak,max streak\n",
             "streaks.csv",
@@ -311,7 +315,7 @@ class Stats(commands.Cog):
         keys.sort()
         titles = ",".join(map(lambda x: x.split(":")[1], keys))
         keys = ["incorrect:global"] + keys
-        _export_helper(
+        await _export_helper(
             keys, f"bird name,total missed,{titles}\n", "missed.csv", users=False
         )
 
@@ -325,7 +329,7 @@ class Stats(commands.Cog):
         keys.sort()
         titles = ",".join(map(lambda x: x.split(":")[1], keys))
         keys = ["users:global"] + keys
-        _export_helper(
+        await _export_helper(
             keys, f"username#discrim,total score,{titles}\n", "scores.csv", users=True
         )
 

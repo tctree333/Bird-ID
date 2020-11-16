@@ -69,20 +69,22 @@ class Race(commands.Cog):
 
         for i, stats in enumerate(leaderboard_list):
             if ctx.guild is not None:
-                user = ctx.guild.get_member(int(stats[0]))
-            else:
-                user = None
-
-            if user is None:
-                user = self.bot.get_user(int(stats[0]))
-                if user is None:
-                    user = "**Deleted**"
+                if self.bot.intents.members:
+                    user = ctx.guild.get_member(int(stats[0]))
                 else:
-                    user = f"**{user.name}#{user.discriminator}**"
+                    user = await ctx.guild.fetch_member(int(stats[0]))
+                user_info = f"**{user.name}#{user.discriminator}** ({user.mention})"
             else:
-                user = f"**{user.name}#{user.discriminator}** ({user.mention})"
+                if self.bot.intents.members:
+                    user = self.bot.get_user(int(stats[0]))
+                else:
+                    user = await self.bot.fetch_user(int(stats[0]))
+                if user is None:
+                    user_info = "**Deleted**"
+                else:
+                    user_info = f"**{user.name}#{user.discriminator}**"
 
-            leaderboard += f"{i+1}. {user} - {int(stats[1])}\n"
+            leaderboard += f"{i+1}. {user_info} - {int(stats[1])}\n"
 
         start = int(database.hget(f"race.data:{ctx.channel.id}", "start"))
         elapsed = str(datetime.timedelta(seconds=round(time.time()) - start))
@@ -117,21 +119,23 @@ class Race(commands.Cog):
 
         first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[0]
         if ctx.guild is not None:
-            user = ctx.guild.get_member(int(first[0]))
-        else:
-            user = None
-
-        if user is None:
-            user = self.bot.get_user(int(first[0]))
-            if user is None:
-                user = "Deleted"
+            if self.bot.intents.members:
+                user = ctx.guild.get_member(int(first[0]))
             else:
-                user = f"{user.name}#{user.discriminator}"
+                user = await ctx.guild.fetch_member(int(first[0]))
+            user_info = f"{user.name}#{user.discriminator} ({user.mention})"
         else:
-            user = f"{user.name}#{user.discriminator} ({user.mention})"
+            if self.bot.intents.members:
+                user = self.bot.get_user(int(first[0]))
+            else:
+                user = await self.bot.fetch_user(int(first[0]))
+            if user is None:
+                user_info = "Deleted"
+            else:
+                user_info = f"{user.name}#{user.discriminator}"
 
         await ctx.send(
-            f"**Congratulations, {user}!**\n"
+            f"**Congratulations, {user_info}!**\n"
             + f"You have won the race by correctly identifying `{int(first[1])}` birds. "
             + "*Way to go!*"
         )

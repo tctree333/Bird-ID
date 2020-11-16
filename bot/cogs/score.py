@@ -115,20 +115,22 @@ class Score(commands.Cog):
 
         for i, stats in enumerate(leaderboard_list):
             if ctx.guild is not None:
-                user = ctx.guild.get_member(int(stats[0]))
-            else:
-                user = None
-
-            if user is None:
-                user = self.bot.get_user(int(stats[0]))
-                if user is None:
-                    user = "**Deleted**"
+                if self.bot.intents.members:
+                    user = ctx.guild.get_member(int(stats[0]))
                 else:
-                    user = f"**{user.name}#{user.discriminator}**"
+                    user = await ctx.guild.fetch_member(int(stats[0]))
+                user_info = f"**{user.name}#{user.discriminator}** ({user.mention})"
             else:
-                user = f"**{user.name}#{user.discriminator}** ({user.mention})"
+                if self.bot.intents.members:
+                    user = self.bot.get_user(int(stats[0]))
+                else:
+                    user = await self.bot.fetch_user(int(stats[0]))
+                if user is None:
+                    user_info = "**Deleted**"
+                else:
+                    user_info = f"**{user.name}#{user.discriminator}**"
 
-            leaderboard += f"{i+1+page}. {user} - {int(stats[1])}\n"
+            leaderboard += f"{i+1+page}. {user_info} - {int(stats[1])}\n"
 
         embed.add_field(name=title, value=leaderboard, inline=False)
 
