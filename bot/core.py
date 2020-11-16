@@ -126,8 +126,9 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
                         + f" while fetching {sciname_url} for {bird}",
                         code=201,
                     )
-                logger.info(f"An HTTP error occurred; Retries: {retries}")
                 retries += 1
+                logger.info(f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}")
+                await asyncio.sleep(1.5**retries)
                 sciname = await get_sciname(bird, session, retries)
                 return sciname
 
@@ -168,8 +169,9 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
                         + f" while fetching {taxon_code_url} for {bird}",
                         code=201,
                     )
-                logger.info(f"An HTTP error occurred; Retries: {retries}")
                 retries += 1
+                logger.info(f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}")
+                await asyncio.sleep(1.5**retries)
                 taxon_code = (await get_taxon(bird, session, retries))[0]
                 return taxon_code
 
@@ -483,7 +485,8 @@ async def _get_urls(
                     code=201,
                 )
             retries += 1
-            logger.info(f"An HTTP error occurred; Retries: {retries}")
+            logger.info(f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}")
+            await asyncio.sleep(1.5**retries)
             urls = await _get_urls(session, bird, media_type, filters, retries)
             return urls
 
