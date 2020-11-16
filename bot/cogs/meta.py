@@ -56,7 +56,7 @@ class Meta(commands.Cog):
         )
         embed.add_field(
             name="Stats",
-            value=f"This bot can see {len(self.bot.users)} users and is in {len(self.bot.guilds)} servers. "
+            value=f"This bot is in {len(self.bot.guilds)} servers. "
             + f"The WebSocket latency is {round((self.bot.latency*1000))} ms.",
             inline=False,
         )
