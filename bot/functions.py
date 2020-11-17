@@ -613,25 +613,46 @@ class CustomCooldown:
         `per` (float) - Cooldown default duration, halves in DM channels
         `bucket` (commands.BucketType) - cooldown scope, defaults to channel
         """
-        rate = 1
-        dm_per = per / 2
-        race_per = 0.5
         self.disable = disable
+
+        rate = 1
+
+        dm_per = per / 2  # half cooldowns in DMs
+        race_per = 0.5  # pin check cooldown during races to 0.5 seconds
+        rate_limit_per = (
+            per * 1.75
+        )  # 75% longer cooldowns on core commands during macaulay issues
+
         self.default_mapping = commands.CooldownMapping.from_cooldown(rate, per, bucket)
         self.dm_mapping = commands.CooldownMapping.from_cooldown(rate, dm_per, bucket)
         self.race_mapping = commands.CooldownMapping.from_cooldown(
             rate, race_per, bucket
         )
+        self.rate_limit_mapping = commands.CooldownMapping.from_cooldown(
+            rate, rate_limit_per, bucket
+        )
 
     def __call__(self, ctx: commands.Context):
-        if not self.disable and ctx.guild is None:
-            # halve cooldown in DMs
+        if (
+            ctx.command.name
+            in (
+                "bird",
+                "song",
+                "goatsucker",
+                "check",
+                "skip",
+            )
+            and database.exists("cooldown:global")
+            and int(database.get("cooldown:global")) > 1
+        ):
+            bucket = self.rate_limit_mapping.get_bucket(ctx.message)
+
+        elif not self.disable and ctx.guild is None:
             bucket = self.dm_mapping.get_bucket(ctx.message)
 
-        elif ctx.command.name.startswith("check") and ctx.channel.name.startswith(
-            "racing"
+        elif ctx.channel.name.startswith("racing") and ctx.command.name.startswith(
+            "check"
         ):
-            # tiny check cooldown in racing channels
             bucket = self.race_mapping.get_bucket(ctx.message)
 
         else:

@@ -221,9 +221,9 @@ async def valid_bird(bird: str, session=None) -> Tuple[str, bool, str, str]:
                 return (bird, False, "No taxon code found", "")
             raise e
         urls = await _get_urls(session, bird, "p", Filter())
-        if len(urls) < 2:
-            return (bird, False, "One or less images found", name)
-        return (bird, True, "All checks passed", name)
+    if len(urls) < 2:
+        return (bird, False, "One or less images found", name)
+    return (bird, True, "All checks passed", name)
 
 
 def _black_and_white(input_image_path) -> BytesIO:
@@ -282,11 +282,18 @@ async def send_bird(
             await ctx.send(
                 f"**This combination of filters has no valid {media_type} for the current bird.**"
             )
+        elif e.code == 201:
+            capture_exception(e)
+            logger.exception(e)
+            await ctx.send("**A network error has occurred.**\n*Please try again later.*")
+            database.incrby("cooldown:global", amount=1)
+            database.expire("cooldown:global", 300)
         else:
+            capture_exception(e)
+            logger.exception(e)
             await ctx.send(
                 f"**An error has occurred while fetching {media_type}.**\n**Reason:** {e}"
             )
-            logger.exception(e)
         if on_error is not None:
             await on_error(e)
         else:

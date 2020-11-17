@@ -41,7 +41,7 @@ class Other(commands.Cog):
         usage="[bird] [options]",
         aliases=["i"],
     )
-    @commands.check(CustomCooldown(10.0, bucket=commands.BucketType.user))
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def info(self, ctx, *, arg):
         logger.info("command: info")
         arg = arg.lower().strip()
@@ -115,7 +115,7 @@ class Other(commands.Cog):
     @commands.command(
         help="- DMs the user with the appropriate bird list.", name="list"
     )
-    @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def list_of_birds(self, ctx, state: str = "blank"):
         logger.info("command: list")
 
@@ -176,7 +176,7 @@ class Other(commands.Cog):
         name="taxon",
         aliases=["taxons", "orders", "families", "order", "family"],
     )
-    @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def bird_taxons(self, ctx, taxon: str = "blank", state: str = "NATS"):
         logger.info("command: taxons")
 
@@ -253,7 +253,7 @@ class Other(commands.Cog):
     @commands.command(
         help="- Fetch the wikipedia page for any given argument", aliases=["wiki"]
     )
-    @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def wikipedia(self, ctx, *, arg):
         logger.info("command: wiki")
 
@@ -267,7 +267,7 @@ class Other(commands.Cog):
 
     # meme command - sends a random bird video/gif
     @commands.command(help="- Sends a funny bird video!")
-    @commands.check(CustomCooldown(300.0, bucket=commands.BucketType.user))
+    @commands.check(CustomCooldown(180.0, disable=True, bucket=commands.BucketType.user))
     async def meme(self, ctx):
         logger.info("command: meme")
         await ctx.send(random.choice(memeList))

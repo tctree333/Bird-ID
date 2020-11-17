@@ -190,8 +190,9 @@ if __name__ == "__main__":
 
         if isinstance(error, commands.CommandOnCooldown):  # send cooldown
             await ctx.send(
-                "**Cooldown.** Try again after "
-                + str(round(error.retry_after))
+                ("**Cooldowns have been temporarily increased due to increased usage.**" if getattr(error.cooldown, "rate_limit", False) else "**Cooldown.** ")
+                + "Try again after "
+                + str(round(error.retry_after, 2))
                 + " s.",
                 delete_after=5.0,
             )

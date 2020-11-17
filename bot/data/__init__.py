@@ -157,6 +157,9 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # custom list format (set):
 #   custom.list:user_id : [validated birds, ...]
 
+# cooldown rate limit format:
+#   cooldown:global : 0
+
 
 #  states = {
 #          state name:
