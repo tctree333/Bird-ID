@@ -124,6 +124,21 @@ if __name__ == "__main__":
     async def prechecks(ctx):
         await ctx.trigger_typing()
 
+        logger.info("globcal check: disable core commands")
+        if ctx.command.name in (
+            "bird",
+            "song",
+            "goatsucker",
+            "check",
+            "skip",
+        ):
+            await ctx.send(
+                "**The Macaulay Library is down for maintenance.**\n"
+                + "*Core commands are not available at the moment*\n"
+                + "See <https://support.ebird.org/en/support/solutions/articles/48001163281> for more info."
+            )
+            raise GenericError(code=666)
+
         logger.info("global check: checking permissions")
         await commands.bot_has_permissions(
             send_messages=True, embed_links=True, attach_files=True
@@ -190,7 +205,11 @@ if __name__ == "__main__":
 
         if isinstance(error, commands.CommandOnCooldown):  # send cooldown
             await ctx.send(
-                ("**Cooldowns have been temporarily increased due to increased usage.**" if getattr(error.cooldown, "rate_limit", False) else "**Cooldown.** ")
+                (
+                    "**Cooldowns have been temporarily increased due to increased usage.**"
+                    if getattr(error.cooldown, "rate_limit", False)
+                    else "**Cooldown.** "
+                )
                 + "Try again after "
                 + str(round(error.retry_after, 2))
                 + " s.",
