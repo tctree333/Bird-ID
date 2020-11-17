@@ -123,9 +123,10 @@ if __name__ == "__main__":
     @bot.check
     async def prechecks(ctx):
         await ctx.trigger_typing()
-        logger.info("globcal check: disable core commands")
+
+        logger.info("global check: disable core commands")
         if (
-            ctx.command.name
+            ctx.command.qualified_name
             in (
                 "bird",
                 "song",
@@ -133,7 +134,7 @@ if __name__ == "__main__":
                 "check",
                 "skip",
             )
-            or ctx.command.name.startswith("race ")
+            or ctx.command.qualified_name.startswith("race ")
         ):
             await ctx.send(
                 "**The Macaulay Library is down for maintenance.**\n"
