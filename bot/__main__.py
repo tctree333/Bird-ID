@@ -133,6 +133,7 @@ if __name__ == "__main__":
                 "goatsucker",
                 "check",
                 "skip",
+                "info",
             )
             or ctx.command.qualified_name.startswith("race ")
         ):
