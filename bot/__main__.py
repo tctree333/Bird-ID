@@ -124,26 +124,6 @@ if __name__ == "__main__":
     async def prechecks(ctx):
         await ctx.trigger_typing()
 
-        logger.info("global check: disable core commands")
-        if (
-            ctx.command.qualified_name
-            in (
-                "bird",
-                "song",
-                "goatsucker",
-                "check",
-                "skip",
-                "info",
-            )
-            or ctx.command.qualified_name.startswith("race ")
-        ):
-            await ctx.send(
-                "**The Macaulay Library is down for maintenance.**\n"
-                + "*Core commands are not available at the moment*\n"
-                + "See <https://support.ebird.org/en/support/solutions/articles/48001163281> for more info."
-            )
-            raise GenericError(code=666)
-
         logger.info("global check: checking permissions")
         await commands.bot_has_permissions(
             send_messages=True, embed_links=True, attach_files=True
