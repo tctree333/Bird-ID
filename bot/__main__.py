@@ -160,7 +160,7 @@ if __name__ == "__main__":
                     "Wild Turkey",
                     "images",
                     Filter(),
-                    message="**It's Thanksgiving!**\nGo celebrate with your family.",
+                    message="**It's Thanksgiving!**\nEnjoy this birb responsibly!.",
                 )
                 raise GenericError(code=666)
             if us.get(now) == "Independence Day":
@@ -169,7 +169,7 @@ if __name__ == "__main__":
                     "Bald Eagle",
                     "images",
                     Filter(),
-                    message="**It's Independence Day!**\nEnjoy this birb responsibly.",
+                    message="**It's Independence Day!**\nEnjoy this birb responsibly!",
                 )
                 raise GenericError(code=666)
         elif now == date(now.year, 4, 1):
