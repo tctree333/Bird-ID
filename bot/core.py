@@ -561,19 +561,21 @@ def rotate_cache():
         logger.info(f"{directory} removed")
 
 
-def spellcheck(worda, wordb, cutoff=3):
+def spellcheck(arg, correct, cutoff=None):
     """Checks if two words are close to each other.
 
     `worda` (str) - first word to compare
     `wordb` (str) - second word to compare
     `cutoff` (int) - allowed difference amount
     """
-    worda = worda.lower().replace("-", " ").replace("'", "")
-    wordb = wordb.lower().replace("-", " ").replace("'", "")
-    shorterword = min(worda, wordb, key=len)
-    if worda != wordb:
+    if cutoff is None:
+        cutoff = math.floor(len(correct) / 3)
+    arg = arg.lower().replace("-", " ").replace("'", "")
+    correct = correct.lower().replace("-", " ").replace("'", "")
+    shorterword = min(arg, correct, key=len)
+    if arg != correct:
         if (
-            len(list(difflib.Differ().compare(worda, wordb))) - len(shorterword)
+            len(list(difflib.Differ().compare(arg, correct))) - len(shorterword)
             >= cutoff
         ):
             return False
