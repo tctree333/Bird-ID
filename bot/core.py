@@ -36,6 +36,7 @@ from sentry_sdk import capture_exception
 import bot.voice as voice_functions
 from bot.data import GenericError, database, logger, screech_owls
 from bot.filters import Filter
+from bot.functions import cache
 
 # Macaulay URL definitions
 SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
@@ -48,49 +49,6 @@ valid_types = {
     "images": {"image/png": "png", "image/jpeg": "jpg", "image/gif": "gif"},
     "songs": {"audio/mpeg": "mp3", "audio/wav": "wav"},
 }
-
-
-def cache(func=None):
-    """Cache decorator based on functools.lru_cache.
-
-    This does not have a max_size and does not evict items.
-    In addition, results are only cached by the first provided argument.
-    """
-
-    def wrapper(func):
-        sentinel = object()
-
-        cache_ = {}
-        hits = misses = 0
-        cache_get = cache_.get
-        cache_len = cache_.__len__
-
-        async def wrapped(*args, **kwds):
-            # Simple caching without ordering or size limit
-            logger.info("checking cache")
-            nonlocal hits, misses
-            key = hash(args[0])
-            result = cache_get(key, sentinel)
-            if result is not sentinel:
-                logger.info(f"{args[0]} found in cache!")
-                hits += 1
-                return result
-            logger.info(f"did not find {args[0]} in cache")
-            misses += 1
-            result = await func(*args, **kwds)
-            cache_[key] = result
-            return result
-
-        def cache_info():
-            """Report cache statistics"""
-            return functools._CacheInfo(hits, misses, None, cache_len())
-
-        wrapped.cache_info = cache_info
-        return functools.update_wrapper(wrapped, func)
-
-    if func:
-        return wrapper(func)
-    return wrapper
 
 
 @cache()
@@ -127,8 +85,10 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
                         code=201,
                     )
                 retries += 1
-                logger.info(f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}")
-                await asyncio.sleep(1.5**retries)
+                logger.info(
+                    f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
+                )
+                await asyncio.sleep(1.5 ** retries)
                 sciname = await get_sciname(bird, session, retries)
                 return sciname
 
@@ -170,8 +130,10 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
                         code=201,
                     )
                 retries += 1
-                logger.info(f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}")
-                await asyncio.sleep(1.5**retries)
+                logger.info(
+                    f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
+                )
+                await asyncio.sleep(1.5 ** retries)
                 taxon_code = (await get_taxon(bird, session, retries))[0]
                 return taxon_code
 
@@ -285,7 +247,9 @@ async def send_bird(
         elif e.code == 201:
             capture_exception(e)
             logger.exception(e)
-            await ctx.send("**A network error has occurred.**\n*Please try again later.*")
+            await ctx.send(
+                "**A network error has occurred.**\n*Please try again later.*"
+            )
             database.incrby("cooldown:global", amount=1)
             database.expire("cooldown:global", 300)
         else:
@@ -492,8 +456,10 @@ async def _get_urls(
                     code=201,
                 )
             retries += 1
-            logger.info(f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}")
-            await asyncio.sleep(1.5**retries)
+            logger.info(
+                f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
+            )
+            await asyncio.sleep(1.5 ** retries)
             urls = await _get_urls(session, bird, media_type, filters, retries)
             return urls
 

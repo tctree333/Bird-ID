@@ -32,16 +32,11 @@ from sentry_sdk import capture_exception
 from bot.core import rotate_cache, send_bird
 from bot.data import GenericError, database, logger
 from bot.filters import Filter
-from bot.functions import backup_all, channel_setup, drone_attack, user_setup
+from bot.functions import (backup_all, channel_setup, drone_attack,
+                           get_all_users, user_setup)
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])
-
-
-def start_backup():
-    """Backs up the database to a discord channel."""
-    asyncio.run(backup_all())
-
 
 if __name__ == "__main__":
     # Initialize bot
@@ -72,6 +67,7 @@ if __name__ == "__main__":
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
         refresh_cache.start()
+        refresh_user_cache.start()
         if os.getenv("SCIOLY_ID_BOT_ENABLE_BACKUPS") != "false":
             refresh_backup.start()
 
@@ -385,6 +381,12 @@ if __name__ == "__main__":
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, rotate_cache)
 
+    @tasks.loop(hours=12.0)
+    async def refresh_user_cache():
+        """Task to update User cache to increase performance of commands."""
+        logger.info("TASK: Updating User cache")
+        await get_all_users(bot)
+
     @tasks.loop(hours=6.0)
     async def refresh_backup():
         """Sends a copy of the database to a discord channel (BACKUPS_CHANNEL)."""
@@ -400,9 +402,7 @@ if __name__ == "__main__":
         except FileNotFoundError:
             logger.info("Already cleared backup keys")
 
-        event_loop = asyncio.get_event_loop()
-        with concurrent.futures.ThreadPoolExecutor(1) as executor:
-            await event_loop.run_in_executor(executor, start_backup)
+        await backup_all()
 
         logger.info("Sending backup files")
         channel = bot.get_channel(int(BACKUPS_CHANNEL))

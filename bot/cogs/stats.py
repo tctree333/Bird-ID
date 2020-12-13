@@ -23,7 +23,7 @@ import pandas as pd
 from discord.ext import commands
 
 from bot.data import database, logger
-from bot.functions import CustomCooldown, send_leaderboard
+from bot.functions import CustomCooldown, send_leaderboard, fetch_get_user
 
 
 class Stats(commands.Cog):
@@ -66,13 +66,7 @@ class Stats(commands.Cog):
         current_ids = df.index
         new_index = []
         for user_id in current_ids:
-            if self.bot.intents.members:
-                user = self.bot.get_user(int(user_id))
-            else:
-                try:
-                    user = await self.bot.fetch_user(int(user_id))
-                except discord.HTTPException:
-                    user = None
+            user = await fetch_get_user(int(user_id), bot=self.bot, member=False)
 
             if user is None:
                 new_index.append("User Unavailable")
