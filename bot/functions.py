@@ -650,7 +650,7 @@ async def drone_attack(ctx):
     raise GenericError(code=666)
 
 
-async def backup_all():
+def backup_all():
     """Backs up the database to a file.
 
     This function serializes all data in the REDIS database
