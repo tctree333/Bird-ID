@@ -34,7 +34,7 @@ from PIL import Image
 from sentry_sdk import capture_exception
 
 import bot.voice as voice_functions
-from bot.data import GenericError, database, logger, screech_owls
+from bot.data import GenericError, database, logger, screech_owls, birdListMaster
 from bot.filters import Filter
 from bot.functions import cache
 
@@ -166,25 +166,26 @@ async def valid_bird(bird: str, session=None) -> Tuple[str, bool, str, str]:
     """Checks if a bird is valid.
 
     This checks first if Macaulay has a valid taxon code for the bird,
-    then if Macaulay has valid media for the bird based on the requested
-    media type. Media can be `p` for pictures, `a` for audio, or `v` for video.
+    then if the bird is already in one of our lists. If not, then it checks
+    if Macaulay has valid images for the bird.
 
     Returns a tuple: `(input bird, valid bool, reason, detected name (may be empty string))`.
     """
-    bird = string.capwords(bird)
+    bird_ = string.capwords(bird.strip().replace("-", " "))
     logger.info(f"checking if {bird} is valid")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
             session = await stack.enter_async_context(aiohttp.ClientSession())
         try:
-            name = (await get_taxon(bird, session))[1]
+            name = (await get_taxon(bird_, session))[1]
         except GenericError as e:
             if e.code in (111, 201):
                 return (bird, False, "No taxon code found", "")
             raise e
-        urls = await _get_urls(session, bird, "p", Filter())
-    if len(urls) < 2:
-        return (bird, False, "One or less images found", name)
+    if bird_ not in birdListMaster:
+        urls = await _get_urls(session, bird_, "p", Filter())
+        if len(urls) < 2:
+            return (bird, False, "One or less images found", name)
     return (bird, True, "All checks passed", name)
 
 

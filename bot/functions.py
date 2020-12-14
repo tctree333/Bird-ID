@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import asyncio
+import concurrent.futures
 import datetime
 import difflib
 import functools
@@ -23,6 +25,7 @@ import pickle
 import random
 import string
 
+import chardet
 import discord
 from discord.ext import commands
 
@@ -249,6 +252,7 @@ def check_state_role(ctx) -> list:
     logger.info(f"user roles: {user_states}")
     return user_states
 
+
 async def fetch_get_user(user_id: int, ctx=None, bot=None, member: bool = False):
     if (ctx is None and bot is None) or (ctx is not None and bot is not None):
         raise ValueError("Only one of ctx or bot must be passed")
@@ -265,6 +269,7 @@ async def fetch_get_user(user_id: int, ctx=None, bot=None, member: bool = False)
     except discord.HTTPException:
         return None
 
+
 @cache()
 async def _fetch_cached_user(user_id: int, bot):
     if bot.intents.members:
@@ -273,6 +278,7 @@ async def _fetch_cached_user(user_id: int, bot):
         return await bot.fetch_user(user_id)
     except discord.HTTPException:
         return None
+
 
 async def send_leaderboard(
     ctx, title, page, database_key=None, data=None, items_per_page=10
@@ -673,12 +679,33 @@ def backup_all():
                 k.write(f"{key}\n")
     logger.info("Backup Finished")
 
+
 async def get_all_users(bot):
     logger.info("Starting user cache")
     user_ids = map(int, database.zrangebyscore("users:global", "-inf", "+inf"))
     for user_id in user_ids:
         await fetch_get_user(user_id, bot=bot, member=False)
     logger.info("User cache finished")
+
+
+async def auto_decode(data: bytes):
+    def _get_encoding():
+        nonlocal data
+        detector = chardet.UniversalDetector()
+        for chunk in data.splitlines(keepends=True):
+            detector.feed(chunk)
+            if detector.done:
+                break
+        detector.close()
+        return detector.result
+
+    event_loop = asyncio.get_event_loop()
+    with concurrent.futures.ThreadPoolExecutor(1) as executor:
+        detected = await event_loop.run_in_executor(executor, _get_encoding)
+    if detected["encoding"] and detected["confidence"] > 0.4:
+        return data.decode(detected["encoding"])
+    return None
+
 
 class CustomCooldown:
     """Halve cooldown times in DM channels."""

@@ -26,7 +26,7 @@ from sentry_sdk import capture_exception, capture_message
 
 from bot.core import valid_bird
 from bot.data import GenericError, database, logger, states
-from bot.functions import CustomCooldown
+from bot.functions import CustomCooldown, auto_decode
 
 
 class States(commands.Cog):
@@ -256,13 +256,14 @@ class States(commands.Cog):
                     "Sorry, no file was detected. Upload your txt file and put `b!custom` in the **Add a Comment** section."
                 )
                 return
-            parsed_birdlist = (
-                (await ctx.message.attachments[0].read())
-                .decode("utf-8-sig")
-                .strip()
-                .split("\n")
-            )
-            parsed_birdlist = {item.strip() for item in parsed_birdlist}
+            decoded = await auto_decode(await ctx.message.attachments[0].read())
+            if not decoded:
+                logger.info("invalid character encoding")
+                await ctx.send(
+                    "Sorry, something went wrong. Are you sure this is a text file?"
+                )
+                return
+            parsed_birdlist = set(map(lambda x: x.strip(), decoded.strip().split("\n")))
             parsed_birdlist.discard("")
             parsed_birdlist = list(parsed_birdlist)
             if len(parsed_birdlist) > 200:
@@ -272,7 +273,7 @@ class States(commands.Cog):
                 )
                 return
             logger.info("checking for invalid characters")
-            char = re.compile(r"[^A-Za-z '-]")
+            char = re.compile("[^A-Za-z '\-\xC0-\xD6\xD8-\xF6\xF8-\xFF]")
             for item in parsed_birdlist:
                 if len(item) > 1000:
                     logger.info("item too long")
