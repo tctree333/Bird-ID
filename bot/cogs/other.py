@@ -17,6 +17,7 @@
 import contextlib
 import os
 import random
+import typing
 from difflib import get_close_matches
 
 import discord
@@ -267,7 +268,9 @@ class Other(commands.Cog):
 
     # meme command - sends a random bird video/gif
     @commands.command(help="- Sends a funny bird video!")
-    @commands.check(CustomCooldown(180.0, disable=True, bucket=commands.BucketType.user))
+    @commands.check(
+        CustomCooldown(180.0, disable=True, bucket=commands.BucketType.user)
+    )
     async def meme(self, ctx):
         logger.info("command: meme")
         await ctx.send(random.choice(memeList))
@@ -307,8 +310,6 @@ class Other(commands.Cog):
     async def error(self, ctx):
         logger.info("command: error")
         await ctx.send(1 / 0)
-
-    import typing
 
     # Test command - for testing purposes only
     @commands.command(help="- test command", hidden=True)

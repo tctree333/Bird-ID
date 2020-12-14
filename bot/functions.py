@@ -29,24 +29,17 @@ import chardet
 import discord
 from discord.ext import commands
 
-from bot.data import (
-    GenericError,
-    birdList,
-    birdListMaster,
-    database,
-    logger,
-    sciListMaster,
-    songBirds,
-    states,
-    taxons,
-)
+from bot.data import (GenericError, birdList, birdListMaster, database, logger,
+                      sciListMaster, songBirds, states, taxons)
 
 
-def cache(func=None):
+def cache(func=None, pre=None):
     """Cache decorator based on functools.lru_cache.
 
     This does not have a max_size and does not evict items.
-    In addition, results are only cached by the first provided argument.
+    In addition, results are only cached by the first positional
+    argument. If pre is provided, the cache key will be the 
+    first positional argument transformed by pre.
     """
 
     def wrapper(func):
@@ -60,7 +53,10 @@ def cache(func=None):
         async def wrapped(*args, **kwds):
             # Simple caching without ordering or size limit
             nonlocal hits, misses
-            key = hash(args[0])
+            if pre:
+                key = hash(pre(args[0]))
+            else:
+                key = hash(args[0])
             result = cache_get(key, sentinel)
             if result is not sentinel:
                 # print("hit")
@@ -690,7 +686,6 @@ async def get_all_users(bot):
 
 async def auto_decode(data: bytes):
     def _get_encoding():
-        nonlocal data
         detector = chardet.UniversalDetector()
         for chunk in data.splitlines(keepends=True):
             detector.feed(chunk)
