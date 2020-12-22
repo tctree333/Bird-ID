@@ -570,7 +570,7 @@ def spellcheck(arg, correct, cutoff=None):
     `cutoff` (int) - allowed difference amount
     """
     if cutoff is None:
-        cutoff = math.floor(len(correct) / 3)
+        cutoff = min((4, math.floor(len(correct) / 3)))
     arg = arg.lower().replace("-", " ").replace("'", "")
     correct = correct.lower().replace("-", " ").replace("'", "")
     shorterword = min(arg, correct, key=len)
