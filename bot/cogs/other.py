@@ -17,6 +17,7 @@
 import contextlib
 import os
 import random
+import string
 import typing
 from difflib import get_close_matches
 
@@ -62,9 +63,12 @@ class Other(commands.Cog):
 
         if not bird:
             for i in reversed(range(1, 6)):
-                # try the first 6 words, then first 5, etc. looking for a match
+                # try the first 5 words, then first 4, etc. looking for a match
                 matches = get_close_matches(
-                    " ".join(arg[:i]), birdListMaster + sciListMaster, n=1
+                    string.capwords(" ".join(arg[:i]).replace("-", " ")),
+                    birdListMaster + sciListMaster,
+                    n=1,
+                    cutoff=0.8,
                 )
                 if matches:
                     bird = matches[0]
@@ -77,11 +81,13 @@ class Other(commands.Cog):
         delete = await ctx.send("Please wait a moment.")
         if options:
             await ctx.send(f"**Detected filters**: `{'`, `'.join(options)}`")
+
+        an = "an" if bird.lower()[0] in ('a', 'e', 'i', 'o', 'u') else 'a'
         await send_bird(
-            ctx, bird, "images", filters, message=f"Here's a *{bird.lower()}* image!"
+            ctx, bird, "images", filters, message=f"Here's {an} *{bird.lower()}* image!"
         )
         await send_bird(
-            ctx, bird, "songs", filters, message=f"Here's a *{bird.lower()}* song!"
+            ctx, bird, "songs", filters, message=f"Here's {an} *{bird.lower()}* song!"
         )
         await delete.delete()
         return
