@@ -10,5 +10,5 @@ Authlib==0.14.1
 python-dotenv==0.15.0
 hiredis==1.1.0
 sentry-sdk==0.19.4
-pandas==1.1.4
+pandas==1.2.0
 blinker==1.4
