@@ -1,7 +1,7 @@
 discord.py[voice]==1.5.1
 wikipedia==1.4.0
 eyeD3==0.9.5
-Pillow==8.0.1
+Pillow==8.1.0
 redis==3.5.3
 holidays==0.10.4
 Flask==1.1.2
