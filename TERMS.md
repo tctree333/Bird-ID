@@ -26,7 +26,7 @@ You agree that you will not, under any circumstances, violate our [Community Cod
 
 This bot is licensed under the [GNU General Public License v3.0](LICENSE). Images and songs are fetched from the [Macaulay Library](https://www.macaulaylibrary.org/) at the Cornell Lab of Ornithology. Wiki links are fetched from [Wikipedia](https://en.wikipedia.org/).
 
-Copyright (C) 2019-2020 Eraserbird, person_v1.32, hmmm
+Copyright (C) 2019-2021 Eraserbird, person_v1.32, hmmm
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
