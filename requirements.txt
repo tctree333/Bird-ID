@@ -1,4 +1,4 @@
-discord.py[voice]==1.5.1
+discord.py[voice]==1.6.0
 wikipedia==1.4.0
 Pillow==8.1.0
 eyeD3==0.9.6
