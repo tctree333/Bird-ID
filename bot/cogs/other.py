@@ -149,7 +149,8 @@ class Other(commands.Cog):
             if len(temp) > 1950:
                 birdLists.append(temp)
                 temp = ""
-        birdLists.append(temp)
+        if temp:
+            birdLists.append(temp)
 
         songLists = []
         temp = ""
@@ -158,7 +159,8 @@ class Other(commands.Cog):
             if len(temp) > 1950:
                 songLists.append(temp)
                 temp = ""
-        songLists.append(temp)
+        if temp:
+            songLists.append(temp)
 
         if ctx.author.dm_channel is None:
             await ctx.author.create_dm()

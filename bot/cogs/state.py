@@ -43,7 +43,8 @@ class States(commands.Cog):
                 pages.append(temp_out.strip())
                 temp_out = ""
         temp_out = f"{between}{temp_out}{between}"
-        pages.append(temp_out.strip())
+        if temp_out.strip():
+            pages.append(temp_out.strip())
         for item in pages:
             await ctx.send(item)
 
