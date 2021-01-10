@@ -97,11 +97,8 @@ async def get_media(bird, media_type, filters):  # images or songs
             extension = media_path.split(".")[-1]
             logger.info("extension: " + str(extension))
             if (
-                media_type == "images"
-                and extension.lower() in valid_types["images"].values()
-            ) or (
-                media_type == "songs"
-                and extension.lower() in valid_types["songs"].values()
+                media_type in ("images", "songs")
+                and extension.lower() in valid_types[media_type].values()
             ):
                 logger.info("found one!")
                 break
