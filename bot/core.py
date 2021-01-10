@@ -134,8 +134,7 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
                     f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
                 )
                 await asyncio.sleep(1.5 ** retries)
-                taxon_code = (await get_taxon(bird, session, retries))[0]
-                return taxon_code
+                return await get_taxon(bird, session, retries)
 
             taxon_code_data = await taxon_code_response.json()
             try:
