@@ -31,10 +31,25 @@ from bot.data import (alpha_codes, birdListMaster, logger, memeList,
 from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list
 
+# Discord max message length is 2000 characters, leave some room just in case
+MAX_MESSAGE = 1950
 
 class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @staticmethod
+    def broken_join(input_list, max_size: int = MAX_MESSAGE):
+        out = []
+        temp = ""
+        for item in input_list:
+            temp += f"{item}\n"
+            if len(temp) > max_size:
+                out.append(temp)
+                temp = ""
+        if temp:
+            out.append(temp)
+        return out
 
     # Info - Gives call+image of 1 bird
     @commands.command(
@@ -142,25 +157,8 @@ class Other(commands.Cog):
             user_id=ctx.author.id, state=state, media="songs"
         )
 
-        birdLists = []
-        temp = ""
-        for bird in state_birdlist:
-            temp += f"{bird}\n"
-            if len(temp) > 1950:
-                birdLists.append(temp)
-                temp = ""
-        if temp:
-            birdLists.append(temp)
-
-        songLists = []
-        temp = ""
-        for bird in state_songlist:
-            temp += f"{bird}\n"
-            if len(temp) > 1950:
-                songLists.append(temp)
-                temp = ""
-        if temp:
-            songLists.append(temp)
+        birdLists = self.broken_join(state_birdlist)
+        songLists = self.broken_join(state_songlist)
 
         if ctx.author.dm_channel is None:
             await ctx.author.create_dm()
@@ -219,23 +217,8 @@ class Other(commands.Cog):
             )
             return
 
-        birdLists = []
-        temp = ""
-        for bird in bird_list:
-            temp += f"{bird}\n"
-            if len(temp) > 1950:
-                birdLists.append(temp)
-                temp = ""
-        birdLists.append(temp)
-
-        songLists = []
-        temp = ""
-        for bird in song_bird_list:
-            temp += f"{bird}\n"
-            if len(temp) > 1950:
-                songLists.append(temp)
-                temp = ""
-        songLists.append(temp)
+        birdLists = self.broken_join(bird_list)
+        songLists = self.broken_join(song_bird_list)
 
         if ctx.author.dm_channel is None:
             await ctx.author.create_dm()
