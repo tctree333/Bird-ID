@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
         logger.info("global check: checking permissions")
         await commands.bot_has_permissions(
-            send_messages=True, embed_links=True, attach_files=True
+            send_messages=True, embed_links=True, attach_files=True, manage_roles=True
         ).predicate(ctx)
 
         logger.info("global check: checking banned")
