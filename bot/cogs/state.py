@@ -52,6 +52,7 @@ class States(commands.Cog):
     @commands.command(help="- Sets your state", name="set", aliases=["state"])
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     @commands.guild_only()
+    @commands.bot_has_permissions(manage_roles=True)
     async def state(self, ctx, *, args):
         logger.info("command: state set")
 
