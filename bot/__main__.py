@@ -381,7 +381,7 @@ if __name__ == "__main__":
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, rotate_cache)
 
-    @tasks.loop(hours=12.0)
+    @tasks.loop(hours=12.0, count=1)
     async def refresh_user_cache():
         """Task to update User cache to increase performance of commands."""
         logger.info("TASK: Updating User cache")
