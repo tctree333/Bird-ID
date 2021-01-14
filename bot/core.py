@@ -51,7 +51,7 @@ valid_types = {
 }
 
 
-@cache(pre=lambda x: string.capwords(x.strip().replace("-", " ")))
+@cache(pre=lambda x: string.capwords(x.strip().replace("-", " ")), local=False)
 async def get_sciname(bird: str, session=None, retries=0) -> str:
     """Returns the scientific name of a bird.
 
@@ -101,7 +101,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
     return sciname
 
 
-@cache(pre=lambda x: string.capwords(x.strip().replace("-", " ")))
+@cache(pre=lambda x: string.capwords(x.strip().replace("-", " ")), local=False)
 async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
     """Returns the taxonomic code of a bird.
 
