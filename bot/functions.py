@@ -30,8 +30,17 @@ import chardet
 import discord
 from discord.ext import commands
 
-from bot.data import (GenericError, birdList, birdListMaster, database, logger,
-                      sciListMaster, songBirds, states, taxons)
+from bot.data import (
+    GenericError,
+    birdList,
+    birdListMaster,
+    database,
+    logger,
+    sciListMaster,
+    songBirds,
+    states,
+    taxons,
+)
 
 
 def cache(func=None, pre=None, local=True):
@@ -67,7 +76,9 @@ def cache(func=None, pre=None, local=True):
                 _cache[key] = value
                 return
             pickled = pickle.dumps(value, protocol=4)
-            database.set(f"cache.{func.__name__}:{key}", pickled, ex=604800)  # 60*60*24*7
+            database.set(
+                f"cache.{func.__name__}:{key}", pickled, ex=604800
+            )  # 60*60*24*7
 
         def _cache_get(key, default=None):
             if local:
@@ -80,14 +91,27 @@ def cache(func=None, pre=None, local=True):
         def _cache_len():
             if local:
                 return _cache.__len__()
-            return sum(1 for _ in database.scan_iter(match=f"cache.{func.__name__}:*", count=1000))
+            return sum(
+                1
+                for _ in database.scan_iter(
+                    match=f"cache.{func.__name__}:*", count=1000
+                )
+            )
 
         def _get_hash(item):
             if local:
                 return hash(item)
             if not isinstance(item, (str, int)):
-                raise TypeError("cache is only available with strings or ints in non-local mode!")
+                raise TypeError(
+                    "cache is only available with strings or ints in non-local mode!"
+                )
             return hashlib.sha1(str(item).encode()).hexdigest()
+
+        def _evict():
+            """Evicts a random item from the local cache."""
+            if not local:
+                raise ValueError("Cannot evict from Redis cache!")
+            _cache.pop(random.choice(tuple(_cache)), 0)
 
         async def wrapped(*args, **kwds):
             # Simple caching without ordering or size limit
@@ -721,6 +745,12 @@ async def get_all_users(bot):
     for user_id in user_ids:
         await fetch_get_user(user_id, bot=bot, member=False)
     logger.info("User cache finished")
+
+
+def prune_user_cache(count: int = 5):
+    """Evicts `count` items from the user cache."""
+    for _ in range(count):
+        _fetch_cached_user.evict()
 
 
 async def auto_decode(data: bytes):

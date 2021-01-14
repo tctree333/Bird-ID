@@ -33,7 +33,7 @@ from bot.core import rotate_cache, send_bird
 from bot.data import GenericError, database, logger
 from bot.filters import Filter
 from bot.functions import (backup_all, channel_setup, drone_attack,
-                           get_all_users, user_setup)
+                           get_all_users, prune_user_cache, user_setup)
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])
@@ -381,11 +381,18 @@ if __name__ == "__main__":
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, rotate_cache)
 
-    @tasks.loop(hours=12.0, count=1)
+    @tasks.loop(hours=3.0)
     async def refresh_user_cache():
         """Task to update User cache to increase performance of commands."""
         logger.info("TASK: Updating User cache")
         await get_all_users(bot)
+
+    @tasks.loop(minutes=8.0)
+    async def evict_user_cache():
+        """Task to remove keys from the User cache to ensure freshness."""
+        logger.info("TASK: Removing user keys")
+        await prune_user_cache(10)
+
 
     @tasks.loop(hours=6.0)
     async def refresh_backup():
