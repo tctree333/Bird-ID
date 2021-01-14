@@ -19,6 +19,7 @@ import time
 
 import discord
 from discord.ext import commands
+from discord.utils import escape_markdown as esc
 
 import bot.voice as voice_functions
 from bot.data import database, logger, states, taxons
@@ -78,9 +79,9 @@ class Race(commands.Cog):
                 if user is None:
                     user_info = "**Deleted**"
                 else:
-                    user_info = f"**{user.name}#{user.discriminator}**"
+                    user_info = f"**{esc(user.name)}#{user.discriminator}**"
             else:
-                user_info = f"**{user.name}#{user.discriminator}** ({user.mention})"
+                user_info = f"**{esc(user.name)}#{user.discriminator}** ({user.mention})"
 
             leaderboard += f"{i+1}. {user_info} - {int(stats[1])}\n"
 
@@ -126,9 +127,9 @@ class Race(commands.Cog):
             if user is None:
                 user_info = "Deleted"
             else:
-                user_info = f"{user.name}#{user.discriminator}"
+                user_info = f"{esc(user.name)}#{user.discriminator}"
         else:
-            user_info = f"{user.name}#{user.discriminator} ({user.mention})"
+            user_info = f"{esc(user.name)}#{user.discriminator} ({user.mention})"
 
         await ctx.send(
             f"**Congratulations, {user_info}!**\n"
