@@ -18,6 +18,7 @@ import os
 
 import sentry_sdk
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
@@ -55,3 +56,8 @@ middleware = [
 ]
 
 app = FastAPI(middleware=middleware)
+
+class NoCacheFileResponse(FileResponse):
+    def __init__(self, path, **kwargs):
+        kwargs["headers"] = {"Cache-Control": "no-cache"}
+        super().__init__(path, **kwargs)
