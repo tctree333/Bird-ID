@@ -17,13 +17,12 @@
 import random
 import urllib.parse
 
-from fastapi.responses import FileResponse, HTMLResponse
-from sentry_sdk import capture_exception
+from fastapi.responses import HTMLResponse
 
 from bot.data import birdList
 from bot.filters import Filter
 from web import practice, user
-from web.config import app
+from web.config import app, NoCacheFileResponse
 from web.data import logger
 from web.functions import get_media, get_sciname
 
@@ -55,10 +54,10 @@ async def bird_info():
 @app.get("/image/{bird}")
 async def bird_image(bird: str):
     path = await get_media(bird, "images", Filter())
-    return FileResponse(path=f"../{path[0]}")
+    return NoCacheFileResponse(path=f"../{path[0]}")
 
 
 @app.get("/song/{bird}")
 async def bird_song(bird: str):
     path = await get_media(bird, "songs", Filter())
-    return FileResponse(path=f"../{path[0]}")
+    return NoCacheFileResponse(path=f"../{path[0]}")
