@@ -36,7 +36,7 @@ sentry_sdk.init(
     integrations=[RedisIntegration()],
 )
 
-FRONTEND_URL = os.getenv("FRONTEND_URL")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://api.example.com")
 DATABASE_SESSION_EXPIRE = 172800  # 2 days
 
 middleware = [

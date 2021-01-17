@@ -14,10 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import asyncio
 import random
+from typing import Union
 
-from flask import session
+from fastapi import Request
 
 from bot.data import database, logger
 from bot.functions import user_setup
@@ -65,9 +65,9 @@ def web_session_setup(session_id):
         logger.info("session set up")
 
 
-def update_web_user(user_data):
+async def update_web_user(request: Request, user_data: dict):
     logger.info("updating user data")
-    session_id = get_session_id()
+    session_id = get_session_id(request)
     user_id = str(user_data["id"])
     database.hset(f"web.session:{session_id}", "user_id", user_id)
     database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)
@@ -80,7 +80,7 @@ def update_web_user(user_data):
             "discriminator": str(user_data["discriminator"]),
         },
     )
-    asyncio.run(user_setup(user_id))
+    await user_setup(user_id)
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
     if tempScore not in (0, -1):
         database.zincrby("users:global", tempScore, int(user_id))
@@ -88,17 +88,14 @@ def update_web_user(user_data):
     logger.info("updated user data")
 
 
-def get_session_id():
-    if "id" not in session:
-        session["id"] = start_session()
-        return str(session["id"])
-    if not verify_session(session["id"]):
-        session["id"] = start_session()
-        return str(session["id"])
-    return str(session["id"])
+def get_session_id(request: Request) -> str:
+    if ("id" not in request.session) or (not verify_session(request.session["id"])):
+        request.session["id"] = start_session()
+        return str(request.session["id"])
+    return str(request.session["id"])
 
 
-def start_session():
+def start_session() -> int:
     logger.info("creating session id")
     session_id = 0
     session_id = random.randint(420000000, 420999999)
@@ -110,7 +107,7 @@ def start_session():
     return session_id
 
 
-def verify_session(session_id):
+def verify_session(session_id) -> Union[int, bool]:
     session_id = str(session_id)
     logger.info(f"verifying session id: {session_id}")
     if not database.exists(f"web.session:{session_id}"):
