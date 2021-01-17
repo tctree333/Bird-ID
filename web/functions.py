@@ -25,7 +25,7 @@ from sentry_sdk import capture_exception
 from bot.core import _black_and_white, get_files, get_sciname, valid_types
 from bot.data import GenericError, birdList, database, logger, screech_owls
 from bot.filters import Filter
-from web.config import get_session_id
+from web.data import get_session_id
 
 
 async def send_bird(bird: str, media_type: str, filters: Filter):
