@@ -1,4 +1,4 @@
-# config.py | Flask server config
+# config.py | FastAPI server config
 # Copyright (C) 2019-2021  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@ middleware = [
     ),
     Middleware(
         SessionMiddleware,
-        secret_key=os.getenv("FLASK_SECRET_KEY"),
+        secret_key=os.getenv("SESSION_SECRET_KEY"),
         same_site="sttrict",
         https_only=True,
     ),

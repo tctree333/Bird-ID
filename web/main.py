@@ -1,4 +1,4 @@
-# main.py | main Flask routes and error handling
+# main.py | main FastAPI routes and error handling
 # Copyright (C) 2019-2021  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 import random
 import urllib.parse
 
+from fastapi import Request
 from fastapi.responses import HTMLResponse
 
 from bot.data import birdList
@@ -52,12 +53,12 @@ async def bird_info():
 
 
 @app.get("/image/{bird}")
-async def bird_image(bird: str):
-    path = await get_media(bird, "images", Filter())
+async def bird_image(request: Request, bird: str):
+    path = await get_media(request, bird, "images", Filter())
     return NoCacheFileResponse(path=f"../{path[0]}")
 
 
 @app.get("/song/{bird}")
-async def bird_song(bird: str):
-    path = await get_media(bird, "songs", Filter())
+async def bird_song(request: Request, bird: str):
+    path = await get_media(request, bird, "songs", Filter())
     return NoCacheFileResponse(path=f"../{path[0]}")

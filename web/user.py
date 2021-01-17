@@ -1,4 +1,4 @@
-# user.py | user related Flask routes
+# user.py | user related FastAPI routes
 # Copyright (C) 2019-2021  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
