@@ -19,7 +19,7 @@ import random
 from functools import partial
 
 import eyed3
-from flask import abort
+from fastapi import HTTPException, Request
 from sentry_sdk import capture_exception
 
 from bot.core import _black_and_white, get_files, get_sciname, valid_types
@@ -28,14 +28,14 @@ from bot.filters import Filter
 from web.data import get_session_id
 
 
-async def send_bird(bird: str, media_type: str, filters: Filter):
+async def send_bird(request: Request, bird: str, media_type: str, filters: Filter):
     if bird == "":
         logger.error("error - bird is blank")
-        abort(406, "Bird is blank")
+        raise HTTPException(status_code=406, detail="Bird is blank")
 
     if media_type not in ("images", "songs"):
         logger.error(f"invalid media type {media_type}")
-        abort(406, "Invalid media type")
+        raise HTTPException(status_code=406, detail="Invalid media type")
 
     # add special condition for screech owls
     # since screech owl is a genus and SciOly
@@ -45,11 +45,11 @@ async def send_bird(bird: str, media_type: str, filters: Filter):
         bird = random.choice(screech_owls)
 
     try:
-        filename, ext = await get_media(bird, media_type, filters)
+        filename, ext = await get_media(request, bird, media_type, filters)
     except GenericError as e:
         logger.info(e)
         capture_exception(e)
-        abort(503, str(e))
+        raise HTTPException(status_code=503, detail=str(e))
 
     if media_type == "images":
         if filters.bw:
@@ -70,7 +70,9 @@ async def send_bird(bird: str, media_type: str, filters: Filter):
     return file_stream, ext
 
 
-async def get_media(bird, media_type, filters):  # images or songs
+async def get_media(
+    request: Request, bird: str, media_type: str, filters: Filter
+):  # images or songs
     if bird not in birdList + screech_owls:
         raise GenericError("Invalid Bird", code=990)
 
@@ -80,7 +82,7 @@ async def get_media(bird, media_type, filters):  # images or songs
     except GenericError:
         sciBird = bird
 
-    session_id = get_session_id()
+    session_id = get_session_id(request)
     database_key = f"web.session:{session_id}"
 
     media = await get_files(sciBird, media_type, filters)
