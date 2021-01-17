@@ -17,9 +17,12 @@
 import os
 
 import sentry_sdk
-from flask import Flask
-from sentry_sdk.integrations.flask import FlaskIntegration
+from fastapi import FastAPI
+from fastapi.middleware import Middleware
+from fastapi.middleware.cors import CORSMiddleware
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sentry_sdk.integrations.redis import RedisIntegration
+from starlette.middleware.sessions import SessionMiddleware
 
 sentry_sdk.init(
     release=f"{os.getenv('CURRENT_PLATFORM')} Release "
@@ -29,20 +32,26 @@ sentry_sdk.init(
         else f"{os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}"
     ),
     dsn=os.getenv("SENTRY_API_DSN"),
-    integrations=[FlaskIntegration(), RedisIntegration()],
+    integrations=[RedisIntegration()],
 )
-app = Flask(__name__)
-app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
-app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
-app.config["SESSION_COOKIE_SECURE"] = True
-app.secret_key = os.getenv("FLASK_SECRET_KEY")
+
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 DATABASE_SESSION_EXPIRE = 172800  # 2 days
 
+middleware = [
+    Middleware(SentryAsgiMiddleware),
+    Middleware(
+        CORSMiddleware,
+        allow_origins=[FRONTEND_URL],
+        allow_methods=["GET", "POST"],
+        allow_credentials=True,
+    ),
+    Middleware(
+        SessionMiddleware,
+        secret_key=os.getenv("FLASK_SECRET_KEY"),
+        same_site="sttrict",
+        https_only=True,
+    ),
+]
 
-@app.after_request  # enable CORS
-def after_request(response):
-    header = response.headers
-    header["Access-Control-Allow-Origin"] = FRONTEND_URL
-    header["Access-Control-Allow-Credentials"] = "true"
-    return response
+app = FastAPI(middleware=middleware)
