@@ -88,9 +88,9 @@ async def get_bird(
         database.hset(f"web.session:{session_id}", "media_type", str(media_type))
         logger.info("currentBird: " + str(currentBird))
         database.hset(f"web.session:{session_id}", "answered", "0")
-        file_object, ext = await send_bird(request, currentBird, media_type, filters)
+        file_object, ext, content_type = await send_bird(request, currentBird, media_type, filters)
     else:  # if no, give the same bird
-        file_object, ext = await send_bird(
+        file_object, ext, content_type = await send_bird(
             request,
             database.hget(f"web.session:{session_id}", "bird").decode("utf-8"),
             database.hget(f"web.session:{session_id}", "media_type").decode("utf-8"),
@@ -99,11 +99,11 @@ async def get_bird(
 
     logger.info(f"file_object: {file_object}")
     logger.info(f"extension: {ext}")
-    return NoCacheFileResponse(path=file_object, filename=f"bird.{ext}")
+    return NoCacheFileResponse(path=file_object, media_type=content_type)
 
 
 @router.get("/check")
-async def check_bird(request: Request, guess: str = ""):
+async def check_bird(request: Request, guess: str):
     logger.info("endpoint: check bird")
 
     session_id = get_session_id(request)
@@ -113,9 +113,6 @@ async def check_bird(request: Request, guess: str = ""):
     if currentBird == "":  # no bird
         logger.info("bird is blank")
         raise HTTPException(status_code=406, detail="Bird is blank")
-    if guess == "":
-        logger.info("empty guess")
-        raise HTTPException(status_code=406, detail="Empty guess")
 
     # if there is a bird, it checks answer
     logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))

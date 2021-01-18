@@ -25,7 +25,7 @@ from bot.filters import Filter
 from web import practice, user
 from web.config import app, NoCacheFileResponse
 from web.data import logger
-from web.functions import get_media, get_sciname
+from web.functions import send_bird, get_sciname
 
 app.include_router(practice.router)
 app.include_router(user.router)
@@ -42,23 +42,21 @@ async def bird_info():
     logger.info("fetching random bird")
     bird = random.choice(birdList)
     logger.info(f"bird: {bird}")
-    content = {
+    return {
         "bird": bird,
         "sciName": (await get_sciname(bird)),
         "imageURL": urllib.parse.quote(f"/image/{bird}"),
         "songURL": urllib.parse.quote(f"/song/{bird}"),
     }
-    logger.info(f"{bird} sent!")
-    return content
 
 
 @app.get("/image/{bird}")
 async def bird_image(request: Request, bird: str):
-    path = await get_media(request, bird, "images", Filter())
-    return NoCacheFileResponse(path=f"../{path[0]}")
+    info = await send_bird(request, bird, "images", Filter())
+    return NoCacheFileResponse(path=info[0], media_type=info[2])
 
 
 @app.get("/song/{bird}")
 async def bird_song(request: Request, bird: str):
-    path = await get_media(request, bird, "songs", Filter())
-    return NoCacheFileResponse(path=f"../{path[0]}")
+    info = await send_bird(request, bird, "songs", Filter())
+    return NoCacheFileResponse(path=info[0], media_type=info[2])

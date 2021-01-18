@@ -27,6 +27,10 @@ from bot.data import GenericError, birdList, database, logger, screech_owls
 from bot.filters import Filter
 from web.data import get_session_id
 
+content_type_lookup = {
+    ext: content for media in valid_types for content, ext in valid_types[media].items()
+}
+
 
 async def send_bird(request: Request, bird: str, media_type: str, filters: Filter):
     if bird == "":
@@ -45,7 +49,7 @@ async def send_bird(request: Request, bird: str, media_type: str, filters: Filte
         bird = random.choice(screech_owls)
 
     try:
-        filename, ext = await get_media(request, bird, media_type, filters)
+        filename, ext, content_type = await get_media(request, bird, media_type, filters)
     except GenericError as e:
         logger.info(e)
         capture_exception(e)
@@ -58,16 +62,16 @@ async def send_bird(request: Request, bird: str, media_type: str, filters: Filte
                 None, partial(_black_and_white, filename)
             )
         else:
-            file_stream = f"../{filename}"
+            file_stream = filename
     elif media_type == "songs":
         # remove spoilers in tag metadata
         audioFile = eyed3.load(filename)
         if audioFile is not None and audioFile.tag is not None:
             audioFile.tag.remove(filename)
 
-        file_stream = f"../{filename}"
+        file_stream = filename
 
-    return file_stream, ext
+    return file_stream, ext, content_type
 
 
 async def get_media(
@@ -75,6 +79,10 @@ async def get_media(
 ):  # images or songs
     if bird not in birdList + screech_owls:
         raise GenericError("Invalid Bird", code=990)
+
+    if media_type not in ("images", "songs"):
+        logger.error(f"invalid media type {media_type}")
+        raise HTTPException(status_code=406, detail="Invalid media type")
 
     # fetch scientific names of birds
     try:
@@ -98,10 +106,7 @@ async def get_media(
             media_path = media[y]
             extension = media_path.split(".")[-1]
             logger.info("extension: " + str(extension))
-            if (
-                media_type in ("images", "songs")
-                and extension.lower() in valid_types[media_type].values()
-            ):
+            if extension.lower() in valid_types[media_type].values():
                 logger.info("found one!")
                 break
             if y == prevJ:
@@ -111,4 +116,4 @@ async def get_media(
     else:
         raise GenericError(f"No {media_type.title()} Found", code=100)
 
-    return media_path, extension
+    return media_path, extension, content_type_lookup[extension]
