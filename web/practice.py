@@ -20,7 +20,7 @@ import string
 from fastapi import APIRouter, HTTPException, Request
 
 from bot.core import spellcheck
-from bot.data import birdList, get_wiki_url, songBirds
+from bot.data import birdList, get_wiki_url, songBirds, alpha_codes
 from bot.filters import Filter
 from bot.functions import (
     bird_setup,
@@ -115,11 +115,18 @@ async def check_bird(request: Request, guess: str):
         raise HTTPException(status_code=500, detail="Bird is blank")
 
     # if there is a bird, it checks answer
-    logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
-    logger.info("args: " + str(guess.lower().replace("-", " ")))
+    sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
+    guess = guess.lower().replace("-", " ")
+    currentBird = currentBird.lower().replace("-", " ")
+    alpha_code = alpha_codes.get(string.capwords(currentBird))
+    logger.info("currentBird: " + currentBird)
+    logger.info("args: " + guess)
 
-    sciBird = await get_sciname(currentBird)
-    if spellcheck(guess, currentBird) or spellcheck(guess, sciBird):
+    if (
+        spellcheck(guess, currentBird)
+        or spellcheck(guess, sciBird)
+        or guess.upper() == alpha_code
+    ):
         logger.info("correct")
 
         database.hset(f"web.session:{session_id}", "bird", "")
