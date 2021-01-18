@@ -59,8 +59,3 @@ middleware = [
 ]
 
 app = FastAPI(middleware=middleware)
-
-class NoCacheFileResponse(FileResponse):
-    def __init__(self, path, **kwargs):
-        kwargs["headers"] = {"Cache-Control": "no-cache"}
-        super().__init__(path, **kwargs)

@@ -16,10 +16,13 @@
 
 import asyncio
 import random
+import io
 from functools import partial
+from typing import Union
 
 import eyed3
 from fastapi import HTTPException, Request
+from fastapi.responses import FileResponse, StreamingResponse
 from sentry_sdk import capture_exception
 
 from bot.core import _black_and_white, get_files, get_sciname, valid_types
@@ -32,14 +35,24 @@ content_type_lookup = {
 }
 
 
+def send_file(
+    fp: Union[str, io.BufferedIOBase], **kwargs
+) -> Union[FileResponse, StreamingResponse]:
+    kwargs.setdefault("headers", {})
+    kwargs["headers"]["Cache-Control"] = "no-cache"
+    if isinstance(fp, str):
+        return FileResponse(fp, **kwargs)
+    return StreamingResponse(fp, **kwargs)
+
+
 async def send_bird(request: Request, bird: str, media_type: str, filters: Filter):
     if bird == "":
         logger.error("error - bird is blank")
-        raise HTTPException(status_code=406, detail="Bird is blank")
+        raise HTTPException(status_code=500, detail="Bird is blank")
 
     if media_type not in ("images", "songs"):
         logger.error(f"invalid media type {media_type}")
-        raise HTTPException(status_code=406, detail="Invalid media type")
+        raise HTTPException(status_code=422, detail="Invalid media type")
 
     # add special condition for screech owls
     # since screech owl is a genus and SciOly
@@ -49,7 +62,9 @@ async def send_bird(request: Request, bird: str, media_type: str, filters: Filte
         bird = random.choice(screech_owls)
 
     try:
-        filename, ext, content_type = await get_media(request, bird, media_type, filters)
+        filename, ext, content_type = await get_media(
+            request, bird, media_type, filters
+        )
     except GenericError as e:
         logger.info(e)
         capture_exception(e)
@@ -82,7 +97,7 @@ async def get_media(
 
     if media_type not in ("images", "songs"):
         logger.error(f"invalid media type {media_type}")
-        raise HTTPException(status_code=406, detail="Invalid media type")
+        raise HTTPException(status_code=422, detail="Invalid media type")
 
     # fetch scientific names of birds
     try:

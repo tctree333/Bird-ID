@@ -22,7 +22,7 @@ from fastapi import APIRouter, HTTPException
 
 from bot.core import _black_and_white
 from web.data import logger
-from web.config import NoCacheFileResponse
+from web.functions import send_file
 
 router = APIRouter(prefix="/tools", tags=["tools"])
 
@@ -42,7 +42,7 @@ async def convert_bw(url: str):
         raise HTTPException(status_code=415, detail="invalid url")
 
     image, content_type = await _bw_helper(url)
-    return NoCacheFileResponse(image, media_type=content_type)
+    return send_file(image, media_type=content_type)
 
 
 async def _bw_helper(url):

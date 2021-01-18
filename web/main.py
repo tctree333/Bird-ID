@@ -23,9 +23,9 @@ from fastapi.responses import HTMLResponse
 from bot.data import birdList
 from bot.filters import Filter
 from web import practice, user
-from web.config import app, NoCacheFileResponse
+from web.config import app
 from web.data import logger
-from web.functions import send_bird, get_sciname
+from web.functions import send_file, get_sciname, send_bird
 
 app.include_router(practice.router)
 app.include_router(user.router)
@@ -53,10 +53,10 @@ async def bird_info():
 @app.get("/image/{bird}")
 async def bird_image(request: Request, bird: str):
     info = await send_bird(request, bird, "images", Filter())
-    return NoCacheFileResponse(path=info[0], media_type=info[2])
+    return send_file(info[0], media_type=info[2])
 
 
 @app.get("/song/{bird}")
 async def bird_song(request: Request, bird: str):
     info = await send_bird(request, bird, "songs", Filter())
-    return NoCacheFileResponse(path=info[0], media_type=info[2])
+    return send_file(info[0], media_type=info[2])

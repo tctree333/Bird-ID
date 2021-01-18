@@ -17,7 +17,7 @@
 import random
 import string
 
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from bot.core import spellcheck
 from bot.data import birdList, get_wiki_url, songBirds
@@ -30,8 +30,7 @@ from bot.functions import (
     streak_increment,
 )
 from web.data import database, get_session_id, logger
-from web.config import NoCacheFileResponse
-from web.functions import get_sciname, send_bird
+from web.functions import send_file, get_sciname, send_bird
 
 router = APIRouter(prefix="/practice", tags=["practice"])
 
@@ -68,7 +67,7 @@ async def get_bird(
 
     if media_type not in ("images", "songs"):
         logger.error(f"invalid media type {media_type}")
-        raise HTTPException(status_code=406, detail="Invalid media type")
+        raise HTTPException(status_code=422, detail="Invalid media type")
 
     answered = int(database.hget(f"web.session:{session_id}", "answered"))
     logger.info(f"answered: {answered}")
@@ -88,7 +87,9 @@ async def get_bird(
         database.hset(f"web.session:{session_id}", "media_type", str(media_type))
         logger.info("currentBird: " + str(currentBird))
         database.hset(f"web.session:{session_id}", "answered", "0")
-        file_object, ext, content_type = await send_bird(request, currentBird, media_type, filters)
+        file_object, ext, content_type = await send_bird(
+            request, currentBird, media_type, filters
+        )
     else:  # if no, give the same bird
         file_object, ext, content_type = await send_bird(
             request,
@@ -99,7 +100,7 @@ async def get_bird(
 
     logger.info(f"file_object: {file_object}")
     logger.info(f"extension: {ext}")
-    return NoCacheFileResponse(path=file_object, media_type=content_type)
+    return send_file(file_object, media_type=content_type)
 
 
 @router.get("/check")
@@ -112,7 +113,7 @@ async def check_bird(request: Request, guess: str):
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird == "":  # no bird
         logger.info("bird is blank")
-        raise HTTPException(status_code=406, detail="Bird is blank")
+        raise HTTPException(status_code=500, detail="Bird is blank")
 
     # if there is a bird, it checks answer
     logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
@@ -183,7 +184,7 @@ async def skip_bird(request: Request):
         url = get_wiki_url(currentBird)  # sends wiki page
     else:
         logger.info("bird is blank")
-        raise HTTPException(status_code=406, detail="Bird is blank")
+        raise HTTPException(status_code=422, detail="Bird is blank")
     return {"answer": currentBird, "sciname": scibird, "wiki": url}
 
 
@@ -197,4 +198,4 @@ async def hint_bird(request: Request):
         return {"hint": currentBird[0]}
 
     logger.info("bird is blank")
-    raise HTTPException(status_code=406, detail="Bird is blank")
+    raise HTTPException(status_code=500, detail="Bird is blank")
