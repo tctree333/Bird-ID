@@ -21,7 +21,7 @@ from fastapi import Request
 
 from bot.data import database, logger
 from bot.functions import user_setup
-from web.config import DATABASE_SESSION_EXPIRE
+from web.config import DATABASE_SESSION_EXPIRE, DATABASE_SESSION_USER_EXPIRE
 
 # Web Database Keys
 
@@ -68,7 +68,7 @@ async def update_web_user(request: Request, user_data: dict):
     session_id = get_session_id(request)
     user_id = str(user_data["id"])
     database.hset(f"web.session:{session_id}", "user_id", user_id)
-    database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)
+    database.expire(f"web.session:{session_id}", DATABASE_SESSION_USER_EXPIRE)
     database.hset(
         f"web.user:{user_id}",
         mapping={

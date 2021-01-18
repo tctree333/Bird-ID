@@ -37,7 +37,9 @@ sentry_sdk.init(
 )
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://api.example.com")
-DATABASE_SESSION_EXPIRE = 172800  # 2 days
+SESSION_COOKIE_EXPIRE = 259200  # 3 days
+DATABASE_SESSION_EXPIRE = 21600  # 6 hours
+DATABASE_SESSION_USER_EXPIRE = 259200  # 3 days
 
 middleware = [
     Middleware(SentryAsgiMiddleware),
@@ -50,7 +52,7 @@ middleware = [
     Middleware(
         SessionMiddleware,
         secret_key=os.getenv("SESSION_SECRET_KEY"),
-        max_age=DATABASE_SESSION_EXPIRE,
+        max_age=SESSION_COOKIE_EXPIRE,
         same_site="lax",
         https_only=True,
     ),
