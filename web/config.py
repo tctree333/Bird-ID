@@ -18,9 +18,10 @@ import os
 
 import sentry_sdk
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import FileResponse
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sentry_sdk.integrations.redis import RedisIntegration
 from starlette.middleware.sessions import SessionMiddleware
@@ -50,9 +51,11 @@ middleware = [
     Middleware(
         SessionMiddleware,
         secret_key=os.getenv("SESSION_SECRET_KEY"),
-        same_site="sttrict",
+        max_age=DATABASE_SESSION_EXPIRE,
+        same_site="lax",
         https_only=True,
     ),
+    Middleware(GZipMiddleware, minimum_size=1000)
 ]
 
 app = FastAPI(middleware=middleware)
