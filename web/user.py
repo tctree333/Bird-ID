@@ -19,7 +19,7 @@ import re
 
 from authlib.common.errors import AuthlibBaseError
 from authlib.integrations.starlette_client import OAuth
-from fastapi import APIRouter, Cookie, Request, Response, HTTPException
+from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import RedirectResponse, JSONResponse
 from sentry_sdk import capture_exception
 
@@ -49,7 +49,6 @@ oauth.register(
 @router.get("/login")
 async def login(
     request: Request,
-    response: Response,
     redirect: str = "/",
 ):
     logger.info("endpoint: login")
@@ -57,14 +56,6 @@ async def login(
     if relative_url_regex.fullmatch(redirect) is None:
         redirect = "/"
     request.session["redirect"] = redirect
-    # response.set_cookie(
-    #     key="redirect",
-    #     value=redirect,
-    #     max_age=180,
-    #     samesite="lax",
-    #     httponly=True,
-    #     secure=True,
-    # )
     redirect_uri = request.url_for("authorize")
     return await oauth.discord.authorize_redirect(request, redirect_uri)
 
@@ -154,6 +145,6 @@ def profile(request: Request):
 
 @app.exception_handler(AuthlibBaseError)
 def handle_authlib_error(request: Request, error: AuthlibBaseError):
-    logger.info(f"error with oauth login: {error}")
+    logger.info(f"error with oauth login: {error}; request: {request}")
     capture_exception(error)
     return JSONResponse(status_code=500, content={"detail": "An error occurred with the login"})
