@@ -44,7 +44,6 @@ oauth.register(
     api_base_url="https://discord.com/api/",
     client_kwargs={"scope": "identify", "prompt": "consent"},
 )
-discord = oauth.discord
 
 
 @router.get("/login")
@@ -57,14 +56,15 @@ async def login(
 
     if relative_url_regex.fullmatch(redirect) is None:
         redirect = "/"
-    response.set_cookie(
-        key="redirect",
-        value=redirect,
-        max_age=180,
-        samesite="lax",
-        httponly=True,
-        secure=True,
-    )
+    request.session["redirect"] = redirect
+    # response.set_cookie(
+    #     key="redirect",
+    #     value=redirect,
+    #     max_age=180,
+    #     samesite="lax",
+    #     httponly=True,
+    #     secure=True,
+    # )
     redirect_uri = request.url_for("authorize")
     return await oauth.discord.authorize_redirect(request, redirect_uri)
 
@@ -92,8 +92,8 @@ async def logout(request: Request, redirect: str = "/"):
     return RedirectResponse(redirect_url)
 
 
-@router.route("/authorize")
-async def authorize(request: Request, redirect: str = Cookie("/")):
+@router.get("/authorize")
+async def authorize(request: Request):
     logger.info("endpoint: authorize")
 
     token = await oauth.discord.authorize_access_token(request)
@@ -102,17 +102,16 @@ async def authorize(request: Request, redirect: str = Cookie("/")):
 
     await update_web_user(request, profile_)
 
+    redirect = request.session.pop("redirect", "/")
     if relative_url_regex.fullmatch(redirect) is not None:
         redirection = FRONTEND_URL + redirect
     else:
         redirection = FRONTEND_URL + "/"
 
-    request.session.pop("redirect", None)
-
     return RedirectResponse(redirection)
 
 
-@router.route("/profile")
+@router.get("/profile")
 def profile(request: Request):
     logger.info("endpoint: profile")
 
@@ -154,7 +153,7 @@ def profile(request: Request):
 
 
 @app.exception_handler(AuthlibBaseError)
-def handle_authlib_error(error: AuthlibBaseError):
+def handle_authlib_error(request: Request, error: AuthlibBaseError):
     logger.info(f"error with oauth login: {error}")
     capture_exception(error)
     return JSONResponse(status_code=500, content={"detail": "An error occurred with the login"})
