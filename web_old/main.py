@@ -23,10 +23,10 @@ from sentry_sdk import capture_exception
 
 from bot.data import birdList
 from bot.filters import Filter
-from web import practice, user
-from web.config import app
-from web.data import logger
-from web.functions import get_media, get_sciname
+from web_old import practice, user
+from web_old.config import app
+from web_old.data import logger
+from web_old.functions import get_media, get_sciname
 
 app.register_blueprint(practice.bp)
 app.register_blueprint(user.bp)

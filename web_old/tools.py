@@ -22,7 +22,7 @@ import aiohttp
 import flask
 
 from bot.core import _black_and_white
-from web.data import logger
+from web_old.data import logger
 
 bp = flask.Blueprint("tools", __name__, url_prefix="/tools")
 

@@ -25,8 +25,8 @@ from bot.data import birdList, get_wiki_url, songBirds
 from bot.filters import Filter
 from bot.functions import (bird_setup, incorrect_increment, score_increment,
                            session_increment, streak_increment)
-from web.data import database, get_session_id, logger
-from web.functions import get_sciname, send_bird
+from web_old.data import database, get_session_id, logger
+from web_old.functions import get_sciname, send_bird
 
 bp = flask.Blueprint("practice", __name__, url_prefix="/practice")
 

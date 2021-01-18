@@ -21,7 +21,7 @@ from flask import session
 
 from bot.data import database, logger
 from bot.functions import user_setup
-from web.config import DATABASE_SESSION_EXPIRE
+from web_old.config import DATABASE_SESSION_EXPIRE
 
 # Web Database Keys
 
