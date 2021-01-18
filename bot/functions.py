@@ -19,6 +19,7 @@ import concurrent.futures
 import datetime
 import difflib
 import functools
+import hashlib
 import itertools
 import os
 import pickle
@@ -29,35 +30,97 @@ import chardet
 import discord
 from discord.ext import commands
 
-from bot.data import (GenericError, birdList, birdListMaster, database, logger,
-                      sciListMaster, songBirds, states, taxons)
+from bot.data import (
+    GenericError,
+    birdList,
+    birdListMaster,
+    database,
+    logger,
+    sciListMaster,
+    songBirds,
+    states,
+    taxons,
+)
 
 
-def cache(func=None, pre=None):
+def cache(func=None, pre=None, local=True):
     """Cache decorator based on functools.lru_cache.
 
-    This does not have a max_size and does not evict items.
+    This is not a very good cache, but it "works" for our
+    purposes.
+
+    This (optionally) caches items into a Redis database
+    (bot.data.database). It does not have a max_size but sets
+    key expiration to 7 days. Items are pickled before storing
+    into the database.
+
+    Cache keys are based on a sha1 hash. Currently, only strings
+    and integers are supported and it will not tell the difference
+    between a string and an integer with the same value.
+
+    If multiple functions with the same name are used, colisions
+    will occur.
+
     In addition, results are only cached by the first positional
-    argument. If pre is provided, the cache key will be the 
+    argument. If pre is provided, the cache key will be the
     first positional argument transformed by pre.
     """
 
     def wrapper(func):
+        _cache = {}
         sentinel = object()
-
-        cache_ = {}
         hits = misses = 0
-        cache_get = cache_.get
-        cache_len = cache_.__len__
+
+        def _cache_store(key, value):
+            if local:
+                _cache[key] = value
+                return
+            pickled = pickle.dumps(value, protocol=4)
+            database.set(
+                f"cache.{func.__name__}:{key}", pickled, ex=604800
+            )  # 60*60*24*7
+
+        def _cache_get(key, default=None):
+            if local:
+                return _cache.get(key, default)
+            data = database.get(f"cache.{func.__name__}:{key}")
+            if data is None:
+                return default
+            return pickle.loads(data)
+
+        def _cache_len():
+            if local:
+                return _cache.__len__()
+            return sum(
+                1
+                for _ in database.scan_iter(
+                    match=f"cache.{func.__name__}:*", count=1000
+                )
+            )
+
+        def _get_hash(item):
+            if local:
+                return hash(item)
+            if not isinstance(item, (str, int)):
+                raise TypeError(
+                    "cache is only available with strings or ints in non-local mode!"
+                )
+            return hashlib.sha1(str(item).encode()).hexdigest()
+
+        def _evict():
+            """Evicts a random item from the local cache."""
+            if not local:
+                raise ValueError("Cannot evict from Redis cache!")
+            _cache.pop(random.choice(tuple(_cache)), 0)
 
         async def wrapped(*args, **kwds):
             # Simple caching without ordering or size limit
             nonlocal hits, misses
             if pre:
-                key = hash(pre(args[0]))
+                key = _get_hash(pre(args[0]))
             else:
-                key = hash(args[0])
-            result = cache_get(key, sentinel)
+                key = _get_hash(args[0])
+            result = _cache_get(key, sentinel)
             if result is not sentinel:
                 # print("hit")
                 hits += 1
@@ -65,12 +128,12 @@ def cache(func=None, pre=None):
             # print("miss")
             misses += 1
             result = await func(*args, **kwds)
-            cache_[key] = result
+            _cache_store(key, result)
             return result
 
         def cache_info():
             """Report cache statistics"""
-            return functools._CacheInfo(hits, misses, None, cache_len())
+            return functools._CacheInfo(hits, misses, None, _cache_len())
 
         wrapped.cache_info = cache_info
         return functools.update_wrapper(wrapped, func)
@@ -682,6 +745,12 @@ async def get_all_users(bot):
     for user_id in user_ids:
         await fetch_get_user(user_id, bot=bot, member=False)
     logger.info("User cache finished")
+
+
+def prune_user_cache(count: int = 5):
+    """Evicts `count` items from the user cache."""
+    for _ in range(count):
+        _fetch_cached_user.evict()
 
 
 async def auto_decode(data: bytes):
