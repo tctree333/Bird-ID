@@ -27,7 +27,6 @@ from web.config import DATABASE_SESSION_EXPIRE
 
 # web.session:session_id : {
 #   bird: ""
-#   media_type: ""
 #   answered: 1
 #   prevB: ""
 #   prevJ: 20
@@ -53,7 +52,6 @@ def web_session_setup(session_id):
             f"web.session:{session_id}",
             mapping={
                 "bird": "",
-                "media_type": "",
                 "answered": 1,  # true = 1, false = 0
                 "prevB": "",
                 "prevJ": 20,

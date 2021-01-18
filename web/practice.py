@@ -84,7 +84,6 @@ async def get_bird(
             currentBird = random.choice(id_list)
         database.hset(f"web.session:{session_id}", "prevB", str(currentBird))
         database.hset(f"web.session:{session_id}", "bird", str(currentBird))
-        database.hset(f"web.session:{session_id}", "media_type", str(media_type))
         logger.info("currentBird: " + str(currentBird))
         database.hset(f"web.session:{session_id}", "answered", "0")
         file_object, ext, content_type = await send_bird(
@@ -94,7 +93,7 @@ async def get_bird(
         file_object, ext, content_type = await send_bird(
             request,
             database.hget(f"web.session:{session_id}", "bird").decode("utf-8"),
-            database.hget(f"web.session:{session_id}", "media_type").decode("utf-8"),
+            media_type,
             filters,
         )
 
