@@ -107,7 +107,7 @@ def cache(func=None, pre=None, local=True):
                 )
             return hashlib.sha1(str(item).encode()).hexdigest()
 
-        def _evict():
+        def evict():
             """Evicts a random item from the local cache."""
             if not local:
                 raise ValueError("Cannot evict from Redis cache!")
