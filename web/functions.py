@@ -48,7 +48,7 @@ def send_file(
 async def send_bird(request: Request, bird: str, media_type: str, filters: Filter):
     if bird == "":
         logger.error("error - bird is blank")
-        raise HTTPException(status_code=500, detail="Bird is blank")
+        raise HTTPException(status_code=422, detail="Bird is blank")
 
     if media_type not in ("images", "songs"):
         logger.error(f"invalid media type {media_type}")

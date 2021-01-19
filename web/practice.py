@@ -26,7 +26,6 @@ from bot.functions import (
     bird_setup,
     incorrect_increment,
     score_increment,
-    session_increment,
     streak_increment,
 )
 from web.data import database, get_session_id, logger
@@ -77,7 +76,6 @@ async def get_bird(
         currentBird = random.choice(id_list)
         user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
         if user_id != 0:
-            session_increment(user_id, "total", 1)
             increment_bird_frequency(currentBird, user_id)
         prevB = database.hget(f"web.session:{session_id}", "prevB").decode("utf-8")
         while currentBird == prevB and len(id_list) > 1:
@@ -112,7 +110,7 @@ async def check_bird(request: Request, guess: str):
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird == "":  # no bird
         logger.info("bird is blank")
-        raise HTTPException(status_code=500, detail="Bird is blank")
+        raise HTTPException(status_code=422, detail="Bird is blank")
 
     # if there is a bird, it checks answer
     sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
@@ -136,7 +134,6 @@ async def check_bird(request: Request, guess: str):
         if user_id != 0:
             bird_setup(user_id, currentBird)
             score_increment(user_id, 1)
-            session_increment(user_id, "correct", 1)
             streak_increment(user_id, 1)
         elif tempScore >= 10:
             logger.info("trial maxed")
@@ -161,7 +158,6 @@ async def check_bird(request: Request, guess: str):
     if user_id != 0:
         bird_setup(user_id, currentBird)
         incorrect_increment(user_id, currentBird, 1)
-        session_increment(user_id, "incorrect", 1)
         streak_increment(user_id, None)  # reset streak
 
     url = get_wiki_url(currentBird)
@@ -204,4 +200,4 @@ async def hint_bird(request: Request):
         return {"hint": currentBird[0]}
 
     logger.info("bird is blank")
-    raise HTTPException(status_code=500, detail="Bird is blank")
+    raise HTTPException(status_code=422, detail="Bird is blank")

@@ -123,7 +123,7 @@ def profile(request: Request):
             "discriminator",
         )
     )
-    placings = int(database.zscore("users:global", str(user_id)))
+    score = int(database.zscore("users:global", str(user_id)))
     max_streak = int(database.zscore("streak.max:global", str(user_id)))
     missed_birds = [
         [stats[0].decode("utf-8"), int(stats[1])]
@@ -136,7 +136,7 @@ def profile(request: Request):
         "avatar_url": avatar_url,
         "username": username,
         "discriminator": discriminator,
-        "rank": placings,
+        "score": score,
         "max_streak": max_streak,
         "missed": missed_birds,
     }
