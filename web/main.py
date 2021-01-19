@@ -1,4 +1,4 @@
-# main.py | main Flask routes and error handling
+# main.py | main FastAPI routes and error handling
 # Copyright (C) 2019-2021  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
@@ -14,79 +14,49 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import asyncio
 import random
 import urllib.parse
 
-import flask
-from sentry_sdk import capture_exception
+from fastapi import Request
+from fastapi.responses import HTMLResponse
 
 from bot.data import birdList
 from bot.filters import Filter
 from web import practice, user
-from web.config import app, logger
-from web.functions import get_media, get_sciname
+from web.config import app
+from web.data import logger
+from web.functions import send_file, get_sciname, send_bird
 
-app.register_blueprint(practice.bp)
-app.register_blueprint(user.bp)
+app.include_router(practice.router)
+app.include_router(user.router)
 
 
-@app.route("/")
+@app.get("/", response_class=HTMLResponse)
 def api_index():
     logger.info("index page accessed")
     return "<h1>Hello!</h1><p>This is the index page for the Bird-ID internal API.<p>"
 
 
-@app.route("/bird")
-def bird_info():
+@app.get("/bird")
+async def bird_info():
     logger.info("fetching random bird")
-    content = {}
     bird = random.choice(birdList)
     logger.info(f"bird: {bird}")
-    content["bird"] = bird
-    content["sciName"] = asyncio.run(get_sciname(bird))
-    content["imageURL"] = urllib.parse.quote(f"/image/{bird}")
-    content["songURL"] = urllib.parse.quote(f"/song/{bird}")
-    logger.info(f"{bird} sent!")
-    return content
+    return {
+        "bird": bird,
+        "sciName": (await get_sciname(bird)),
+        "imageURL": urllib.parse.quote(f"/image/{bird}"),
+        "songURL": urllib.parse.quote(f"/song/{bird}"),
+    }
 
 
-@app.route("/image/<string:bird>")
-def bird_image(bird):
-    path = asyncio.run(get_media(bird, "images", Filter()))
-    return flask.send_file(f"../{path[0]}")
+@app.get("/image/{bird}")
+async def bird_image(request: Request, bird: str):
+    info = await send_bird(request, bird, "images", Filter())
+    return send_file(info[0], media_type=info[2])
 
 
-@app.route("/song/<string:bird>")
-def bird_song(bird):
-    path = asyncio.run(get_media(bird, "songs", Filter()))
-    return flask.send_file(f"../{path[0]}")
-
-
-@app.errorhandler(403)
-def not_allowed(e):
-    capture_exception(e)
-    return flask.jsonify(error=str(e)), 403
-
-
-@app.errorhandler(404)
-def not_found(e):
-    return flask.jsonify(error=str(e)), 404
-
-
-@app.errorhandler(406)
-def input_error(e):
-    capture_exception(e)
-    return flask.jsonify(error=str(e)), 406
-
-
-@app.errorhandler(500)
-def other_internal_error(e):
-    capture_exception(e)
-    return flask.jsonify(error=str(e)), 500
-
-
-@app.errorhandler(503)
-def internal_error(e):
-    capture_exception(e)
-    return flask.jsonify(error=str(e)), 503
+@app.get("/song/{bird}")
+async def bird_song(request: Request, bird: str):
+    info = await send_bird(request, bird, "songs", Filter())
+    return send_file(info[0], media_type=info[2])

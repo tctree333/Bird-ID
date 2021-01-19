@@ -1,4 +1,4 @@
-# practice.py | practice related Flask routes
+# practice.py | practice related FastAPI routes
 # Copyright (C) 2019-2021  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
@@ -14,21 +14,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import asyncio
 import random
 import string
 
-import flask
+from fastapi import APIRouter, HTTPException, Request
 
 from bot.core import spellcheck
-from bot.data import birdList, get_wiki_url, songBirds
+from bot.data import birdList, get_wiki_url, songBirds, alpha_codes
 from bot.filters import Filter
-from bot.functions import (bird_setup, incorrect_increment, score_increment,
-                           session_increment, streak_increment)
-from web.config import database, get_session_id, logger
-from web.functions import get_sciname, send_bird
+from bot.functions import (
+    bird_setup,
+    incorrect_increment,
+    score_increment,
+    streak_increment,
+)
+from web.data import database, get_session_id, logger
+from web.functions import send_file, get_sciname, send_bird
 
-bp = flask.Blueprint("practice", __name__, url_prefix="/practice")
+router = APIRouter(prefix="/practice", tags=["practice"])
 
 
 def increment_bird_frequency(bird, user_id):
@@ -36,14 +39,19 @@ def increment_bird_frequency(bird, user_id):
     database.zincrby("frequency.bird:global", 1, string.capwords(bird))
 
 
-@bp.route("/get", methods=["GET"])
-def get_bird():
+@router.get("/get")
+async def get_bird(
+    request: Request,
+    media: str = "images",
+    addon: str = "",
+    bw: int = 0,
+):
     logger.info("endpoint: get bird")
-    session_id = get_session_id()
-    media_type = flask.request.args.get("media", "images", str)
+    session_id = get_session_id(request)
+    media_type = media
 
-    filters = Filter.parse(flask.request.args.get("addon", "", str))
-    if bool(flask.request.args.get("bw", 0, int)):
+    filters = Filter.parse(addon)
+    if bool(bw):
         filters.bw = True
     logger.info(f"args: media: {media_type}; filters: {filters};")
 
@@ -54,11 +62,11 @@ def get_bird():
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
     if tempScore >= 10:
         logger.info("trial maxed")
-        flask.abort(403, "Sign in to continue")
+        raise HTTPException(status_code=403, detail="Sign in to continue")
 
     if media_type not in ("images", "songs"):
         logger.error(f"invalid media type {media_type}")
-        flask.abort(406, "Invalid media type")
+        raise HTTPException(status_code=422, detail="Invalid media type")
 
     answered = int(database.hget(f"web.session:{session_id}", "answered"))
     logger.info(f"answered: {answered}")
@@ -68,55 +76,55 @@ def get_bird():
         currentBird = random.choice(id_list)
         user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
         if user_id != 0:
-            session_increment(user_id, "total", 1)
             increment_bird_frequency(currentBird, user_id)
         prevB = database.hget(f"web.session:{session_id}", "prevB").decode("utf-8")
         while currentBird == prevB and len(id_list) > 1:
             currentBird = random.choice(id_list)
         database.hset(f"web.session:{session_id}", "prevB", str(currentBird))
         database.hset(f"web.session:{session_id}", "bird", str(currentBird))
-        database.hset(f"web.session:{session_id}", "media_type", str(media_type))
         logger.info("currentBird: " + str(currentBird))
         database.hset(f"web.session:{session_id}", "answered", "0")
-        file_object, ext = asyncio.run(send_bird(currentBird, media_type, filters))
+        file_object, ext, content_type = await send_bird(
+            request, currentBird, media_type, filters
+        )
     else:  # if no, give the same bird
-        file_object, ext = asyncio.run(
-            send_bird(
-                database.hget(f"web.session:{session_id}", "bird").decode("utf-8"),
-                database.hget(f"web.session:{session_id}", "media_type").decode(
-                    "utf-8"
-                ),
-                filters,
-            )
+        file_object, ext, content_type = await send_bird(
+            request,
+            database.hget(f"web.session:{session_id}", "bird").decode("utf-8"),
+            media_type,
+            filters,
         )
 
     logger.info(f"file_object: {file_object}")
     logger.info(f"extension: {ext}")
-    return flask.send_file(file_object, attachment_filename=f"bird.{ext}")
+    return send_file(file_object, media_type=content_type)
 
 
-@bp.route("/check", methods=["GET"])
-def check_bird():
+@router.get("/check")
+async def check_bird(request: Request, guess: str):
     logger.info("endpoint: check bird")
-    bird_guess = flask.request.args.get("guess", "", str)
 
-    session_id = get_session_id()
+    session_id = get_session_id(request)
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
 
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird == "":  # no bird
         logger.info("bird is blank")
-        flask.abort(406, "Bird is blank")
-    elif bird_guess == "":
-        logger.info("empty guess")
-        flask.abort(406, "Empty guess")
+        raise HTTPException(status_code=422, detail="Bird is blank")
 
     # if there is a bird, it checks answer
-    logger.info("currentBird: " + str(currentBird.lower().replace("-", " ")))
-    logger.info("args: " + str(bird_guess.lower().replace("-", " ")))
+    sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
+    guess = guess.lower().replace("-", " ")
+    currentBird = currentBird.lower().replace("-", " ")
+    alpha_code = alpha_codes.get(string.capwords(currentBird))
+    logger.info("currentBird: " + currentBird)
+    logger.info("args: " + guess)
 
-    sciBird = asyncio.run(get_sciname(currentBird))
-    if spellcheck(bird_guess, currentBird) or spellcheck(bird_guess, sciBird):
+    if (
+        spellcheck(guess, currentBird)
+        or spellcheck(guess, sciBird)
+        or guess.upper() == alpha_code
+    ):
         logger.info("correct")
 
         database.hset(f"web.session:{session_id}", "bird", "")
@@ -126,17 +134,16 @@ def check_bird():
         if user_id != 0:
             bird_setup(user_id, currentBird)
             score_increment(user_id, 1)
-            session_increment(user_id, "correct", 1)
             streak_increment(user_id, 1)
         elif tempScore >= 10:
             logger.info("trial maxed")
-            flask.abort(403, "Sign in to continue")
+            raise HTTPException(status_code=403, detail="Sign in to continue")
         else:
             database.hset(f"web.session:{session_id}", "tempScore", str(tempScore + 1))
 
         url = get_wiki_url(currentBird)
         return {
-            "guess": bird_guess,
+            "guess": guess,
             "answer": currentBird,
             "sciname": sciBird,
             "status": "correct",
@@ -151,12 +158,11 @@ def check_bird():
     if user_id != 0:
         bird_setup(user_id, currentBird)
         incorrect_increment(user_id, currentBird, 1)
-        session_increment(user_id, "incorrect", 1)
         streak_increment(user_id, None)  # reset streak
 
     url = get_wiki_url(currentBird)
     return {
-        "guess": bird_guess,
+        "guess": guess,
         "answer": currentBird,
         "sciname": sciBird,
         "status": "incorrect",
@@ -164,10 +170,10 @@ def check_bird():
     }
 
 
-@bp.route("/skip", methods=["GET"])
-def skip_bird():
+@router.get("/skip")
+async def skip_bird(request: Request):
     logger.info("endpoint: skip bird")
-    session_id = get_session_id()
+    session_id = get_session_id(request)
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
 
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
@@ -176,23 +182,22 @@ def skip_bird():
         database.hset(f"web.session:{session_id}", "answered", "1")
         if user_id != 0:
             streak_increment(user_id, None)  # reset streak
-        scibird = asyncio.run(get_sciname(currentBird))
+        scibird = await get_sciname(currentBird)
         url = get_wiki_url(currentBird)  # sends wiki page
     else:
         logger.info("bird is blank")
-        flask.abort(406, "Bird is blank")
+        raise HTTPException(status_code=422, detail="Bird is blank")
     return {"answer": currentBird, "sciname": scibird, "wiki": url}
 
 
-@bp.route("/hint", methods=["GET"])
-def hint_bird():
+@router.get("/hint")
+async def hint_bird(request: Request):
     logger.info("endpoint: hint bird")
 
-    session_id = get_session_id()
+    session_id = get_session_id(request)
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird != "":  # check if there is bird
         return {"hint": currentBird[0]}
 
     logger.info("bird is blank")
-    flask.abort(406, "Bird is blank")
-    return None
+    raise HTTPException(status_code=422, detail="Bird is blank")

@@ -1,4 +1,4 @@
-# user.py | user related Flask routes
+# user.py | user related FastAPI routes
 # Copyright (C) 2019-2021  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
@@ -17,27 +17,20 @@
 import os
 import re
 
-import authlib
-from authlib.integrations.flask_client import OAuth
-from flask import Blueprint, abort, make_response, redirect, request, session, url_for
+from authlib.common.errors import AuthlibBaseError
+from authlib.integrations.starlette_client import OAuth
+from fastapi import APIRouter, Request, HTTPException
+from fastapi.responses import RedirectResponse, JSONResponse
 from sentry_sdk import capture_exception
 
-from web.config import (
-    FRONTEND_URL,
-    app,
-    database,
-    get_session_id,
-    logger,
-    update_web_user,
-    verify_session,
-)
+from web.config import FRONTEND_URL, app
+from web.data import database, get_session_id, logger, update_web_user, verify_session
 
-bp = Blueprint("user", __name__, url_prefix="/user")
-oauth = OAuth(app)
+router = APIRouter(prefix="/user", tags=["user"])
+oauth = OAuth()
 
-relative_url_regex = re.compile(
-    r"/[^/](?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*"
-)
+REL_REGEX = r"/[^/](?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*"
+relative_url_regex = re.compile(REL_REGEX)
 
 DISCORD_CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 oauth.register(
@@ -51,112 +44,107 @@ oauth.register(
     api_base_url="https://discord.com/api/",
     client_kwargs={"scope": "identify", "prompt": "consent"},
 )
-discord = oauth.discord
 
 
-@bp.route("/login", methods=["GET"])
-def login():
+@router.get("/login")
+async def login(
+    request: Request,
+    redirect: str = "/",
+):
     logger.info("endpoint: login")
-    redirect_uri = url_for("user.authorize", _external=True, _scheme="https")
-    resp = make_response(oauth.discord.authorize_redirect(redirect_uri))
-    redirect_after = request.args.get("redirect", FRONTEND_URL, str)
-    if relative_url_regex.fullmatch(redirect_after) is not None:
-        resp.headers.add(
-            "Set-Cookie",
-            "redirect="
-            + redirect_after
-            + "; Max-Age=180; SameSite=None; HttpOnly; Secure",
-        )
-    else:
-        resp.headers.add(
-            "Set-Cookie", "redirect=/; Max-Age=180; SameSite=None; HttpOnly; Secure"
-        )
-    return resp
+
+    if relative_url_regex.fullmatch(redirect) is None:
+        redirect = "/"
+    request.session["redirect"] = redirect
+    redirect_uri = request.url_for("authorize")
+    return await oauth.discord.authorize_redirect(request, redirect_uri)
 
 
-@bp.route("/logout", methods=["GET"])
-def logout():
+@router.get("/logout")
+async def logout(request: Request, redirect: str = "/"):
     logger.info("endpoint: logout")
-    redirect_after = request.args.get("redirect", FRONTEND_URL, str)
-    if relative_url_regex.fullmatch(redirect_after) is not None:
-        redirect_url = FRONTEND_URL + redirect_after
+
+    if relative_url_regex.fullmatch(redirect) is not None:
+        redirect_url = FRONTEND_URL + redirect
     else:
         redirect_url = FRONTEND_URL
 
-    session_id = get_session_id()
+    session_id = get_session_id(request)
     user_id = verify_session(session_id)
+
     if isinstance(user_id, int):
         logger.info("deleting user data, session data")
         database.delete(f"web.user:{user_id}", f"web.session:{session_id}")
-        session.clear()
     else:
         logger.info("deleting session data")
         database.delete(f"web.session:{session_id}")
-        session.clear()
-    return redirect(redirect_url)
+
+    request.session.clear()
+    return RedirectResponse(redirect_url)
 
 
-@bp.route("/authorize")
-def authorize():
+@router.get("/authorize")
+async def authorize(request: Request):
     logger.info("endpoint: authorize")
-    redirect_uri = url_for("user.authorize", _external=True, _scheme="https")
-    oauth.discord.authorize_access_token(redirect_uri=redirect_uri)
-    resp = oauth.discord.get("users/@me")
+
+    token = await oauth.discord.authorize_access_token(request)
+    resp = await oauth.discord.get("users/@me", token=token)
     profile_ = resp.json()
-    # do something with the token and profile
-    update_web_user(profile_)
-    redirect_cookie = str(request.cookies.get("redirect"))
-    if relative_url_regex.fullmatch(redirect_cookie) is not None:
-        redirection = FRONTEND_URL + redirect_cookie
+
+    await update_web_user(request, profile_)
+
+    redirect = request.session.pop("redirect", "/")
+    if relative_url_regex.fullmatch(redirect) is not None:
+        redirection = FRONTEND_URL + redirect
     else:
         redirection = FRONTEND_URL + "/"
-    session.pop("redirect", None)
-    return redirect(redirection)
+
+    return RedirectResponse(redirection)
 
 
-@bp.route("/profile")
-def profile():
+@router.get("/profile")
+def profile(request: Request):
     logger.info("endpoint: profile")
 
-    session_id = get_session_id()
+    session_id = get_session_id(request)
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
 
-    if user_id != 0:
-        avatar_hash, avatar_url, username, discriminator = (
-            stat.decode("utf-8")
-            for stat in database.hmget(
-                f"web.user:{user_id}",
-                "avatar_hash",
-                "avatar_url",
-                "username",
-                "discriminator",
-            )
+    if user_id == 0:
+        logger.info("not logged in")
+        raise HTTPException(status_code=403, detail="Sign in to continue")
+
+    avatar_hash, avatar_url, username, discriminator = (
+        stat.decode("utf-8")
+        for stat in database.hmget(
+            f"web.user:{user_id}",
+            "avatar_hash",
+            "avatar_url",
+            "username",
+            "discriminator",
         )
-        placings = int(database.zscore("users:global", str(user_id)))
-        max_streak = int(database.zscore("streak.max:global", str(user_id)))
-        missed_birds = [
-            [stats[0].decode("utf-8"), int(stats[1])]
-            for stats in database.zrevrangebyscore(
-                f"incorrect.user:{user_id}", "+inf", "-inf", 0, 10, True
-            )
-        ]
-        return {
-            "avatar_hash": avatar_hash,
-            "avatar_url": avatar_url,
-            "username": username,
-            "discriminator": discriminator,
-            "rank": placings,
-            "max_streak": max_streak,
-            "missed": missed_birds,
-        }
-
-    logger.info("not logged in")
-    abort(403, "Sign in to continue")
-    return None
+    )
+    score = int(database.zscore("users:global", str(user_id)))
+    max_streak = int(database.zscore("streak.max:global", str(user_id)))
+    missed_birds = [
+        [stats[0].decode("utf-8"), int(stats[1])]
+        for stats in database.zrevrangebyscore(
+            f"incorrect.user:{user_id}", "+inf", "-inf", 0, 10, True
+        )
+    ]
+    return {
+        "avatar_hash": avatar_hash,
+        "avatar_url": avatar_url,
+        "username": username,
+        "discriminator": discriminator,
+        "score": score,
+        "max_streak": max_streak,
+        "missed": missed_birds,
+    }
 
 
-@app.errorhandler(authlib.common.errors.AuthlibBaseError)
-def handle_authlib_error(e):
-    logger.info(f"error with oauth login: {e}")
-    capture_exception(e)
-    return "An error occurred with the login", 500
+
+@app.exception_handler(AuthlibBaseError)
+def handle_authlib_error(request: Request, error: AuthlibBaseError):
+    logger.info(f"error with oauth login: {error}; request: {request}")
+    capture_exception(error)
+    return JSONResponse(status_code=500, content={"detail": "An error occurred with the login"})

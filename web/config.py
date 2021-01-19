@@ -1,4 +1,4 @@
-# config.py | Flask server config and assorted functions
+# config.py | FastAPI server config
 # Copyright (C) 2019-2021  EraserBird, person_v1.32, hmmm
 
 # This program is free software: you can redistribute it and/or modify
@@ -14,140 +14,49 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import asyncio
 import os
-import random
 
 import sentry_sdk
-from flask import Flask, session
-from sentry_sdk.integrations.flask import FlaskIntegration
+from fastapi import FastAPI
+from fastapi.middleware import Middleware
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sentry_sdk.integrations.redis import RedisIntegration
-
-from bot.data import database, logger
-from bot.functions import user_setup
+from starlette.middleware.sessions import SessionMiddleware
 
 sentry_sdk.init(
     release=f"{os.getenv('CURRENT_PLATFORM')} Release "
     + (
-        f"{os.getenv('GIT_REV')[:8]}"
+        f"{os.getenv('GIT_REV', '00000000')[:8]}"
         if os.getenv("CURRENT_PLATFORM") != "Heroku"
         else f"{os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}"
     ),
     dsn=os.getenv("SENTRY_API_DSN"),
-    integrations=[FlaskIntegration(), RedisIntegration()],
+    integrations=[RedisIntegration()],
 )
-app = Flask(__name__)
-app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
-app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
-app.config["SESSION_COOKIE_SECURE"] = True
-app.secret_key = os.getenv("FLASK_SECRET_KEY")
-FRONTEND_URL = os.getenv("FRONTEND_URL")
-DATABASE_SESSION_EXPIRE = 172800  # 2 days
 
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://api.example.com")
+SESSION_COOKIE_EXPIRE = 259200  # 3 days
+DATABASE_SESSION_EXPIRE = 21600  # 6 hours
+DATABASE_SESSION_USER_EXPIRE = 259200  # 3 days
 
-@app.after_request  # enable CORS
-def after_request(response):
-    header = response.headers
-    header["Access-Control-Allow-Origin"] = FRONTEND_URL
-    header["Access-Control-Allow-Credentials"] = "true"
-    return response
+middleware = [
+    Middleware(SentryAsgiMiddleware),
+    Middleware(
+        CORSMiddleware,
+        allow_origins=[FRONTEND_URL],
+        allow_methods=["GET", "POST"],
+        allow_credentials=True,
+    ),
+    Middleware(
+        SessionMiddleware,
+        secret_key=os.getenv("SESSION_SECRET_KEY"),
+        max_age=SESSION_COOKIE_EXPIRE,
+        same_site="lax",
+        https_only=True,
+    ),
+    Middleware(GZipMiddleware, minimum_size=1000)
+]
 
-
-# Web Database Keys
-
-# web.session:session_id : {
-#   bird: ""
-#   media_type: ""
-#   answered: 1
-#   prevB: ""
-#   prevJ: 20
-#   tempScore: 0
-#   user_id: 0
-# }
-
-# web.user:user_id : {
-#   avatar_hash: ""
-#   avatar_url: "https://cdn.discordapp.com/avatars/{user_id}/{avatar_hash}.png"
-#   username: ""
-#   discriminator: ""
-# }
-
-
-def web_session_setup(session_id):
-    logger.info("setting up session")
-    session_id = str(session_id)
-    if database.exists(f"web.session:{session_id}"):
-        logger.info("session data ok")
-    else:
-        database.hset(
-            f"web.session:{session_id}",
-            mapping={
-                "bird": "",
-                "media_type": "",
-                "answered": 1,  # true = 1, false = 0
-                "prevB": "",
-                "prevJ": 20,
-                "tempScore": 0,  # not used = -1
-                "user_id": 0,  # not set = 0
-            },
-        )
-        database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)
-        logger.info("session set up")
-
-
-def update_web_user(user_data):
-    logger.info("updating user data")
-    session_id = get_session_id()
-    user_id = str(user_data["id"])
-    database.hset(f"web.session:{session_id}", "user_id", user_id)
-    database.expire(f"web.session:{session_id}", DATABASE_SESSION_EXPIRE)
-    database.hset(
-        f"web.user:{user_id}",
-        mapping={
-            "avatar_hash": str(user_data["avatar"]),
-            "avatar_url": f"https://cdn.discordapp.com/avatars/{user_id}/{user_data['avatar']}.png",
-            "username": str(user_data["username"]),
-            "discriminator": str(user_data["discriminator"]),
-        },
-    )
-    asyncio.run(user_setup(user_id))
-    tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
-    if tempScore not in (0, -1):
-        database.zincrby("users:global", tempScore, int(user_id))
-        database.hset(f"web.session:{session_id}", "tempScore", -1)
-    logger.info("updated user data")
-
-
-def get_session_id():
-    if "id" not in session:
-        session["id"] = start_session()
-        return str(session["id"])
-    if not verify_session(session["id"]):
-        session["id"] = start_session()
-        return str(session["id"])
-    return str(session["id"])
-
-
-def start_session():
-    logger.info("creating session id")
-    session_id = 0
-    session_id = random.randint(420000000, 420999999)
-    while database.exists(f"web.session:{session_id}") and session_id == 0:
-        session_id = random.randint(420000000, 420999999)
-    logger.info(f"session_id: {session_id}")
-    web_session_setup(session_id)
-    logger.info(f"created session id: {session_id}")
-    return session_id
-
-
-def verify_session(session_id):
-    session_id = str(session_id)
-    logger.info(f"verifying session id: {session_id}")
-    if not database.exists(f"web.session:{session_id}"):
-        logger.info("doesn't exist")
-        return False
-    if int(database.hget(f"web.session:{session_id}", "user_id")) == 0:
-        logger.info("exists, no user id")
-        return True
-    logger.info("exists with user id")
-    return int(database.hget(f"web.session:{session_id}", "user_id"))
+app = FastAPI(middleware=middleware)
