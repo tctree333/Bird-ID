@@ -12,7 +12,7 @@ sentry-sdk==0.19.5
 blinker==1.4
 Authlib==0.15.3
 fastapi==0.63.0
-orjson==3.4.6
+orjson==3.4.7
 itsdangerous==1.1.0
 uvicorn[standard]==0.13.3
 httpx==0.12.0
