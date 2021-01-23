@@ -110,7 +110,10 @@ async def check_bird(request: Request, guess: str):
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird == "":  # no bird
         logger.info("bird is blank")
-        raise HTTPException(status_code=422, detail="Bird is blank")
+        raise HTTPException(status_code=404, detail="Bird is blank")
+    if guess == "":
+        logger.info("empty guess")
+        raise HTTPException(status_code=422, detail="empty guess")
 
     # if there is a bird, it checks answer
     sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
@@ -186,7 +189,7 @@ async def skip_bird(request: Request):
         url = get_wiki_url(currentBird)  # sends wiki page
     else:
         logger.info("bird is blank")
-        raise HTTPException(status_code=422, detail="Bird is blank")
+        raise HTTPException(status_code=404, detail="Bird is blank")
     return {"answer": currentBird, "sciname": scibird, "wiki": url}
 
 
@@ -200,4 +203,4 @@ async def hint_bird(request: Request):
         return {"hint": currentBird[0]}
 
     logger.info("bird is blank")
-    raise HTTPException(status_code=422, detail="Bird is blank")
+    raise HTTPException(status_code=404, detail="Bird is blank")
