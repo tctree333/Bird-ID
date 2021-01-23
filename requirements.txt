@@ -1,4 +1,4 @@
-discord.py[voice]==1.5.1
+discord.py[voice]==1.6.0
 wikipedia==1.4.0
 Pillow==8.1.0
 eyeD3==0.9.6
@@ -7,7 +7,7 @@ holidays==0.10.4
 gunicorn==20.0.4
 python-dotenv==0.15.0
 hiredis==1.1.0
-pandas==1.2.0
+pandas==1.2.1
 sentry-sdk==0.19.5
 blinker==1.4
 Authlib==0.15.3
