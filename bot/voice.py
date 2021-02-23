@@ -173,7 +173,7 @@ async def rel_seek(ctx, seconds: Optional[int], silent: bool = False):
 
     if client.source and (client.is_playing() or client.is_paused()):
         client.source.jump(seconds)
-        if not (client.is_playing() or client.is_paused):
+        if not (client.is_playing() or client.is_paused()):
             client.play(client.source)
         t = client.source.remaining
         await _send(
