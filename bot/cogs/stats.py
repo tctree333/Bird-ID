@@ -410,6 +410,32 @@ class Stats(commands.Cog):
             keys, f"username#discrim,total score,{titles}\n", "scores.csv", users=True
         )
 
+        logger.info("exporting web scores")
+        keys = list(
+            map(
+                lambda x: x.decode("utf-8"),
+                database.scan_iter(match="daily.webscore:????-??-??", count=5000),
+            )
+        )
+        keys.sort()
+        titles = ",".join(map(lambda x: x.split(":")[1], keys))
+        await _export_helper(
+            keys, f"username#discrim,{titles}\n", "scores.csv", users=True
+        )
+
+        logger.info("exporting web usage")
+        keys = list(
+            map(
+                lambda x: x.decode("utf-8"),
+                database.scan_iter(match="daily.web:????-??-??", count=5000),
+            )
+        )
+        keys.sort()
+        titles = ",".join(map(lambda x: x.split(":")[1], keys))
+        await _export_helper(
+            keys, f"command,{titles}\n", "scores.csv", users=False
+        )
+
         await ctx.send(files=files)
 
 
