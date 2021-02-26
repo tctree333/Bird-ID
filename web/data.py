@@ -89,7 +89,6 @@ async def update_web_user(request: Request, user_data: dict):
 def get_session_id(request: Request) -> str:
     if ("id" not in request.session) or (not verify_session(request.session["id"])):
         request.session["id"] = start_session()
-        return str(request.session["id"])
     return str(request.session["id"])
 
 

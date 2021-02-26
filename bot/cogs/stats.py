@@ -256,34 +256,45 @@ class Stats(commands.Cog):
             ).date
             web_score = (f"daily.webscore:{str(date)}" for date in past_month)
             web_usage = (f"daily.web:{str(date)}" for date in past_month)
-            titles = (
-                reversed(range(1, 31))
+            titles = reversed(
+                range(1, 31)
             )  # label columns by # days ago, today is 1 day ago
 
             web_score_month = self.generate_dataframe(web_score, titles)
             web_score_week = web_score_month.loc[:, 7:1]  # generate week from month
-            web_score_week = web_score_week.loc[(web_score_week != 0).any(1)]  # remove users with no correct answers
+            web_score_week = web_score_week.loc[
+                (web_score_week != 0).any(1)
+            ]  # remove users with no correct answers
             web_score_today = web_score_week.loc[:, 1]  # generate today from week
-            web_score_today = web_score_today.loc[web_score_today != 0]  # remove users with no correct answers
+            web_score_today = web_score_today.loc[
+                web_score_today != 0
+            ]  # remove users with no correct answers
 
             web_usage_month = self.generate_dataframe(web_usage, titles)
             web_usage_week = web_usage_month.loc[:, 7:1]
             web_usage_today = web_usage_week.loc[:, 1]
 
-            score_totals_keys = sorted(map(
-                lambda x: x.decode("utf-8"),
-                database.scan_iter(match="daily.webscore:????-??-??", count=5000),
-            ))
+            score_totals_keys = sorted(
+                map(
+                    lambda x: x.decode("utf-8"),
+                    database.scan_iter(match="daily.webscore:????-??-??", count=5000),
+                )
+            )
             score_totals_titles = ",".join(map(lambda x: x.split(":")[1], keys))
-            web_score_total = self.generate_dataframe(score_totals_keys, score_totals_titles)
-            
-            usage_totals_keys = sorted(map(
-                lambda x: x.decode("utf-8"),
-                database.scan_iter(match="daily.webscore:????-??-??", count=5000),
-            ))
-            usage_totals_titles = ",".join(map(lambda x: x.split(":")[1], keys))
-            web_usage_total = self.generate_dataframe(usage_totals_keys, usage_totals_titles)
+            web_score_total = self.generate_dataframe(
+                score_totals_keys, score_totals_titles
+            )
 
+            usage_totals_keys = sorted(
+                map(
+                    lambda x: x.decode("utf-8"),
+                    database.scan_iter(match="daily.webscore:????-??-??", count=5000),
+                )
+            )
+            usage_totals_titles = ",".join(map(lambda x: x.split(":")[1], keys))
+            web_usage_total = self.generate_dataframe(
+                usage_totals_keys, usage_totals_titles
+            )
 
             embed.add_field(
                 name="Today (Since midnight UTC)",
@@ -291,40 +302,70 @@ class Stats(commands.Cog):
                 value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
                     len(web_score_today)
                 )
-                + "**Total birds answered correctly:** `{:,}`\n".format(web_score_today.sum())
-                + "**Check command usage:** `{:,}`\n".format(web_usage_today.loc["check"])
+                + "**Total birds answered correctly:** `{:,}`\n".format(
+                    web_score_today.sum()
+                )
+                + "**Check command usage:** `{:,}`\n".format(
+                    web_usage_today.loc["check"]
+                )
                 + "**Skip command usage:** `{:,}`\n".format(web_usage_today.loc["skip"])
-                + "**Hint command usage:** `{:,}`\n".format(web_usage_today.loc["hint"]),
+                + "**Hint command usage:** `{:,}`\n".format(
+                    web_usage_today.loc["hint"]
+                ),
             ).add_field(
                 name="Last 7 Days",
                 inline=False,
                 value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
                     len(web_score_week)
                 )
-                + "**Total birds answered correctly:** `{:,}`\n".format(web_score_week.sum().sum())
-                + "**Check command usage:** `{:,}`\n".format(web_usage_week.loc["check"].sum())
-                + "**Skip command usage:** `{:,}`\n".format(web_usage_week.loc["skip"].sum())
-                + "**Hint command usage:** `{:,}`\n".format(web_usage_week.loc["hint"].sum()),
+                + "**Total birds answered correctly:** `{:,}`\n".format(
+                    web_score_week.sum().sum()
+                )
+                + "**Check command usage:** `{:,}`\n".format(
+                    web_usage_week.loc["check"].sum()
+                )
+                + "**Skip command usage:** `{:,}`\n".format(
+                    web_usage_week.loc["skip"].sum()
+                )
+                + "**Hint command usage:** `{:,}`\n".format(
+                    web_usage_week.loc["hint"].sum()
+                ),
             ).add_field(
                 name="Last 30 Days",
                 inline=False,
                 value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
                     len(web_score_month)
                 )
-                + "**Total birds answered correctly:** `{:,}`\n".format(web_score_month.sum().sum())
-                + "**Check command usage:** `{:,}`\n".format(web_usage_month.loc["check"].sum())
-                + "**Skip command usage:** `{:,}`\n".format(web_usage_month.loc["skip"].sum())
-                + "**Hint command usage:** `{:,}`\n".format(web_usage_month.loc["hint"].sum()),
+                + "**Total birds answered correctly:** `{:,}`\n".format(
+                    web_score_month.sum().sum()
+                )
+                + "**Check command usage:** `{:,}`\n".format(
+                    web_usage_month.loc["check"].sum()
+                )
+                + "**Skip command usage:** `{:,}`\n".format(
+                    web_usage_month.loc["skip"].sum()
+                )
+                + "**Hint command usage:** `{:,}`\n".format(
+                    web_usage_month.loc["hint"].sum()
+                ),
             ).add_field(
                 name="Total",
                 inline=False,
                 value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
                     len(web_score_total)
                 )
-                + "**Total birds answered correctly:** `{:,}`\n".format(web_score_total.sum().sum())
-                + "**Check command usage:** `{:,}`\n".format(web_usage_total.loc["check"].sum())
-                + "**Skip command usage:** `{:,}`\n".format(web_usage_total.loc["skip"].sum())
-                + "**Hint command usage:** `{:,}`\n".format(web_usage_total.loc["hint"].sum()),
+                + "**Total birds answered correctly:** `{:,}`\n".format(
+                    web_score_total.sum().sum()
+                )
+                + "**Check command usage:** `{:,}`\n".format(
+                    web_usage_total.loc["check"].sum()
+                )
+                + "**Skip command usage:** `{:,}`\n".format(
+                    web_usage_total.loc["skip"].sum()
+                )
+                + "**Hint command usage:** `{:,}`\n".format(
+                    web_usage_total.loc["hint"].sum()
+                ),
             )
 
         await ctx.send(embed=embed)
@@ -338,7 +379,9 @@ class Stats(commands.Cog):
 
         files = []
 
-        async def _export_helper(database_keys, header: str, filename: str, users=False):
+        async def _export_helper(
+            database_keys, header: str, filename: str, users=False
+        ):
             if not isinstance(database_keys, str) and len(database_keys) > 1:
                 data = self.generate_dataframe(
                     database_keys, header.strip().split(",")[1:]
@@ -383,13 +426,12 @@ class Stats(commands.Cog):
         )
 
         logger.info("exporting missed")
-        keys = list(
+        keys = sorted(
             map(
                 lambda x: x.decode("utf-8"),
                 database.scan_iter(match="daily.incorrect:????-??-??", count=5000),
             )
         )
-        keys.sort()
         titles = ",".join(map(lambda x: x.split(":")[1], keys))
         keys = ["incorrect:global"] + keys
         await _export_helper(
@@ -397,13 +439,12 @@ class Stats(commands.Cog):
         )
 
         logger.info("exporting scores")
-        keys = list(
+        keys = sorted(
             map(
                 lambda x: x.decode("utf-8"),
                 database.scan_iter(match="daily.score:????-??-??", count=5000),
             )
         )
-        keys.sort()
         titles = ",".join(map(lambda x: x.split(":")[1], keys))
         keys = ["users:global"] + keys
         await _export_helper(
@@ -411,30 +452,26 @@ class Stats(commands.Cog):
         )
 
         logger.info("exporting web scores")
-        keys = list(
+        keys = sorted(
             map(
                 lambda x: x.decode("utf-8"),
                 database.scan_iter(match="daily.webscore:????-??-??", count=5000),
             )
         )
-        keys.sort()
         titles = ",".join(map(lambda x: x.split(":")[1], keys))
         await _export_helper(
             keys, f"username#discrim,{titles}\n", "scores.csv", users=True
         )
 
         logger.info("exporting web usage")
-        keys = list(
+        keys = sorted(
             map(
                 lambda x: x.decode("utf-8"),
                 database.scan_iter(match="daily.web:????-??-??", count=5000),
             )
         )
-        keys.sort()
         titles = ",".join(map(lambda x: x.split(":")[1], keys))
-        await _export_helper(
-            keys, f"command,{titles}\n", "scores.csv", users=False
-        )
+        await _export_helper(keys, f"command,{titles}\n", "scores.csv", users=False)
 
         await ctx.send(files=files)
 
