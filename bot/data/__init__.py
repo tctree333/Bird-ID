@@ -136,6 +136,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # daily update format:
 #     daily.score:YYYY-MM-DD : [user id, # correct today]
 #     daily.incorrect:YYYY-MM-DD : [bird name, # incorrect today]
+#     daily.web:YYYY-MM-DD : [("check", "skip", "hint"), daily value]
+#     daily.webscore:YYYY-MM-DD : [user id, # correct today]
 
 # ban format:
 #   banned:global : [user id, 0]
