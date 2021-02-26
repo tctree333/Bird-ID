@@ -150,12 +150,12 @@ class Other(commands.Cog):
             )
             return
 
-        state_birdlist = build_id_list(
+        state_birdlist = sorted(build_id_list(
             user_id=ctx.author.id, state=state, media="images"
-        )
-        state_songlist = build_id_list(
+        ))
+        state_songlist = sorted(build_id_list(
             user_id=ctx.author.id, state=state, media="songs"
-        )
+        ))
 
         birdLists = self.broken_join(state_birdlist)
         songLists = self.broken_join(state_songlist)
@@ -204,12 +204,12 @@ class Other(commands.Cog):
             )
             return
 
-        bird_list = build_id_list(
+        bird_list = sorted(build_id_list(
             user_id=ctx.author.id, taxon=taxon, state=state, media="images"
-        )
-        song_bird_list = build_id_list(
+        ))
+        song_bird_list = sorted(build_id_list(
             user_id=ctx.author.id, taxon=taxon, state=state, media="songs"
-        )
+        ))
         if not bird_list and not song_bird_list:
             logger.info("no birds for taxon/state")
             await ctx.send(
