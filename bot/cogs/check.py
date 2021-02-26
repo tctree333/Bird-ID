@@ -109,9 +109,9 @@ class Check(commands.Cog):
                 await voice_functions.stop(ctx, silent=True)
 
             await ctx.send(
-                "Correct! Good job!"
+                f"Correct! Good job! The bird was **{currentBird}**."
                 if not race_in_session
-                else f"**{ctx.author.mention}**, you are correct!"
+                else f"**{ctx.author.mention}**, you are correct! The bird was **{currentBird}**."
             )
             url = get_wiki_url(ctx, currentBird)
             await ctx.send(url)
@@ -162,7 +162,7 @@ class Check(commands.Cog):
             else:
                 database.hset(f"channel:{ctx.channel.id}", "bird", "")
                 database.hset(f"channel:{ctx.channel.id}", "answered", "1")
-                await ctx.send("Sorry, the bird was actually " + currentBird + ".")
+                await ctx.send("Sorry, the bird was actually **" + currentBird + "**.")
                 url = get_wiki_url(ctx, currentBird)
                 await ctx.send(url)
 

@@ -675,10 +675,10 @@ async def drone_attack(ctx):
                 "SHHHHHH! Birds are **NOT** government drones! You'll blow our cover, and we'll need to get rid of you."
             )
         elif matches:
-            await ctx.send("Correct! Good job!")
+            await ctx.send("Correct! Good job! The bird was **definitely a real bird**.")
             await ctx.send(embed=video_embed())
         else:
-            await ctx.send("Sorry, the bird was actually **definitely a real bird.**")
+            await ctx.send("Sorry, the bird was actually **definitely a real bird**.")
             await ctx.send(embed=video_embed())
 
     elif str(ctx.command) in ("skip",):
