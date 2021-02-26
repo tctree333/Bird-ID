@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import datetime
 import random
 import string
 
@@ -32,6 +33,7 @@ from web.data import database, get_session_id, logger
 from web.functions import send_file, get_sciname, send_bird
 
 router = APIRouter(prefix="/practice", tags=["practice"])
+date = lambda: str(datetime.datetime.now(datetime.timezone.utc).date())
 
 
 def increment_bird_frequency(bird, user_id):
@@ -123,6 +125,10 @@ async def check_bird(request: Request, guess: str):
     logger.info("currentBird: " + currentBird)
     logger.info("args: " + guess)
 
+    if user_id != 0:
+        database.zincrby(f"daily.web:{date()}", 1, "check")
+        bird_setup(user_id, currentBird)
+
     if (
         spellcheck(guess, currentBird)
         or spellcheck(guess, sciBird)
@@ -135,7 +141,7 @@ async def check_bird(request: Request, guess: str):
 
         tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
         if user_id != 0:
-            bird_setup(user_id, currentBird)
+            database.zincrby(f"daily.webscore:{date()}", 1, user_id)
             score_increment(user_id, 1)
             streak_increment(user_id, 1)
         elif tempScore >= 10:
@@ -159,7 +165,6 @@ async def check_bird(request: Request, guess: str):
     database.zincrby("incorrect:global", 1, currentBird)
 
     if user_id != 0:
-        bird_setup(user_id, currentBird)
         incorrect_increment(user_id, currentBird, 1)
         streak_increment(user_id, None)  # reset streak
 
@@ -176,8 +181,11 @@ async def check_bird(request: Request, guess: str):
 @router.get("/skip")
 async def skip_bird(request: Request):
     logger.info("endpoint: skip bird")
+
     session_id = get_session_id(request)
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
+    if user_id != 0:
+        database.zincrby(f"daily.web:{date()}", 1, "skip")
 
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird != "":  # check if there is bird
@@ -198,6 +206,10 @@ async def hint_bird(request: Request):
     logger.info("endpoint: hint bird")
 
     session_id = get_session_id(request)
+    user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
+    if user_id != 0:
+        database.zincrby(f"daily.web:{date()}", 1, "hint")
+
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird != "":  # check if there is bird
         return {"hint": currentBird[0]}
