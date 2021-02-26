@@ -111,10 +111,12 @@ class Stats(commands.Cog):
             topic = "scores"
         elif topic in ("usage", "u"):
             topic = "usage"
+        elif topic in ("web", "w"):
+            topic = "web"
         elif topic in ("help", ""):
             topic = "help"
         else:
-            valid_topics = ("help", "scores", "usage")
+            valid_topics = ("help", "scores", "usage", "web")
             await ctx.send(
                 f"**`{topic}` is not a valid topic!**\nValid Topics: `{'`, `'.join(valid_topics)}`"
             )
@@ -139,6 +141,9 @@ class Stats(commands.Cog):
             ).add_field(
                 name="Usage",
                 value="`b!stats [usage|u]`\n*Displays stats about usage.*",
+            ).add_field(
+                name="Web",
+                value="`b!stats [web|w]`\n*Displays stats about web usage.*",
             )
 
         elif topic == "scores":
@@ -239,12 +244,87 @@ class Stats(commands.Cog):
                 )
                 + "**Accounts that answered at least 1 correctly:** `{:,} ({:,.1%})`\n".format(
                     len(total[total > 0]), len(total[total > 0]) / len(total)
+                ),
+            )
+
+        elif topic == "web":
+            embed.description = "**Web Usage Statistics**"
+
+            today = datetime.datetime.now(datetime.timezone.utc).date()
+            past_month = pd.date_range(  # pylint: disable=no-member
+                today - datetime.timedelta(29), today
+            ).date
+            web_score = (f"daily.webscore:{str(date)}" for date in past_month)
+            web_usage = (f"daily.web:{str(date)}" for date in past_month)
+            titles = (
+                reversed(range(1, 31))
+            )  # label columns by # days ago, today is 1 day ago
+
+            web_score_month = self.generate_dataframe(web_score, titles)
+            web_score_week = web_score_month.loc[:, 7:1]  # generate week from month
+            web_score_week = web_score_week.loc[(web_score_week != 0).any(1)]  # remove users with no correct answers
+            web_score_today = web_score_week.loc[:, 1]  # generate today from week
+            web_score_today = web_score_today.loc[web_score_today != 0]  # remove users with no correct answers
+
+            web_usage_month = self.generate_dataframe(web_usage, titles)
+            web_usage_week = web_usage_month.loc[:, 7:1]
+            web_usage_today = web_usage_week.loc[:, 1]
+
+            score_totals_keys = sorted(map(
+                lambda x: x.decode("utf-8"),
+                database.scan_iter(match="daily.webscore:????-??-??", count=5000),
+            ))
+            score_totals_titles = ",".join(map(lambda x: x.split(":")[1], keys))
+            web_score_total = self.generate_dataframe(score_totals_keys, score_totals_titles)
+            
+            usage_totals_keys = sorted(map(
+                lambda x: x.decode("utf-8"),
+                database.scan_iter(match="daily.webscore:????-??-??", count=5000),
+            ))
+            usage_totals_titles = ",".join(map(lambda x: x.split(":")[1], keys))
+            web_usage_total = self.generate_dataframe(usage_totals_keys, usage_totals_titles)
+
+
+            embed.add_field(
+                name="Today (Since midnight UTC)",
+                inline=False,
+                value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
+                    len(web_score_today)
                 )
-                + "**Users the bot can see:** `{:,}`\n".format(len(self.bot.users))
-                + "**Percentage of users the bot can see that have used the bot:** `{:,.1%}`\n".format(
-                    len(total) / len(self.bot.users)
+                + "**Total birds answered correctly:** `{:,}`\n".format(web_score_today.sum())
+                + "**Check command usage:** `{:,}`\n".format(web_usage_today.loc["check"])
+                + "**Skip command usage:** `{:,}`\n".format(web_usage_today.loc["skip"])
+                + "**Hint command usage:** `{:,}`\n".format(web_usage_today.loc["hint"]),
+            ).add_field(
+                name="Last 7 Days",
+                inline=False,
+                value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
+                    len(web_score_week)
                 )
-                + "*(Note: There may be users the bot can't see anymore).*\n",
+                + "**Total birds answered correctly:** `{:,}`\n".format(web_score_week.sum().sum())
+                + "**Check command usage:** `{:,}`\n".format(web_usage_week.loc["check"].sum())
+                + "**Skip command usage:** `{:,}`\n".format(web_usage_week.loc["skip"].sum())
+                + "**Hint command usage:** `{:,}`\n".format(web_usage_week.loc["hint"].sum()),
+            ).add_field(
+                name="Last 30 Days",
+                inline=False,
+                value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
+                    len(web_score_month)
+                )
+                + "**Total birds answered correctly:** `{:,}`\n".format(web_score_month.sum().sum())
+                + "**Check command usage:** `{:,}`\n".format(web_usage_month.loc["check"].sum())
+                + "**Skip command usage:** `{:,}`\n".format(web_usage_month.loc["skip"].sum())
+                + "**Hint command usage:** `{:,}`\n".format(web_usage_month.loc["hint"].sum()),
+            ).add_field(
+                name="Total",
+                inline=False,
+                value="**Accounts that answered at least 1 correctly:** `{:,}`\n".format(
+                    len(web_score_total)
+                )
+                + "**Total birds answered correctly:** `{:,}`\n".format(web_score_total.sum().sum())
+                + "**Check command usage:** `{:,}`\n".format(web_usage_total.loc["check"].sum())
+                + "**Skip command usage:** `{:,}`\n".format(web_usage_total.loc["skip"].sum())
+                + "**Hint command usage:** `{:,}`\n".format(web_usage_total.loc["hint"].sum()),
             )
 
         await ctx.send(embed=embed)
