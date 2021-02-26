@@ -136,6 +136,7 @@ def cache(func=None, pre=None, local=True):
             return functools._CacheInfo(hits, misses, None, _cache_len())
 
         wrapped.cache_info = cache_info
+        wrapped.evict = evict
         return functools.update_wrapper(wrapped, func)
 
     if func:
