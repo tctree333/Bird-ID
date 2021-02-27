@@ -392,7 +392,7 @@ if __name__ == "__main__":
     async def evict_user_cache():
         """Task to remove keys from the User cache to ensure freshness."""
         logger.info("TASK: Removing user keys")
-        await prune_user_cache(10)
+        prune_user_cache(10)
 
 
     @tasks.loop(hours=1.0)

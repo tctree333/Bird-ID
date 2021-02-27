@@ -111,7 +111,7 @@ def cache(func=None, pre=None, local=True):
             """Evicts a random item from the local cache."""
             if not local:
                 raise ValueError("Cannot evict from Redis cache!")
-            _cache.pop(random.choice(tuple(_cache)), 0)
+            _cache.pop(random.choice((*_cache, object())), 0)
 
         async def wrapped(*args, **kwds):
             # Simple caching without ordering or size limit
