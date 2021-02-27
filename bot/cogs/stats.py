@@ -40,17 +40,18 @@ class Stats(commands.Cog):
         )
 
     @staticmethod
-    def generate_dataframe(database_keys, titles):
+    def generate_dataframe(database_keys, titles, index=None):
         """Generates a pandas.DataFrame from multiple Redis sorted sets."""
         pipe = database.pipeline()
         for key in database_keys:
             pipe.zrevrangebyscore(key, "+inf", "-inf", withscores=True)
         result = pipe.execute()
-        df = pd.DataFrame()
-        for i, item in enumerate(result):
+        index = {v[0].decode("utf-8") for r in result for v in r}.union(set(index if index else {}))
+        df = pd.DataFrame(index=index)
+        for title, item in zip(titles, result):
             df.insert(
                 len(df.columns),
-                titles[i],
+                title,
                 pd.Series(
                     {
                         e[0]: e[1]
@@ -191,8 +192,8 @@ class Stats(commands.Cog):
             ).date
             keys = list(f"daily.score:{str(date)}" for date in past_month)
             keys = ["users:global"] + keys
-            titles = list(
-                reversed(range(1, 32))
+            titles = reversed(
+                range(1, 32)
             )  # label columns by # days ago, today is 1 day ago
             month = self.generate_dataframe(keys, titles)
             total = month.loc[:, 31]
@@ -256,9 +257,9 @@ class Stats(commands.Cog):
             ).date
             web_score = (f"daily.webscore:{str(date)}" for date in past_month)
             web_usage = (f"daily.web:{str(date)}" for date in past_month)
-            titles = reversed(
+            titles = tuple(reversed(
                 range(1, 31)
-            )  # label columns by # days ago, today is 1 day ago
+            ))  # label columns by # days ago, today is 1 day ago
 
             web_score_month = self.generate_dataframe(web_score, titles)
             web_score_week = web_score_month.loc[:, 7:1]  # generate week from month
@@ -270,7 +271,7 @@ class Stats(commands.Cog):
                 web_score_today != 0
             ]  # remove users with no correct answers
 
-            web_usage_month = self.generate_dataframe(web_usage, titles)
+            web_usage_month = self.generate_dataframe(web_usage, titles, index=("check", "skip", "hint"))
             web_usage_week = web_usage_month.loc[:, 7:1]
             web_usage_today = web_usage_week.loc[:, 1]
 
@@ -280,7 +281,7 @@ class Stats(commands.Cog):
                     database.scan_iter(match="daily.webscore:????-??-??", count=5000),
                 )
             )
-            score_totals_titles = ",".join(map(lambda x: x.split(":")[1], keys))
+            score_totals_titles = map(lambda x: x.split(":")[1], score_totals_keys)
             web_score_total = self.generate_dataframe(
                 score_totals_keys, score_totals_titles
             )
@@ -288,12 +289,12 @@ class Stats(commands.Cog):
             usage_totals_keys = sorted(
                 map(
                     lambda x: x.decode("utf-8"),
-                    database.scan_iter(match="daily.webscore:????-??-??", count=5000),
+                    database.scan_iter(match="daily.web:????-??-??", count=5000),
                 )
             )
-            usage_totals_titles = ",".join(map(lambda x: x.split(":")[1], keys))
+            usage_totals_titles = map(lambda x: x.split(":")[1], usage_totals_keys)
             web_usage_total = self.generate_dataframe(
-                usage_totals_keys, usage_totals_titles
+                usage_totals_keys, usage_totals_titles, index=("check", "skip", "hint")
             )
 
             embed.add_field(
