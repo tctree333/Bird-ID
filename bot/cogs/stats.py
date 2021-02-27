@@ -46,7 +46,9 @@ class Stats(commands.Cog):
         for key in database_keys:
             pipe.zrevrangebyscore(key, "+inf", "-inf", withscores=True)
         result = pipe.execute()
-        index = {v[0].decode("utf-8") for r in result for v in r}.union(set(index if index else {}))
+        index = {v[0].decode("utf-8") for r in result for v in r}.union(
+            set(index if index else {})
+        )
         df = pd.DataFrame(index=index)
         for title, item in zip(titles, result):
             df.insert(
@@ -257,9 +259,9 @@ class Stats(commands.Cog):
             ).date
             web_score = (f"daily.webscore:{str(date)}" for date in past_month)
             web_usage = (f"daily.web:{str(date)}" for date in past_month)
-            titles = tuple(reversed(
-                range(1, 31)
-            ))  # label columns by # days ago, today is 1 day ago
+            titles = tuple(
+                reversed(range(1, 31))
+            )  # label columns by # days ago, today is 1 day ago
 
             web_score_month = self.generate_dataframe(web_score, titles)
             web_score_week = web_score_month.loc[:, 7:1]  # generate week from month
@@ -271,7 +273,9 @@ class Stats(commands.Cog):
                 web_score_today != 0
             ]  # remove users with no correct answers
 
-            web_usage_month = self.generate_dataframe(web_usage, titles, index=("check", "skip", "hint"))
+            web_usage_month = self.generate_dataframe(
+                web_usage, titles, index=("check", "skip", "hint")
+            )
             web_usage_week = web_usage_month.loc[:, 7:1]
             web_usage_today = web_usage_week.loc[:, 1]
 
