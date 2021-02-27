@@ -465,7 +465,7 @@ class Stats(commands.Cog):
         )
         titles = ",".join(map(lambda x: x.split(":")[1], keys))
         await _export_helper(
-            keys, f"username#discrim,{titles}\n", "scores.csv", users=True
+            keys, f"username#discrim,{titles}\n", "web_scores.csv", users=True
         )
 
         logger.info("exporting web usage")
@@ -476,7 +476,7 @@ class Stats(commands.Cog):
             )
         )
         titles = ",".join(map(lambda x: x.split(":")[1], keys))
-        await _export_helper(keys, f"command,{titles}\n", "scores.csv", users=False)
+        await _export_helper(keys, f"command,{titles}\n", "web_usage.csv", users=False)
 
         await ctx.send(files=files)
 
