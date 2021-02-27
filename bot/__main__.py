@@ -394,7 +394,6 @@ if __name__ == "__main__":
         logger.info("TASK: Removing user keys")
         prune_user_cache(10)
 
-
     @tasks.loop(hours=1.0)
     async def refresh_backup():
         """Sends a copy of the database to a discord channel (BACKUPS_CHANNEL)."""
