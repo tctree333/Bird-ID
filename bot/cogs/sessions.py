@@ -39,7 +39,7 @@ class Sessions(commands.Cog):
         options = textwrap.dedent(
             f"""\
             **Active Filters:** `{'`, `'.join(filters.display())}`
-            **State bird list:** {state.decode('utf-8') if state else 'None'}
+            **Alternate bird list:** {state.decode('utf-8') if state else 'None'}
             **Bird taxon:** {taxon.decode('utf-8') if taxon else 'None'}
             **Wiki Embeds**: {wiki==b'wiki'}
             **Strict Spelling**: {strict==b'strict'}
@@ -204,77 +204,78 @@ class Sessions(commands.Cog):
     async def edit(self, ctx, *, args_str: str = ""):
         logger.info("command: view session")
 
-        if database.exists(f"session.data:{ctx.author.id}"):
-            new_filter = Filter.parse(args_str, defaults=False)
-            if new_filter.vc:
-                new_filter.vc = False
-                await ctx.send("**The VC filter is not allowed in sessions!**")
-
-            args = args_str.lower().split(" ")
-            logger.info(f"args: {args}")
-
-            new_filter ^= int(database.hget(f"session.data:{ctx.author.id}", "filter"))
-            database.hset(
-                f"session.data:{ctx.author.id}", "filter", str(new_filter.to_int())
-            )
-
-            if "wiki" in args:
-                if database.hget(f"session.data:{ctx.author.id}", "wiki"):
-                    logger.info("enabling wiki embeds")
-                    database.hset(f"session.data:{ctx.author.id}", "wiki", "")
-                else:
-                    logger.info("disabling wiki embeds")
-                    database.hset(f"session.data:{ctx.author.id}", "wiki", "wiki")
-
-            if "strict" in args:
-                if database.hget(f"session.data:{ctx.author.id}", "strict"):
-                    logger.info("disabling strict spelling")
-                    database.hset(f"session.data:{ctx.author.id}", "strict", "")
-                else:
-                    logger.info("enabling strict spelling")
-                    database.hset(f"session.data:{ctx.author.id}", "strict", "strict")
-
-            states_args = set(states.keys()).intersection({arg.upper() for arg in args})
-            if states_args:
-                current_states = set(
-                    database.hget(f"session.data:{ctx.author.id}", "state")
-                    .decode("utf-8")
-                    .split(" ")
-                )
-                logger.info(f"toggle states: {states_args}")
-                logger.info(f"current states: {current_states}")
-                states_args.symmetric_difference_update(current_states)
-                states_args.discard("")
-                logger.info(f"new states: {states_args}")
-                database.hset(
-                    f"session.data:{ctx.author.id}",
-                    "state",
-                    " ".join(states_args).strip(),
-                )
-
-            taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
-            if taxon_args:
-                current_taxons = set(
-                    database.hget(f"session.data:{ctx.author.id}", "taxon")
-                    .decode("utf-8")
-                    .split(" ")
-                )
-                logger.info(f"toggle taxons: {taxon_args}")
-                logger.info(f"current taxons: {current_taxons}")
-                taxon_args.symmetric_difference_update(current_taxons)
-                taxon_args.discard("")
-                logger.info(f"new taxons: {taxon_args}")
-                database.hset(
-                    f"session.data:{ctx.author.id}",
-                    "taxon",
-                    " ".join(taxon_args).strip(),
-                )
-
-            await self._send_stats(ctx, "**Session started previously.**\n")
-        else:
+        if not database.exists(f"session.data:{ctx.author.id}"):
             await ctx.send(
                 "**There is no session running.** *You can start one with `b!session start`*"
             )
+            return
+
+        new_filter = Filter.parse(args_str, defaults=False)
+        if new_filter.vc:
+            new_filter.vc = False
+            await ctx.send("**The VC filter is not allowed in sessions!**")
+
+        args = args_str.lower().split(" ")
+        logger.info(f"args: {args}")
+
+        new_filter ^= int(database.hget(f"session.data:{ctx.author.id}", "filter"))
+        database.hset(
+            f"session.data:{ctx.author.id}", "filter", str(new_filter.to_int())
+        )
+
+        if "wiki" in args:
+            if database.hget(f"session.data:{ctx.author.id}", "wiki"):
+                logger.info("enabling wiki embeds")
+                database.hset(f"session.data:{ctx.author.id}", "wiki", "")
+            else:
+                logger.info("disabling wiki embeds")
+                database.hset(f"session.data:{ctx.author.id}", "wiki", "wiki")
+
+        if "strict" in args:
+            if database.hget(f"session.data:{ctx.author.id}", "strict"):
+                logger.info("disabling strict spelling")
+                database.hset(f"session.data:{ctx.author.id}", "strict", "")
+            else:
+                logger.info("enabling strict spelling")
+                database.hset(f"session.data:{ctx.author.id}", "strict", "strict")
+
+        states_args = set(states.keys()).intersection({arg.upper() for arg in args})
+        if states_args:
+            current_states = set(
+                database.hget(f"session.data:{ctx.author.id}", "state")
+                .decode("utf-8")
+                .split(" ")
+            )
+            logger.info(f"toggle states: {states_args}")
+            logger.info(f"current states: {current_states}")
+            states_args.symmetric_difference_update(current_states)
+            states_args.discard("")
+            logger.info(f"new states: {states_args}")
+            database.hset(
+                f"session.data:{ctx.author.id}",
+                "state",
+                " ".join(states_args).strip(),
+            )
+
+        taxon_args = set(taxons.keys()).intersection({arg.lower() for arg in args})
+        if taxon_args:
+            current_taxons = set(
+                database.hget(f"session.data:{ctx.author.id}", "taxon")
+                .decode("utf-8")
+                .split(" ")
+            )
+            logger.info(f"toggle taxons: {taxon_args}")
+            logger.info(f"current taxons: {current_taxons}")
+            taxon_args.symmetric_difference_update(current_taxons)
+            taxon_args.discard("")
+            logger.info(f"new taxons: {taxon_args}")
+            database.hset(
+                f"session.data:{ctx.author.id}",
+                "taxon",
+                " ".join(taxon_args).strip(),
+            )
+
+        await self._send_stats(ctx, "**Session started previously.**\n")
 
     # stops session
     @session.command(help="- Stops session", aliases=["stp", "end"])

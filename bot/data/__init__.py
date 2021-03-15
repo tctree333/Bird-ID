@@ -169,7 +169,6 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #               aliases: [alias1, alias2...],
 #               birdList: [bird1, bird2...],
 #               songBirds: [etc.],
-#               sciList: [etc.],
 #               }
 #          }
 

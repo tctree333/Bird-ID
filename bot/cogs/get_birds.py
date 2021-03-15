@@ -159,8 +159,8 @@ class Birds(commands.Cog):
                 await ctx.send(
                     "**Recognized arguments:** "
                     + f"*Active Filters*: `{'`, `'.join(filters.display())}`, "
-                    + f"*Taxons*: `{'None' if taxon == [] else ' '.join(taxon)}`, "
-                    + f"*Detected State*: `{'None' if roles == [] else ' '.join(roles)}`"
+                    + f"*Taxons*: `{'None' if taxon_str == '' else taxon_str}`, "
+                    + f"*Detected State*: `{'None' if role_str == '' else role_str}`"
                 )
 
             find_custom_role = {i if i.startswith("CUSTOM:") else "" for i in roles}
@@ -174,11 +174,11 @@ class Birds(commands.Cog):
                 roles.append("CUSTOM")
                 user_id = custom_role.split(":")[1]
                 birds = build_id_list(
-                    user_id=user_id, taxon=taxon, roles=roles, media=media_type
+                    user_id=user_id, taxon=taxon, state=roles, media=media_type
                 )
             else:
                 birds = build_id_list(
-                    user_id=ctx.author.id, taxon=taxon, roles=roles, media=media_type
+                    user_id=ctx.author.id, taxon=taxon, state=roles, media=media_type
                 )
 
             if not birds:

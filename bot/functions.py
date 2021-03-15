@@ -388,13 +388,12 @@ async def send_leaderboard(
 
 
 def build_id_list(
-    user_id=None, taxon=None, roles=None, state=None, media="images"
+    user_id=None, taxon=None, state=None, media="images"
 ) -> list:
     """Generates an ID list based on given arguments
 
     - `user_id`: User ID of custom list
     - `taxon`: taxon string/list
-    - `roles`: role list
     - `state`: state string/list
     - `media`: images/songs
     """
@@ -404,7 +403,7 @@ def build_id_list(
     if isinstance(state, str):
         state = state.split(" ")
 
-    state_roles = (state if state else []) + (roles if roles else [])
+    state_roles = (state if state else [])
     if media in ("songs", "song", "s", "a"):
         state_list = "songBirds"
         default = songBirds
