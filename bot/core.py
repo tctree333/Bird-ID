@@ -404,7 +404,7 @@ async def download_media(bird, media_type, filters, directory=None, session=None
         if not os.path.exists(directory):
             os.makedirs(directory)
         paths = [f"{directory}{i}" for i in range(len(urls))]
-        sem = asyncio.Semaphore(5)
+        sem = asyncio.BoundedSemaphore(3)
         filenames = await asyncio.gather(
             *(
                 _download_helper(path, url, session, sem)

@@ -374,7 +374,7 @@ if __name__ == "__main__":
             await ctx.send("https://discord.gg/fXxYyDJ")
             raise error
 
-    @tasks.loop(hours=1.0)
+    @tasks.loop(hours=0.5)
     async def refresh_cache():
         """Task to delete a random selection of cached birds every hour."""
         logger.info("TASK: Refreshing some cache items")

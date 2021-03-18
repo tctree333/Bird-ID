@@ -77,8 +77,8 @@ def cache(func=None, pre=None, local=True):
                 return
             pickled = pickle.dumps(value, protocol=4)
             database.set(
-                f"cache.{func.__name__}:{key}", pickled, ex=604800
-            )  # 60*60*24*7
+                f"cache.{func.__name__}:{key}", pickled, ex=1209600
+            )  # 60*60*24*14
 
         def _cache_get(key, default=None):
             if local:
