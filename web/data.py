@@ -20,7 +20,7 @@ from typing import Union
 from fastapi import Request
 
 from bot.data import database, logger
-from bot.functions import user_setup
+from bot.functions import user_setup, score_increment
 from web.config import DATABASE_SESSION_EXPIRE, DATABASE_SESSION_USER_EXPIRE
 
 # Web Database Keys
@@ -81,7 +81,7 @@ async def update_web_user(request: Request, user_data: dict):
     await user_setup(user_id)
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
     if tempScore not in (0, -1):
-        database.zincrby("users:global", tempScore, int(user_id))
+        score_increment(user_id, tempScore)
         database.hset(f"web.session:{session_id}", "tempScore", -1)
     logger.info("updated user data")
 

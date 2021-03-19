@@ -519,7 +519,7 @@ def score_increment(ctx, amount: int):
     if isinstance(ctx, (str, int)):
         user_id = str(ctx)
         guild = None
-        channel_id = ""
+        channel_id = "web"
     else:
         user_id = str(ctx.author.id)
         guild = ctx.guild
