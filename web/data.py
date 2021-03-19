@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import datetime
 import random
 from typing import Union
 
@@ -82,6 +83,7 @@ async def update_web_user(request: Request, user_data: dict):
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
     if tempScore not in (0, -1):
         score_increment(user_id, tempScore)
+        database.zincrby(f"daily.webscore:{str(datetime.datetime.now(datetime.timezone.utc).date())}", 1, user_id)
         database.hset(f"web.session:{session_id}", "tempScore", -1)
     logger.info("updated user data")
 
