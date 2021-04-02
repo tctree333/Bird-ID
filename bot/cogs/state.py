@@ -26,7 +26,7 @@ from sentry_sdk import capture_exception, capture_message
 
 from bot.core import valid_bird
 from bot.data import GenericError, database, logger, states
-from bot.functions import CustomCooldown, auto_decode
+from bot.functions import CustomCooldown, auto_decode, handle_error
 
 
 class States(commands.Cog):
@@ -398,54 +398,8 @@ class States(commands.Cog):
             await ctx.send(
                 f"**Please enter your state.**\n*Valid States:* `{'`, `'.join(states.keys())}`"
             )
-        elif isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send(
-                f"**Cooldown.** Try again after {str(round(error.retry_after))}s.",
-                delete_after=5.0,
-            )
-        elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.send("**This command is unavailable in DMs!**")
-        elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.send(
-                "**The bot does not have enough permissions to fully function.**\n"
-                + f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n"
-                + "*Please try again once the correct permissions are set.*"
-            )
-        elif isinstance(error, GenericError):
-            if error.code == 192:
-                # channel is ignored
-                return
-            if error.code == 842:
-                await ctx.send("**Sorry, you cannot use this command.**")
-            elif error.code == 666:
-                logger.info("GenericError 666")
-            elif error.code == 201:
-                logger.info("HTTP Error")
-                capture_exception(error)
-                await ctx.send(
-                    "**An unexpected HTTP Error has occurred.**\n *Please try again.*"
-                )
-            else:
-                logger.info("uncaught generic error")
-                capture_exception(error)
-                await ctx.send(
-                    "**An uncaught generic error has occurred.**\n"
-                    + "*Please log this message in #support in the support server below, or try again.*\n"
-                    + "**Error:** "
-                    + str(error)
-                )
-                await ctx.send("https://discord.gg/fXxYyDJ")
-                raise error
         else:
-            capture_exception(error)
-            await ctx.send(
-                "**An uncaught set error has occurred.**\n"
-                + "*Please log this message in #support in the support server below, or try again.*\n"
-                + "**Error:** "
-                + str(error)
-            )
-            await ctx.send("https://discord.gg/fXxYyDJ")
-            raise error
+            await handle_error(ctx, error)
 
 
 def setup(bot):
