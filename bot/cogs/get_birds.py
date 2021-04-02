@@ -22,9 +22,9 @@ from discord.ext import commands
 
 from bot.core import send_bird
 from bot.data import GenericError, database, goatsuckers, logger, states, taxons
+from bot.data_functions import bird_setup, session_increment
 from bot.filters import Filter
-from bot.functions import (CustomCooldown, bird_setup, build_id_list,
-                           check_state_role, session_increment)
+from bot.functions import CustomCooldown, build_id_list, check_state_role
 
 BASE_MESSAGE = (
     "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, "

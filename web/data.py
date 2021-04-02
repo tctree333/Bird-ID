@@ -21,7 +21,7 @@ from typing import Union
 from fastapi import Request
 
 from bot.data import database, logger
-from bot.functions import user_setup, score_increment
+from bot.data_functions import user_setup, score_increment
 from web.config import DATABASE_SESSION_EXPIRE, DATABASE_SESSION_USER_EXPIRE
 
 # Web Database Keys

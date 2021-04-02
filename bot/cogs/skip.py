@@ -18,8 +18,9 @@ from discord.ext import commands
 
 import bot.voice as voice_functions
 from bot.data import database, get_wiki_url, logger
+from bot.data_functions import streak_increment
 from bot.filters import Filter
-from bot.functions import CustomCooldown, streak_increment
+from bot.functions import CustomCooldown
 
 
 class Skip(commands.Cog):

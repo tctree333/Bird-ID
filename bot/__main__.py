@@ -16,24 +16,26 @@
 
 import asyncio
 import concurrent.futures
-import errno
 import os
 import sys
 from datetime import date, datetime, timedelta, timezone
 
-import aiohttp
 import discord
 import holidays
-import redis
-import wikipedia
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception
 
 from bot.core import rotate_cache, send_bird
 from bot.data import GenericError, database, logger
+from bot.data_functions import channel_setup, user_setup
 from bot.filters import Filter
-from bot.functions import (backup_all, channel_setup, drone_attack,
-                           get_all_users, prune_user_cache, user_setup)
+from bot.functions import (
+    backup_all,
+    drone_attack,
+    get_all_users,
+    handle_error,
+    prune_user_cache,
+)
 
 # The channel id that the backups send to
 BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])
@@ -185,194 +187,7 @@ if __name__ == "__main__":
         if hasattr(ctx.command, "on_error"):
             return
 
-        if isinstance(error, commands.CommandOnCooldown):  # send cooldown
-            await ctx.send(
-                (
-                    "**Cooldowns have been temporarily increased due to increased usage.**"
-                    if getattr(error.cooldown, "rate_limit", False)
-                    else "**Cooldown.** "
-                )
-                + "Try again after "
-                + str(round(error.retry_after, 2))
-                + " s.",
-                delete_after=5.0,
-            )
-
-        elif isinstance(error, commands.CommandNotFound):
-            capture_exception(error)
-            await ctx.send("Sorry, the command was not found.")
-
-        elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("This command requires an argument!")
-
-        elif isinstance(error, commands.BadArgument):
-            await ctx.send("The argument passed was invalid. Please try again.")
-
-        elif isinstance(error, commands.ArgumentParsingError):
-            await ctx.send("An invalid character was detected. Please try again.")
-
-        elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.send(
-                "**The bot does not have enough permissions to fully function.**\n"
-                + f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n"
-                + "*Please try again once the correct permissions are set.*"
-            )
-
-        elif isinstance(error, commands.MissingPermissions):
-            await ctx.send(
-                "You do not have the required permissions to use this command.\n"
-                + f"**Required Perms:** `{'`, `'.join(error.missing_perms)}`"
-            )
-
-        elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.send("**This command is unavailable in DMs!**")
-
-        elif isinstance(error, commands.PrivateMessageOnly):
-            await ctx.send("**This command is only available in DMs!**")
-
-        elif isinstance(error, commands.NotOwner):
-            logger.info("not owner")
-            await ctx.send("Sorry, the command was not found.")
-
-        elif isinstance(error, GenericError):
-            if error.code == 192:
-                # channel is ignored
-                return
-            if error.code == 842:
-                await ctx.send("**Sorry, you cannot use this command.**")
-            elif error.code == 666:
-                logger.info("GenericError 666")
-            elif error.code == 201:
-                logger.info("HTTP Error")
-                capture_exception(error)
-                await ctx.send(
-                    "**An unexpected HTTP Error has occurred.**\n *Please try again.*"
-                )
-            else:
-                logger.info("uncaught generic error")
-                capture_exception(error)
-                await ctx.send(
-                    "**An uncaught generic error has occurred.**\n"
-                    + "*Please log this message in #support in the support server below, or try again.*\n"
-                    + f"**Error code:** `{error.code}`"
-                )
-                await ctx.send("https://discord.gg/fXxYyDJ")
-                raise error
-
-        elif isinstance(error, commands.CommandInvokeError):
-            if isinstance(error.original, redis.exceptions.ResponseError):
-                capture_exception(error.original)
-                if database.exists(f"channel:{ctx.channel.id}"):
-                    await ctx.send(
-                        "**An unexpected ResponseError has occurred.**\n"
-                        + "*Please log this message in #support in the support server below, or try again.*\n"
-                    )
-                    await ctx.send("https://discord.gg/fXxYyDJ")
-                else:
-                    await channel_setup(ctx)
-                    await ctx.send("Please run that command again.")
-
-            elif isinstance(error.original, wikipedia.exceptions.DisambiguationError):
-                await ctx.send("Wikipedia page not found. (Disambiguation Error)")
-
-            elif isinstance(error.original, wikipedia.exceptions.PageError):
-                await ctx.send("Wikipedia page not found. (Page Error)")
-
-            elif isinstance(error.original, wikipedia.exceptions.WikipediaException):
-                capture_exception(error.original)
-                await ctx.send("Wikipedia page unavailable. Try again later.")
-
-            elif isinstance(error.original, discord.Forbidden):
-                if error.original.code == 50007:
-                    await ctx.send(
-                        "I was unable to DM you. Check if I was blocked and try again."
-                    )
-                elif error.original.code == 50013:
-                    await ctx.send(
-                        "There was an error with permissions. Check the bot has proper permissions and try again."
-                    )
-                else:
-                    capture_exception(error)
-                    await ctx.send(
-                        "**An unexpected Forbidden error has occurred.**\n"
-                        + "*Please log this message in #support in the support server below, or try again.*\n"
-                        + f"**Error code:** `{error.original.code}`"
-                    )
-                    await ctx.send("https://discord.gg/fXxYyDJ")
-
-            elif isinstance(error.original, discord.HTTPException):
-                capture_exception(error.original)
-                if error.original.status == 502:
-                    await ctx.send(
-                        "**An error has occurred with discord. :(**\n*Please try again.*"
-                    )
-                else:
-                    await ctx.send(
-                        "**An unexpected HTTPException has occurred.**\n"
-                        + "*Please log this message in #support in the support server below, or try again*\n"
-                        + f"**Reponse Code:** `{error.original.status}`"
-                    )
-                    await ctx.send("https://discord.gg/fXxYyDJ")
-
-            elif isinstance(error.original, aiohttp.ClientOSError):
-                capture_exception(error.original)
-                if error.original.errno == errno.ECONNRESET:
-                    await ctx.send(
-                        "**An error has occurred with discord. :(**\n*Please try again.*"
-                    )
-                else:
-                    await ctx.send(
-                        "**An unexpected ClientOSError has occurred.**\n"
-                        + "*Please log this message in #support in the support server below, or try again.*\n"
-                        + f"**Error code:** `{error.original.errno}`"
-                    )
-                    await ctx.send("https://discord.gg/fXxYyDJ")
-
-            elif isinstance(error.original, aiohttp.ServerDisconnectedError):
-                capture_exception(error.original)
-                await ctx.send("**The server disconnected.**\n*Please try again.*")
-
-            elif isinstance(error.original, asyncio.TimeoutError):
-                capture_exception(error.original)
-                await ctx.send(
-                    "**The request timed out.**\n*Please try again in a bit.*"
-                )
-
-            elif isinstance(error.original, OSError):
-                capture_exception(error.original)
-                if error.original.errno == errno.ENOSPC:
-                    await ctx.send(
-                        "**No space is left on the server!**\n"
-                        + "*Please report this message in #support in the support server below!*\n"
-                    )
-                    await ctx.send("https://discord.gg/fXxYyDJ")
-                else:
-                    await ctx.send(
-                        "**An unexpected OSError has occurred.**\n"
-                        + "*Please log this message in #support in the support server below, or try again.*\n"
-                        + f"**Error code:** `{error.original.errno}`"
-                    )
-                    await ctx.send("https://discord.gg/fXxYyDJ")
-
-            else:
-                logger.info("uncaught command error")
-                capture_exception(error.original)
-                await ctx.send(
-                    "**An uncaught command error has occurred.**\n"
-                    + "*Please log this message in #support in the support server below, or try again.*\n"
-                )
-                await ctx.send("https://discord.gg/fXxYyDJ")
-                raise error
-
-        else:
-            logger.info("uncaught non-command")
-            capture_exception(error)
-            await ctx.send(
-                "**An uncaught non-command error has occurred.**\n"
-                + "*Please log this message in #support in the support server below, or try again.*\n"
-            )
-            await ctx.send("https://discord.gg/fXxYyDJ")
-            raise error
+        await handle_error(ctx, error)
 
     @tasks.loop(hours=0.5)
     async def refresh_cache():

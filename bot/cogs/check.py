@@ -22,15 +22,15 @@ from discord.ext import commands
 import bot.voice as voice_functions
 from bot.core import get_sciname, spellcheck
 from bot.data import alpha_codes, database, get_wiki_url, logger
-from bot.filters import Filter
-from bot.functions import (
-    CustomCooldown,
+from bot.data_functions import (
     bird_setup,
     incorrect_increment,
     score_increment,
     session_increment,
     streak_increment,
 )
+from bot.filters import Filter
+from bot.functions import CustomCooldown
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]

@@ -22,13 +22,13 @@ from fastapi import APIRouter, HTTPException, Request
 
 from bot.core import spellcheck
 from bot.data import birdList, get_wiki_url, songBirds, alpha_codes
-from bot.filters import Filter
-from bot.functions import (
+from bot.data_functions import (
     bird_setup,
     incorrect_increment,
     score_increment,
     streak_increment,
 )
+from bot.filters import Filter
 from web.data import database, get_session_id, logger
 from web.functions import send_file, get_sciname, send_bird
 

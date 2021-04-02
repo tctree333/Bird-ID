@@ -16,19 +16,22 @@
 
 import asyncio
 import concurrent.futures
-import datetime
 import difflib
+import errno
 import functools
 import hashlib
 import itertools
 import os
 import pickle
 import random
-import string
 
+import aiohttp
 import chardet
 import discord
+import redis
+import wikipedia
 from discord.ext import commands
+from sentry_sdk import capture_exception
 
 from bot.data import (
     GenericError,
@@ -41,6 +44,7 @@ from bot.data import (
     states,
     taxons,
 )
+from bot.data_functions import channel_setup
 
 
 def cache(func=None, pre=None, local=True):
@@ -144,155 +148,6 @@ def cache(func=None, pre=None, local=True):
     return wrapper
 
 
-async def channel_setup(ctx):
-    """Sets up a new discord channel.
-
-    `ctx` - Discord context object
-    """
-    logger.info("checking channel setup")
-    if not database.exists(f"channel:{ctx.channel.id}"):
-        database.hset(
-            f"channel:{ctx.channel.id}",
-            mapping={"bird": "", "answered": 1, "prevB": "", "prevJ": 20},
-        )
-        # true = 1, false = 0, index 0 is last arg, prevJ is 20 to define as integer
-        logger.info("channel data added")
-        await ctx.send("Ok, setup! I'm all ready to use!")
-
-    if database.zscore("score:global", str(ctx.channel.id)) is None:
-        database.zadd("score:global", {str(ctx.channel.id): 0})
-        logger.info("channel score added")
-
-    if ctx.guild is not None:
-        database.zadd("channels:global", {f"{ctx.guild.id}:{ctx.channel.id}": 0})
-
-
-async def user_setup(ctx):
-    """Sets up a new discord user for score tracking.
-
-    `ctx` - Discord context object or user id
-    """
-    if isinstance(ctx, (str, int)):
-        user_id = str(ctx)
-        guild = None
-        ctx = None
-    else:
-        user_id = str(ctx.author.id)
-        guild = ctx.guild
-
-    logger.info("checking user data")
-    if database.zscore("users:global", user_id) is None:
-        database.zadd("users:global", {user_id: 0})
-        logger.info("user global added")
-        if ctx is not None:
-            await ctx.send("Welcome <@" + user_id + ">!")
-
-    date = str(datetime.datetime.now(datetime.timezone.utc).date())
-    if database.zscore(f"daily.score:{date}", user_id) is None:
-        database.zadd(f"daily.score:{date}", {user_id: 0})
-        logger.info("user daily added")
-
-    # Add streak
-    if (database.zscore("streak:global", user_id) is None) or (
-        database.zscore("streak.max:global", user_id) is None
-    ):
-        database.zadd("streak:global", {user_id: 0})
-        database.zadd("streak.max:global", {user_id: 0})
-        logger.info("added streak")
-
-    if guild is not None:
-        global_score = database.zscore("users:global", str(ctx.author.id))
-        database.zadd(
-            f"users.server:{ctx.guild.id}", {str(ctx.author.id): global_score}
-        )
-        logger.info("synced scores")
-
-        if not database.exists(f"custom.list:{ctx.author.id}"):
-            role_ids = [role.id for role in ctx.author.roles]
-            role_names = [role.name.lower() for role in ctx.author.roles]
-            if set(role_names).intersection(set(states["CUSTOM"]["aliases"])):
-                index = role_names.index(states["CUSTOM"]["aliases"][0].lower())
-                role = ctx.guild.get_role(role_ids[index])
-                await ctx.author.remove_roles(
-                    role, reason="Remove state role for bird list"
-                )
-                logger.info("synced roles")
-
-
-def bird_setup(ctx, bird: str):
-    """Sets up a new bird for incorrect tracking.
-
-    `ctx` - Discord context object or user id\n
-    `bird` - bird to setup
-    """
-    if isinstance(ctx, (str, int)):
-        user_id = ctx
-        guild = None
-    else:
-        user_id = ctx.author.id
-        guild = ctx.guild
-
-    logger.info("checking bird data")
-    if database.zscore("incorrect:global", string.capwords(bird)) is not None:
-        logger.info("bird global ok")
-    else:
-        database.zadd("incorrect:global", {string.capwords(bird): 0})
-        logger.info("bird global added")
-
-    if database.zscore(f"incorrect.user:{user_id}", string.capwords(bird)) is not None:
-        logger.info("incorrect bird user ok")
-    else:
-        database.zadd(f"incorrect.user:{user_id}", {string.capwords(bird): 0})
-        logger.info("incorrect bird user added")
-
-    if database.zscore(f"correct.user:{user_id}", string.capwords(bird)) is not None:
-        logger.info("correct bird user ok")
-    else:
-        database.zadd(f"correct.user:{user_id}", {string.capwords(bird): 0})
-        logger.info("correct bird user added")
-
-    date = str(datetime.datetime.now(datetime.timezone.utc).date())
-    if database.zscore(f"daily.incorrect:{date}", string.capwords(bird)) is not None:
-        logger.info("bird daily ok")
-    else:
-        database.zadd(f"daily.incorrect:{date}", {string.capwords(bird): 0})
-        logger.info("bird daily added")
-
-    if database.zscore("frequency.bird:global", string.capwords(bird)) is not None:
-        logger.info("bird freq global ok")
-    else:
-        database.zadd("frequency.bird:global", {string.capwords(bird): 0})
-        logger.info("bird freq global added")
-
-    if guild is not None:
-        logger.info("no dm")
-        if (
-            database.zscore(f"incorrect.server:{ctx.guild.id}", string.capwords(bird))
-            is not None
-        ):
-            logger.info("bird server ok")
-        else:
-            database.zadd(
-                f"incorrect.server:{ctx.guild.id}", {string.capwords(bird): 0}
-            )
-            logger.info("bird server added")
-    else:
-        logger.info("dm context")
-
-    if database.exists(f"session.data:{user_id}"):
-        logger.info("session in session")
-        if (
-            database.zscore(f"session.incorrect:{user_id}", string.capwords(bird))
-            is not None
-        ):
-            logger.info("bird session ok")
-        else:
-            database.zadd(f"session.incorrect:{user_id}", {string.capwords(bird): 0})
-            logger.info("bird session added")
-    else:
-        logger.info("no session")
-
-
 def check_state_role(ctx) -> list:
     """Returns a list of state roles a user has.
 
@@ -387,9 +242,7 @@ async def send_leaderboard(
     await ctx.send(embed=embed)
 
 
-def build_id_list(
-    user_id=None, taxon=None, state=None, media="images"
-) -> list:
+def build_id_list(user_id=None, taxon=None, state=None, media="images") -> list:
     """Generates an ID list based on given arguments
 
     - `user_id`: User ID of custom list
@@ -403,7 +256,7 @@ def build_id_list(
     if isinstance(state, str):
         state = state.split(" ")
 
-    state_roles = (state if state else [])
+    state_roles = state if state else []
     if media in ("songs", "song", "s", "a"):
         state_list = "songBirds"
         default = songBirds
@@ -450,120 +303,6 @@ def build_id_list(
         birds = default
     logger.info(f"number of birds: {len(birds)}")
     return birds
-
-
-def session_increment(ctx, item: str, amount: int):
-    """Increments the value of a database hash field by `amount`.
-
-    `ctx` - Discord context object or user id\n
-    `item` - hash field to increment (see data.py for details,
-    possible values include correct, incorrect, total)\n
-    `amount` (int) - amount to increment by, usually 1
-    """
-    if isinstance(ctx, (str, int)):
-        user_id = ctx
-    else:
-        user_id = ctx.author.id
-
-    if database.exists(f"session.data:{user_id}"):
-        logger.info("session active")
-        logger.info(f"incrementing {item} by {amount}")
-        value = int(database.hget(f"session.data:{user_id}", item))
-        value += int(amount)
-        database.hset(f"session.data:{user_id}", item, str(value))
-    else:
-        logger.info("session not active")
-
-
-def incorrect_increment(ctx, bird: str, amount: int):
-    """Increments the value of an incorrect bird by `amount`.
-
-    `ctx` - Discord context object or user id\n
-    `bird` - bird that was incorrect\n
-    `amount` (int) - amount to increment by, usually 1
-    """
-    if isinstance(ctx, (str, int)):
-        user_id = ctx
-        guild = None
-    else:
-        user_id = ctx.author.id
-        guild = ctx.guild
-
-    logger.info(f"incrementing incorrect {bird} by {amount}")
-    date = str(datetime.datetime.now(datetime.timezone.utc).date())
-    database.zincrby("incorrect:global", amount, string.capwords(str(bird)))
-    database.zincrby(f"incorrect.user:{user_id}", amount, string.capwords(str(bird)))
-    database.zincrby(f"daily.incorrect:{date}", amount, string.capwords(str(bird)))
-    if guild is not None:
-        logger.info("no dm")
-        database.zincrby(
-            f"incorrect.server:{ctx.guild.id}", amount, string.capwords(str(bird))
-        )
-    else:
-        logger.info("dm context")
-    if database.exists(f"session.data:{user_id}"):
-        logger.info("session in session")
-        database.zincrby(
-            f"session.incorrect:{user_id}", amount, string.capwords(str(bird))
-        )
-    else:
-        logger.info("no session")
-
-
-def score_increment(ctx, amount: int):
-    """Increments the score of a user by `amount`.
-
-    `ctx` - Discord context object\n
-    `amount` (int) - amount to increment by, usually 1
-    """
-    if isinstance(ctx, (str, int)):
-        user_id = str(ctx)
-        guild = None
-        channel_id = "web"
-    else:
-        user_id = str(ctx.author.id)
-        guild = ctx.guild
-        channel_id = str(ctx.channel.id)
-
-    logger.info(f"incrementing score by {amount}")
-    date = str(datetime.datetime.now(datetime.timezone.utc).date())
-    database.zincrby("score:global", amount, channel_id)
-    database.zincrby("users:global", amount, user_id)
-    database.zincrby(f"daily.score:{date}", amount, user_id)
-    if guild is not None:
-        logger.info("no dm")
-        database.zincrby(f"users.server:{ctx.guild.id}", amount, user_id)
-        if database.exists(f"race.data:{ctx.channel.id}"):
-            logger.info("race in session")
-            database.zincrby(f"race.scores:{ctx.channel.id}", amount, user_id)
-    else:
-        logger.info("dm context")
-
-
-def streak_increment(ctx, amount: int):
-    """Increments the streak of a user by `amount`.
-
-    `ctx` - Discord context object or user id\n
-    `amount` (int) - amount to increment by, usually 1.
-    If amount is None, the streak is ended.
-    """
-    if isinstance(ctx, (str, int)):
-        user_id = str(ctx)
-    else:
-        user_id = str(ctx.author.id)
-
-    if amount is not None:
-        # increment streak and update max
-        database.zincrby("streak:global", amount, user_id)
-        if database.zscore("streak:global", user_id) > database.zscore(
-            "streak.max:global", user_id
-        ):
-            database.zadd(
-                "streak.max:global",
-                {user_id: database.zscore("streak:global", user_id)},
-            )
-    else:
-        database.zadd("streak:global", {user_id: 0})
 
 
 async def drone_attack(ctx):
@@ -675,7 +414,9 @@ async def drone_attack(ctx):
                 "SHHHHHH! Birds are **NOT** government drones! You'll blow our cover, and we'll need to get rid of you."
             )
         elif matches:
-            await ctx.send("Correct! Good job! The bird was **definitely a real bird**.")
+            await ctx.send(
+                "Correct! Good job! The bird was **definitely a real bird**."
+            )
             await ctx.send(embed=video_embed())
         else:
             await ctx.send("Sorry, the bird was actually **definitely a real bird**.")
@@ -835,3 +576,194 @@ class CustomCooldown:
         if retry_after:
             raise commands.CommandOnCooldown(bucket, retry_after)
         return True
+
+
+async def handle_error(ctx, error):
+    """Function for comprehensive error handling."""
+
+    if isinstance(error, commands.CommandOnCooldown):  # send cooldown
+        await ctx.send(
+            (
+                "**Cooldowns have been temporarily increased due to increased usage.**"
+                if getattr(error.cooldown, "rate_limit", False)
+                else "**Cooldown.** "
+            )
+            + "Try again after "
+            + str(round(error.retry_after, 2))
+            + " s.",
+            delete_after=5.0,
+        )
+
+    elif isinstance(error, commands.CommandNotFound):
+        capture_exception(error)
+        await ctx.send("Sorry, the command was not found.")
+
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("This command requires an argument!")
+
+    elif isinstance(error, commands.BadArgument):
+        await ctx.send("The argument passed was invalid. Please try again.")
+
+    elif isinstance(error, commands.ArgumentParsingError):
+        await ctx.send("An invalid character was detected. Please try again.")
+
+    elif isinstance(error, commands.BotMissingPermissions):
+        await ctx.send(
+            "**The bot does not have enough permissions to fully function.**\n"
+            + f"**Permissions Missing:** `{', '.join(map(str, error.missing_perms))}`\n"
+            + "*Please try again once the correct permissions are set.*"
+        )
+
+    elif isinstance(error, commands.MissingPermissions):
+        await ctx.send(
+            "You do not have the required permissions to use this command.\n"
+            + f"**Required Perms:** `{'`, `'.join(error.missing_perms)}`"
+        )
+
+    elif isinstance(error, commands.NoPrivateMessage):
+        await ctx.send("**This command is unavailable in DMs!**")
+
+    elif isinstance(error, commands.PrivateMessageOnly):
+        await ctx.send("**This command is only available in DMs!**")
+
+    elif isinstance(error, commands.NotOwner):
+        logger.info("not owner")
+        await ctx.send("Sorry, the command was not found.")
+
+    elif isinstance(error, GenericError):
+        if error.code == 192:
+            # channel is ignored
+            return
+        if error.code == 842:
+            await ctx.send("**Sorry, you cannot use this command.**")
+        elif error.code == 666:
+            logger.info("GenericError 666")
+        elif error.code == 201:
+            logger.info("HTTP Error")
+            capture_exception(error)
+            await ctx.send(
+                "**An unexpected HTTP Error has occurred.**\n *Please try again.*"
+            )
+        else:
+            logger.info("uncaught generic error")
+            capture_exception(error)
+            await ctx.send(
+                "**An uncaught generic error has occurred.**\n"
+                + "*Please log this message in #support in the support server below, or try again.*\n"
+                + f"**Error code:** `{error.code}`"
+            )
+            await ctx.send("https://discord.gg/fXxYyDJ")
+            raise error
+
+    elif isinstance(error, commands.CommandInvokeError):
+        if isinstance(error.original, redis.exceptions.ResponseError):
+            capture_exception(error.original)
+            if database.exists(f"channel:{ctx.channel.id}"):
+                await ctx.send(
+                    "**An unexpected ResponseError has occurred.**\n"
+                    + "*Please log this message in #support in the support server below, or try again.*\n"
+                )
+                await ctx.send("https://discord.gg/fXxYyDJ")
+            else:
+                await channel_setup(ctx)
+                await ctx.send("Please run that command again.")
+
+        elif isinstance(error.original, wikipedia.exceptions.DisambiguationError):
+            await ctx.send("Wikipedia page not found. (Disambiguation Error)")
+
+        elif isinstance(error.original, wikipedia.exceptions.PageError):
+            await ctx.send("Wikipedia page not found. (Page Error)")
+
+        elif isinstance(error.original, wikipedia.exceptions.WikipediaException):
+            capture_exception(error.original)
+            await ctx.send("Wikipedia page unavailable. Try again later.")
+
+        elif isinstance(error.original, discord.Forbidden):
+            if error.original.code == 50007:
+                await ctx.send(
+                    "I was unable to DM you. Check if I was blocked and try again."
+                )
+            elif error.original.code == 50013:
+                await ctx.send(
+                    "There was an error with permissions. Check the bot has proper permissions and try again."
+                )
+            else:
+                capture_exception(error)
+                await ctx.send(
+                    "**An unexpected Forbidden error has occurred.**\n"
+                    + "*Please log this message in #support in the support server below, or try again.*\n"
+                    + f"**Error code:** `{error.original.code}`"
+                )
+                await ctx.send("https://discord.gg/fXxYyDJ")
+
+        elif isinstance(error.original, discord.HTTPException):
+            capture_exception(error.original)
+            if error.original.status == 502:
+                await ctx.send(
+                    "**An error has occurred with discord. :(**\n*Please try again.*"
+                )
+            else:
+                await ctx.send(
+                    "**An unexpected HTTPException has occurred.**\n"
+                    + "*Please log this message in #support in the support server below, or try again*\n"
+                    + f"**Reponse Code:** `{error.original.status}`"
+                )
+                await ctx.send("https://discord.gg/fXxYyDJ")
+
+        elif isinstance(error.original, aiohttp.ClientOSError):
+            capture_exception(error.original)
+            if error.original.errno == errno.ECONNRESET:
+                await ctx.send(
+                    "**An error has occurred with discord. :(**\n*Please try again.*"
+                )
+            else:
+                await ctx.send(
+                    "**An unexpected ClientOSError has occurred.**\n"
+                    + "*Please log this message in #support in the support server below, or try again.*\n"
+                    + f"**Error code:** `{error.original.errno}`"
+                )
+                await ctx.send("https://discord.gg/fXxYyDJ")
+
+        elif isinstance(error.original, aiohttp.ServerDisconnectedError):
+            capture_exception(error.original)
+            await ctx.send("**The server disconnected.**\n*Please try again.*")
+
+        elif isinstance(error.original, asyncio.TimeoutError):
+            capture_exception(error.original)
+            await ctx.send("**The request timed out.**\n*Please try again in a bit.*")
+
+        elif isinstance(error.original, OSError):
+            capture_exception(error.original)
+            if error.original.errno == errno.ENOSPC:
+                await ctx.send(
+                    "**No space is left on the server!**\n"
+                    + "*Please report this message in #support in the support server below!*\n"
+                )
+                await ctx.send("https://discord.gg/fXxYyDJ")
+            else:
+                await ctx.send(
+                    "**An unexpected OSError has occurred.**\n"
+                    + "*Please log this message in #support in the support server below, or try again.*\n"
+                    + f"**Error code:** `{error.original.errno}`"
+                )
+                await ctx.send("https://discord.gg/fXxYyDJ")
+
+        else:
+            logger.info("uncaught command error")
+            capture_exception(error.original)
+            await ctx.send(
+                "**An uncaught command error has occurred.**\n"
+                + "*Please log this message in #support in the support server below, or try again.*\n"
+            )
+            await ctx.send("https://discord.gg/fXxYyDJ")
+            raise error
+
+    else:
+        logger.info("uncaught non-command")
+        capture_exception(error)
+        await ctx.send(
+            "**An uncaught non-command error has occurred.**\n"
+            + "*Please log this message in #support in the support server below, or try again.*\n"
+        )
+        await ctx.send("https://discord.gg/fXxYyDJ")
+        raise error

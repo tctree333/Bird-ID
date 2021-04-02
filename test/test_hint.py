@@ -5,7 +5,7 @@ import pytest
 import discord_mock as mock
 from bot.cogs import hint
 from bot.data import database
-from bot.functions import channel_setup, user_setup
+from bot.data_functions import channel_setup, user_setup
 
 
 class TestHint:
