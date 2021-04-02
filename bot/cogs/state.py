@@ -22,10 +22,10 @@ import time
 import aiohttp
 import discord
 from discord.ext import commands
-from sentry_sdk import capture_exception, capture_message
+from sentry_sdk import capture_message
 
 from bot.core import valid_bird
-from bot.data import GenericError, database, logger, states
+from bot.data import database, logger, states
 from bot.functions import CustomCooldown, auto_decode, handle_error
 
 
