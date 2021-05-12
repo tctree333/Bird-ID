@@ -13,7 +13,7 @@ blinker==1.4
 Authlib==0.15.3
 fastapi==0.63.0
 orjson==3.4.8
-itsdangerous==1.1.0
+itsdangerous==2.0.0
 uvicorn[standard]==0.13.4
 httpx==0.12.0
 aiofiles==0.6.0
