@@ -95,8 +95,8 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
             sciname_data = await sciname_response.json()
             try:
                 sciname = sciname_data[0]["sciName"]
-            except IndexError:
-                raise GenericError(f"No sciname found for {code}", code=111)
+            except IndexError as e:
+                raise GenericError(f"No sciname found for {code}", code=111) from e
     logger.info(f"sciname: {sciname}")
     return sciname
 
@@ -154,8 +154,8 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
                             item_name = item["name"]
                             break
                         logger.info("fail")
-            except IndexError:
-                raise GenericError(f"No taxon code found for {bird}", code=111)
+            except IndexError as e:
+                raise GenericError(f"No taxon code found for {bird}", code=111) from e
     logger.info(f"taxon code: {taxon_code}")
     logger.info(f"name: {item_name}")
     return (taxon_code, item_name)
@@ -182,7 +182,12 @@ async def valid_bird(bird: str, session=None) -> Tuple[str, bool, str, str]:
                 return (bird, False, "No taxon code found", "")
             raise e
     if bird_ not in birdListMaster:
-        urls = await _get_urls(session, bird_, "p", Filter())
+        try:
+            urls = await _get_urls(session, bird_, "p", Filter())
+        except GenericError as e:
+            if e.code in (100, 201):
+                return (bird, False, "One or less images found", name)
+            raise e
         if len(urls) < 2:
             return (bird, False, "One or less images found", name)
     return (bird, True, "All checks passed", name)
@@ -504,18 +509,18 @@ async def _download_helper(path, url, session, sem):
                 if content_type.partition("/")[0] == "image":
                     try:
                         ext = valid_types["images"][content_type]
-                    except KeyError:
+                    except KeyError as e:
                         raise GenericError(
                             f"No valid extensions found. Content-Type: {content_type}"
-                        )
+                        ) from e
 
                 elif content_type.partition("/")[0] == "audio":
                     try:
                         ext = valid_types["songs"][content_type]
-                    except KeyError:
+                    except KeyError as e:
                         raise GenericError(
                             f"No valid extensions found. Content-Type: {content_type}"
-                        )
+                        ) from e
                 else:
                     raise GenericError("Invalid content-type.")
 
