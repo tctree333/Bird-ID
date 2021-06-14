@@ -143,6 +143,10 @@ class Race(commands.Cog):
         database.delete(f"race.data:{ctx.channel.id}")
         database.delete(f"race.scores:{ctx.channel.id}")
 
+        logger.info("race end: skipping last bird")
+        database.hset(f"channel:{ctx.channel.id}", "bird", "")
+        database.hset(f"channel:{ctx.channel.id}", "answered", "1")
+
     @commands.group(
         brief="- Base race command",
         help="- Base race command\n"

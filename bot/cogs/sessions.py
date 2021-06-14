@@ -191,6 +191,10 @@ class Sessions(commands.Cog):
             f"**Session started with options:**\n{await self._get_options(ctx)}"
         )
 
+        logger.info("session start: skipping bird")
+        database.hset(f"channel:{ctx.channel.id}", "bird", "")
+        database.hset(f"channel:{ctx.channel.id}", "answered", "1")
+
     # views session
     @session.command(
         brief="- Views session",
@@ -289,6 +293,10 @@ class Sessions(commands.Cog):
             await self._send_stats(ctx, "**Session stopped.**\n")
             database.delete(f"session.data:{ctx.author.id}")
             database.delete(f"session.incorrect:{ctx.author.id}")
+
+            logger.info("session end: skipping bird")
+            database.hset(f"channel:{ctx.channel.id}", "bird", "")
+            database.hset(f"channel:{ctx.channel.id}", "answered", "1")
         else:
             await ctx.send(
                 "**There is no session running.** *You can start one with `b!session start`*"
