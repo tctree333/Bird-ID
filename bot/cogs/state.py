@@ -179,7 +179,7 @@ class States(commands.Cog):
             database.set(f"custom.confirm:{ctx.author.id}", "delete", ex=86400)
             await ctx.send(
                 "Are you sure you want to permanently delete your list? "
-                + "Use `b!delete` again within 24 hours to clear your custom list."
+                + "Use `b!custom delete` again within 24 hours to clear your custom list."
             )
             return
 
