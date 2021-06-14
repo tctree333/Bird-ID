@@ -275,7 +275,7 @@ class States(commands.Cog):
                 )
                 return
             logger.info("checking for invalid characters")
-            char = re.compile("[^A-Za-z '\-\xC0-\xD6\xD8-\xF6\xF8-\xFF]")
+            char = re.compile(r"[^A-Za-z '\-\xC0-\xD6\xD8-\xF6\xF8-\xFF]")
             for item in parsed_birdlist:
                 if len(item) > 1000:
                     logger.info("item too long")
