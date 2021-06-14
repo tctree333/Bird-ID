@@ -306,6 +306,20 @@ class Birds(commands.Cog):
             else:
                 state = " ".join(roles).strip()
 
+            if "CUSTOM" in state.upper().split(" "):
+                if not database.exists(f"custom.list:{ctx.author.id}"):
+                    await ctx.send("**You don't have a custom list set!**")
+                    state_list = state.split(" ")
+                    state_list.remove("CUSTOM")
+                    state = " ".join(state_list)
+                elif database.exists(f"custom.confirm:{ctx.author.id}"):
+                    await ctx.send(
+                        "**Please verify or confirm your custom list before using!**"
+                    )
+                    state_list = state.split(" ")
+                    state_list.remove("CUSTOM")
+                    state = " ".join(state_list)
+
         else:
             logger.info("race parameters")
 
