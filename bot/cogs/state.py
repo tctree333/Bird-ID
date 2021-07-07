@@ -185,6 +185,7 @@ class States(commands.Cog):
 
         if (
             "confirm" in args
+            and database.exists(f"custom.confirm:{ctx.author.id}")
             and database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8")
             == "confirm"
         ):
@@ -201,6 +202,7 @@ class States(commands.Cog):
 
         if (
             "validate" in args
+            and database.exists(f"custom.confirm:{ctx.author.id}")
             and database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8")
             == "valid"
         ):
