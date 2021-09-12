@@ -40,7 +40,9 @@ from bot.functions import cache
 
 # Macaulay URL definitions
 SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
-TAXON_CODE_URL = "https://search.macaulaylibrary.org/api/v1/find/taxon?q={}"
+TAXON_CODE_URL = (
+    "https://api.ebird.org/v2/ref/taxon/find?key=jfekjedvescr&cat=species&q={}"
+)
 
 MAX_FILESIZE = 6000000  # limit media to 6mb
 
