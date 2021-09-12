@@ -55,7 +55,7 @@ def cache(func=None, pre=None, local=True):
 
     This (optionally) caches items into a Redis database
     (bot.data.database). It does not have a max_size but sets
-    key expiration to 7 days. Items are pickled before storing
+    key expiration to 90 days. Items are pickled before storing
     into the database.
 
     Cache keys are based on a sha1 hash. Currently, only strings
@@ -81,8 +81,8 @@ def cache(func=None, pre=None, local=True):
                 return
             pickled = pickle.dumps(value, protocol=4)
             database.set(
-                f"cache.{func.__name__}:{key}", pickled, ex=1209600
-            )  # 60*60*24*14
+                f"cache.{func.__name__}:{key}", pickled, ex=7776000
+            )  # 60*60*24*90
 
         def _cache_get(key, default=None):
             if local:
