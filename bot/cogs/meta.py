@@ -105,22 +105,26 @@ class Meta(commands.Cog):
     async def ignore(self, ctx, channels: commands.Greedy[discord.TextChannel] = None):
         logger.info("command: invite")
 
-        added = ""
-        removed = ""
+        added = []
+        removed = []
         if channels is not None:
             logger.info(f"ignored channels: {[c.name for c in channels]}")
             for channel in channels:
                 if database.zscore("ignore:global", str(channel.id)) is None:
-                    added += f"`#{esc(channel.name)}` (`{esc(channel.category.name) if channel.category else 'No Category'}`)\n"
+                    added.append(
+                        f"`#{esc(channel.name)}` (`{esc(channel.category.name) if channel.category else 'No Category'}`)\n"
+                    )
                     database.zadd("ignore:global", {str(channel.id): ctx.guild.id})
                 else:
-                    removed += f"`#{esc(channel.name)}` (`{esc(channel.category.name) if channel.category else 'No Category'}`)\n"
+                    removed.append(
+                        f"`#{esc(channel.name)}` (`{esc(channel.category.name) if channel.category else 'No Category'}`)\n"
+                    )
                     database.zrem("ignore:global", str(channel.id))
         else:
             await ctx.send("**No valid channels were passed.**")
 
         ignored = "".join(
-            [
+            (
                 f"`#{esc(channel.name)}` (`{esc(channel.category.name) if channel.category else 'No Category'}`)\n"
                 for channel in map(
                     lambda c: ctx.guild.get_channel(int(c)),
@@ -128,12 +132,12 @@ class Meta(commands.Cog):
                         "ignore:global", ctx.guild.id - 0.1, ctx.guild.id + 0.1
                     ),
                 )
-            ]
+            )
         )
 
         await ctx.send(
-            (f"**Ignoring:**\n{added}" if added else "")
-            + (f"**Stopped ignoring:**\n{removed}" if removed else "")
+            (f"**Ignoring:**\n{''.join(added)}" if added else "")
+            + (f"**Stopped ignoring:**\n{''.join(removed)}" if removed else "")
             + (
                 f"**Ignored Channels:**\n{ignored}"
                 if ignored

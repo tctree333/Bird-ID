@@ -39,17 +39,23 @@ class Other(commands.Cog):
         self.bot = bot
 
     @staticmethod
-    def broken_join(input_list, max_size: int = MAX_MESSAGE):
-        out = []
-        temp = ""
-        for item in input_list:
-            temp += f"{item}\n"
-            if len(temp) > max_size:
-                out.append(temp)
-                temp = ""
-        if temp:
-            out.append(temp)
-        return out
+    def broken_join(input_list: list[str], max_size: int = MAX_MESSAGE) -> list[str]:
+        pages: list[str] = []
+        temp_lines: list[str] = []
+        temp_len = 0
+        for line in input_list:
+            temp_lines.append(line)
+            temp_len += len(line)
+            if temp_len > max_size:
+                temp_out = "".join(temp_lines)
+                pages.append(temp_out)
+                temp_lines.clear()
+
+        if temp_lines:
+            temp_out = "".join(temp_lines)
+            pages.append(temp_out)
+
+        return pages
 
     # Info - Gives call+image of 1 bird
     @commands.command(
@@ -127,9 +133,12 @@ class Other(commands.Cog):
         )
         embed.set_author(name="Bird ID - An Ornithology Bot")
         for title, subdict in filters.items():
-            value = ""
-            for name, aliases in subdict.items():
-                value += f"**{name.title()}**: `{'`, `'.join(aliases)}`\n"
+            value = "".join(
+                (
+                    f"**{name.title()}**: `{'`, `'.join(aliases)}`\n"
+                    for name, aliases in subdict.items()
+                )
+            )
             embed.add_field(name=title.title(), value=value, inline=False)
         await ctx.send(embed=embed)
 

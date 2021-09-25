@@ -66,7 +66,7 @@ class Race(commands.Cog):
             type="rich", colour=discord.Color.blurple(), title=preamble
         )
         embed.set_author(name="Bird ID - An Ornithology Bot")
-        leaderboard = ""
+        leaderboard = []
 
         for i, stats in enumerate(leaderboard_list):
             if ctx.guild is not None:
@@ -81,9 +81,11 @@ class Race(commands.Cog):
                 else:
                     user_info = f"**{esc(user.name)}#{user.discriminator}**"
             else:
-                user_info = f"**{esc(user.name)}#{user.discriminator}** ({user.mention})"
+                user_info = (
+                    f"**{esc(user.name)}#{user.discriminator}** ({user.mention})"
+                )
 
-            leaderboard += f"{i+1}. {user_info} - {int(stats[1])}\n"
+            leaderboard.append(f"{i+1}. {user_info} - {int(stats[1])}\n")
 
         start = int(database.hget(f"race.data:{ctx.channel.id}", "start"))
         elapsed = str(datetime.timedelta(seconds=round(time.time()) - start))
@@ -94,7 +96,7 @@ class Race(commands.Cog):
         embed.add_field(
             name="Stats", value=f"**Race Duration:** `{elapsed}`", inline=False
         )
-        embed.add_field(name="Leaderboard", value=leaderboard, inline=False)
+        embed.add_field(name="Leaderboard", value="".join(leaderboard), inline=False)
 
         if ctx.author:
             if database.zscore(database_key, str(ctx.author.id)) is not None:

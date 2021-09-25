@@ -33,20 +33,24 @@ class States(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def broken_send(self, ctx, message, between=""):
-        pages = []
-        temp_out = ""
+    async def broken_send(self, ctx, message: str, between: str = ""):
+        pages: list[str] = []
+        temp_lines: list[str] = []
+        temp_len = 0
         for line in message.splitlines(keepends=True):
-            temp_out += line
-            if len(temp_out) > 1700:
-                temp_out = f"{between}{temp_out}{between}"
-                pages.append(temp_out.strip())
-                temp_out = ""
-        temp_out = f"{between}{temp_out}{between}"
-        if temp_out.strip():
-            pages.append(temp_out.strip())
-        for item in pages:
-            await ctx.send(item)
+            temp_lines.append(line)
+            temp_len += len(line)
+            if temp_len > 1700:
+                temp_out = f"{between}{''.join(temp_lines)}{between}"
+                pages.append(temp_out)
+                temp_lines.clear()
+
+        if temp_lines:
+            temp_out = f"{between}{''.join(temp_lines)}{between}"
+            pages.append(temp_out)
+
+        for page in pages:
+            await ctx.send(page)
 
     # set state role
     @commands.command(help="- Sets your state", name="set", aliases=["state"])
@@ -344,8 +348,8 @@ class States(commands.Cog):
         async with aiohttp.ClientSession() as session:
             logger.info("starting validation")
             await ctx.send("**Validating bird list...**\n*This may take a while.*")
-            invalid_output = ""
-            valid_output = ""
+            invalid_output = []
+            valid_output = []
             validity = []
             for x in range(0, len(parsed_birdlist), 10):
                 validity += await asyncio.gather(
@@ -361,22 +365,26 @@ class States(commands.Cog):
                             item[3].split(" - ")[0].strip().replace("-", " ")
                         )
                     )
-                    valid_output += f"Item `{item[0]}`: Detected as **{item[3]}**\n"
+                    valid_output.append(
+                        f"Item `{item[0]}`: Detected as **{item[3]}**\n"
+                    )
                 else:
-                    invalid_output += f"Item `{item[0]}`: **{item[2]}** {f'(Detected as *{item[3]}*)' if item[3] else ''}\n"
+                    invalid_output.append(
+                        f"Item `{item[0]}`: **{item[2]}** {f'(Detected as *{item[3]}*)' if item[3] else ''}\n"
+                    )
             logger.info("done validating")
 
         if valid_output:
             logger.info("sending validation success")
             valid_output = (
                 "**Succeeded Items:** Please verify items were detected correctly.\n"
-                + valid_output
+                + "".join(valid_output)
             )
             await self.broken_send(ctx, valid_output)
         if invalid_output:
             logger.info("sending validation failure")
-            invalid_output = (
-                "**FAILED ITEMS:** Please fix and resubmit.\n" + invalid_output
+            invalid_output = "**FAILED ITEMS:** Please fix and resubmit.\n" + "".join(
+                invalid_output
             )
             await self.broken_send(ctx, invalid_output)
             return False
