@@ -50,7 +50,9 @@ async def _bw_helper(url):
         async with session.get(url) as response:
             if response.status != 200:
                 logger.info("invalid response")
-                raise HTTPException(status_code=response.status, detail="error fetching url")
+                raise HTTPException(
+                    status_code=response.status, detail="error fetching url"
+                )
             if response.content_type not in valid_content_types:
                 logger.info("invalid content type")
                 raise HTTPException(status_code=415, detail="invalid content type")

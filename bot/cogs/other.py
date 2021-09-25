@@ -26,13 +26,21 @@ import wikipedia
 from discord.ext import commands
 
 from bot.core import get_sciname, get_taxon, send_bird
-from bot.data import (alpha_codes, birdListMaster, logger, memeList,
-                      sciListMaster, states, taxons)
+from bot.data import (
+    alpha_codes,
+    birdListMaster,
+    logger,
+    memeList,
+    sciListMaster,
+    states,
+    taxons,
+)
 from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list
 
 # Discord max message length is 2000 characters, leave some room just in case
 MAX_MESSAGE = 1950
+
 
 class Other(commands.Cog):
     def __init__(self, bot):
@@ -103,7 +111,7 @@ class Other(commands.Cog):
         if options:
             await ctx.send(f"**Detected filters**: `{'`, `'.join(options)}`")
 
-        an = "an" if bird.lower()[0] in ('a', 'e', 'i', 'o', 'u') else 'a'
+        an = "an" if bird.lower()[0] in ("a", "e", "i", "o", "u") else "a"
         await send_bird(
             ctx, bird, "images", filters, message=f"Here's {an} *{bird.lower()}* image!"
         )
@@ -159,12 +167,12 @@ class Other(commands.Cog):
             )
             return
 
-        state_birdlist = sorted(build_id_list(
-            user_id=ctx.author.id, state=state, media="images"
-        ))
-        state_songlist = sorted(build_id_list(
-            user_id=ctx.author.id, state=state, media="songs"
-        ))
+        state_birdlist = sorted(
+            build_id_list(user_id=ctx.author.id, state=state, media="images")
+        )
+        state_songlist = sorted(
+            build_id_list(user_id=ctx.author.id, state=state, media="songs")
+        )
 
         birdLists = self.broken_join(state_birdlist)
         songLists = self.broken_join(state_songlist)
@@ -213,12 +221,16 @@ class Other(commands.Cog):
             )
             return
 
-        bird_list = sorted(build_id_list(
-            user_id=ctx.author.id, taxon=taxon, state=state, media="images"
-        ))
-        song_bird_list = sorted(build_id_list(
-            user_id=ctx.author.id, taxon=taxon, state=state, media="songs"
-        ))
+        bird_list = sorted(
+            build_id_list(
+                user_id=ctx.author.id, taxon=taxon, state=state, media="images"
+            )
+        )
+        song_bird_list = sorted(
+            build_id_list(
+                user_id=ctx.author.id, taxon=taxon, state=state, media="songs"
+            )
+        )
         if not bird_list and not song_bird_list:
             logger.info("no birds for taxon/state")
             await ctx.send(

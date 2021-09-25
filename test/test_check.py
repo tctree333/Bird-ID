@@ -66,7 +66,10 @@ class TestCheck:
             self.cog, self.ctx, arg=test_word
         )
         assert asyncio.run(coroutine) is None
-        assert self.ctx.messages[2].content == f"Correct! Good job! The bird was **{test_word.lower()}**."
+        assert (
+            self.ctx.messages[2].content
+            == f"Correct! Good job! The bird was **{test_word.lower()}**."
+        )
 
     def test_check_bird_dm_2(self):
         self.setup(guild=True)

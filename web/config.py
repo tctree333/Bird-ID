@@ -56,7 +56,7 @@ middleware = [
         same_site="lax",
         https_only=True,
     ),
-    Middleware(GZipMiddleware, minimum_size=1000)
+    Middleware(GZipMiddleware, minimum_size=1000),
 ]
 
 app = FastAPI(middleware=middleware)
