@@ -60,7 +60,9 @@ class Voice(commands.Cog):
             return
         await voice_functions.rel_seek(ctx, seconds)
 
-    @commands.command(help="- Skip back 5 seconds", aliases=["bk", "backward", "backwards"])
+    @commands.command(
+        help="- Skip back 5 seconds", aliases=["bk", "backward", "backwards"]
+    )
     @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     async def back(self, ctx, seconds: int = 5):

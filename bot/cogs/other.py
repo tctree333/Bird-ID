@@ -26,30 +26,44 @@ import wikipedia
 from discord.ext import commands
 
 from bot.core import get_sciname, get_taxon, send_bird
-from bot.data import (alpha_codes, birdListMaster, logger, memeList,
-                      sciListMaster, states, taxons)
+from bot.data import (
+    alpha_codes,
+    birdListMaster,
+    logger,
+    memeList,
+    sciListMaster,
+    states,
+    taxons,
+)
 from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list
 
 # Discord max message length is 2000 characters, leave some room just in case
 MAX_MESSAGE = 1950
 
+
 class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @staticmethod
-    def broken_join(input_list, max_size: int = MAX_MESSAGE):
-        out = []
-        temp = ""
-        for item in input_list:
-            temp += f"{item}\n"
-            if len(temp) > max_size:
-                out.append(temp)
-                temp = ""
-        if temp:
-            out.append(temp)
-        return out
+    def broken_join(input_list: list[str], max_size: int = MAX_MESSAGE) -> list[str]:
+        pages: list[str] = []
+        temp_lines: list[str] = []
+        temp_len = 0
+        for line in input_list:
+            temp_lines.append(line)
+            temp_len += len(line)
+            if temp_len > max_size:
+                temp_out = "".join(temp_lines)
+                pages.append(temp_out)
+                temp_lines.clear()
+
+        if temp_lines:
+            temp_out = "".join(temp_lines)
+            pages.append(temp_out)
+
+        return pages
 
     # Info - Gives call+image of 1 bird
     @commands.command(
@@ -97,7 +111,7 @@ class Other(commands.Cog):
         if options:
             await ctx.send(f"**Detected filters**: `{'`, `'.join(options)}`")
 
-        an = "an" if bird.lower()[0] in ('a', 'e', 'i', 'o', 'u') else 'a'
+        an = "an" if bird.lower()[0] in ("a", "e", "i", "o", "u") else "a"
         await send_bird(
             ctx, bird, "images", filters, message=f"Here's {an} *{bird.lower()}* image!"
         )
@@ -127,9 +141,12 @@ class Other(commands.Cog):
         )
         embed.set_author(name="Bird ID - An Ornithology Bot")
         for title, subdict in filters.items():
-            value = ""
-            for name, aliases in subdict.items():
-                value += f"**{name.title()}**: `{'`, `'.join(aliases)}`\n"
+            value = "".join(
+                (
+                    f"**{name.title()}**: `{'`, `'.join(aliases)}`\n"
+                    for name, aliases in subdict.items()
+                )
+            )
             embed.add_field(name=title.title(), value=value, inline=False)
         await ctx.send(embed=embed)
 
@@ -150,12 +167,12 @@ class Other(commands.Cog):
             )
             return
 
-        state_birdlist = sorted(build_id_list(
-            user_id=ctx.author.id, state=state, media="images"
-        ))
-        state_songlist = sorted(build_id_list(
-            user_id=ctx.author.id, state=state, media="songs"
-        ))
+        state_birdlist = sorted(
+            build_id_list(user_id=ctx.author.id, state=state, media="images")
+        )
+        state_songlist = sorted(
+            build_id_list(user_id=ctx.author.id, state=state, media="songs")
+        )
 
         birdLists = self.broken_join(state_birdlist)
         songLists = self.broken_join(state_songlist)
@@ -204,12 +221,16 @@ class Other(commands.Cog):
             )
             return
 
-        bird_list = sorted(build_id_list(
-            user_id=ctx.author.id, taxon=taxon, state=state, media="images"
-        ))
-        song_bird_list = sorted(build_id_list(
-            user_id=ctx.author.id, taxon=taxon, state=state, media="songs"
-        ))
+        bird_list = sorted(
+            build_id_list(
+                user_id=ctx.author.id, taxon=taxon, state=state, media="images"
+            )
+        )
+        song_bird_list = sorted(
+            build_id_list(
+                user_id=ctx.author.id, taxon=taxon, state=state, media="songs"
+            )
+        )
         if not bird_list and not song_bird_list:
             logger.info("no birds for taxon/state")
             await ctx.send(

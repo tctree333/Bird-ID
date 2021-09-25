@@ -112,7 +112,7 @@ class Score(commands.Cog):
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
         embed.set_author(name="Bird ID - An Ornithology Bot")
-        leaderboard = ""
+        leaderboard = []
 
         for i, stats in enumerate(leaderboard_list):
             if ctx.guild is not None:
@@ -127,11 +127,13 @@ class Score(commands.Cog):
                 else:
                     user_info = f"**{esc(user.name)}#{user.discriminator}**"
             else:
-                user_info = f"**{esc(user.name)}#{user.discriminator}** ({user.mention})"
+                user_info = (
+                    f"**{esc(user.name)}#{user.discriminator}** ({user.mention})"
+                )
 
-            leaderboard += f"{i+1+page}. {user_info} - {int(stats[1])}\n"
+            leaderboard.append(f"{i+1+page}. {user_info} - {int(stats[1])}\n")
 
-        embed.add_field(name=title, value=leaderboard, inline=False)
+        embed.add_field(name=title, value="".join(leaderboard), inline=False)
 
         user_score = (
             database.zscore(database_key, str(ctx.author.id))

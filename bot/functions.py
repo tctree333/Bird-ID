@@ -233,10 +233,12 @@ async def send_leaderboard(
     )
     embed = discord.Embed(type="rich", colour=discord.Color.blurple())
     embed.set_author(name="Bird ID - An Ornithology Bot")
-    leaderboard = ""
-
-    for i, stats in enumerate(leaderboard_list):
-        leaderboard += f"{i+1+page}. **{stats[0]}** - {int(stats[1])}\n"
+    leaderboard = "".join(
+        (
+            f"{i+1+page}. **{stats[0]}** - {int(stats[1])}\n"
+            for i, stats in enumerate(leaderboard_list)
+        )
+    )
     embed.add_field(name=title, value=leaderboard, inline=False)
 
     await ctx.send(embed=embed)

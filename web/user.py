@@ -142,9 +142,10 @@ def profile(request: Request):
     }
 
 
-
 @app.exception_handler(AuthlibBaseError)
 def handle_authlib_error(request: Request, error: AuthlibBaseError):
     logger.info(f"error with oauth login: {error}; request: {request}")
     capture_exception(error)
-    return JSONResponse(status_code=500, content={"detail": "An error occurred with the login"})
+    return JSONResponse(
+        status_code=500, content={"detail": "An error occurred with the login"}
+    )

@@ -159,8 +159,8 @@ class Filter:
             "captive": "&cap={}",
             "quality": "&qua={}",
         }
-        url = CATALOG_URL
-        url += f"&taxonCode={taxon_code}&mediaType={media_type}&count={COUNT}"
+        url = [CATALOG_URL]
+        url.append(f"&taxonCode={taxon_code}&mediaType={media_type}&count={COUNT}")
 
         for item in self.__dict__.items():
             if (
@@ -173,10 +173,10 @@ class Filter:
             for value in item[1]:
                 if value in ("env", "peo") and item[0] == "sounds":
                     # two sound filters have 'tag' as the url parameter
-                    url += url_parameter_names["tags"].format(value)
+                    url.append(url_parameter_names["tags"].format(value))
                 else:
-                    url += url_parameter_names[item[0]].format(value)
-        return url
+                    url.append(url_parameter_names[item[0]].format(value))
+        return "".join(url)
 
     def to_int(self):
         """Convert filters into an integer representation.

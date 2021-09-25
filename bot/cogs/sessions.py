@@ -84,12 +84,12 @@ class Sessions(commands.Cog):
             leaderboard_list = database.zrevrangebyscore(
                 database_key, "+inf", "-inf", 0, 5, True
             )
-            leaderboard = ""
-
-            for i, stats in enumerate(leaderboard_list):
-                leaderboard += (
+            leaderboard = "".join(
+                (
                     f"{i+1}. **{stats[0].decode('utf-8')}** - {int(stats[1])}\n"
+                    for i, stats in enumerate(leaderboard_list)
                 )
+            )
         else:
             logger.info(f"no birds in {database_key}")
             leaderboard = "**There are no missed birds.**"
