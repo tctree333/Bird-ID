@@ -165,7 +165,7 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
 
 
 ValidatedBird = collections.namedtuple(
-    "ValidatedBird", ["input bird", "valid", "reason", "detected name"]
+    "ValidatedBird", ["input_bird", "valid", "reason", "detected_name"]
 )
 
 
