@@ -247,7 +247,7 @@ class Filter:
                 me.__dict__[key[0]].add(key[1])
         if defaults:
             for key in me._default_options:
-                if len(me.__dict__[key]) == 0:
+                if not me.__dict__[key]:
                     me.__dict__[key] = me._default_options[key]
                 elif me.__dict__[key] == me._default_options[key]:
                     me ^= me.__class__()

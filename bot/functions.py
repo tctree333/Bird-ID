@@ -158,10 +158,7 @@ def check_state_role(ctx) -> list:
     if ctx.guild is not None:
         logger.info("server context")
         user_role_names = [role.name.lower() for role in ctx.author.roles]
-        for state in states:
-            # gets similarities
-            if set(user_role_names).intersection(set(states[state]["aliases"])):
-                user_states.append(state)
+        user_states = list(filter(lambda x: set(user_role_names).intersection(set(states[x]["aliases"])), states.keys()))
     else:
         logger.info("dm context")
     logger.info(f"user roles: {user_states}")

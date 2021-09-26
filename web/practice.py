@@ -121,7 +121,7 @@ async def check_bird(request: Request, guess: str):
     sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
     guess = guess.lower().replace("-", " ")
     currentBird = currentBird.lower().replace("-", " ")
-    alpha_code = alpha_codes.get(string.capwords(currentBird))
+    alpha_code = alpha_codes.get(string.capwords(currentBird), "")
     logger.info("currentBird: " + currentBird)
     logger.info("args: " + guess)
 

@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
+import collections
 import contextlib
 import difflib
 import functools
@@ -163,7 +164,12 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
     return (taxon_code, item_name)
 
 
-async def valid_bird(bird: str, session=None) -> Tuple[str, bool, str, str]:
+ValidatedBird = collections.namedtuple(
+    "ValidatedBird", ["input bird", "valid", "reason", "detected name"]
+)
+
+
+async def valid_bird(bird: str, session=None) -> ValidatedBird:
     """Checks if a bird is valid.
 
     This checks first if Macaulay has a valid taxon code for the bird,
@@ -181,18 +187,18 @@ async def valid_bird(bird: str, session=None) -> Tuple[str, bool, str, str]:
             name = (await get_taxon(bird_, session))[1]
         except GenericError as e:
             if e.code in (111, 201):
-                return (bird, False, "No taxon code found", "")
+                return ValidatedBird(bird, False, "No taxon code found", "")
             raise e
     if bird_ not in birdListMaster:
         try:
             urls = await _get_urls(session, bird_, "p", Filter())
         except GenericError as e:
             if e.code in (100, 201):
-                return (bird, False, "One or less images found", name)
+                return ValidatedBird(bird, False, "One or less images found", name)
             raise e
         if len(urls) < 2:
-            return (bird, False, "One or less images found", name)
-    return (bird, True, "All checks passed", name)
+            return ValidatedBird(bird, False, "One or less images found", name)
+    return ValidatedBird(bird, True, "All checks passed", name)
 
 
 def _black_and_white(input_image_path) -> BytesIO:
