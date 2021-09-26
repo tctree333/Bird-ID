@@ -20,6 +20,7 @@ import logging.handlers
 import os
 import string
 import sys
+from typing import Dict, List
 
 import redis
 import sentry_sdk
@@ -46,7 +47,7 @@ if os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS") == "true":
         host = "localhost"
     database = redis.Redis(host=host, port=6379, db=0)
 else:
-    database = redis.from_url(os.environ["REDIS_URL"])
+    database = redis.from_url(os.getenv("REDIS_URL"))
 
 
 def before_sentry_send(event, hint):
@@ -69,7 +70,7 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
             if os.getenv("CURRENT_PLATFORM") != "Heroku"
             else f"{os.getenv('HEROKU_RELEASE_VERSION')}:{os.getenv('HEROKU_SLUG_DESCRIPTION')}"
         ),
-        dsn=os.environ["SCIOLY_ID_BOT_SENTRY_DISCORD_DSN"],
+        dsn=os.getenv("SCIOLY_ID_BOT_SENTRY_DISCORD_DSN"),
         integrations=[RedisIntegration(), AioHttpIntegration()],
         before_send=before_sentry_send,
     )
@@ -262,7 +263,7 @@ screech_owls = ["Whiskered Screech Owl", "Western Screech Owl", "Eastern Screech
 sci_screech_owls = ["Megascops trichopsis", "Megascops kennicottii", "Megascops asio"]
 
 
-def _wiki_urls():
+def _wiki_urls() -> Dict[str, str]:
     logger.info("Working on wiki urls")
     urls = {}
     with open("bot/data/wikipedia.txt", "r") as f:
@@ -273,7 +274,7 @@ def _wiki_urls():
     return urls
 
 
-def get_wiki_url(ctx, bird=None):
+def get_wiki_url(ctx, bird: str = None) -> str:
     logger.info("fetching wiki url")
     if bird is None:
         bird = ctx
@@ -283,28 +284,25 @@ def get_wiki_url(ctx, bird=None):
         user_id = ctx.author.id
         channel_id = ctx.channel.id
 
-    try:
-        bird = string.capwords(bird.replace("-", " "))
-        url = wikipedia_urls[bird]
-        if database.hget(f"session.data:{user_id}", "wiki") == b"" or database.exists(
-            f"race.data:{channel_id}"
-        ):
-            logger.info("found in cache, disabling preview")
-            return f"<{url}>"
-        logger.info("found in cache")
-        return url
-    except KeyError:
+    bird = string.capwords(bird.replace("-", " "))
+    url = wikipedia_urls.get(bird, "")
+    if not url:
         logger.info(f"{bird} not found in wikipedia url cache, falling back")
         page = wikipedia.page(bird)
-        if database.hget(f"session.data:{user_id}", "wiki") == b"" or database.exists(
-            f"race.data:{channel_id}"
-        ):
-            logger.info("disabling preview")
-            return f"<{page.url}>"
-        return page.url
+        url = page.url
+    else:
+        logger.info("found in cache")
+
+    if database.hget(f"session.data:{user_id}", "wiki") == b"" or database.exists(
+        f"race.data:{channel_id}"
+    ):
+        logger.info("disabling preview")
+        url = f"<{url}>"
+
+    return url
 
 
-def _alpha_codes():
+def _alpha_codes() -> Dict[str, str]:
     logger.info("Working on alpha codes")
     lookup = {}
     with open("bot/data/alpha.txt", "r") as f:
@@ -318,7 +316,7 @@ def _alpha_codes():
     return lookup
 
 
-def _nats_lists():
+def _nats_lists() -> List[List[str]]:
     """Converts txt files of national bird data into lists."""
     filenames = ("birdList", "songBirds", "sciListMaster", "memeList")
     # Converts txt file of data into lists
@@ -339,7 +337,7 @@ def _nats_lists():
     return lists
 
 
-def _taxons():
+def _taxons() -> Dict[str, List[str]]:
     """Converts txt files of taxon data into lists."""
     logger.info("Working on taxon lists")
     logger.info("Working on taxon master list")
@@ -360,7 +358,7 @@ def _taxons():
 def _state_lists():
     """Converts txt files of state data into lists."""
     filenames = ("birdList", "songBirds", "aliases")
-    states_ = {}
+    states_: Dict[str, Dict[str, List[str]]] = {}
     state_names = os.listdir("bot/data/state")
     for state in state_names:
         states_[state] = {}
@@ -381,7 +379,7 @@ def _state_lists():
     return states_
 
 
-def _all_birds():
+def _all_birds() -> List[str]:
     """Combines all state and national lists."""
     logger.info("Working on master lists")
     birds = []

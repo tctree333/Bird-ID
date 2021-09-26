@@ -38,7 +38,7 @@ from bot.functions import (
 )
 
 # The channel id that the backups send to
-BACKUPS_CHANNEL = int(os.environ["SCIOLY_ID_BOT_BACKUPS_CHANNEL"])
+BACKUPS_CHANNEL = os.getenv("SCIOLY_ID_BOT_BACKUPS_CHANNEL", "")
 
 if __name__ == "__main__":
     # Initialize bot
@@ -89,14 +89,7 @@ if __name__ == "__main__":
         "bot.cogs.meta",
         "bot.cogs.other",
     ]
-
-    if (
-        "SCIOLY_ID_BOT_EXTRA_COGS" in os.environ
-        and len(os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip()) > 0
-    ):
-        extra_extensions = os.environ["SCIOLY_ID_BOT_EXTRA_COGS"].strip().split(",")
-    else:
-        extra_extensions = []
+    extra_extensions = os.getenv("SCIOLY_ID_BOT_EXTRA_COGS", "").strip().split(",")
 
     for extension in core_extensions + extra_extensions:
         try:
@@ -228,14 +221,15 @@ if __name__ == "__main__":
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
             await event_loop.run_in_executor(executor, backup_all)
 
-        logger.info("Sending backup files")
-        channel = bot.get_channel(int(BACKUPS_CHANNEL))
-        with open("bot_files/backups/dump.dump", "rb") as f:
-            await channel.send(file=discord.File(f, filename="dump"))
-        with open("bot_files/backups/keys.txt", "r") as f:
-            await channel.send(file=discord.File(f, filename="keys.txt"))
-        logger.info("Backup Files Sent!")
+        if BACKUPS_CHANNEL.isdecimal():
+            logger.info("Sending backup files")
+            channel = bot.get_channel(int(BACKUPS_CHANNEL))
+            with open("bot_files/backups/dump.dump", "rb") as f:
+                await channel.send(file=discord.File(f, filename="dump"))
+            with open("bot_files/backups/keys.txt", "r") as f:
+                await channel.send(file=discord.File(f, filename="keys.txt"))
+            logger.info("Backup Files Sent!")
 
     # Actually run the bot
-    token = os.environ["SCIOLY_ID_BOT_TOKEN"]
+    token = os.getenv("SCIOLY_ID_BOT_TOKEN")
     bot.run(token)
