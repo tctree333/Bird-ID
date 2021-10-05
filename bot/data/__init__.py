@@ -25,8 +25,6 @@ from typing import Dict, List
 import redis
 import sentry_sdk
 import wikipedia
-from boto3.session import Session
-from codeguru_profiler_agent import Profiler
 from discord.ext import commands
 from dotenv import find_dotenv, load_dotenv
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
@@ -34,11 +32,6 @@ from sentry_sdk.integrations.redis import RedisIntegration
 
 load_dotenv(find_dotenv(), verbose=True)
 
-authed_session = Session(
-    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-)
-Profiler(profiling_group_name="BirdID-Profile", aws_session=authed_session).start()
 
 # define database for one connection
 if os.getenv("SCIOLY_ID_BOT_LOCAL_REDIS") == "true":
