@@ -17,6 +17,7 @@
 import asyncio
 import concurrent.futures
 import os
+import random
 import sys
 from datetime import date, datetime, timedelta, timezone
 
@@ -92,6 +93,8 @@ if __name__ == "__main__":
     extra_extensions = os.getenv("SCIOLY_ID_BOT_EXTRA_COGS", "").strip().split(",")
 
     for extension in core_extensions + extra_extensions:
+        if extension.strip() == "":
+            continue
         try:
             bot.load_extension(extension)
         except (
@@ -134,6 +137,28 @@ if __name__ == "__main__":
         await channel_setup(ctx)
         await user_setup(ctx)
 
+        return True
+
+    @bot.check
+    async def fundraiser_info(ctx):
+        logger.info("global check: fundraiser info")
+        if random.random() <= 0.75:
+            return True
+
+        if database.get(f"fundraiser.shown:{ctx.author.id}") is None:
+            database.set(f"fundraiser.shown:{ctx.author.id}", "true", ex=60 * 60 * 24)
+            embed = discord.Embed(
+                color=discord.Color.gold(),
+                title="SciOlyID needs your help!",
+                url="https://ko-fi.com/person_v132",
+                description="**The SciOly-ID Fall/Winter/idkseasons Fundraiser is on until "
+                + "Dec. 13th!** We need your support to keep these bots running into the next year. "
+                + "If we aren't able to raise enough money, all SciOlyID bots will be shut down.\n"
+                + "Join our [support server](https://discord.gg/fXxYyDJ) for more information.\n\n"
+                + "[Donate Here!](https://ko-fi.com/person_v132)",
+            )
+            await ctx.send(embed=embed)
+            await ctx.trigger_typing()
         return True
 
     @bot.check
