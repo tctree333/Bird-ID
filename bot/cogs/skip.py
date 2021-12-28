@@ -53,27 +53,18 @@ class Skip(commands.Cog):
                     "utf-8"
                 )
 
-                limit = int(database.hget(f"race.data:{ctx.channel.id}", "limit"))
-                first = database.zrevrange(f"race.scores:{ctx.channel.id}", 0, 0, True)[
-                    0
-                ]
-                if int(first[1]) >= limit:
-                    logger.info("race ending")
-                    race = self.bot.get_cog("Race")
-                    await race.stop_race_(ctx)
-                else:
-                    logger.info(f"auto sending next bird {media}")
-                    filter_int, taxon, state = database.hmget(
-                        f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"]
-                    )
-                    birds = self.bot.get_cog("Birds")
-                    await birds.send_bird_(
-                        ctx,
-                        media,
-                        Filter.from_int(int(filter_int)),
-                        taxon.decode("utf-8"),
-                        state.decode("utf-8"),
-                    )
+                logger.info(f"auto sending next bird {media}")
+                filter_int, taxon, state = database.hmget(
+                    f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"]
+                )
+                birds = self.bot.get_cog("Birds")
+                await birds.send_bird_(
+                    ctx,
+                    media,
+                    Filter.from_int(int(filter_int)),
+                    taxon.decode("utf-8"),
+                    state.decode("utf-8"),
+                )
         else:
             await ctx.send("You need to ask for a bird first!")
 
