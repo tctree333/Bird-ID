@@ -50,6 +50,12 @@ class Meta(commands.Cog):
             inline=False,
         )
         embed.add_field(
+            name="Credits",
+            value="Images are from the Macaulay Library at the Cornell Lab of Ornithology.\n\n"
+            + "The bot profile picture and server icon were drawn by naddle and Nin, respectively.",
+            inline=False,
+        )
+        embed.add_field(
             name="Support",
             value="If you are experiencing any issues, have feature requests, "
             + "or want to get updates on bot status, join our support server below.",
