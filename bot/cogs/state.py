@@ -335,7 +335,7 @@ class States(commands.Cog):
             capture_message(f"custom.confirm database invalid with {next_step}")
             await ctx.send(
                 "Whoops, something went wrong. Please report this incident "
-                + "in the support server below.\nhttps://discord.gg/fXxYyDJ"
+                + "in the support server below.\nhttps://discord.gg/2HbshwGjnm"
             )
             return
 

@@ -62,7 +62,7 @@ class Meta(commands.Cog):
             inline=False,
         )
         await ctx.send(embed=embed)
-        await ctx.send("https://discord.gg/fXxYyDJ")
+        await ctx.send("https://discord.gg/2HbshwGjnm")
 
     # ping command - gives bot latency
     @commands.command(
@@ -92,7 +92,7 @@ class Meta(commands.Cog):
             inline=False,
         )
         await ctx.send(embed=embed)
-        await ctx.send("https://discord.gg/fXxYyDJ")
+        await ctx.send("https://discord.gg/2HbshwGjnm")
 
     # ignore command - ignores a given channel
     @commands.command(

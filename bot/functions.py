@@ -158,7 +158,12 @@ def check_state_role(ctx) -> list:
     if ctx.guild is not None:
         logger.info("server context")
         user_role_names = [role.name.lower() for role in ctx.author.roles]
-        user_states = list(filter(lambda x: set(user_role_names).intersection(set(states[x]["aliases"])), states.keys()))
+        user_states = list(
+            filter(
+                lambda x: set(user_role_names).intersection(set(states[x]["aliases"])),
+                states.keys(),
+            )
+        )
     else:
         logger.info("dm context")
     logger.info(f"user roles: {user_states}")
@@ -651,7 +656,7 @@ async def handle_error(ctx, error):
                 + "*Please log this message in #support in the support server below, or try again.*\n"
                 + f"**Error code:** `{error.code}`"
             )
-            await ctx.send("https://discord.gg/fXxYyDJ")
+            await ctx.send("https://discord.gg/2HbshwGjnm")
             raise error
 
     elif isinstance(error, commands.CommandInvokeError):
@@ -662,7 +667,7 @@ async def handle_error(ctx, error):
                     "**An unexpected ResponseError has occurred.**\n"
                     + "*Please log this message in #support in the support server below, or try again.*\n"
                 )
-                await ctx.send("https://discord.gg/fXxYyDJ")
+                await ctx.send("https://discord.gg/2HbshwGjnm")
             else:
                 await channel_setup(ctx)
                 await ctx.send("Please run that command again.")
@@ -693,7 +698,7 @@ async def handle_error(ctx, error):
                     + "*Please log this message in #support in the support server below, or try again.*\n"
                     + f"**Error code:** `{error.original.code}`"
                 )
-                await ctx.send("https://discord.gg/fXxYyDJ")
+                await ctx.send("https://discord.gg/2HbshwGjnm")
 
         elif isinstance(error.original, discord.HTTPException):
             capture_exception(error.original)
@@ -707,7 +712,7 @@ async def handle_error(ctx, error):
                     + "*Please log this message in #support in the support server below, or try again*\n"
                     + f"**Reponse Code:** `{error.original.status}`"
                 )
-                await ctx.send("https://discord.gg/fXxYyDJ")
+                await ctx.send("https://discord.gg/2HbshwGjnm")
 
         elif isinstance(error.original, aiohttp.ClientOSError):
             capture_exception(error.original)
@@ -721,7 +726,7 @@ async def handle_error(ctx, error):
                     + "*Please log this message in #support in the support server below, or try again.*\n"
                     + f"**Error code:** `{error.original.errno}`"
                 )
-                await ctx.send("https://discord.gg/fXxYyDJ")
+                await ctx.send("https://discord.gg/2HbshwGjnm")
 
         elif isinstance(error.original, aiohttp.ServerDisconnectedError):
             capture_exception(error.original)
@@ -738,14 +743,14 @@ async def handle_error(ctx, error):
                     "**No space is left on the server!**\n"
                     + "*Please report this message in #support in the support server below!*\n"
                 )
-                await ctx.send("https://discord.gg/fXxYyDJ")
+                await ctx.send("https://discord.gg/2HbshwGjnm")
             else:
                 await ctx.send(
                     "**An unexpected OSError has occurred.**\n"
                     + "*Please log this message in #support in the support server below, or try again.*\n"
                     + f"**Error code:** `{error.original.errno}`"
                 )
-                await ctx.send("https://discord.gg/fXxYyDJ")
+                await ctx.send("https://discord.gg/2HbshwGjnm")
 
         else:
             logger.info("uncaught command error")
@@ -754,7 +759,7 @@ async def handle_error(ctx, error):
                 "**An uncaught command error has occurred.**\n"
                 + "*Please log this message in #support in the support server below, or try again.*\n"
             )
-            await ctx.send("https://discord.gg/fXxYyDJ")
+            await ctx.send("https://discord.gg/2HbshwGjnm")
             raise error
 
     else:
@@ -764,5 +769,5 @@ async def handle_error(ctx, error):
             "**An uncaught non-command error has occurred.**\n"
             + "*Please log this message in #support in the support server below, or try again.*\n"
         )
-        await ctx.send("https://discord.gg/fXxYyDJ")
+        await ctx.send("https://discord.gg/2HbshwGjnm")
         raise error

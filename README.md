@@ -10,7 +10,7 @@ The prefix for this bot is `b!`. Use `b!help` to get a list of commands, and `b!
 
 ## Server
 
-For help with the bot, feature requests, or any other questions, please join our support server [here.](https://discord.gg/tNyGdve) You can also add the bot to your own server, or use the bot too.
+For help with the bot, feature requests, or any other questions, please join our support server [here.](https://discord.gg/2HbshwGjnm) You can also add the bot to your own server, or use the bot too.
 
 ## Terms
 
@@ -38,32 +38,35 @@ To run the bot locally, you'll need to install some software first.
 
 The bot can also attempt to backup the Redis database to a set Discord channel. To enable this, set `SCIOLY_ID_BOT_ENABLE_BACKUPS` to `true` and `SCIOLY_ID_BOT_BACKUPS_CHANNEL` to the channel id of a channel the bot has access to in `.env`.
 
-If you need help or have any questions, let us know in our [Discord support server.](https://discord.gg/xDqYddK)
+If you need help or have any questions, let us know in our [Discord support server.](https://discord.gg/2HbshwGjnm)
 
 ## Troubleshooting
+
 If you are having issues running the bot locally, here are some tips and common issues people run into.
 
-* Make sure you're on Python 3.7, since we're using some language features only available in version 3.7.
-* If you're having issues with Redis, make sure you're on version 4.0.14 or later. If you're still having issues, see the Redis [documentation](https://redis.io/documentation).
-* Common Redis errors include:
-  * `ValueError: Redis URL must specify one of the followingschemes (redis://, rediss://, unix://)` - Make sure the `SCIOLY_ID_BOT_LOCAL_REDIS` environment variable is set to `true` if you're using a local Redis server. If you're using a remote Redis server, or a server with a different address, make sure `SCIOLY_ID_BOT_LOCAL_REDIS` is `false` and the `SCIOLY_ID_BOT_REDIS_URL` environment variable is set correctly.
-  * `redis.exceptions.ConnectionError: Error 61 connecting to localhost:6379. Connection refused.` - Make sure your Redis server is actually running. You can start it with `redis-server` from the `redis-stable` directory.
-* If your error message mentions errors with the `covid` cog or a coronavirus API and you aren't terribly concerned about this feature, disable the cog manually by removing `bot.cogs.covid` from `SCIOLY_ID_BOT_EXTRA_COGS` in `.env`.
-* If your error is about missing Discord Permissions, make sure your bot account has permission to send messages, send files, embed links, and manage roles in that channel.
+- Make sure you're on Python 3.7, since we're using some language features only available in version 3.7.
+- If you're having issues with Redis, make sure you're on version 4.0.14 or later. If you're still having issues, see the Redis [documentation](https://redis.io/documentation).
+- Common Redis errors include:
+  - `ValueError: Redis URL must specify one of the followingschemes (redis://, rediss://, unix://)` - Make sure the `SCIOLY_ID_BOT_LOCAL_REDIS` environment variable is set to `true` if you're using a local Redis server. If you're using a remote Redis server, or a server with a different address, make sure `SCIOLY_ID_BOT_LOCAL_REDIS` is `false` and the `SCIOLY_ID_BOT_REDIS_URL` environment variable is set correctly.
+  - `redis.exceptions.ConnectionError: Error 61 connecting to localhost:6379. Connection refused.` - Make sure your Redis server is actually running. You can start it with `redis-server` from the `redis-stable` directory.
+- If your error message mentions errors with the `covid` cog or a coronavirus API and you aren't terribly concerned about this feature, disable the cog manually by removing `bot.cogs.covid` from `SCIOLY_ID_BOT_EXTRA_COGS` in `.env`.
+- If your error is about missing Discord Permissions, make sure your bot account has permission to send messages, send files, embed links, and manage roles in that channel.
 
-Having other issues not listed here? Ask in our [Discord support server](https://discord.gg/xDqYddK) and we will do our best to solve the problem.
+Having other issues not listed here? Ask in our [Discord support server](https://discord.gg/2HbshwGjnm) and we will do our best to solve the problem.
 
 ## Files and Folders
 
 The main bot application uses the bot folder.
-  * `__main__.py` is the application start point, with `functions.py` containing assorted functions assisting with downloading bird files and other commonly used functions.
-  * The `data` folder stores bird lists, with `data.py` managing those lists along with logging and database tasks.
-  * The `cogs` folder contains the bot commands themselves, with each file being a different collection of commands (a category in `b!help`).
-  * The `media` folder contains assorted image files for achievement badges and other things.
+
+- `__main__.py` is the application start point, with `functions.py` containing assorted functions assisting with downloading bird files and other commonly used functions.
+- The `data` folder stores bird lists, with `data.py` managing those lists along with logging and database tasks.
+- The `cogs` folder contains the bot commands themselves, with each file being a different collection of commands (a category in `b!help`).
+- The `media` folder contains assorted image files for achievement badges and other things.
 
 Bot unit tests uses the `test` folder. Currently, test coverage is quite poor and these tests are mostly just for fun and learning. If you would like to contribute to tests and increase test coverage, that would be greatly appreciated.
-  * `discord_mock.py` contains classes to replicate discord.py functionality.
-  * `test_{COG NAME}.py` contains the tests for the respective cog.
+
+- `discord_mock.py` contains classes to replicate discord.py functionality.
+- `test_{COG NAME}.py` contains the tests for the respective cog.
 
 The web API uses the `web` folder. Currently, development of the web API is paused.
 
