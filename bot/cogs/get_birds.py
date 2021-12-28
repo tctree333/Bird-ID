@@ -20,6 +20,7 @@ from typing import Optional
 
 from discord.ext import commands
 
+import bot.voice as voice_functions
 from bot.core import send_bird
 from bot.data import GenericError, database, goatsuckers, logger, states, taxons
 from bot.data_functions import bird_setup, session_increment
@@ -55,6 +56,30 @@ class Birds(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def _send_next_race_media(self, ctx):
+        if database.exists(f"race.data:{ctx.channel.id}"):
+            if Filter.from_int(
+                int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
+            ).vc:
+                await voice_functions.stop(ctx, silent=True)
+
+            media = database.hget(f"race.data:{ctx.channel.id}", "media").decode(
+                "utf-8"
+            )
+
+            logger.info(f"auto sending next bird {media}")
+            filter_int, taxon, state = database.hmget(
+                f"race.data:{ctx.channel.id}", ["filter", "taxon", "state"]
+            )
+
+            await self.send_bird_(
+                ctx,
+                media,
+                Filter.from_int(int(filter_int)),
+                taxon.decode("utf-8"),
+                state.decode("utf-8"),
+            )
+
     def error_handle(
         self,
         ctx,
@@ -76,6 +101,7 @@ class Birds(commands.Cog):
 
             if retries >= 2:  # only retry twice
                 await ctx.send("**Too many retries.**\n*Please try again.*")
+                await self._send_next_race_media(ctx)
                 return
 
             if isinstance(error, GenericError) and error.code == 100:
@@ -86,6 +112,7 @@ class Birds(commands.Cog):
                 )
             else:
                 await ctx.send("*Please try again.*")
+                await self._send_next_race_media(ctx)
 
         return inner
 
@@ -147,6 +174,8 @@ class Birds(commands.Cog):
             + database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
         )
 
+        currently_in_race = bool(database.exists(f"race.data:{ctx.channel.id}"))
+
         answered = int(database.hget(f"channel:{ctx.channel.id}", "answered"))
         logger.info(f"answered: {answered}")
         # check to see if previous bird was answered
@@ -155,7 +184,7 @@ class Birds(commands.Cog):
 
             logger.info(f"filters: {filters}; taxon: {taxon}; roles: {roles}")
 
-            if retries == 0:
+            if not currently_in_race and retries == 0:
                 await ctx.send(
                     "**Recognized arguments:** "
                     + f"*Active Filters*: `{'`, `'.join(filters.display())}`, "
@@ -206,7 +235,9 @@ class Birds(commands.Cog):
                 on_error=self.error_handle(
                     ctx, media_type, filters, taxon_str, role_str, retries
                 ),
-                message=(SONG_MESSAGE if media_type == "songs" else BIRD_MESSAGE),
+                message=(SONG_MESSAGE if media_type == "songs" else BIRD_MESSAGE)
+                if not currently_in_race
+                else "*Here you go!*",
             )
         else:  # if no, give the same bird
             await ctx.send(f"**Active Filters**: `{'`, `'.join(filters.display())}`")
@@ -218,7 +249,9 @@ class Birds(commands.Cog):
                 on_error=self.error_handle(
                     ctx, media_type, filters, taxon_str, role_str, retries
                 ),
-                message=(SONG_MESSAGE if media_type == "songs" else BIRD_MESSAGE),
+                message=(SONG_MESSAGE if media_type == "songs" else BIRD_MESSAGE)
+                if not currently_in_race
+                else "*Here you go!*",
             )
 
     @staticmethod
