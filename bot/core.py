@@ -45,6 +45,8 @@ TAXON_CODE_URL = (
     "https://api.ebird.org/v2/ref/taxon/find?key=jfekjedvescr&cat=species&q={}"
 )
 
+COUNT = 5  # fetch 5 media from macaulay at a time
+
 MAX_FILESIZE = 6000000  # limit media to 6mb
 
 # Valid file types
@@ -370,6 +372,8 @@ async def get_files(sciBird: str, media_type: str, filters: Filter, retries: int
     """
     logger.info(f"get_files retries: {retries}")
     directory = f"bot_files/cache/{media_type}/{sciBird}{filters.to_int()}/"
+    # track counts for more accurate eviction
+    database.zincrby("frequency.media:global", 1, f"{media_type}/{sciBird}{filters.to_int()}")
     try:
         logger.info("trying")
         files_dir = os.listdir(directory)
@@ -458,7 +462,7 @@ async def _get_urls(
     """
     logger.info(f"getting file urls for {bird}")
     taxon_code = (await get_taxon(bird, session))[0]
-    catalog_url = filters.url(taxon_code, media_type)
+    catalog_url = filters.url(taxon_code, media_type, COUNT)
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
             if retries >= 3:
@@ -551,27 +555,51 @@ async def _download_helper(path, url, session, sem):
             raise
 
 
-def rotate_cache():
-    """Deletes a random selection of cached birds."""
-    logger.info("Rotating cache items")
-    items = []
-    with contextlib.suppress(FileNotFoundError):
-        items += map(
-            lambda x: f"bot_files/cache/images/{x}/",
-            os.listdir("bot_files/cache/images/"),
-        )
-    with contextlib.suppress(FileNotFoundError):
-        items += map(
-            lambda x: f"bot_files/cache/songs/{x}/",
-            os.listdir("bot_files/cache/songs/"),
-        )
-    logger.info(f"num birds: {len(items)}")
-    delete = random.choices(
-        items, k=math.ceil(len(items) * 0.05)
-    )  # choose 5% of the items to delete
-    for directory in delete:
-        shutil.rmtree(directory)
-        logger.info(f"{directory} removed")
+# def rotate_cache():
+#     """Deletes a random selection of cached birds."""
+#     logger.info("Rotating cache items")
+#     items = []
+#     with contextlib.suppress(FileNotFoundError):
+#         items += map(
+#             lambda x: f"bot_files/cache/images/{x}/",
+#             os.listdir("bot_files/cache/images/"),
+#         )
+#     with contextlib.suppress(FileNotFoundError):
+#         items += map(
+#             lambda x: f"bot_files/cache/songs/{x}/",
+#             os.listdir("bot_files/cache/songs/"),
+#         )
+#     logger.info(f"num birds: {len(items)}")
+#     delete = random.choices(
+#         items, k=math.ceil(len(items) * 0.05)
+#     )  # choose 5% of the items to delete
+#     for directory in delete:
+#         shutil.rmtree(directory)
+#         logger.info(f"{directory} removed")
+
+
+def evict_media():
+    """Deletes media for items that have exceeded a certain frequency.
+
+    This prevents media from becoming stale. If the item frequency has
+    been incremented more than 2*COUNT times, this function will delete
+    the top 3 items.
+    """
+    logger.info("Updating cached images")
+
+    for item in map(
+        lambda x: x.decode(),
+        database.zrevrangebyscore(
+            "frequency.media:global",
+            "+inf",
+            min=2*COUNT,
+            start=0,
+            num=3,
+        ),
+    ):
+        database.zadd("frequency.media:global", {item: 0})
+        shutil.rmtree(f"bot_files/cache/{item}/")
+        logger.info(f"{item} removed")
 
 
 def spellcheck(arg, correct, cutoff=None):

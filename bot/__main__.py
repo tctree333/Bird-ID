@@ -25,7 +25,7 @@ import holidays
 from discord.ext import commands, tasks
 from sentry_sdk import capture_exception
 
-from bot.core import rotate_cache, send_bird
+from bot.core import evict_media, send_bird
 from bot.data import GenericError, database, logger
 from bot.data_functions import channel_setup, user_setup
 from bot.filters import Filter
@@ -184,13 +184,13 @@ if __name__ == "__main__":
 
         await handle_error(ctx, error)
 
-    @tasks.loop(hours=0.5)
+    @tasks.loop(minutes=10.0)
     async def refresh_cache():
-        """Task to delete a random selection of cached birds every hour."""
+        """Task to delete a random selection of cached birds to ensure freshness."""
         logger.info("TASK: Refreshing some cache items")
         event_loop = asyncio.get_event_loop()
         with concurrent.futures.ThreadPoolExecutor(1) as executor:
-            await event_loop.run_in_executor(executor, rotate_cache)
+            await event_loop.run_in_executor(executor, evict_media)
 
     @tasks.loop(hours=3.0)
     async def refresh_user_cache():

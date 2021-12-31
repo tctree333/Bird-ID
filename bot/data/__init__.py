@@ -164,6 +164,10 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # cooldown rate limit format:
 #   cooldown:global : 0
 
+# media type, bird, and filter media frequency format:
+# (for media eviction)
+#   frequency.media:global : ["{type}/{sciname}{filter}", count]
+
 
 #  states = {
 #          state name:

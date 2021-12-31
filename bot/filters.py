@@ -19,7 +19,6 @@ from collections.abc import Iterable
 
 # Macaulay Library URLs
 CATALOG_URL = "https://search.macaulaylibrary.org/catalog.json?searchField=species"
-COUNT = 5  # number of media items from catalog url
 
 
 class Filter:
@@ -143,7 +142,7 @@ class Filter:
                 raise ValueError(f"{item[1]} contains invalid {item[0]} values.")
         return True
 
-    def url(self, taxon_code: str, media_type: str) -> str:
+    def url(self, taxon_code: str, media_type: str, count: int) -> str:
         """Generate the search url based on the filters.
 
         `media_type` is all, p (pictures), a (audio), v (video)
@@ -160,7 +159,7 @@ class Filter:
             "quality": "&qua={}",
         }
         url = [CATALOG_URL]
-        url.append(f"&taxonCode={taxon_code}&mediaType={media_type}&count={COUNT}")
+        url.append(f"&taxonCode={taxon_code}&mediaType={media_type}&count={count}")
 
         for item in self.__dict__.items():
             if (
