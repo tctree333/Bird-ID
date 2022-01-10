@@ -134,6 +134,7 @@ def profile(request: Request):
     return {
         "avatar_hash": avatar_hash,
         "avatar_url": avatar_url,
+        "avatar": avatar_url,
         "username": username,
         "discriminator": discriminator,
         "score": score,
