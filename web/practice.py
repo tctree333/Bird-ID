@@ -125,8 +125,8 @@ async def check_bird(request: Request, guess: str):
     logger.info("currentBird: " + currentBird)
     logger.info("args: " + guess)
 
+    database.zincrby(f"daily.web:{date()}", 1, "check")
     if user_id != 0:
-        database.zincrby(f"daily.web:{date()}", 1, "check")
         bird_setup(user_id, currentBird)
 
     if (
@@ -184,8 +184,7 @@ async def skip_bird(request: Request):
 
     session_id = get_session_id(request)
     user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
-    if user_id != 0:
-        database.zincrby(f"daily.web:{date()}", 1, "skip")
+    database.zincrby(f"daily.web:{date()}", 1, "skip")
 
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird != "":  # check if there is bird
@@ -206,9 +205,7 @@ async def hint_bird(request: Request):
     logger.info("endpoint: hint bird")
 
     session_id = get_session_id(request)
-    user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
-    if user_id != 0:
-        database.zincrby(f"daily.web:{date()}", 1, "hint")
+    database.zincrby(f"daily.web:{date()}", 1, "hint")
 
     currentBird = database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     if currentBird != "":  # check if there is bird
