@@ -62,9 +62,9 @@ async def get_bird(
     )
 
     tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
-    if tempScore >= 10:
-        logger.info("trial maxed")
-        raise HTTPException(status_code=403, detail="Sign in to continue")
+    # if tempScore >= 10:
+    #     logger.info("trial maxed")
+    #     raise HTTPException(status_code=403, detail="Sign in to continue")
 
     if media_type not in ("images", "songs"):
         logger.error(f"invalid media type {media_type}")
@@ -144,9 +144,9 @@ async def check_bird(request: Request, guess: str):
             database.zincrby(f"daily.webscore:{date()}", 1, user_id)
             score_increment(user_id, 1)
             streak_increment(user_id, 1)
-        elif tempScore >= 10:
-            logger.info("trial maxed")
-            raise HTTPException(status_code=403, detail="Sign in to continue")
+        # elif tempScore >= 10:
+        #     logger.info("trial maxed")
+        #     raise HTTPException(status_code=403, detail="Sign in to continue")
         else:
             database.hset(f"web.session:{session_id}", "tempScore", str(tempScore + 1))
 
