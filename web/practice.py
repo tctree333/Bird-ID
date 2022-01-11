@@ -61,7 +61,7 @@ async def get_bird(
         "bird: " + database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
     )
 
-    tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
+    # tempScore = int(database.hget(f"web.session:{session_id}", "tempScore"))
     # if tempScore >= 10:
     #     logger.info("trial maxed")
     #     raise HTTPException(status_code=403, detail="Sign in to continue")
