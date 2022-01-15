@@ -184,7 +184,9 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 
 # setup logging
 logger = logging.getLogger("bird-id")
+discordLogger = logging.getLogger("discord")
 logger.setLevel(logging.DEBUG)
+discordLogger.setLevel(logging.INFO)
 os.makedirs("bot_files/logs", exist_ok=True)
 
 file_handler = logging.handlers.TimedRotatingFileHandler(
@@ -205,6 +207,8 @@ stream_handler.setFormatter(
 
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
+discordLogger.addHandler(file_handler)
+discordLogger.addHandler(stream_handler)
 
 # log uncaught exceptions
 def handle_exception(exc_type, exc_value, exc_traceback):
@@ -250,11 +254,11 @@ class GenericError(commands.CommandError):
 
 # Lists of birds, memes, and other info
 goatsuckers = ["Common Pauraque", "Chuck Will's Widow", "Eastern Whip Poor Will"]
-sciGoat = [
-    "Nyctidromus albicollis",
-    "Antrostomus carolinensis",
-    "Antrostomus vociferus",
-]
+# sciGoat = [
+#     "Nyctidromus albicollis",
+#     "Antrostomus carolinensis",
+#     "Antrostomus vociferus",
+# ]
 
 screech_owls = ["Whiskered Screech Owl", "Western Screech Owl", "Eastern Screech Owl"]
 sci_screech_owls = ["Megascops trichopsis", "Megascops kennicottii", "Megascops asio"]
