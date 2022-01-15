@@ -48,4 +48,4 @@ We may change our Privacy Policy from time to time. Changes to this Privacy Poli
 
 Any questions, concerns, or comments regarding this Privacy Policy can be asked in the [Discord support server][server link].
 
-[server link]: https://discord.gg/fXxYyDJ
+[server link]: https://discord.gg/2HbshwGjnm

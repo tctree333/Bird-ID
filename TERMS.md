@@ -63,6 +63,6 @@ Our liability is limited whether or not we have been informed of the possibility
 
 ## Changes
 
-We reserve the right, at our sole discretion, to amend these Terms of Service at any time and will update these Terms of Service in the event of any such amendments. We will notify our users of changes to this agreement at least 14 days prior to the change taking effect by announcing it in the [Discord support server](https://discord.gg/fXxYyDJ). For all revisions, your continued use of the bot constitutes agreement to our revisions of these Terms of Service.
+We reserve the right, at our sole discretion, to amend these Terms of Service at any time and will update these Terms of Service in the event of any such amendments. We will notify our users of changes to this agreement at least 14 days prior to the change taking effect by announcing it in the [Discord support server](https://discord.gg/2HbshwGjnm). For all revisions, your continued use of the bot constitutes agreement to our revisions of these Terms of Service.
 
 We reserve the right at any time and from time to time to modify or discontinue, temporarily or permanently, the bot (or any part of it) with or without notice.
