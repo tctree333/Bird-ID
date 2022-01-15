@@ -20,8 +20,15 @@ import discord
 from discord.ext import commands
 
 import bot.voice as voice_functions
-from bot.core import get_sciname, spellcheck
-from bot.data import alpha_codes, database, get_wiki_url, logger
+from bot.core import get_sciname, spellcheck_list
+from bot.data import (
+    alpha_codes,
+    database,
+    get_wiki_url,
+    logger,
+    screech_owls,
+    sci_screech_owls,
+)
 from bot.data_functions import (
     bird_setup,
     incorrect_increment,
@@ -62,15 +69,20 @@ class Check(commands.Cog):
 
         bird_setup(ctx, currentBird)
 
+        accepted_answers = [currentBird, sciBird]
+        if currentBird == "screech owl":
+            accepted_answers += screech_owls
+            accepted_answers += sci_screech_owls
+
         race_in_session = bool(database.exists(f"race.data:{ctx.channel.id}"))
         if race_in_session:
             logger.info("race in session")
             if database.hget(f"race.data:{ctx.channel.id}", "strict"):
                 logger.info("strict spelling")
-                correct = arg in (currentBird, sciBird)
+                correct = arg in accepted_answers
             else:
                 logger.info("spelling leniency")
-                correct = spellcheck(arg, currentBird) or spellcheck(arg, sciBird)
+                correct = spellcheck_list(arg, accepted_answers)
 
             if not correct and database.hget(f"race.data:{ctx.channel.id}", "alpha"):
                 logger.info("checking alpha codes")
@@ -79,13 +91,11 @@ class Check(commands.Cog):
             logger.info("no race")
             if database.hget(f"session.data:{ctx.author.id}", "strict"):
                 logger.info("strict spelling")
-                correct = arg in (currentBird, sciBird)
+                correct = arg in accepted_answers
             else:
                 logger.info("spelling leniency")
                 correct = (
-                    spellcheck(arg, currentBird)
-                    or spellcheck(arg, sciBird)
-                    or arg.upper() == alpha_code
+                    spellcheck_list(arg, accepted_answers) or arg.upper() == alpha_code
                 )
 
         if correct:

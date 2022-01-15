@@ -621,3 +621,9 @@ def spellcheck(arg, correct, cutoff=None):
         ):
             return False
     return True
+
+def spellcheck_list(arg, correct_options, cutoff=None):
+    for correct in correct_options:
+        if spellcheck(arg, correct, cutoff):
+            return True
+    return False
