@@ -636,8 +636,9 @@ def better_spellcheck(
     word: str, correct: Iterable[str], options: Iterable[str]
 ) -> bool:
     """Allow lenient spelling unless another answer is closer."""
+    all_options = set(list(correct) + list(options))
     matches = difflib.get_close_matches(
-        word.lower(), map(str.lower, options), n=1, cutoff=(2 / 3)
+        word.lower(), map(str.lower, all_options), n=1, cutoff=(2 / 3)
     )
     if not matches:
         return False
