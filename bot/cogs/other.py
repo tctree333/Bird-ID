@@ -49,19 +49,20 @@ class Other(commands.Cog):
     @staticmethod
     def broken_join(input_list: list[str], max_size: int = MAX_MESSAGE) -> list[str]:
         pages: list[str] = []
-        temp_lines: list[str] = []
-        temp_len = 0
+        lines: list[str] = []
+        block_length = 0
         for line in input_list:
-            temp_lines.append(line)
-            temp_len += len(line)
-            if temp_len > max_size:
-                temp_out = "".join(temp_lines)
-                pages.append(temp_out)
-                temp_lines.clear()
+            lines.append(line)
+            block_length += len(line)
+            if block_length > max_size:
+                page = "\n".join(lines)
+                pages.append(page)
+                lines.clear()
+                block_length = 0
 
-        if temp_lines:
-            temp_out = "".join(temp_lines)
-            pages.append(temp_out)
+        if lines:
+            page = "\n".join(lines)
+            pages.append(page)
 
         return pages
 
