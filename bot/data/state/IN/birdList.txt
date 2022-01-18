@@ -1,0 +1,96 @@
+Snow Goose
+Canada Goose
+Wood Duck
+Mallard
+Northern Shoveler
+Green-winged Teal
+Hooded Merganser
+Blue-winged teal
+Ring-necked Pheasant
+Ruffed Grouse
+Wild Turkey 
+Northern Bobwhite
+Common Loon
+Pied-billed Grebe
+American Bittern
+Great Blue Heron
+Green Heron
+American Kestrel
+Peregrine Falcon
+Bald Eagle
+Northern Harrier
+Cooper's Hawk
+Red-tailed Hawk
+Turkey Vulture
+Sora
+American Coot
+Sandhill Crane
+Whooping Crane
+Killdeer
+Spotted Sandpiper
+American Woodcock
+Ring-billed Gull
+Herring Gull
+Black Tern
+Mourning Dove
+Rock Pigeon
+Black-billed Cuckoo
+Barn Owl
+Great Horned Owl
+Northern Saw-Whet Owl
+Barred Owl
+Eastern Screech Owl
+Short eared Owl
+Common Nighthawk
+Chimney Swift
+Ruby-throated Hummingbird
+Belted Kingfisher
+Red-headed Woodpecker
+Yellow-bellied Sapsucker
+Downy Woodpecker
+Northern Flicker
+Pileated Woodpecker
+Eastern Phoebe
+Great Crested Flycatcher
+Eastern Kingbird
+Warbling Vireo
+Red-eyed Vireo
+Blue Jay
+American Crow
+Horned Lark
+Purple Martin
+Barn Swallow
+Black-capped Chickadee
+Tufted Titmouse
+White-breasted Nuthatch
+Carolina Wren
+Ruby-crowned Kinglet
+Blue-gray Gnatcatcher
+Eastern Bluebird
+American Robin
+Gray Catbird
+Northern Mockingbird
+Brown Thrasher
+Cedar Waxwing
+Yellow Warbler
+Magnolia Warbler
+Yellow-rumped Warbler
+American Redstart
+Ovenbird
+Common Yellowthroat
+White-crowned Sparrow
+Chipping Sparrow
+Dark-eyed Junco
+Northern Cardinal
+Indigo Bunting
+Scarlet Tanager
+Bobolink
+Red-winged Blackbird
+Common Grackle
+Brown-headed Cowbird
+Baltimore Oriole
+American Goldfinch
+House Finch
+Pine Siskin
+House Sparrow
+European Starling
