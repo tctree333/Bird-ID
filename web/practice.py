@@ -20,8 +20,17 @@ import string
 
 from fastapi import APIRouter, HTTPException, Request
 
-from bot.core import spellcheck
-from bot.data import birdList, get_wiki_url, songBirds, alpha_codes
+from bot.core import better_spellcheck
+from bot.data import (
+    alpha_codes,
+    birdList,
+    birdListMaster,
+    get_wiki_url,
+    sci_screech_owls,
+    sciListMaster,
+    screech_owls,
+    songBirds,
+)
 from bot.data_functions import (
     bird_setup,
     incorrect_increment,
@@ -30,7 +39,7 @@ from bot.data_functions import (
 )
 from bot.filters import Filter
 from web.data import database, get_session_id, logger
-from web.functions import send_file, get_sciname, send_bird
+from web.functions import get_sciname, send_bird, send_file
 
 router = APIRouter(prefix="/practice", tags=["practice"])
 date = lambda: str(datetime.datetime.now(datetime.timezone.utc).date())
@@ -129,9 +138,13 @@ async def check_bird(request: Request, guess: str):
     if user_id != 0:
         bird_setup(user_id, currentBird)
 
+    accepted_answers = [currentBird, sciBird]
+    if currentBird == "screech owl":
+        accepted_answers += screech_owls
+        accepted_answers += sci_screech_owls
+
     if (
-        spellcheck(guess, currentBird)
-        or spellcheck(guess, sciBird)
+        better_spellcheck(guess, accepted_answers, birdListMaster + sciListMaster)
         or guess.upper() == alpha_code
     ):
         logger.info("correct")

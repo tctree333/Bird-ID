@@ -16,18 +16,18 @@
 
 import string
 
-import discord
-from discord.ext import commands
-
 import bot.voice as voice_functions
-from bot.core import get_sciname, spellcheck_list
+import discord
+from bot.core import better_spellcheck, get_sciname
 from bot.data import (
     alpha_codes,
+    birdListMaster,
     database,
     get_wiki_url,
     logger,
-    screech_owls,
     sci_screech_owls,
+    sciListMaster,
+    screech_owls,
 )
 from bot.data_functions import (
     bird_setup,
@@ -38,6 +38,7 @@ from bot.data_functions import (
 )
 from bot.filters import Filter
 from bot.functions import CustomCooldown
+from discord.ext import commands
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
@@ -82,7 +83,9 @@ class Check(commands.Cog):
                 correct = arg in accepted_answers
             else:
                 logger.info("spelling leniency")
-                correct = spellcheck_list(arg, accepted_answers)
+                correct = better_spellcheck(
+                    arg, accepted_answers, birdListMaster + sciListMaster
+                )
 
             if not correct and database.hget(f"race.data:{ctx.channel.id}", "alpha"):
                 logger.info("checking alpha codes")
@@ -95,7 +98,10 @@ class Check(commands.Cog):
             else:
                 logger.info("spelling leniency")
                 correct = (
-                    spellcheck_list(arg, accepted_answers) or arg.upper() == alpha_code
+                    better_spellcheck(
+                        arg, accepted_answers, birdListMaster + sciListMaster
+                    )
+                    or arg.upper() == alpha_code
                 )
 
         if correct:

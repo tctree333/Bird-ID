@@ -26,7 +26,7 @@ import shutil
 import string
 import urllib
 from io import BytesIO
-from typing import Tuple
+from typing import Iterable, Tuple
 
 import aiohttp
 import discord
@@ -35,7 +35,7 @@ from PIL import Image
 from sentry_sdk import capture_exception
 
 import bot.voice as voice_functions
-from bot.data import GenericError, database, logger, screech_owls, birdListMaster
+from bot.data import GenericError, birdListMaster, database, logger, screech_owls
 from bot.filters import Filter
 from bot.functions import cache
 
@@ -373,7 +373,9 @@ async def get_files(sciBird: str, media_type: str, filters: Filter, retries: int
     logger.info(f"get_files retries: {retries}")
     directory = f"bot_files/cache/{media_type}/{sciBird}{filters.to_int()}/"
     # track counts for more accurate eviction
-    database.zincrby("frequency.media:global", 1, f"{media_type}/{sciBird}{filters.to_int()}")
+    database.zincrby(
+        "frequency.media:global", 1, f"{media_type}/{sciBird}{filters.to_int()}"
+    )
     try:
         logger.info("trying")
         files_dir = os.listdir(directory)
@@ -592,7 +594,7 @@ def evict_media():
         database.zrevrangebyscore(
             "frequency.media:global",
             "+inf",
-            min=2*COUNT,
+            min=2 * COUNT,
             start=0,
             num=3,
         ),
@@ -622,8 +624,23 @@ def spellcheck(arg, correct, cutoff=None):
             return False
     return True
 
+
 def spellcheck_list(arg, correct_options, cutoff=None):
     for correct in correct_options:
         if spellcheck(arg, correct, cutoff):
             return True
+    return False
+
+
+def better_spellcheck(
+    word: str, correct: Iterable[str], options: Iterable[str]
+) -> bool:
+    """Allow lenient spelling unless another answer is closer."""
+    matches = difflib.get_close_matches(
+        word.lower(), map(str.lower, options), n=1, cutoff=(2 / 3)
+    )
+    if not matches:
+        return False
+    if matches[0] in map(str.lower, correct):
+        return True
     return False
