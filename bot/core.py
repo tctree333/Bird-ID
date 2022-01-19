@@ -464,14 +464,16 @@ async def _get_urls(
     """
     logger.info(f"getting file urls for {bird}")
     taxon_code = (await get_taxon(bird, session))[0]
-    catalog_url = filters.url(taxon_code, media_type, COUNT)
+    database_key = f"{media_type}/{bird}{filters.to_int()}"
+    cursor = (database.get(f"media.cursor:{database_key}") or b"").decode()
+    catalog_url = filters.url(taxon_code, media_type, COUNT, cursor)
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
             if retries >= 3:
                 logger.info("Retried more than 3 times. Aborting...")
                 raise GenericError(
                     f"An http error code of {catalog_response.status} occurred "
-                    + f"while fetching {catalog_url} for a {'image'if media_type=='p' else 'song'} for {bird}",
+                    + f"while fetching {catalog_url} for a {'image' if media_type=='p' else 'song'} for {bird}",
                     code=201,
                 )
             retries += 1
@@ -483,6 +485,10 @@ async def _get_urls(
             return urls
 
         catalog_data = await catalog_response.json()
+        database.set(
+            f"media.cursor:{database_key}",
+            catalog_data["results"]["nextCursorMark"] or b"",
+        )
         content = catalog_data["results"]["content"]
         urls = (
             [data["mediaUrl"] for data in content]
@@ -490,7 +496,13 @@ async def _get_urls(
             else [data["previewUrl"] for data in content]
         )
         if not urls:
-            raise GenericError("No urls found.", code=100)
+            if retries >= 1:
+                raise GenericError("No urls found.", code=100)
+            logger.info("retrying without cursor")
+            retries += 1
+            urls = await _get_urls(session, bird, media_type, filters, retries)
+            return urls
+
         return urls
 
 

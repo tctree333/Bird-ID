@@ -142,7 +142,7 @@ class Filter:
                 raise ValueError(f"{item[1]} contains invalid {item[0]} values.")
         return True
 
-    def url(self, taxon_code: str, media_type: str, count: int) -> str:
+    def url(self, taxon_code: str, media_type: str, count: int, cursor: str = "") -> str:
         """Generate the search url based on the filters.
 
         `media_type` is all, p (pictures), a (audio), v (video)
@@ -159,7 +159,7 @@ class Filter:
             "quality": "&qua={}",
         }
         url = [CATALOG_URL]
-        url.append(f"&taxonCode={taxon_code}&mediaType={media_type}&count={count}")
+        url.append(f"&taxonCode={taxon_code}&mediaType={media_type}&count={count}&initialCursorMark={cursor}")
 
         for item in self.__dict__.items():
             if (

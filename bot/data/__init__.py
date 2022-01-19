@@ -168,6 +168,8 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # (for media eviction)
 #   frequency.media:global : ["{type}/{sciname}{filter}", count]
 
+# media cursor format:
+#   media.cursor:{type}/{sciname}{filter} : cursor
 
 #  states = {
 #          state name:
