@@ -18,7 +18,7 @@ from typing import Union, Dict, Tuple
 from collections.abc import Iterable
 
 # Macaulay Library URLs
-CATALOG_URL = "https://search.macaulaylibrary.org/catalog.json?searchField=species&sort=rating_rank_desc"
+CATALOG_URL = "https://search.macaulaylibrary.org/catalog.json?searchField=species"
 
 
 class Filter:
