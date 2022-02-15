@@ -3,7 +3,7 @@ wikipedia==1.4.0
 Pillow==9.0.0
 eyeD3==0.9.6
 redis==4.1.0
-holidays==0.11.3.1
+holidays==0.13
 gunicorn==20.1.0
 python-dotenv==0.19.2
 hiredis==2.0.0
