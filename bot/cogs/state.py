@@ -412,5 +412,5 @@ class States(commands.Cog):
             await handle_error(ctx, error)
 
 
-def setup(bot):
-    bot.add_cog(States(bot))
+async def setup(bot):
+    await bot.add_cog(States(bot))

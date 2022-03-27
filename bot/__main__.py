@@ -17,7 +17,6 @@
 import asyncio
 import concurrent.futures
 import os
-import sys
 from datetime import date, datetime, timedelta, timezone
 
 import discord
@@ -40,82 +39,84 @@ from bot.functions import (
 # The channel id that the backups send to
 BACKUPS_CHANNEL = os.getenv("SCIOLY_ID_BOT_BACKUPS_CHANNEL", "")
 
-if __name__ == "__main__":
-    # Initialize bot
-    intent: discord.Intents = discord.Intents.none()
-    intent.guilds = True
-    # intent.members = True
-    intent.messages = True
-    intent.voice_states = True
 
-    cache_flags: discord.MemberCacheFlags = discord.MemberCacheFlags.none()
-    cache_flags.voice = True
+class Bot(commands.Bot):
+    def __init__(self):
+        intent: discord.Intents = discord.Intents.none()
+        intent.guilds = True
+        # intent.members = True
+        intent.messages = True
+        intent.voice_states = True
 
-    bot = commands.Bot(
-        command_prefix=["b!", "b.", "b#", "B!", "B.", "B#", "o>", "O>"],
-        case_insensitive=True,
-        description="BirdID - Your Very Own Ornithologist",
-        help_command=commands.DefaultHelpCommand(verify_checks=False),
-        intents=intent,
-        member_cache_flags=cache_flags,
-    )
+        cache_flags: discord.MemberCacheFlags = discord.MemberCacheFlags.none()
+        cache_flags.voice = True
 
-    @bot.event
-    async def on_ready():
+        super().__init__(
+            command_prefix=["b!", "b.", "b#", "B!", "B.", "B#", "o>", "O>"],
+            case_insensitive=True,
+            description="BirdID - Your Very Own Ornithologist",
+            help_command=commands.DefaultHelpCommand(verify_checks=False),
+            intents=intent,
+            member_cache_flags=cache_flags,
+        )
+
+    async def on_ready(self):
         print("Ready!")
         logger.info("Logged in as:")
-        logger.info(bot.user.name)
-        logger.info(bot.user.id)
+        logger.info(self.user.name)
+        logger.info(self.user.id)
         # Change discord activity
-        await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
-        refresh_cache.start()
-        refresh_user_cache.start()
-        evict_user_cache.start()
+        await self.change_presence(activity=discord.Activity(type=3, name="birds"))
+
+    async def setup_hook(self) -> None:
+        self.refresh_cache.start()
+        self.refresh_user_cache.start()
+        self.evict_user_cache.start()
         if os.getenv("SCIOLY_ID_BOT_ENABLE_BACKUPS") != "false":
-            refresh_backup.start()
+            self.refresh_backup.start()
 
-    # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
-    core_extensions = [
-        "bot.cogs.get_birds",
-        "bot.cogs.check",
-        "bot.cogs.skip",
-        "bot.cogs.hint",
-        "bot.cogs.score",
-        "bot.cogs.stats",
-        "bot.cogs.state",
-        "bot.cogs.sessions",
-        "bot.cogs.race",
-        "bot.cogs.voice",
-        "bot.cogs.meta",
-        "bot.cogs.other",
-    ]
-    extra_extensions = os.getenv("SCIOLY_ID_BOT_EXTRA_COGS", "").strip().split(",")
+        # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
+        core_extensions = [
+            "bot.cogs.get_birds",
+            "bot.cogs.check",
+            "bot.cogs.skip",
+            "bot.cogs.hint",
+            "bot.cogs.score",
+            "bot.cogs.stats",
+            "bot.cogs.state",
+            "bot.cogs.sessions",
+            "bot.cogs.race",
+            "bot.cogs.voice",
+            "bot.cogs.meta",
+            "bot.cogs.other",
+        ]
+        extra_extensions = os.getenv("SCIOLY_ID_BOT_EXTRA_COGS", "").strip().split(",")
 
-    for extension in core_extensions + extra_extensions:
-        if extension.strip() == "":
-            continue
-        try:
-            bot.load_extension(extension)
-        except (
-            discord.errors.ClientException,
-            commands.errors.ExtensionNotFound,
-            commands.errors.ExtensionFailed,
-        ) as e:
-            if extension in core_extensions:
-                logger.exception(f"Failed to load extension {extension}.", e)
-                capture_exception(e)
-                raise e
-            logger.error(f"Failed to load extension {extension}.", e)
+        for extension in core_extensions + extra_extensions:
+            if extension.strip() == "":
+                continue
+            try:
+                await self.load_extension(extension)
+            except (
+                discord.errors.ClientException,
+                commands.errors.ExtensionNotFound,
+                commands.errors.ExtensionFailed,
+            ) as e:
+                if extension in core_extensions:
+                    logger.exception(f"Failed to load extension {extension}.", e)
+                    capture_exception(e)
+                    raise e
+                logger.error(f"Failed to load extension {extension}.", e)
 
-    if sys.platform == "win32":
-        asyncio.set_event_loop(asyncio.ProactorEventLoop())
+        # register global checks
+        self.add_check(self.prechecks)
+        self.add_check(self.is_holiday)
 
     ######
     # Global Command Checks
     ######
 
-    @bot.check
-    async def prechecks(ctx):
+    async def prechecks(self, ctx):
         await ctx.trigger_typing()
 
         logger.info("global check: checking permissions")
@@ -138,8 +139,7 @@ if __name__ == "__main__":
 
         return True
 
-    @bot.check
-    async def is_holiday(ctx):
+    async def is_holiday(self, ctx):
         """Sends a picture of a turkey on Thanksgiving.
 
         Can be extended to other holidays as well.
@@ -173,8 +173,9 @@ if __name__ == "__main__":
     ######
     # GLOBAL ERROR CHECKING
     ######
-    @bot.event
-    async def on_command_error(ctx, error):
+    async def on_command_error(
+        self, ctx: commands.Context, error: commands.CommandError, /
+    ):
         """Handles errors for all commands without local error handlers."""
         logger.info("Error: " + str(error))
 
@@ -184,8 +185,9 @@ if __name__ == "__main__":
 
         await handle_error(ctx, error)
 
+    ## Background Tasks
     @tasks.loop(minutes=10.0)
-    async def refresh_cache():
+    async def refresh_cache(self):
         """Task to delete a random selection of cached birds to ensure freshness."""
         logger.info("TASK: Refreshing some cache items")
         event_loop = asyncio.get_event_loop()
@@ -193,19 +195,19 @@ if __name__ == "__main__":
             await event_loop.run_in_executor(executor, evict_media)
 
     @tasks.loop(hours=3.0)
-    async def refresh_user_cache():
+    async def refresh_user_cache(self):
         """Task to update User cache to increase performance of commands."""
         logger.info("TASK: Updating User cache")
-        await get_all_users(bot)
+        await get_all_users(self)
 
     @tasks.loop(minutes=8.0)
-    async def evict_user_cache():
+    async def evict_user_cache(self):
         """Task to remove keys from the User cache to ensure freshness."""
         logger.info("TASK: Removing user keys")
         prune_user_cache(10)
 
     @tasks.loop(hours=1.0)
-    async def refresh_backup():
+    async def refresh_backup(self):
         """Sends a copy of the database to a discord channel (BACKUPS_CHANNEL)."""
         logger.info("TASK: Refreshing backup")
         try:
@@ -225,12 +227,16 @@ if __name__ == "__main__":
 
         if BACKUPS_CHANNEL.isdecimal():
             logger.info("Sending backup files")
-            channel = bot.get_channel(int(BACKUPS_CHANNEL))
+            channel = self.get_channel(int(BACKUPS_CHANNEL))
             with open("bot_files/backups/dump.dump", "rb") as f:
                 await channel.send(file=discord.File(f, filename="dump"))
             with open("bot_files/backups/keys.txt", "r") as f:
                 await channel.send(file=discord.File(f, filename="keys.txt"))
             logger.info("Backup Files Sent!")
+
+
+if __name__ == "__main__":
+    bot = Bot()
 
     # Actually run the bot
     token = os.getenv("SCIOLY_ID_BOT_TOKEN")

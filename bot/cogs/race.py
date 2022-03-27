@@ -348,5 +348,5 @@ class Race(commands.Cog):
             )
 
 
-def setup(bot):
-    bot.add_cog(Race(bot))
+async def setup(bot):
+    await bot.add_cog(Race(bot))

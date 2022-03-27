@@ -270,20 +270,28 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def wikipedia(self, ctx, *, arg):
         logger.info("command: wiki")
-        
+
         arg = arg.capitalize()
-        
+
         try:
             page = wikipedia.page(arg, auto_suggest=False)
-        except (wikipedia.exceptions.DisambiguationError,wikipedia.exceptions.PageError):
+        except (
+            wikipedia.exceptions.DisambiguationError,
+            wikipedia.exceptions.PageError,
+        ):
             try:
                 page = wikipedia.page(f"{arg} (bird)", auto_suggest=False)
-            except (wikipedia.exceptions.DisambiguationError,wikipedia.exceptions.PageError): 
+            except (
+                wikipedia.exceptions.DisambiguationError,
+                wikipedia.exceptions.PageError,
+            ):
                 # fall back to suggestion
                 try:
                     page = wikipedia.page(arg)
                 except wikipedia.exceptions.DisambiguationError:
-                    await ctx.send("Sorry, that page was not found. Try being more specific.")
+                    await ctx.send(
+                        "Sorry, that page was not found. Try being more specific."
+                    )
                     return
                 except wikipedia.exceptions.PageError:
                     await ctx.send("Sorry, that page was not found.")
@@ -352,5 +360,5 @@ class Other(commands.Cog):
         )
 
 
-def setup(bot):
-    bot.add_cog(Other(bot))
+async def setup(bot):
+    await bot.add_cog(Other(bot))

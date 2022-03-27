@@ -481,5 +481,5 @@ class Stats(commands.Cog):
         await ctx.send(files=files)
 
 
-def setup(bot):
-    bot.add_cog(Stats(bot))
+async def setup(bot):
+    await bot.add_cog(Stats(bot))

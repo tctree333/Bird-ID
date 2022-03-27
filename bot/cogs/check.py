@@ -183,5 +183,5 @@ class Check(commands.Cog):
                 await ctx.send(url)
 
 
-def setup(bot):
-    bot.add_cog(Check(bot))
+async def setup(bot):
+    await bot.add_cog(Check(bot))
