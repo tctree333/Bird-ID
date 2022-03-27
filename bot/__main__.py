@@ -46,13 +46,14 @@ class Bot(commands.Bot):
         intent.guilds = True
         # intent.members = True
         intent.messages = True
+        intent.message_content = True
         intent.voice_states = True
 
         cache_flags: discord.MemberCacheFlags = discord.MemberCacheFlags.none()
         cache_flags.voice = True
 
         super().__init__(
-            command_prefix=["b!", "b.", "b#", "B!", "B.", "B#", "o>", "O>"],
+            command_prefix=("b!", "b.", "b#", "B!", "B.", "B#", "o>", "O>"),
             case_insensitive=True,
             description="BirdID - Your Very Own Ornithologist",
             help_command=commands.DefaultHelpCommand(verify_checks=False),
