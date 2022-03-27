@@ -34,6 +34,7 @@ from discord.ext import commands
 from sentry_sdk import capture_exception
 
 from bot.data import (
+    ContextOrInteraction,
     GenericError,
     birdList,
     birdListMaster,
@@ -148,7 +149,7 @@ def cache(func=None, pre=None, local=True):
     return wrapper
 
 
-def check_state_role(ctx) -> list:
+def check_state_role(ctx: ContextOrInteraction) -> list:
     """Returns a list of state roles a user has.
 
     `ctx` - Discord context object
@@ -170,7 +171,12 @@ def check_state_role(ctx) -> list:
     return user_states
 
 
-async def fetch_get_user(user_id: int, ctx=None, bot=None, member: bool = False):
+async def fetch_get_user(
+    user_id: int,
+    ctx: ContextOrInteraction = None,
+    bot: commands.Bot = None,
+    member: bool = False,
+):
     if (ctx is None and bot is None) or (ctx is not None and bot is not None):
         raise ValueError("Only one of ctx or bot must be passed")
     if ctx:
@@ -198,7 +204,12 @@ async def _fetch_cached_user(user_id: int, bot):
 
 
 async def send_leaderboard(
-    ctx, title, page, database_key=None, data=None, items_per_page=10
+    ctx: ContextOrInteraction,
+    title,
+    page,
+    database_key=None,
+    data=None,
+    items_per_page=10,
 ):
     logger.info("building/sending leaderboard")
 
@@ -309,7 +320,7 @@ def build_id_list(user_id=None, taxon=None, state=None, media="images") -> list:
     return birds
 
 
-async def drone_attack(ctx):
+async def drone_attack(ctx: ContextOrInteraction):
     logger.info(f"holiday check: invoked command: {str(ctx.command)}")
 
     def video_embed():
@@ -582,7 +593,7 @@ class CustomCooldown:
         return True
 
 
-async def handle_error(ctx, error):
+async def handle_error(ctx: commands.Context, error):
     """Function for comprehensive error handling."""
 
     if isinstance(error, commands.CommandOnCooldown):  # send cooldown

@@ -16,11 +16,12 @@
 
 import datetime
 import string
+from typing import Union
 
-from bot.data import database, logger, states
+from bot.data import ContextOrInteraction, database, logger, states
 
 
-async def channel_setup(ctx):
+async def channel_setup(ctx: ContextOrInteraction):
     """Sets up a new discord channel.
 
     `ctx` - Discord context object
@@ -43,7 +44,7 @@ async def channel_setup(ctx):
         database.zadd("channels:global", {f"{ctx.guild.id}:{ctx.channel.id}": 0})
 
 
-async def user_setup(ctx):
+async def user_setup(ctx: ContextOrInteraction):
     """Sets up a new discord user for score tracking.
 
     `ctx` - Discord context object or user id
@@ -95,7 +96,7 @@ async def user_setup(ctx):
                 logger.info("synced roles")
 
 
-def bird_setup(ctx, bird: str):
+def bird_setup(ctx: Union[str, int, ContextOrInteraction], bird: str):
     """Sets up a new bird for incorrect tracking.
 
     `ctx` - Discord context object or user id\n
@@ -103,10 +104,10 @@ def bird_setup(ctx, bird: str):
     """
     if isinstance(ctx, (str, int)):
         user_id = ctx
-        guild = None
+        guild_id = None
     else:
         user_id = ctx.author.id
-        guild = ctx.guild
+        guild_id = ctx.guild.id
 
     logger.info("checking bird data")
     if database.zscore("incorrect:global", string.capwords(bird)) is not None:
@@ -140,17 +141,15 @@ def bird_setup(ctx, bird: str):
         database.zadd("frequency.bird:global", {string.capwords(bird): 0})
         logger.info("bird freq global added")
 
-    if guild is not None:
+    if guild_id is not None:
         logger.info("no dm")
         if (
-            database.zscore(f"incorrect.server:{ctx.guild.id}", string.capwords(bird))
+            database.zscore(f"incorrect.server:{guild_id}", string.capwords(bird))
             is not None
         ):
             logger.info("bird server ok")
         else:
-            database.zadd(
-                f"incorrect.server:{ctx.guild.id}", {string.capwords(bird): 0}
-            )
+            database.zadd(f"incorrect.server:{guild_id}", {string.capwords(bird): 0})
             logger.info("bird server added")
     else:
         logger.info("dm context")
@@ -169,7 +168,9 @@ def bird_setup(ctx, bird: str):
         logger.info("no session")
 
 
-def session_increment(ctx, item: str, amount: int):
+def session_increment(
+    ctx: Union[str, int, ContextOrInteraction], item: str, amount: int
+):
     """Increments the value of a database hash field by `amount`.
 
     `ctx` - Discord context object or user id\n
@@ -192,7 +193,9 @@ def session_increment(ctx, item: str, amount: int):
         logger.info("session not active")
 
 
-def incorrect_increment(ctx, bird: str, amount: int):
+def incorrect_increment(
+    ctx: Union[str, int, ContextOrInteraction], bird: str, amount: int
+):
     """Increments the value of an incorrect bird by `amount`.
 
     `ctx` - Discord context object or user id\n
@@ -201,20 +204,20 @@ def incorrect_increment(ctx, bird: str, amount: int):
     """
     if isinstance(ctx, (str, int)):
         user_id = ctx
-        guild = None
+        guild_id = None
     else:
         user_id = ctx.author.id
-        guild = ctx.guild
+        guild_id = ctx.guild.id
 
     logger.info(f"incrementing incorrect {bird} by {amount}")
     date = str(datetime.datetime.now(datetime.timezone.utc).date())
     database.zincrby("incorrect:global", amount, string.capwords(str(bird)))
     database.zincrby(f"incorrect.user:{user_id}", amount, string.capwords(str(bird)))
     database.zincrby(f"daily.incorrect:{date}", amount, string.capwords(str(bird)))
-    if guild is not None:
+    if guild_id is not None:
         logger.info("no dm")
         database.zincrby(
-            f"incorrect.server:{ctx.guild.id}", amount, string.capwords(str(bird))
+            f"incorrect.server:{guild_id}", amount, string.capwords(str(bird))
         )
     else:
         logger.info("dm context")
@@ -227,7 +230,7 @@ def incorrect_increment(ctx, bird: str, amount: int):
         logger.info("no session")
 
 
-def score_increment(ctx, amount: int):
+def score_increment(ctx: Union[str, int, ContextOrInteraction], amount: int):
     """Increments the score of a user by `amount`.
 
     `ctx` - Discord context object\n
@@ -235,11 +238,11 @@ def score_increment(ctx, amount: int):
     """
     if isinstance(ctx, (str, int)):
         user_id = str(ctx)
-        guild = None
+        guild_id = None
         channel_id = "web"
     else:
         user_id = str(ctx.author.id)
-        guild = ctx.guild
+        guild_id = ctx.guild.id
         channel_id = str(ctx.channel.id)
 
     logger.info(f"incrementing score by {amount}")
@@ -247,17 +250,17 @@ def score_increment(ctx, amount: int):
     database.zincrby("score:global", amount, channel_id)
     database.zincrby("users:global", amount, user_id)
     database.zincrby(f"daily.score:{date}", amount, user_id)
-    if guild is not None:
+    if guild_id is not None:
         logger.info("no dm")
-        database.zincrby(f"users.server:{ctx.guild.id}", amount, user_id)
-        if database.exists(f"race.data:{ctx.channel.id}"):
+        database.zincrby(f"users.server:{guild_id}", amount, user_id)
+        if database.exists(f"race.data:{channel_id}"):
             logger.info("race in session")
-            database.zincrby(f"race.scores:{ctx.channel.id}", amount, user_id)
+            database.zincrby(f"race.scores:{channel_id}", amount, user_id)
     else:
         logger.info("dm context")
 
 
-def streak_increment(ctx, amount: int):
+def streak_increment(ctx: Union[str, int, ContextOrInteraction], amount: int):
     """Increments the streak of a user by `amount`.
 
     `ctx` - Discord context object or user id\n

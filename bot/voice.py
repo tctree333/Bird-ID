@@ -20,16 +20,21 @@ from typing import Optional
 import discord
 import discord.utils
 
-from bot.data import logger, database
+from bot.data import ContextOrInteraction, logger, database
 
 
-async def _send(ctx, silent, message: str):
+async def _send(ctx: ContextOrInteraction, silent, message: str):
     if not silent:
-        await ctx.send(message)
+        if isinstance(ctx, discord.Interaction):
+            await ctx.followup.send(message)
+        else:
+            await ctx.send(message)
 
 
 async def get_voice_client(
-    ctx, connect: bool = False, silent: bool = False
+    ctx: ContextOrInteraction,
+    connect: bool = False,
+    silent: bool = False,
 ) -> Optional[discord.VoiceClient]:
     logger.info("fetching voice client")
 
@@ -89,7 +94,11 @@ async def get_voice_client(
     return client
 
 
-async def play(ctx, filename: Optional[str], silent: bool = False):
+async def play(
+    ctx: ContextOrInteraction,
+    filename: Optional[str],
+    silent: bool = False,
+):
     logger.info("voice: playing")
 
     client: discord.VoiceClient = await get_voice_client(ctx, connect=True)
@@ -122,7 +131,7 @@ async def play(ctx, filename: Optional[str], silent: bool = False):
     return True
 
 
-async def pause(ctx, silent: bool = False):
+async def pause(ctx: ContextOrInteraction, silent: bool = False):
     logger.info("voice: pausing")
 
     client: discord.VoiceClient = await get_voice_client(ctx)
@@ -138,7 +147,7 @@ async def pause(ctx, silent: bool = False):
     return True
 
 
-async def stop(ctx, silent: bool = False):
+async def stop(ctx: ContextOrInteraction, silent: bool = False):
     logger.info("voice: stopping")
 
     client: discord.VoiceClient = await get_voice_client(ctx)
@@ -152,7 +161,7 @@ async def stop(ctx, silent: bool = False):
     return True
 
 
-async def disconnect(ctx, silent: bool = False):
+async def disconnect(ctx: ContextOrInteraction, silent: bool = False):
     logger.info("voice: disconnecting")
 
     client: discord.VoiceClient = await get_voice_client(ctx)
@@ -164,7 +173,11 @@ async def disconnect(ctx, silent: bool = False):
     return True
 
 
-async def rel_seek(ctx, seconds: Optional[int], silent: bool = False):
+async def rel_seek(
+    ctx: ContextOrInteraction,
+    seconds: Optional[int],
+    silent: bool = False,
+):
     logger.info("voice: seeking")
 
     client: discord.VoiceClient = await get_voice_client(ctx)

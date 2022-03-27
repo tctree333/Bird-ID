@@ -22,7 +22,7 @@ from discord.ext import commands
 from discord.utils import escape_markdown as esc
 
 import bot.voice as voice_functions
-from bot.data import database, logger, states, taxons
+from bot.data import ContextOrInteraction, database, logger, states, taxons
 from bot.filters import Filter
 from bot.functions import CustomCooldown, fetch_get_user
 
@@ -31,7 +31,7 @@ class Race(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def _get_options(self, ctx):
+    async def _get_options(self, ctx: ContextOrInteraction):
         filter_int, state, media, limit, taxon, strict, alpha = database.hmget(
             f"race.data:{ctx.channel.id}",
             ["filter", "state", "media", "limit", "taxon", "strict", "alpha"],
@@ -48,7 +48,7 @@ class Race(commands.Cog):
         )
         return options
 
-    async def _send_stats(self, ctx, preamble):
+    async def _send_stats(self, ctx: ContextOrInteraction, preamble):
         placings = 5
         database_key = f"race.scores:{ctx.channel.id}"
         if database.zcard(database_key) == 0:
@@ -111,7 +111,7 @@ class Race(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    async def stop_race_(self, ctx):
+    async def stop_race_(self, ctx: ContextOrInteraction):
         if Filter.from_int(
             int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
         ).vc:

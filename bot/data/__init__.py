@@ -20,8 +20,9 @@ import logging.handlers
 import os
 import string
 import sys
-from typing import Dict, List
+from typing import Dict, List, Union
 
+import discord
 import redis
 import sentry_sdk
 import wikipedia
@@ -244,15 +245,33 @@ class GenericError(commands.CommandError):
         super().__init__(message=message)
 
 
-# Error codes: (can add more if needed)
-# 0 - no code
-# 111 - Index Error
-# 201 - HTTP Error
-# 999 - Invalid
-# 990 - Invalid Input
-# 100 - Blank
-# 842 - Banned User
-# 666 - No output error
+class ContextOrInteraction:
+    """Makes `discord.Interaction` and `commands.Context` interchangeable."""
+
+    def __init__(self, ctx: Union[discord.Interaction, commands.Context], /):
+        self.raw = ctx
+
+        self.channel = ctx.channel
+        self.guild = ctx.guild
+        self.message = ctx.message
+        self.command = ctx.command
+
+        if isinstance(ctx, discord.Interaction):
+            self.author = ctx.user
+            self.send = ctx.followup.send
+            self.trigger_typing = self.nop
+            self.bot = ctx.client
+            self.send = ctx.followup.send
+        else:
+            self.author = ctx.author
+            self.send = ctx.send
+            self.trigger_typing = ctx.trigger_typing
+            self.bot = ctx.bot
+            self.send = ctx.send
+
+    async def nop(self):
+        pass
+
 
 # Lists of birds, memes, and other info
 goatsuckers = ["Common Pauraque", "Chuck Will's Widow", "Eastern Whip Poor Will"]
@@ -277,9 +296,10 @@ def _wiki_urls() -> Dict[str, str]:
     return urls
 
 
-def get_wiki_url(ctx, bird: str = None) -> str:
+def get_wiki_url(ctx: Union[ContextOrInteraction, str], bird: str = None) -> str:
+
     logger.info("fetching wiki url")
-    if bird is None:
+    if bird is None and isinstance(ctx, str):
         bird = ctx
         user_id = 0
         channel_id = 0

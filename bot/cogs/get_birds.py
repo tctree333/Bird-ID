@@ -22,7 +22,15 @@ from discord.ext import commands
 
 import bot.voice as voice_functions
 from bot.core import send_bird
-from bot.data import GenericError, database, goatsuckers, logger, states, taxons
+from bot.data import (
+    ContextOrInteraction,
+    GenericError,
+    database,
+    goatsuckers,
+    logger,
+    states,
+    taxons,
+)
 from bot.data_functions import bird_setup, session_increment
 from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list, check_state_role
@@ -53,10 +61,10 @@ SONG_MESSAGE = BASE_MESSAGE.format(
 
 
 class Birds(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    async def _send_next_race_media(self, ctx):
+    async def _send_next_race_media(self, ctx: ContextOrInteraction):
         if database.exists(f"race.data:{ctx.channel.id}"):
             if Filter.from_int(
                 int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
@@ -82,12 +90,12 @@ class Birds(commands.Cog):
 
     def error_handle(
         self,
-        ctx,
+        ctx: ContextOrInteraction,
         media_type: str,
         filters: Filter,
-        taxon_str,
-        role_str,
-        retries,
+        taxon_str: str,
+        role_str: str,
+        retries: int,
     ):
         """Return a function to pass to send_bird() as on_error."""
         # pylint: disable=unused-argument
@@ -117,7 +125,7 @@ class Birds(commands.Cog):
         return inner
 
     @staticmethod
-    def error_skip(ctx):
+    def error_skip(ctx: ContextOrInteraction):
         async def inner(error):
             # pylint: disable=unused-argument
 
@@ -129,13 +137,13 @@ class Birds(commands.Cog):
         return inner
 
     @staticmethod
-    def increment_bird_frequency(ctx, bird):
+    def increment_bird_frequency(ctx: ContextOrInteraction, bird: str):
         bird_setup(ctx, bird)
         database.zincrby("frequency.bird:global", 1, string.capwords(bird))
 
     async def send_bird_(
         self,
-        ctx,
+        ctx: ContextOrInteraction,
         media_type: Optional[str],
         filters: Filter,
         taxon_str: str = "",
@@ -255,7 +263,7 @@ class Birds(commands.Cog):
             )
 
     @staticmethod
-    async def parse(ctx, args_str: str):
+    async def parse(ctx: ContextOrInteraction, args_str: str):
         """Parse arguments for options."""
 
         args = args_str.split(" ")

@@ -25,7 +25,7 @@ from bot.functions import CustomCooldown, send_leaderboard
 
 
 class Meta(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     # bot info command - gives info on bot
@@ -242,6 +242,12 @@ class Meta(commands.Cog):
             database_key=f"correct.user:{user.id}",
             items_per_page=25,
         )
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def sync(self, _):
+        logger.info("command: sync")
+        print(await self.bot.tree.sync())
 
 
 async def setup(bot):
