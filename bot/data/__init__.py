@@ -297,7 +297,6 @@ def _wiki_urls() -> Dict[str, str]:
 
 
 def get_wiki_url(ctx: Union[ContextOrInteraction, str], bird: str = None) -> str:
-
     logger.info("fetching wiki url")
     if bird is None and isinstance(ctx, str):
         bird = ctx

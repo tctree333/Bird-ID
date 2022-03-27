@@ -14,10 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import discord
+from discord import app_commands
 from discord.ext import commands
 
-from bot.data import database, logger
-from bot.functions import CustomCooldown
+from bot.data import ContextOrInteraction, database, logger
 
 
 class Hint(commands.Cog):
@@ -25,16 +26,19 @@ class Hint(commands.Cog):
         self.bot = bot
 
     # give hint
-    @commands.command(help="- Gives first letter of current bird", aliases=["h"])
-    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    async def hint(self, ctx):
+    @app_commands.command(name="hint", description="Gives first letter of current bird")
+    async def hint(self, interaction: discord.Interaction):
         logger.info("command: hint")
+
+        ctx = ContextOrInteraction(interaction)
 
         currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
         if currentBird != "":  # check if there is bird
-            await ctx.send(f"The first letter is {currentBird[0]}")
+            await interaction.response.send_message(
+                f"The first letter is {currentBird[0]}"
+            )
         else:
-            await ctx.send("You need to ask for a bird first!")
+            await interaction.response.send_message("You need to ask for a bird first!")
 
 
 async def setup(bot):

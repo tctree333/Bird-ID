@@ -16,10 +16,14 @@
 
 import string
 
-import bot.voice as voice_functions
 import discord
+from discord import app_commands
+from discord.ext import commands
+
+import bot.voice as voice_functions
 from bot.core import better_spellcheck, get_sciname
 from bot.data import (
+    ContextOrInteraction,
     alpha_codes,
     birdListMaster,
     database,
@@ -37,32 +41,34 @@ from bot.data_functions import (
     streak_increment,
 )
 from bot.filters import Filter
-from bot.functions import CustomCooldown
-from discord.ext import commands
+
+# from bot.functions import CustomCooldown
+
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
 
 
 class Check(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     # Check command - argument is the guess
-    @commands.command(
-        help="- Checks your answer.", usage="guess", aliases=["guess", "c"]
-    )
-    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
-    async def check(self, ctx, *, arg):
+    @app_commands.command(name="check", description="Checks your answer.")
+    @app_commands.describe(guess="Your answer")
+    # @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
+    async def check(self, interaction: discord.Interaction, guess: str) -> None:
         logger.info("command: check")
+
+        ctx = ContextOrInteraction(interaction)
 
         currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
         if currentBird == "":  # no bird
-            await ctx.send("You must ask for a bird first!")
+            await interaction.response.send_message("You must ask for a bird first!")
             return
         # if there is a bird, it checks answer
         sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
-        arg = arg.lower().replace("-", " ")
+        arg = guess.lower().replace("-", " ")
         currentBird = currentBird.lower().replace("-", " ")
         alpha_code = alpha_codes.get(string.capwords(currentBird), "")
         logger.info("currentBird: " + currentBird)
@@ -124,7 +130,7 @@ class Check(commands.Cog):
             ):
                 await voice_functions.stop(ctx, silent=True)
 
-            await ctx.send(
+            await interaction.response.send_message(
                 f"Correct! Good job! The bird was **{currentBird}**."
                 if not race_in_session
                 else f"**{ctx.author.mention}**, you are correct! The bird was **{currentBird}**."
@@ -174,11 +180,11 @@ class Check(commands.Cog):
             incorrect_increment(ctx, str(currentBird), 1)
 
             if race_in_session:
-                await ctx.send("Sorry, that wasn't the right answer.")
+                await interaction.response.send_message("Sorry, that wasn't the right answer.")
             else:
                 database.hset(f"channel:{ctx.channel.id}", "bird", "")
                 database.hset(f"channel:{ctx.channel.id}", "answered", "1")
-                await ctx.send("Sorry, the bird was actually **" + currentBird + "**.")
+                await interaction.response.send_message("Sorry, the bird was actually **" + currentBird + "**.")
                 url = get_wiki_url(ctx, currentBird)
                 await ctx.send(url)
 
