@@ -46,8 +46,8 @@ class CustomBot(commands.Bot):
         super().__init__(*args, **kwargs)
         self.on_message_handler = []
 
-    async def on_message(self, message, /):
-        if message.author.id != self.bot.user.id:
+    async def on_message(self, message: discord.Message):
+        if message.author.id != self.user.id:
             for handler in self.on_message_handler:
                 await handler(message)
         await super().on_message(message)
