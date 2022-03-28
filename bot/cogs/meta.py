@@ -17,11 +17,12 @@
 import typing
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.utils import escape_markdown as esc
 
 from bot.data import database, logger
-from bot.functions import CustomCooldown, send_leaderboard
+from bot.functions import send_leaderboard
 
 
 class Meta(commands.Cog):
@@ -29,12 +30,11 @@ class Meta(commands.Cog):
         self.bot = bot
 
     # bot info command - gives info on bot
-    @commands.command(
-        help="- Gives info on bot, support server invite, stats",
-        aliases=["bot_info", "support"],
+    @app_commands.command(
+        name="botinfo",
+        description="Gives info on bot, support server invite, stats",
     )
-    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def botinfo(self, ctx):
+    async def botinfo(self, interaction: discord.Interaction):
         logger.info("command: botinfo")
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
@@ -67,24 +67,25 @@ class Meta(commands.Cog):
             + f"The WebSocket latency is {round((self.bot.latency*1000))} ms.",
             inline=False,
         )
-        await ctx.send(embed=embed)
-        await ctx.send("https://discord.gg/2HbshwGjnm")
+        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send("https://discord.gg/2HbshwGjnm")
 
     # ping command - gives bot latency
-    @commands.command(
-        help="- Pings the bot and displays latency",
+    @app_commands.command(
+        name="ping",
+        description="Pings the bot and displays latency",
     )
-    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    async def ping(self, ctx):
+    async def ping(self, interaction: discord.Interaction):
         logger.info("command: ping")
         lat = round(self.bot.latency * 1000)
         logger.info(f"latency: {lat}")
-        await ctx.send(f"**Pong!** The WebSocket latency is `{lat}` ms.")
+        await interaction.response.send_message(
+            f"**Pong!** The WebSocket latency is `{lat}` ms."
+        )
 
     # invite command - sends invite link
-    @commands.command(help="- Get the invite link for this bot")
-    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def invite(self, ctx):
+    @app_commands.command(name="invite", description="Get the invite link for this bot")
+    async def invite(self, interaction: discord.Interaction):
         logger.info("command: invite")
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
@@ -97,15 +98,14 @@ class Meta(commands.Cog):
             + "<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>, <https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>",
             inline=False,
         )
-        await ctx.send(embed=embed)
-        await ctx.send("https://discord.gg/2HbshwGjnm")
+        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send("https://discord.gg/2HbshwGjnm")
 
     # ignore command - ignores a given channel
     @commands.command(
         brief="- Ignore all commands in a channel",
         help="- Ignore all commands in a channel. The 'manage guild' permission is needed to use this command.",
     )
-    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
     async def ignore(self, ctx, channels: commands.Greedy[discord.TextChannel] = None):
@@ -157,7 +157,6 @@ class Meta(commands.Cog):
         help="- Remove the bot from the guild. The 'manage guild' permission is needed to use this command.",
         aliases=["kick"],
     )
-    @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
     async def leave(self, ctx, confirm: typing.Optional[bool] = False):

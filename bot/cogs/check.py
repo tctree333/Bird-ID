@@ -42,8 +42,6 @@ from bot.data_functions import (
 )
 from bot.filters import Filter
 
-# from bot.functions import CustomCooldown
-
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
@@ -56,7 +54,6 @@ class Check(commands.Cog):
     # Check command - argument is the guess
     @app_commands.command(name="check", description="Checks your answer.")
     @app_commands.describe(guess="Your answer")
-    # @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     async def check(self, interaction: discord.Interaction, guess: str) -> None:
         logger.info("command: check")
 
@@ -180,11 +177,15 @@ class Check(commands.Cog):
             incorrect_increment(ctx, str(currentBird), 1)
 
             if race_in_session:
-                await interaction.response.send_message("Sorry, that wasn't the right answer.")
+                await interaction.response.send_message(
+                    "Sorry, that wasn't the right answer."
+                )
             else:
                 database.hset(f"channel:{ctx.channel.id}", "bird", "")
                 database.hset(f"channel:{ctx.channel.id}", "answered", "1")
-                await interaction.response.send_message("Sorry, the bird was actually **" + currentBird + "**.")
+                await interaction.response.send_message(
+                    "Sorry, the bird was actually **" + currentBird + "**."
+                )
                 url = get_wiki_url(ctx, currentBird)
                 await ctx.send(url)
 
