@@ -15,9 +15,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import string
+from difflib import get_close_matches
+
+import discord
+from discord.ext import commands
 
 import bot.voice as voice_functions
-import discord
 from bot.core import better_spellcheck, get_sciname
 from bot.data import (
     alpha_codes,
@@ -38,14 +41,13 @@ from bot.data_functions import (
 )
 from bot.filters import Filter
 from bot.functions import CustomCooldown
-from discord.ext import commands
 
 # achievement values
 achievement = [1, 10, 25, 50, 100, 150, 200, 250, 400, 420, 500, 650, 666, 690, 1000]
 
 
 class Check(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     # Check command - argument is the guess
@@ -182,6 +184,29 @@ class Check(commands.Cog):
                 url = get_wiki_url(ctx, currentBird)
                 await ctx.send(url)
 
+    async def race_autocheck(self, message: discord.Message):
+        if not database.exists(f"race.data:{message.channel.id}"):
+            return
+        if (
+            len(message.content.strip()) == 4
+            and message.content.strip().upper() in alpha_codes.values()
+            and database.hget(f"race.data:{message.channel.id}", "alpha")
+        ) or len(
+            get_close_matches(
+                string.capwords(message.content.strip().replace("-", " ")),
+                birdListMaster + sciListMaster,
+            )
+        ) != 0:
+            logger.info("race autocheck found: checking")
+            ctx = commands.Context(
+                message=message,
+                bot=self.bot,
+                prefix="race-autocheck",
+            )
+            await self.check(ctx, arg=message.content)
+
 
 def setup(bot):
-    bot.add_cog(Check(bot))
+    cog = Check(bot)
+    bot.add_message_handler(cog.race_autocheck)
+    bot.add_cog(cog)

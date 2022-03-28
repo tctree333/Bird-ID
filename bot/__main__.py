@@ -40,6 +40,22 @@ from bot.functions import (
 # The channel id that the backups send to
 BACKUPS_CHANNEL = os.getenv("SCIOLY_ID_BOT_BACKUPS_CHANNEL", "")
 
+
+class CustomBot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.on_message_handler = []
+
+    async def on_message(self, message, /):
+        if message.author.id != self.bot.user.id:
+            for handler in self.on_message_handler:
+                await handler(message)
+        await super().on_message(message)
+
+    def add_message_handler(self, handler):
+        self.on_message_handler.append(handler)
+
+
 if __name__ == "__main__":
     # Initialize bot
     intent: discord.Intents = discord.Intents.none()
@@ -51,8 +67,10 @@ if __name__ == "__main__":
     cache_flags: discord.MemberCacheFlags = discord.MemberCacheFlags.none()
     cache_flags.voice = True
 
-    bot = commands.Bot(
-        command_prefix=commands.when_mentioned_or("b!", "b.", "b#", "B!", "B.", "B#", "o>", "O>"),
+    bot = CustomBot(
+        command_prefix=commands.when_mentioned_or(
+            "b!", "b.", "b#", "B!", "B.", "B#", "o>", "O>"
+        ),
         case_insensitive=True,
         description="BirdID - Your Very Own Ornithologist",
         help_command=commands.DefaultHelpCommand(verify_checks=False),
