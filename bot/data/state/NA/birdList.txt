@@ -2,6 +2,7 @@ Abert's Towhee
 Acadian Flycatcher
 Acorn Woodpecker
 African Silverbill
+African Swamphen
 Akekee
 Akiapolaau
 Akikiki
@@ -51,6 +52,7 @@ Asian Rosy-Finch
 Atlantic Puffin
 Audubon's Oriole
 Audubon's Shearwater
+Australasian Swamphen
 Aztec Thrush
 Bachman's Sparrow
 Bachman's Warbler
@@ -103,6 +105,7 @@ Black Turnstone
 Black Vulture
 Black-and-white Warbler
 Black-backed Oriole
+Black-backed Swamphen
 Black-backed Woodpecker
 Black-bellied Plover
 Black-bellied Storm-Petrel
@@ -430,6 +433,7 @@ Gray-crowned Rosy-Finch
 Gray-crowned Yellowthroat
 Gray-faced Petrel
 Gray-headed Chickadee
+Gray-headed Swamphen
 Gray-hooded Gull
 Gray-streaked Flycatcher
 Gray-tailed Tattler
@@ -748,6 +752,7 @@ Pelagic Cormorant
 Peregrine Falcon
 Phainopepla
 Philadelphia Vireo
+Philippine Swamphen
 Pied Wheatear
 Pied-billed Grebe
 Pigeon Guillemot
@@ -777,7 +782,6 @@ Purple Finch
 Purple Gallinule
 Purple Martin
 Purple Sandpiper
-Purple Swamphen
 Pygmy Nuthatch
 Pyrrhuloxia
 Razorbill
@@ -1021,6 +1025,7 @@ Western Reef-Heron
 Western Sandpiper
 Western Screech-Owl
 Western Spindalis
+Western Swamphen
 Western Tanager
 Western Wood-Pewee
 Whimbrel

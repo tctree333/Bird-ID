@@ -198,6 +198,11 @@ Fulica alai
 Fulica americana
 Porphyrio martinicus
 Porphyrio porphyrio
+Porphyrio madagascariensis
+Porphyrio poliocephalus
+Porphyrio indicus
+Porphyrio pulverulentus
+Porphyrio melanotus
 Coturnicops noveboracensis
 Laterallus jamaicensis
 Zapornia palmeri
