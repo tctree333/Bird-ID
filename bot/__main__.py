@@ -52,7 +52,7 @@ if __name__ == "__main__":
     cache_flags.voice = True
 
     bot = commands.Bot(
-        command_prefix=["b!", "b.", "b#", "B!", "B.", "B#", "o>", "O>"],
+        command_prefix=commands.when_mentioned_or("b!", "b.", "b#", "B!", "B.", "B#", "o>", "O>"),
         case_insensitive=True,
         description="BirdID - Your Very Own Ornithologist",
         help_command=commands.DefaultHelpCommand(verify_checks=False),
