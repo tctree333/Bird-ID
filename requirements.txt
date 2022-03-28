@@ -15,5 +15,5 @@ fastapi==0.75.0
 orjson==3.6.7
 itsdangerous==2.0.1
 uvicorn[standard]==0.17.6
-httpx==0.21.3
+httpx==0.22.0
 aiofiles==0.8.0
