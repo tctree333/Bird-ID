@@ -39,7 +39,7 @@ from bot.filters import Filter
 from bot.functions import CustomCooldown, build_id_list
 
 # Discord max message length is 2000 characters, leave some room just in case
-MAX_MESSAGE = 1950
+MAX_MESSAGE = 1900
 
 
 class Other(commands.Cog):
@@ -52,13 +52,13 @@ class Other(commands.Cog):
         lines: list[str] = []
         block_length = 0
         for line in input_list:
-            lines.append(line)
-            block_length += len(line)
-            if block_length > max_size:
+            if block_length + len(line) > max_size:
                 page = "\n".join(lines)
                 pages.append(page)
                 lines.clear()
                 block_length = 0
+            lines.append(line)
+            block_length += len(line)
 
         if lines:
             page = "\n".join(lines)
