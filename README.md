@@ -1,6 +1,6 @@
 # Bird-ID
 
-[![Discord Invite](https://discord.com/api/guilds/601913706288381952/embed.png)](https://discord.gg/tNyGDve) [![Build Status](https://travis-ci.org/tctree333/Bird-ID.svg?branch=master)](https://travis-ci.org/tctree333/Bird-ID) [![Maintainability](https://api.codeclimate.com/v1/badges/6731bd218230bbc9e088/maintainability)](https://codeclimate.com/github/tctree333/Bird-ID/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/6731bd218230bbc9e088/test_coverage)](https://codeclimate.com/github/tctree333/Bird-ID/test_coverage) [![Total alerts](https://img.shields.io/lgtm/alerts/g/tctree333/Bird-ID.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tctree333/Bird-ID/alerts/)
+[![Discord Invite](https://discord.com/api/guilds/925214799711858688/embed.png)](https://discord.gg/2HbshwGjnm) [![Build Status](https://travis-ci.org/tctree333/Bird-ID.svg?branch=master)](https://travis-ci.org/tctree333/Bird-ID) [![Maintainability](https://api.codeclimate.com/v1/badges/6731bd218230bbc9e088/maintainability)](https://codeclimate.com/github/tctree333/Bird-ID/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/6731bd218230bbc9e088/test_coverage)](https://codeclimate.com/github/tctree333/Bird-ID/test_coverage) [![Total alerts](https://img.shields.io/lgtm/alerts/g/tctree333/Bird-ID.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tctree333/Bird-ID/alerts/)
 
 A discord bot for young ornithologists. This bot is designed to help people practice the identification portion of the Science Olympiad Ornithology event.
 
