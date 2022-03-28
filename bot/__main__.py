@@ -47,7 +47,13 @@ class CustomBot(commands.Bot):
         self.on_message_handler = []
 
     async def on_message(self, message: discord.Message):
-        if message.author.id != self.user.id:
+        prefixes = await self.get_prefix(message)
+        if isinstance(prefixes, str):
+            command = message.content.startswith(prefixes)
+        else:
+            command = message.content.startswith(tuple(prefixes))
+
+        if not message.author.bot and not command:
             for handler in self.on_message_handler:
                 await handler(message)
         await super().on_message(message)
