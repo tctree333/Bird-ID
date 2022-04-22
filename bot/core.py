@@ -56,6 +56,7 @@ valid_types = {
     },
     "songs": {
     "audio/mpeg": "mp3",
+    "audio/mpeg3": "mp3",
     "audio/wav": "wav"
     },
 }
@@ -460,9 +461,13 @@ async def _get_urls(
             return urls
         
         catalog_data = await catalog_response.json()
+        if catalog_data and catalog_data[-1] and "cursorMark" in catalog_data[-1]:
+            cursor_mark = catalog_data[-1]["cursorMark"]
+        else:
+            cursor_mark = b""
         database.set(
             f"media.cursor:{database_key}",
-            catalog_data[-1]["cursorMark"] or b"",
+            cursor_mark,
         )
         content = catalog_data
         urls = [ASSET_URL.format(data["assetId"]) for data in content]
