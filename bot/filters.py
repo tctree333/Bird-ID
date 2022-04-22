@@ -18,13 +18,12 @@ from typing import Union, Dict, Tuple
 from collections.abc import Iterable
 
 # Macaulay Library URLs
-CATALOG_URL = "https://search.macaulaylibrary.org/catalog.json?searchField=species"
-
+CATALOG_URL = "https://search.macaulaylibrary.org/api/v2/search"
 
 class Filter:
     _boolean_options = ("large", "bw", "vc")
     _default_options = {"quality": {"3", "4", "5"}}
-
+    
     def __init__(
         self,
         age: Union[str, Iterable] = (),
@@ -39,6 +38,7 @@ class Filter:
         bw: bool = False,
         vc: bool = False,
     ):
+        #FIXME update docs to new url's filters (check _validate)
         """Represents Macaulay Library media filters.
 
         Valid filters:
@@ -73,7 +73,7 @@ class Filter:
         self.age = age
         self.sex = sex
         self.behavior = behavior
-        self.breeding = breeding
+        #self.breeding = breeding
         self.sounds = sounds
         self.tags = tags
         self.captive = captive
@@ -81,7 +81,7 @@ class Filter:
         self.large = large
         self.bw = bw
         self.vc = vc
-
+        
         for item in self.__dict__.items():
             if isinstance(item[1], str):
                 cleaned = set(item[1].split(" "))
@@ -92,17 +92,14 @@ class Filter:
                 cleaned.discard("")
                 self.__dict__[item[0]] = cleaned
         self._validate()
-
+    
     def __repr__(self):
         return self.__dict__.__repr__()
-
+    
     def _clear(self):
         """Clear all filters."""
-        self.__dict__ = {
-            k: (False if k in self._boolean_options else set())
-            for k in self.__dict__.keys()
-        }
-
+        self.__dict__ = {k: (False if k in self._boolean_options else set()) for k in self.__dict__.keys()}
+    
     def _validate(self) -> bool:
         """Check the validity of Filter values.
 
@@ -110,25 +107,23 @@ class Filter:
         Raises a ValueError if Filter values are invalid.
         Raises a TypeError if values are not iterables.
         """
+        #TODO find out if
         valid_values = {
-            "age": {"a", "i", "j", "u"},
-            "sex": {"m", "f", "u"},
-            "behavior": {"e", "f", "p", "vocalizing", "molting"},
-            "breeding": {"cdc", "fy", "cf", "cfs", "nb"},
-            "sounds": {"s", "c", "nv", "ds", "fs", "fc", "dt", "env", "peo"},
-            "tags": {
-                "mul",
-                "in",
-                "nes",
-                "egg",
-                "hab",
-                "wat",
-                "bac",
-                "dea",
-                "fie",
-                "non",
+            "age": {"adult", "immature", "juvenile", "unknown"},
+            "sex": {"male", "female", "unknown"},
+            "sounds":
+            {"song", "call", "non_vocal", "flight_call", "flight_song", "dawn_song", "duet", "environmental", "people"},
+            "behavior":
+            {
+            'carrying_fecal_sac', 'carrying_food', 'courtship_display_or_copulation', 'feeding_young', 'flying_flight',
+            'foraging_eating', 'molting', 'nest_building', 'preening', 'vocalizing'
             },
-            "captive": {"all", "yes", "no"},
+            "tags":
+            {
+            'back_of_camera', 'dead', 'egg', 'field_notes_sketch', 'habitat', 'in_hand', 'multiple_species', 'nest',
+            'non_bird', 'watermark'
+            },
+            "captive": {"incl", "only"},
             "quality": {"0", "1", "2", "3", "4", "5"},
         }
         for item in self.__dict__.items():
@@ -141,42 +136,36 @@ class Filter:
             if not set(item[1]).issubset(valid_values[item[0]]):
                 raise ValueError(f"{item[1]} contains invalid {item[0]} values.")
         return True
-
+    
     def url(self, taxon_code: str, media_type: str, count: int, cursor: str = "") -> str:
         """Generate the search url based on the filters.
 
-        `media_type` is all, p (pictures), a (audio), v (video)
+        `media_type` is photo, audio, video
         """
         self._validate()
         url_parameter_names = {
             "age": "&age={}",
             "sex": "&sex={}",
-            "behavior": "&beh={}",
-            "breeding": "&bre={}",
-            "sounds": "&behaviors={}",
+            "sounds": "&tag={}",
+            "behavior": "&tag={}",
             "tags": "&tag={}",
-            "captive": "&cap={}",
-            "quality": "&qua={}",
+            "captive": "&captive={}",
+            "quality": "&quality={}",
         }
         url = [CATALOG_URL]
-        url.append(f"&taxonCode={taxon_code}&mediaType={media_type}&count={count}&initialCursorMark={cursor}")
-
+        url.append(f"?taxonCode={taxon_code}&mediaType={media_type}&count={count}&initialCursorMark={cursor}")
+        
         for item in self.__dict__.items():
             if (
-                (item[0] == "sounds" and media_type == "p")
-                or (item[0] == "tags" and media_type == "a")
-                or item[0] in self._boolean_options
+                (item[0] == "sounds" and media_type == "p") or (item[0] == "tags" and media_type == "a") or
+                item[0] in self._boolean_options
             ):
                 # disable invalid filters on certain media types
                 continue
             for value in item[1]:
-                if value in ("env", "peo") and item[0] == "sounds":
-                    # two sound filters have 'tag' as the url parameter
-                    url.append(url_parameter_names["tags"].format(value))
-                else:
-                    url.append(url_parameter_names[item[0]].format(value))
+                url.append(url_parameter_names[item[0]].format(value))
         return "".join(url)
-
+    
     def to_int(self):
         """Convert filters into an integer representation.
 
@@ -192,14 +181,14 @@ class Filter:
             for name in filters:
                 out[indexes[title][name] - 1] = "1"
         return int("".join(reversed(out)), 2)
-
+    
     @classmethod
     def from_int(cls, number: int):
         """Convert an int to a filter object."""
-        if number >= 2 ** 48 or number < 0:
+        if number >= 2**48 or number < 0:
             raise ValueError("Input number out of bounds.")
         me = cls()
-
+        
         me._clear()  # reset existing filters to empty
         binary = reversed("{0:0>48b}".format(number))
         lookup = me.aliases(lookup=True)
@@ -211,18 +200,18 @@ class Filter:
                     continue
                 me.__dict__[key[0]].add(key[1])
         return me
-
+    
     def __xor__(self, other):
         return self.xor(other)
-
+    
     def xor(self, other):
         """Combine/toggle filters by xor-ing the integer representations."""
         if isinstance(other, self.__class__):
             other = other.to_int()
-        if other >= 2 ** 48 or other < 0:
+        if other >= 2**48 or other < 0:
             raise ValueError("Input number out of bounds.")
         return self.from_int(other ^ self.to_int())
-
+    
     @classmethod
     def parse(cls, args: str, defaults: bool = True, use_numbers: bool = True):
         """Parse an argument string as Macaulay Library media filters."""
@@ -236,7 +225,7 @@ class Filter:
             inputs = map(lambda x: x.strip(), args.split(","))
         else:
             inputs = map(lambda x: x.strip(), args.split(" "))
-
+        
         for arg in inputs:
             key = lookup.get(arg)
             if key is not None:
@@ -251,7 +240,7 @@ class Filter:
                 elif me.__dict__[key] == me._default_options[key]:
                     me ^= me.__class__()
         return me
-
+    
     def display(self):
         """Return a list describing the filters."""
         output = []
@@ -266,7 +255,8 @@ class Filter:
         if not output:
             output.append("None")
         return output
-
+    
+    #FIXME update to new endpoint's params
     @staticmethod
     def aliases(lookup: bool = False, num: bool = False, display_lookup: bool = False):
         """Generate filter alises.
@@ -278,134 +268,138 @@ class Filter:
         """
         # the keys of this dict are in the form ("display text", "internal key")
         # the first alias should be a number
-        aliases: Dict[
-            Tuple[str, str], Dict[Tuple[str, Union[str, bool]], Tuple[str, ...]]
-        ] = {
-            ("age", "age"): {
-                ("adult", "a"): ("1", "adult", "a"),
-                ("immature", "i"): ("2", "immature", "im"),
-                ("juvenile", "j"): ("3", "juvenile", "j"),
-                ("unknown", "u"): ("4", "age:unknown", "unknown age"),
+        aliases: Dict[Tuple[str, str], Dict[Tuple[str, Union[str, bool]], Tuple[str, ...]]] = {
+            ("age", "age"):
+            {
+            ("adult", "a"): ("1", "adult", "a"),
+            ("immature", "i"): ("2", "immature", "im"),
+            ("juvenile", "j"): ("3", "juvenile", "j"),
+            ("unknown", "u"): ("4", "age:unknown", "unknown age"),
             },
-            ("sex", "sex"): {
-                ("male", "m"): ("5", "male", "m"),
-                ("female", "f"): ("6", "female", "f"),
-                ("unknown", "u"): ("7", "sex:unknown", "unknown sex"),
+            ("sex", "sex"):
+            {
+            ("male", "m"): ("5", "male", "m"),
+            ("female", "f"): ("6", "female", "f"),
+            ("unknown", "u"): ("7", "sex:unknown", "unknown sex"),
             },
-            ("behavior", "behavior"): {
-                ("eating/foraging", "e"): ("8", "eating", "foraging", "e", "ef"),
-                ("flying", "f"): ("9", "flying", "fly"),
-                ("preening", "p"): ("10", "preening", "p"),
-                ("vocalizing", "vocalizing"): ("11", "vocalizing", "vo"),
-                ("molting", "molting"): ("12", "molting", "mo"),
+            ("behavior", "behavior"):
+            {
+            ("eating/foraging", "e"): ("8", "eating", "foraging", "e", "ef"),
+            ("flying", "f"): ("9", "flying", "fly"),
+            ("preening", "p"): ("10", "preening", "p"),
+            ("vocalizing", "vocalizing"): ("11", "vocalizing", "vo"),
+            ("molting", "molting"): ("12", "molting", "mo"),
             },
-            ("breeding", "breeding"): {
-                ("courtship, display, or copulation", "cdc"): (
-                    "13",
-                    "courtship",
-                    "display",
-                    "copulation",
-                    "cdc",
+            ("breeding", "breeding"):
+            {
+            ("courtship, display, or copulation", "cdc"): (
+            "13",
+            "courtship",
+            "display",
+            "copulation",
+            "cdc",
                 ),
-                ("feeding young", "fy"): ("14", "feeding", "feeding young", "fy"),
-                ("carrying food", "cf"): ("15", "food", "carrying food", "cf"),
-                ("carrying fecal sac", "cfs"): (
-                    "16",
-                    "fecal",
-                    "carrying fecal sac",
-                    "fecal sac",
-                    "cfs",
+            ("feeding young", "fy"): ("14", "feeding", "feeding young", "fy"),
+            ("carrying food", "cf"): ("15", "food", "carrying food", "cf"),
+            ("carrying fecal sac", "cfs"): (
+            "16",
+            "fecal",
+            "carrying fecal sac",
+            "fecal sac",
+            "cfs",
                 ),
-                ("nest building", "nb"): (
-                    "17",
-                    "nest",
-                    "building",
-                    "nest building",
-                    "nb",
+            ("nest building", "nb"): (
+            "17",
+            "nest",
+            "building",
+            "nest building",
+            "nb",
                 ),
             },
-            ("sounds", "sounds"): {
-                ("song", "s"): ("18", "song", "so"),
-                ("call", "c"): ("19", "call", "c"),
-                ("non-vocal", "nv"): ("20", "non-vocal", "non vocal", "nv"),
-                ("dawn song", "ds"): ("21", "dawn", "dawn song", "ds"),
-                ("flight song", "fs"): ("22", "flight song", "fs"),
-                ("flight call", "fc"): ("23", "flight call", "fc"),
-                ("duet", "dt"): ("24", "duet", "dt"),
-                ("environmental", "env"): ("25", "environmental", "env"),
-                ("people", "peo"): ("26", "people", "peo"),
+            ("sounds", "sounds"):
+            {
+            ("song", "s"): ("18", "song", "so"),
+            ("call", "c"): ("19", "call", "c"),
+            ("non-vocal", "nv"): ("20", "non-vocal", "non vocal", "nv"),
+            ("dawn song", "ds"): ("21", "dawn", "dawn song", "ds"),
+            ("flight song", "fs"): ("22", "flight song", "fs"),
+            ("flight call", "fc"): ("23", "flight call", "fc"),
+            ("duet", "dt"): ("24", "duet", "dt"),
+            ("environmental", "env"): ("25", "environmental", "env"),
+            ("people", "peo"): ("26", "people", "peo"),
             },
-            ("photo tags", "tags"): {
-                ("multiple species", "mul"): (
-                    "27",
-                    "multiple",
-                    "species",
-                    "multiple species",
-                    "mul",
+            ("photo tags", "tags"):
+            {
+            ("multiple species", "mul"): (
+            "27",
+            "multiple",
+            "species",
+            "multiple species",
+            "mul",
                 ),
-                ("in-hand", "in"): ("28", "in-hand", "in hand", "in"),
-                ("nest", "nes"): ("29", "nest", "nes"),
-                ("eggs", "egg"): ("30", "egg", "eggs"),
-                ("habitat", "hab"): ("31", "habitat", "hab"),
-                ("watermark", "wat"): ("32", "watermark", "wat"),
-                ("back of camera", "bac"): (
-                    "33",
-                    "back of camera",
-                    "camera",
-                    "back",
-                    "bac",
+            ("in-hand", "in"): ("28", "in-hand", "in hand", "in"),
+            ("nest", "nes"): ("29", "nest", "nes"),
+            ("eggs", "egg"): ("30", "egg", "eggs"),
+            ("habitat", "hab"): ("31", "habitat", "hab"),
+            ("watermark", "wat"): ("32", "watermark", "wat"),
+            ("back of camera", "bac"): (
+            "33",
+            "back of camera",
+            "camera",
+            "back",
+            "bac",
                 ),
-                ("dead", "dea"): ("34", "dead", "dea"),
-                ("field notes/sketch", "fie"): (
-                    "35",
-                    "field",
-                    "field notes",
-                    "sketch",
+            ("dead", "dea"): ("34", "dead", "dea"),
+            ("field notes/sketch", "fie"): (
+            "35",
+            "field",
+            "field notes",
+            "sketch",
                 ),
-                ("no bird", "non"): ("36", "none", "no bird", "non"),
+            ("no bird", "non"): ("36", "none", "no bird", "non"),
             },
-            ("captive (animals in captivity)", "captive"): {
-                ("all", "all"): ("37", "captive:all"),
-                ("yes", "yes"): ("38", "captive"),
-                ("no", "no"): ("39", "captive:no", "not captive"),
+            ("captive (animals in captivity)", "captive"):
+            {
+            ("all", "all"): ("37", "captive:all"),
+            ("yes", "yes"): ("38", "captive"),
+            ("no", "no"): ("39", "captive:no", "not captive"),
             },
-            ("quality (defaults to 3,4,5)", "quality"): {
-                ("no rating", "0"): ("40", "no rating", "q0"),
-                ("terrible", "1"): ("41", "terrible", "q1"),
-                ("poor", "2"): ("42", "poor", "q2"),
-                ("average", "3"): ("43", "average", "avg", "q3"),
-                ("good", "4"): ("44", "good", "q4"),
-                ("excellent", "5"): ("45", "excellent", "best", "q5"),
+            ("quality (defaults to 3,4,5)", "quality"):
+            {
+            ("no rating", "0"): ("40", "no rating", "q0"),
+            ("terrible", "1"): ("41", "terrible", "q1"),
+            ("poor", "2"): ("42", "poor", "q2"),
+            ("average", "3"): ("43", "average", "avg", "q3"),
+            ("good", "4"): ("44", "good", "q4"),
+            ("excellent", "5"): ("45", "excellent", "best", "q5"),
             },
             ("larger images (defaults to no)", "large"): {
-                ("yes", True): ("46", "large", "larger images"),
+            ("yes", True): ("46", "large", "larger images"),
             },
             ("black & white (defaults to no)", "bw"): {
-                ("yes", True): ("47", "bw", "b&w"),
+            ("yes", True): ("47", "bw", "b&w"),
             },
-            ("voice channel (defaults to no) (RACES ONLY)", "vc"): {
-                ("yes", True): ("48", "vc", "voice", "voice channel"),
+            ("voice channel (defaults to no) (RACES ONLY)", "vc"):
+            {
+            ("yes", True): ("48", "vc", "voice", "voice channel"),
             },
         }
         if lookup:
             return {
                 alias: (title[1], name[1])
-                for title, subdict in aliases.items()
-                for name, alias_tuple in subdict.items()
-                for alias in alias_tuple
+                for title, subdict in aliases.items() for name, alias_tuple in subdict.items() for alias in alias_tuple
             }
         if num:
             return {
-                title[1]: {name[1]: int(alias[0]) for name, alias in subdict.items()}
+                title[1]: {name[1]: int(alias[0])
+                for name, alias in subdict.items()}
                 for title, subdict in aliases.items()
             }
         if display_lookup:
             return {
-                title[1]: (title[0], {key[1]: key[0] for key in subdict.keys()})
+                title[1]: (title[0], {key[1]: key[0]
+                for key in subdict.keys()})
                 for title, subdict in aliases.items()
             }
-
-        return {
-            title[0]: {name[0]: alias for name, alias in subdict.items()}
-            for title, subdict in aliases.items()
-        }
+        
+        return {title[0]: {name[0]: alias for name, alias in subdict.items()} for title, subdict in aliases.items()}
