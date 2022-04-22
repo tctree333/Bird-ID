@@ -41,7 +41,7 @@ from bot.functions import cache
 
 # Macaulay URL definitions
 SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
-TAXON_CODE_URL = ("https://api.ebird.org/v2/ref/taxon/find?key=jfekjedvescr&cat=species&q={}")
+TAXON_CODE_URL = ("https://taxonomy.api.macaulaylibrary.org/v1/taxonomy?q={}&key=PUB5447877383")
 ASSET_URL = "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/{}/"
 COUNT = 5  # fetch 5 media from macaulay at a time
 
@@ -61,6 +61,20 @@ valid_types = {
     },
 }
 
+cookies = None
+
+async def get_cookies():
+    global cookies
+    async with aiohttp.ClientSession(
+        headers={
+        "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36"
+        }
+    ) as session:
+        await session.head("https://search.macaulaylibrary.org/login?path=/catalog")
+        cookies = session.cookie_jar
+        return cookies
+
 @cache(pre=lambda x: string.capwords(x.strip().replace("-", " ")), local=False)
 async def get_sciname(bird: str, session=None, retries=0) -> str:
     """Returns the scientific name of a bird.
@@ -75,7 +89,9 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
     logger.info(f"getting sciname for {bird}")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            session = await stack.enter_async_context(aiohttp.ClientSession())
+            if cookies is None:
+                await get_cookies()
+            session = await stack.enter_async_context(aiohttp.ClientSession(cookie_jar=cookies))
         try:
             code = (await get_taxon(bird, session))[0]
         except GenericError as e:
@@ -177,22 +193,24 @@ async def valid_bird(bird: str, session=None) -> ValidatedBird:
     logger.info(f"checking if {bird} is valid")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            session = await stack.enter_async_context(aiohttp.ClientSession())
+            if cookies is None:
+                await get_cookies()
+            session = await stack.enter_async_context(aiohttp.ClientSession(cookie_jar=cookies))
         try:
             name = (await get_taxon(bird_, session))[1]
         except GenericError as e:
             if e.code in (111, 201):
                 return ValidatedBird(bird, False, "No taxon code found", "")
             raise e
-    if bird_ not in birdListMaster:
-        try:
-            urls = await _get_urls(session, bird_, "photo", Filter())
-        except GenericError as e:
-            if e.code in (100, 201):
+        if bird_ not in birdListMaster:
+            try:
+                urls = await _get_urls(session, bird_, "photo", Filter())
+            except GenericError as e:
+                if e.code in (100, 201):
+                    return ValidatedBird(bird, False, "One or less images found", name)
+                raise e
+            if len(urls) < 2:
                 return ValidatedBird(bird, False, "One or less images found", name)
-            raise e
-        if len(urls) < 2:
-            return ValidatedBird(bird, False, "One or less images found", name)
     return ValidatedBird(bird, True, "All checks passed", name)
 
 def _black_and_white(input_image_path) -> BytesIO:
@@ -395,7 +413,9 @@ async def download_media(bird, media_type, filters, directory=None, session=None
     
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            session = await stack.enter_async_context(aiohttp.ClientSession())
+            if cookies is None:
+                await get_cookies()
+            session = await stack.enter_async_context(aiohttp.ClientSession(cookie_jar=cookies))
         urls = await _get_urls(session, bird, media, filters)
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -433,25 +453,22 @@ async def _get_urls(
     `media_type` (str) - either `p` for pictures, `a` for audio, or `v` for video\n
     `filters` (bot.filters Filter)
     """
+    global cookies
+    
     logger.info(f"getting file urls for {bird}")
     taxon_code = (await get_taxon(bird, session))[0]
     database_key = f"{media_type}/{bird}{filters.to_int()}"
     cursor = (database.get(f"media.cursor:{database_key}") or b"").decode()
     catalog_url = filters.url(taxon_code, media_type, COUNT, cursor)
     
-    async with session.head(
-        "https://search.macaulaylibrary.org/login?path=/catalog", allow_redirects=False
-    ) as resp:  # get valid cookies
-        await resp.text()
-        print(list(session.cookie_jar))
-    
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
+            cookies = None
             if retries >= 3:
                 logger.info("Retried more than 3 times. Aborting...")
                 raise GenericError(
                     f"An http error code of {catalog_response.status} occurred " +
-                    f"while fetching {catalog_url} for a {'image' if media_type=='p' else 'song'} for {bird}",
+                    f"while fetching {catalog_url} for a {'image' if media_type=='photo' else 'song'} for {bird}",
                     code=201,
                 )
             retries += 1
@@ -465,12 +482,8 @@ async def _get_urls(
             cursor_mark = catalog_data[-1]["cursorMark"]
         else:
             cursor_mark = b""
-        database.set(
-            f"media.cursor:{database_key}",
-            cursor_mark,
-        )
-        content = catalog_data
-        urls = [ASSET_URL.format(data["assetId"]) for data in content]
+        database.set(f"media.cursor:{database_key}", cursor_mark)
+        urls = [ASSET_URL.format(data["assetId"]) for data in catalog_data]
         if not urls:
             if retries >= 1:
                 raise GenericError("No urls found.", code=100)

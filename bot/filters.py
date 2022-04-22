@@ -18,7 +18,7 @@ from typing import Union, Dict, Tuple
 from collections.abc import Iterable
 
 # Macaulay Library URLs
-CATALOG_URL = "https://search.macaulaylibrary.org/api/v2/search"
+CATALOG_URL = "https://search.macaulaylibrary.org/api/v2/search?sort=rating_rank_desc"
 
 class Filter:
     _boolean_options = ("large", "bw", "vc")
@@ -153,7 +153,7 @@ class Filter:
             "quality": "&quality={}",
         }
         url = [CATALOG_URL]
-        url.append(f"?taxonCode={taxon_code}&mediaType={media_type}&count={count}&initialCursorMark={cursor}")
+        url.append(f"&taxonCode={taxon_code}&mediaType={media_type}&count={count}&initialCursorMark={cursor}")
         
         for item in self.__dict__.items():
             if (
