@@ -23,18 +23,17 @@ CATALOG_URL = "https://search.macaulaylibrary.org/api/v2/search?sort=rating_rank
 
 class Filter:
     _boolean_options = ("large", "bw", "vc")
-    _default_options = {"quality": {"3", "4", "5"}}
+    _default_options = {}
 
     def __init__(
         self,
         age: Union[str, Iterable] = (),
         sex: Union[str, Iterable] = (),
         behavior: Union[str, Iterable] = (),
-        #breeding: Union[str, Iterable] = (),
         sounds: Union[str, Iterable] = (),
         tags: Union[str, Iterable] = (),
         captive: Union[str, Iterable] = (),
-        quality: Union[str, Iterable] = ("3", "4", "5"),
+        quality: Union[str, Iterable] = (),
         large: bool = False,
         bw: bool = False,
         vc: bool = False,
@@ -74,7 +73,6 @@ class Filter:
         self.age = age
         self.sex = sex
         self.behavior = behavior
-        # self.breeding = breeding
         self.sounds = sounds
         self.tags = tags
         self.captive = captive
@@ -187,8 +185,8 @@ class Filter:
 
         for item in self.__dict__.items():
             if (
-                (item[0] == "sounds" and media_type == "p")
-                or (item[0] == "tags" and media_type == "a")
+                (item[0] == "sounds" and media_type == "photo")
+                or (item[0] == "tags" and media_type == "audio")
                 or item[0] in self._boolean_options
             ):
                 # disable invalid filters on certain media types
@@ -287,7 +285,6 @@ class Filter:
             output.append("None")
         return output
 
-    # FIXME update to new endpoint's params
     @staticmethod
     def aliases(lookup: bool = False, num: bool = False, display_lookup: bool = False):
         """Generate filter alises.
@@ -303,41 +300,58 @@ class Filter:
             Tuple[str, str], Dict[Tuple[str, Union[str, bool]], Tuple[str, ...]]
         ] = {
             ("age", "age"): {
-                ("adult", "a"): ("1", "adult", "a"),
-                ("immature", "i"): ("2", "immature", "im"),
-                ("juvenile", "j"): ("3", "juvenile", "j"),
-                ("unknown", "u"): ("4", "age:unknown", "unknown age"),
+                ("adult", "adult"): ("1", "adult", "a"),
+                ("immature", "immature"): ("2", "immature", "im"),
+                ("juvenile", "juvenile"): ("3", "juvenile", "j"),
+                ("unknown", "unknown"): ("4", "age:unknown", "unknown age"),
             },
             ("sex", "sex"): {
-                ("male", "m"): ("5", "male", "m"),
-                ("female", "f"): ("6", "female", "f"),
-                ("unknown", "u"): ("7", "sex:unknown", "unknown sex"),
+                ("male", "male"): ("5", "male", "m"),
+                ("female", "female"): ("6", "female", "f"),
+                ("unknown", "unknown"): ("7", "sex:unknown", "unknown sex"),
             },
             ("behavior", "behavior"): {
-                ("eating/foraging", "e"): ("8", "eating", "foraging", "e", "ef"),
-                ("flying", "f"): ("9", "flying", "fly"),
-                ("preening", "p"): ("10", "preening", "p"),
+                ("eating/foraging", "foraging_eating"): (
+                    "8",
+                    "eating",
+                    "foraging",
+                    "e",
+                    "ef",
+                ),
+                ("flying", "flying_flight"): ("9", "flying", "fly"),
+                ("preening", "preening"): ("10", "preening", "p"),
                 ("vocalizing", "vocalizing"): ("11", "vocalizing", "vo"),
                 ("molting", "molting"): ("12", "molting", "mo"),
-            },
-            ("breeding", "breeding"): {
-                ("courtship, display, or copulation", "cdc"): (
+                (
+                    "courtship, display, or copulation",
+                    "courtship_display_or_copulation",
+                ): (
                     "13",
                     "courtship",
                     "display",
                     "copulation",
                     "cdc",
                 ),
-                ("feeding young", "fy"): ("14", "feeding", "feeding young", "fy"),
-                ("carrying food", "cf"): ("15", "food", "carrying food", "cf"),
-                ("carrying fecal sac", "cfs"): (
+                ("feeding young", "feeding_young"): (
+                    "14",
+                    "feeding",
+                    "feeding young",
+                    "fy",
+                ),
+                ("carrying food", "carrying_food"): (
+                    "15",
+                    "food",
+                    "carrying food",
+                    "cf",
+                ),
+                ("carrying fecal sac", "carrying_fecal_sac"): (
                     "16",
                     "fecal",
                     "carrying fecal sac",
                     "fecal sac",
                     "cfs",
                 ),
-                ("nest building", "nb"): (
+                ("nest building", "nest_building"): (
                     "17",
                     "nest",
                     "building",
@@ -346,51 +360,51 @@ class Filter:
                 ),
             },
             ("sounds", "sounds"): {
-                ("song", "s"): ("18", "song", "so"),
-                ("call", "c"): ("19", "call", "c"),
-                ("non-vocal", "nv"): ("20", "non-vocal", "non vocal", "nv"),
-                ("dawn song", "ds"): ("21", "dawn", "dawn song", "ds"),
-                ("flight song", "fs"): ("22", "flight song", "fs"),
-                ("flight call", "fc"): ("23", "flight call", "fc"),
-                ("duet", "dt"): ("24", "duet", "dt"),
-                ("environmental", "env"): ("25", "environmental", "env"),
-                ("people", "peo"): ("26", "people", "peo"),
+                ("song", "song"): ("18", "song", "so"),
+                ("call", "call"): ("19", "call", "c"),
+                ("non-vocal", "non_vocal"): ("20", "non-vocal", "non vocal", "nv"),
+                ("dawn song", "dawn_song"): ("21", "dawn", "dawn song", "ds"),
+                ("flight song", "flight_song"): ("22", "flight song", "fs"),
+                ("flight call", "flight_call"): ("23", "flight call", "fc"),
+                ("duet", "duett"): ("24", "duet", "dt"),
+                ("environmental", "environmental"): ("25", "environmental", "env"),
+                ("people", "people"): ("26", "people", "peo"),
             },
             ("photo tags", "tags"): {
-                ("multiple species", "mul"): (
+                ("multiple species", "multiple_species"): (
                     "27",
                     "multiple",
                     "species",
                     "multiple species",
                     "mul",
                 ),
-                ("in-hand", "in"): ("28", "in-hand", "in hand", "in"),
-                ("nest", "nes"): ("29", "nest", "nes"),
+                ("in-hand", "in_hand"): ("28", "in-hand", "in hand", "in"),
+                ("nest", "nest"): ("29", "nest", "nes"),
                 ("eggs", "egg"): ("30", "egg", "eggs"),
-                ("habitat", "hab"): ("31", "habitat", "hab"),
-                ("watermark", "wat"): ("32", "watermark", "wat"),
-                ("back of camera", "bac"): (
+                ("habitat", "habitat"): ("31", "habitat", "hab"),
+                ("watermark", "watermark"): ("32", "watermark", "wat"),
+                ("back of camera", "back_of_camera"): (
                     "33",
                     "back of camera",
                     "camera",
                     "back",
                     "bac",
                 ),
-                ("dead", "dea"): ("34", "dead", "dea"),
-                ("field notes/sketch", "fie"): (
+                ("dead", "dead"): ("34", "dead", "dea"),
+                ("field notes/sketch", "field_notes_sketch"): (
                     "35",
                     "field",
                     "field notes",
                     "sketch",
                 ),
-                ("no bird", "non"): ("36", "none", "no bird", "non"),
+                ("no bird", "non_bird"): ("36", "none", "no bird", "non"),
             },
             ("captive (animals in captivity)", "captive"): {
-                ("all", "all"): ("37", "captive:all"),
-                ("yes", "yes"): ("38", "captive"),
-                ("no", "no"): ("39", "captive:no", "not captive"),
+                ("all", "incl"): ("37", "captive:all"),
+                ("yes", "only"): ("38", "captive"),
+                # ("no", "no"): ("39", "captive:no", "not captive"),
             },
-            ("quality (defaults to 3,4,5)", "quality"): {
+            ("quality", "quality"): {
                 ("no rating", "0"): ("40", "no rating", "q0"),
                 ("terrible", "1"): ("41", "terrible", "q1"),
                 ("poor", "2"): ("42", "poor", "q2"),
