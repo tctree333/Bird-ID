@@ -38,32 +38,30 @@ class Filter:
         bw: bool = False,
         vc: bool = False,
     ):
-        # FIXME update docs to new url's filters (check _validate)
+        # TODO large images
         """Represents Macaulay Library media filters.
 
         Valid filters:
         - Age:
-            - a (adult), i (immature), j (juvenile), u (unknown)
+            - adult, immature, juvenile, unknown
         - Sex:
-            - m (male), f (female), u (unknown)
+            - male, female, unknown
         - Behavior:
-            - e (eating/foraging), f (flying), p (preening)
-            - vocalizing (vocalizing), molting (molting)
-        - Breeding:
-            - fy (feeding young), cdc (courtship, display, or copulation)
-            - cf (carrying food), cfs (carrying fecal sac), nb (nest building)
+            - carrying_fecal_sac, carrying_food, courtship_display_or_copulation,
+            - feeding_young, flying_flight, foraging_eating, molting
+            - nest_building, preening, vocalizing
         - Sounds:
-            - s (song), c (call), nv (non-vocal), ds (dawn song), fs (flight song)
-            - fc (flight call), dt (duet), env (environmental), peo (people)
+            - song, call, non_vocal, dawn_song, flight_song
+            - flight_call, duet, environmental, people
         - Photo Tags:
-            - mul (multiple species), in (in-hand), nes (nest), egg (eggs), hab (habitat)
-            - wat (watermark), bac (back of camera), dea (dead)
-            - fie (field notes/sketch), non (no bird)
+            - multiple_species, in_hand, nest, egg, habitat
+            - watermark, back_of_camera, dead
+            - field_notes_sketch, non_bird
         - Captive (animals in captivity):
-            - all, yes, no
+            - incl (including), only
         - Quality:
             - 0 (unrated), 1 (worst) - 5 (best)
-        - Large:
+        - Large: 
             - True (uses previewUrl), False (uses mediaUrl)
         - Black & White:
             - True (black and white), False (color)
