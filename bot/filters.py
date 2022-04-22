@@ -18,7 +18,7 @@ from typing import Union, Dict, Tuple
 from collections.abc import Iterable
 
 # Macaulay Library URLs
-CATALOG_URL = "https://search.macaulaylibrary.org/catalog.json?searchField=species"
+CATALOG_URL = "https://search.macaulaylibrary.org/api/v2/search?sort=rating_rank_desc"
 
 
 class Filter:
@@ -142,39 +142,43 @@ class Filter:
                 raise ValueError(f"{item[1]} contains invalid {item[0]} values.")
         return True
 
-    def url(self, taxon_code: str, media_type: str, count: int, cursor: str = "") -> str:
+    def url(
+        self, taxon_code: str, media_type: str, count: int, cursor: str = ""
+    ) -> str:
         """Generate the search url based on the filters.
 
-        `media_type` is all, p (pictures), a (audio), v (video)
+        `media_type` is photo, audio, video
         """
         self._validate()
-        url_parameter_names = {
-            "age": "&age={}",
-            "sex": "&sex={}",
-            "behavior": "&beh={}",
-            "breeding": "&bre={}",
-            "sounds": "&behaviors={}",
-            "tags": "&tag={}",
-            "captive": "&cap={}",
-            "quality": "&qua={}",
-        }
+        # url_parameter_names = {
+        #     "age": "&age={}",
+        #     "sex": "&sex={}",
+        #     "behavior": "&beh={}",
+        #     "breeding": "&bre={}",
+        #     "sounds": "&behaviors={}",
+        #     "tags": "&tag={}",
+        #     "captive": "&cap={}",
+        #     "quality": "&qua={}",
+        # }
         url = [CATALOG_URL]
-        url.append(f"&taxonCode={taxon_code}&mediaType={media_type}&count={count}&initialCursorMark={cursor}")
+        url.append(
+            f"&taxonCode={taxon_code}&mediaType={media_type}&count={count}"
+        )  # &initialCursorMark={cursor}")
 
-        for item in self.__dict__.items():
-            if (
-                (item[0] == "sounds" and media_type == "p")
-                or (item[0] == "tags" and media_type == "a")
-                or item[0] in self._boolean_options
-            ):
-                # disable invalid filters on certain media types
-                continue
-            for value in item[1]:
-                if value in ("env", "peo") and item[0] == "sounds":
-                    # two sound filters have 'tag' as the url parameter
-                    url.append(url_parameter_names["tags"].format(value))
-                else:
-                    url.append(url_parameter_names[item[0]].format(value))
+        # for item in self.__dict__.items():
+        #     if (
+        #         (item[0] == "sounds" and media_type == "photo")
+        #         or (item[0] == "tags" and media_type == "audio")
+        #         or item[0] in self._boolean_options
+        #     ):
+        #         # disable invalid filters on certain media types
+        #         continue
+        #     for value in item[1]:
+        #         if value in ("env", "peo") and item[0] == "sounds":
+        #             # two sound filters have 'tag' as the url parameter
+        #             url.append(url_parameter_names["tags"].format(value))
+        #         else:
+        #             url.append(url_parameter_names[item[0]].format(value))
         return "".join(url)
 
     def to_int(self):

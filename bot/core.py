@@ -42,8 +42,9 @@ from bot.functions import cache
 # Macaulay URL definitions
 SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
 TAXON_CODE_URL = (
-    "https://api.ebird.org/v2/ref/taxon/find?key=jfekjedvescr&cat=species&q={}"
+    "https://taxonomy.api.macaulaylibrary.org/v1/taxonomy?q={}&key=PUB5447877383"
 )
+ASSET_URL = "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/{}/"
 
 COUNT = 5  # fetch 5 media from macaulay at a time
 
@@ -54,6 +55,20 @@ valid_types = {
     "images": {"image/png": "png", "image/jpeg": "jpg", "image/gif": "gif"},
     "songs": {"audio/mpeg": "mp3", "audio/wav": "wav"},
 }
+
+cookies = None
+
+
+async def get_cookies():
+    global cookies
+    async with aiohttp.ClientSession(
+        headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36"
+        }
+    ) as session:
+        await session.get("https://search.macaulaylibrary.org/catalog")
+        cookies = session.cookie_jar
+        return cookies
 
 
 @cache(pre=lambda x: string.capwords(x.strip().replace("-", " ")), local=False)
@@ -70,7 +85,11 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
     logger.info(f"getting sciname for {bird}")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            session = await stack.enter_async_context(aiohttp.ClientSession())
+            if cookies is None:
+                await get_cookies()
+            session = await stack.enter_async_context(
+                aiohttp.ClientSession(cookie_jar=cookies)
+            )
         try:
             code = (await get_taxon(bird, session))[0]
         except GenericError as e:
@@ -121,7 +140,11 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
     logger.info(f"getting taxon code for {bird}")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            session = await stack.enter_async_context(aiohttp.ClientSession())
+            if cookies is None:
+                await get_cookies()
+            session = await stack.enter_async_context(
+                aiohttp.ClientSession(cookie_jar=cookies)
+            )
         taxon_code_url = TAXON_CODE_URL.format(
             urllib.parse.quote(bird.replace("-", " ").replace("'s", ""))
         )
@@ -184,7 +207,11 @@ async def valid_bird(bird: str, session=None) -> ValidatedBird:
     logger.info(f"checking if {bird} is valid")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            session = await stack.enter_async_context(aiohttp.ClientSession())
+            if cookies is None:
+                await get_cookies()
+            session = await stack.enter_async_context(
+                aiohttp.ClientSession(cookie_jar=cookies)
+            )
         try:
             name = (await get_taxon(bird_, session))[1]
         except GenericError as e:
@@ -412,13 +439,17 @@ async def download_media(bird, media_type, filters, directory=None, session=None
         directory = f"bot_files/cache/{media_type}/{bird}{filters.to_int()}/"
 
     if media_type == "images":
-        media = "p"
+        media = "photo"
     elif media_type == "songs":
-        media = "a"
+        media = "audio"
 
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            session = await stack.enter_async_context(aiohttp.ClientSession())
+            if cookies is None:
+                await get_cookies()
+            session = await stack.enter_async_context(
+                aiohttp.ClientSession(cookie_jar=cookies)
+            )
         urls = await _get_urls(session, bird, media, filters)
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -462,18 +493,21 @@ async def _get_urls(
     `media_type` (str) - either `p` for pictures, `a` for audio, or `v` for video\n
     `filters` (bot.filters Filter)
     """
+    global cookies
+
     logger.info(f"getting file urls for {bird}")
     taxon_code = (await get_taxon(bird, session))[0]
-    database_key = f"{media_type}/{bird}{filters.to_int()}"
-    cursor = (database.get(f"media.cursor:{database_key}") or b"").decode()
-    catalog_url = filters.url(taxon_code, media_type, COUNT, cursor)
+    # database_key = f"{media_type}/{bird}{filters.to_int()}"
+    # cursor = (database.get(f"media.cursor:{database_key}") or b"").decode()
+    catalog_url = filters.url(taxon_code, media_type, COUNT,) #cursor)
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
+            cookies = None
             if retries >= 3:
                 logger.info("Retried more than 3 times. Aborting...")
                 raise GenericError(
                     f"An http error code of {catalog_response.status} occurred "
-                    + f"while fetching {catalog_url} for a {'image' if media_type=='p' else 'song'} for {bird}",
+                    + f"while fetching {catalog_url} for a {'image' if media_type=='photo' else 'song'} for {bird}",
                     code=201,
                 )
             retries += 1
@@ -485,15 +519,14 @@ async def _get_urls(
             return urls
 
         catalog_data = await catalog_response.json()
-        database.set(
-            f"media.cursor:{database_key}",
-            catalog_data["results"]["nextCursorMark"] or b"",
-        )
-        content = catalog_data["results"]["content"]
+        # database.set(
+        #     f"media.cursor:{database_key}",
+        #     catalog_data["results"]["nextCursorMark"] or b"",
+        # )
         urls = (
-            [data["mediaUrl"] for data in content]
-            if filters.large or media_type == "a"
-            else [data["previewUrl"] for data in content]
+            [ASSET_URL.format(data["assetId"]) for data in catalog_data]
+            # if filters.large or media_type == "audio"
+            # else [data["previewUrl"] for data in catalog_data]
         )
         if not urls:
             if retries >= 1:
