@@ -92,7 +92,7 @@ if __name__ == "__main__":
         logger.info(bot.user.id)
         # Change discord activity
         await bot.change_presence(activity=discord.Activity(type=3, name="birds"))
-        # refresh_cache.start()
+        refresh_cache.start()
         refresh_user_cache.start()
         evict_user_cache.start()
         if os.getenv("SCIOLY_ID_BOT_ENABLE_BACKUPS") != "false":
