@@ -53,7 +53,7 @@ MAX_FILESIZE = 6000000  # limit media to 6mb
 # Valid file types
 valid_types = {
     "images": {"image/png": "png", "image/jpeg": "jpg", "image/gif": "gif"},
-    "songs": {"audio/mpeg": "mp3", "audio/wav": "wav"},
+    "songs": {"audio/mpeg": "mp3", "audio/mpeg3": "mp3", "audio/wav": "wav"},
 }
 
 cookies = None
@@ -66,7 +66,7 @@ async def get_cookies():
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36"
         }
     ) as session:
-        await session.get("https://search.macaulaylibrary.org/catalog")
+        await session.head("https://search.macaulaylibrary.org/login?path=/catalog")
         cookies = session.cookie_jar
         return cookies
 
@@ -112,7 +112,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
                 logger.info(
                     f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
                 )
-                await asyncio.sleep(1.5 ** retries)
+                await asyncio.sleep(1.5**retries)
                 sciname = await get_sciname(bird, session, retries)
                 return sciname
 
@@ -161,7 +161,7 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
                 logger.info(
                     f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
                 )
-                await asyncio.sleep(1.5 ** retries)
+                await asyncio.sleep(1.5**retries)
                 return await get_taxon(bird, session, retries)
 
             taxon_code_data = await taxon_code_response.json()
@@ -218,15 +218,15 @@ async def valid_bird(bird: str, session=None) -> ValidatedBird:
             if e.code in (111, 201):
                 return ValidatedBird(bird, False, "No taxon code found", "")
             raise e
-    if bird_ not in birdListMaster:
-        try:
-            urls = await _get_urls(session, bird_, "p", Filter())
-        except GenericError as e:
-            if e.code in (100, 201):
+        if bird_ not in birdListMaster:
+            try:
+                urls = await _get_urls(session, bird_, "photo", Filter())
+            except GenericError as e:
+                if e.code in (100, 201):
+                    return ValidatedBird(bird, False, "One or less images found", name)
+                raise e
+            if len(urls) < 2:
                 return ValidatedBird(bird, False, "One or less images found", name)
-            raise e
-        if len(urls) < 2:
-            return ValidatedBird(bird, False, "One or less images found", name)
     return ValidatedBird(bird, True, "All checks passed", name)
 
 
@@ -497,9 +497,10 @@ async def _get_urls(
 
     logger.info(f"getting file urls for {bird}")
     taxon_code = (await get_taxon(bird, session))[0]
-    # database_key = f"{media_type}/{bird}{filters.to_int()}"
-    # cursor = (database.get(f"media.cursor:{database_key}") or b"").decode()
-    catalog_url = filters.url(taxon_code, media_type, COUNT,) #cursor)
+    database_key = f"{media_type}/{bird}{filters.to_int()}"
+    cursor = (database.get(f"media.cursor:{database_key}") or b"").decode()
+    catalog_url = filters.url(taxon_code, media_type, COUNT, cursor)
+
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
             cookies = None
@@ -514,20 +515,17 @@ async def _get_urls(
             logger.info(
                 f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
             )
-            await asyncio.sleep(1.5 ** retries)
+            await asyncio.sleep(1.5**retries)
             urls = await _get_urls(session, bird, media_type, filters, retries)
             return urls
 
         catalog_data = await catalog_response.json()
-        # database.set(
-        #     f"media.cursor:{database_key}",
-        #     catalog_data["results"]["nextCursorMark"] or b"",
-        # )
-        urls = (
-            [ASSET_URL.format(data["assetId"]) for data in catalog_data]
-            # if filters.large or media_type == "audio"
-            # else [data["previewUrl"] for data in catalog_data]
-        )
+        if catalog_data and "cursorMark" in catalog_data[-1]:
+            cursor_mark = catalog_data[-1]["cursorMark"]
+        else:
+            cursor_mark = b""
+        database.set(f"media.cursor:{database_key}", cursor_mark)
+        urls = [ASSET_URL.format(data["assetId"]) for data in catalog_data]
         if not urls:
             if retries >= 1:
                 raise GenericError("No urls found.", code=100)
