@@ -61,7 +61,7 @@ class Filter:
             - incl (including), only
         - Quality:
             - 0 (unrated), 1 (worst) - 5 (best)
-        - Large: 
+        - Large:
             - True (uses previewUrl), False (uses mediaUrl)
         - Black & White:
             - True (black and white), False (color)
@@ -212,7 +212,7 @@ class Filter:
     @classmethod
     def from_int(cls, number: int):
         """Convert an int to a filter object."""
-        if number >= 2**48 or number < 0:
+        if number >= 2 ** 48 or number < 0:
             raise ValueError("Input number out of bounds.")
         me = cls()
 
@@ -235,7 +235,7 @@ class Filter:
         """Combine/toggle filters by xor-ing the integer representations."""
         if isinstance(other, self.__class__):
             other = other.to_int()
-        if other >= 2**48 or other < 0:
+        if other >= 2 ** 48 or other < 0:
             raise ValueError("Input number out of bounds.")
         return self.from_int(other ^ self.to_int())
 
@@ -364,7 +364,7 @@ class Filter:
                 ("dawn song", "dawn_song"): ("21", "dawn", "dawn song", "ds"),
                 ("flight song", "flight_song"): ("22", "flight song", "fs"),
                 ("flight call", "flight_call"): ("23", "flight call", "fc"),
-                ("duet", "duett"): ("24", "duet", "dt"),
+                ("duet", "duet"): ("24", "duet", "dt"),
                 ("environmental", "environmental"): ("25", "environmental", "env"),
                 ("people", "people"): ("26", "people", "peo"),
             },
