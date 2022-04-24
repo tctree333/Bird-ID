@@ -49,7 +49,7 @@ from bot.data_functions import channel_setup
 from bot.filters import MediaType
 
 
-def cache(func=None, pre=None, local=True):
+def cache(pre=None, local=True):
     """Cache decorator based on functools.lru_cache.
 
     This is not a very good cache, but it "works" for our
@@ -119,6 +119,7 @@ def cache(func=None, pre=None, local=True):
                 raise ValueError("Cannot evict from Redis cache!")
             _cache.pop(random.choice((*_cache, object())), 0)
 
+        @functools.wraps(func)
         async def wrapped(*args, **kwds):
             # Simple caching without ordering or size limit
             nonlocal hits, misses
@@ -143,10 +144,8 @@ def cache(func=None, pre=None, local=True):
 
         wrapped.cache_info = cache_info
         wrapped.evict = evict
-        return functools.update_wrapper(wrapped, func)
+        return wrapped
 
-    if func:
-        return wrapper(func)
     return wrapper
 
 
