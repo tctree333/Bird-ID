@@ -24,6 +24,7 @@ import itertools
 import os
 import pickle
 import random
+from typing import List, Union
 
 import aiohttp
 import chardet
@@ -45,6 +46,7 @@ from bot.data import (
     taxons,
 )
 from bot.data_functions import channel_setup
+from bot.filters import MediaType
 
 
 def cache(func=None, pre=None, local=True):
@@ -246,7 +248,12 @@ async def send_leaderboard(
     await ctx.send(embed=embed)
 
 
-def build_id_list(user_id=None, taxon=None, state=None, media="images") -> list:
+def build_id_list(
+    user_id: str = None,
+    taxon: Union[list, str] = None,
+    state: Union[list, str] = None,
+    media_type: MediaType = MediaType.IMAGE,
+) -> list:
     """Generates an ID list based on given arguments
 
     - `user_id`: User ID of custom list
@@ -260,11 +267,11 @@ def build_id_list(user_id=None, taxon=None, state=None, media="images") -> list:
     if isinstance(state, str):
         state = state.split(" ")
 
-    state_roles = state if state else []
-    if media in ("songs", "song", "s", "a"):
+    state_roles: List[str] = state if isinstance(state, list) else []
+    if media_type is MediaType.SONG:
         state_list = "songBirds"
         default = songBirds
-    elif media in ("images", "image", "i", "p"):
+    elif media_type is MediaType.IMAGE:
         state_list = "birdList"
         default = birdList
     else:

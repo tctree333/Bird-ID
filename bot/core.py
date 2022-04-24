@@ -36,7 +36,7 @@ from sentry_sdk import capture_exception
 
 import bot.voice as voice_functions
 from bot.data import GenericError, birdListMaster, database, logger, screech_owls
-from bot.filters import Filter
+from bot.filters import Filter, MediaType
 from bot.functions import cache
 
 # Macaulay URL definitions
@@ -50,11 +50,6 @@ COUNT = 5  # fetch 5 media from macaulay at a time
 
 MAX_FILESIZE = 6000000  # limit media to 6mb
 
-# Valid file types
-valid_types = {
-    "images": {"image/png": "png", "image/jpeg": "jpg", "image/gif": "gif"},
-    "songs": {"audio/mpeg": "mp3", "audio/mpeg3": "mp3", "audio/wav": "wav"},
-}
 
 cookies = None
 
@@ -112,7 +107,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
                 logger.info(
                     f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
                 )
-                await asyncio.sleep(1.5**retries)
+                await asyncio.sleep(1.5 ** retries)
                 sciname = await get_sciname(bird, session, retries)
                 return sciname
 
@@ -161,7 +156,7 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
                 logger.info(
                     f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
                 )
-                await asyncio.sleep(1.5**retries)
+                await asyncio.sleep(1.5 ** retries)
                 return await get_taxon(bird, session, retries)
 
             taxon_code_data = await taxon_code_response.json()
@@ -247,13 +242,13 @@ def _black_and_white(input_image_path) -> BytesIO:
 
 
 async def send_bird(
-    ctx, bird: str, media_type: str, filters: Filter, on_error=None, message=None
+    ctx, bird: str, media_type: MediaType, filters: Filter, on_error=None, message=None
 ):
     """Gets bird media and sends it to the user.
 
     `ctx` - Discord context object\n
     `bird` (str) - bird to send\n
-    `media_type` (str) - type of media (images/songs)\n
+    `media_type` (MediaType) - type of media (images/songs)\n
     `filters` (bot.filters Filter)\n
     `on_error` (function) - async function to run when an error occurs, passes error as argument\n
     `message` (str) - text message to send before bird\n
@@ -284,7 +279,7 @@ async def send_bird(
         await delete.delete()
         if e.code == 100:
             await ctx.send(
-                f"**This combination of filters has no valid {media_type} for the current bird.**"
+                f"**This combination of filters has no valid {media_type.name()} for the current bird.**"
             )
         elif e.code == 201:
             capture_exception(e)
@@ -298,7 +293,7 @@ async def send_bird(
             capture_exception(e)
             logger.exception(e)
             await ctx.send(
-                f"**An error has occurred while fetching {media_type}.**\n**Reason:** {e}"
+                f"**An error has occurred while fetching {media_type.name()}.**\n**Reason:** {e}"
             )
         if on_error is not None:
             await on_error(e)
@@ -311,14 +306,14 @@ async def send_bird(
         await ctx.send("**Oops! File too large :(**\n*Please try again.*")
         return
 
-    if media_type == "images":
+    if media_type is MediaType.IMAGE:
         if filters.bw:
             # prevent the black and white conversion from blocking
             loop = asyncio.get_running_loop()
             fn = functools.partial(_black_and_white, filename)
             filename = await loop.run_in_executor(None, fn)
 
-    elif media_type == "songs" and not filters.vc:
+    elif media_type is MediaType.SONG and not filters.vc:
         # remove spoilers in tag metadata
         audioFile = eyed3.load(filename)
         if audioFile is not None and audioFile.tag is not None:
@@ -327,7 +322,7 @@ async def send_bird(
     if message is not None:
         await ctx.send(message)
 
-    if media_type == "songs" and filters.vc:
+    if media_type is MediaType.SONG and filters.vc:
         await voice_functions.play(ctx, filename)
     else:
         # change filename to avoid spoilers
@@ -336,7 +331,7 @@ async def send_bird(
     await delete.delete()
 
 
-async def get_media(ctx, bird: str, media_type: str, filters: Filter):
+async def get_media(ctx, bird: str, media_type: MediaType, filters: Filter):
     """Chooses media from a list of filenames.
 
     This function chooses a valid image to pass to send_bird().
@@ -346,7 +341,7 @@ async def get_media(ctx, bird: str, media_type: str, filters: Filter):
 
     `ctx` - Discord context object\n
     `bird` (str) - bird to get media of\n
-    `media_type` (str) - type of media (images/songs)\n
+    `media_type` (MediaType) - type of media (images/songs)\n
     `filters` (bot.filters Filter)\n
     """
 
@@ -372,21 +367,23 @@ async def get_media(ctx, bird: str, media_type: str, filters: Filter):
             statInfo = os.stat(path)
             logger.info("size: " + str(statInfo.st_size))
             if (
-                extension.lower() in valid_types[media_type].values()
+                extension.lower() in media_type.types().values()
                 and statInfo.st_size < MAX_FILESIZE
             ):  # keep files less than 4mb
                 logger.info("found one!")
                 break
-            raise GenericError(f"No Valid {media_type.title()} Found", code=999)
+            raise GenericError(f"No Valid {media_type.name().title()} Found", code=999)
 
         database.hset(f"channel:{ctx.channel.id}", "prevJ", str(j))
     else:
-        raise GenericError(f"No {media_type.title()} Found", code=100)
+        raise GenericError(f"No {media_type.name().title()} Found", code=100)
 
     return [path, extension]
 
 
-async def get_files(sciBird: str, media_type: str, filters: Filter, retries: int = 0):
+async def get_files(
+    sciBird: str, media_type: MediaType, filters: Filter, retries: int = 0
+):
     """Returns a list of image/song filenames.
 
     This function also does cache management,
@@ -394,14 +391,16 @@ async def get_files(sciBird: str, media_type: str, filters: Filter, retries: int
     downloading images to the cache if not found.
 
     `sciBird` (str) - scientific name of bird\n
-    `media_type` (str) - type of media (images/songs)\n
+    `media_type` (MediaType) - type of media (images/songs)\n
     `filters` (bot.filters Filter)\n
     """
     logger.info(f"get_files retries: {retries}")
-    directory = f"bot_files/cache/{media_type}/{sciBird}{filters.to_int()}/"
+    directory = f"bot_files/cache/{media_type.name()}/{sciBird}{filters.to_int()}/"
     # track counts for more accurate eviction
     database.zincrby(
-        "frequency.media:global", 1, f"{media_type}/{sciBird}{filters.to_int()}"
+        "frequency.media:global",
+        1,
+        f"{media_type.name()}/{sciBird}{filters.to_int()}",
     )
     try:
         logger.info("trying")
@@ -424,24 +423,21 @@ async def get_files(sciBird: str, media_type: str, filters: Filter, retries: int
         return filenames
 
 
-async def download_media(bird, media_type, filters, directory=None, session=None):
+async def download_media(
+    bird: str, media_type: MediaType, filters: Filter, directory=None, session=None
+):
     """Returns a list of filenames downloaded from Macaulay Library.
 
     This function manages the download helpers to fetch images from Macaulay.
 
     `bird` (str) - scientific name of bird\n
-    `media_type` (str) - type of media (images/songs)\n
+    `media_type` (MediaType) - type of media (images/songs)\n
     `filters` (bot.filters Filter)\n
     `directory` (str) - relative path to bird directory\n
     `session` (aiohttp ClientSession)
     """
     if directory is None:
-        directory = f"bot_files/cache/{media_type}/{bird}{filters.to_int()}/"
-
-    if media_type == "images":
-        media = "photo"
-    elif media_type == "songs":
-        media = "audio"
+        directory = f"bot_files/cache/{media_type.name()}/{bird}{filters.to_int()}/"
 
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
@@ -450,7 +446,7 @@ async def download_media(bird, media_type, filters, directory=None, session=None
             session = await stack.enter_async_context(
                 aiohttp.ClientSession(cookie_jar=cookies)
             )
-        urls = await _get_urls(session, bird, media, filters)
+        urls = await _get_urls(session, bird, media_type, filters)
         if not os.path.exists(directory):
             os.makedirs(directory)
         paths = [f"{directory}{i}" for i in range(len(urls))]
@@ -466,7 +462,7 @@ async def download_media(bird, media_type, filters, directory=None, session=None
             filenames = set(filenames)
             filenames.discard(None)
             filenames = list(filenames)
-        logger.info(f"downloaded {media_type} for {bird}")
+        logger.info(f"downloaded {media_type.name()} for {bird}")
         logger.info(f"download check fails: {fails}")
         logger.info(f"returned filename count: {len(filenames)}")
         logger.info(f"actual filenames count: {len(os.listdir(directory))}")
@@ -476,7 +472,7 @@ async def download_media(bird, media_type, filters, directory=None, session=None
 async def _get_urls(
     session: aiohttp.ClientSession,
     bird: str,
-    media_type: str,
+    media_type: MediaType,
     filters: Filter,
     retries: int = 0,
 ):
@@ -490,14 +486,14 @@ async def _get_urls(
 
     `session` (aiohttp ClientSession)\n
     `bird` (str) - can be either common name or scientific name\n
-    `media_type` (str) - either `p` for pictures, `a` for audio, or `v` for video\n
+    `media_type` (MediaType) - either `p` for pictures, `a` for audio, or `v` for video\n
     `filters` (bot.filters Filter)
     """
     global cookies
 
     logger.info(f"getting file urls for {bird}")
     taxon_code = (await get_taxon(bird, session))[0]
-    database_key = f"{media_type}/{bird}{filters.to_int()}"
+    database_key = f"{media_type.name()}/{bird}{filters.to_int()}"
     cursor = (database.get(f"media.cursor:{database_key}") or b"").decode()
     catalog_url = filters.url(taxon_code, media_type, COUNT, cursor)
 
@@ -508,14 +504,14 @@ async def _get_urls(
                 logger.info("Retried more than 3 times. Aborting...")
                 raise GenericError(
                     f"An http error code of {catalog_response.status} occurred "
-                    + f"while fetching {catalog_url} for a {'image' if media_type=='photo' else 'song'} for {bird}",
+                    + f"while fetching {catalog_url} for a {media_type.name()} for {bird}",
                     code=201,
                 )
             retries += 1
             logger.info(
                 f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
             )
-            await asyncio.sleep(1.5**retries)
+            await asyncio.sleep(1.5 ** retries)
             urls = await _get_urls(session, bird, media_type, filters, retries)
             return urls
 
@@ -565,7 +561,7 @@ async def _download_helper(path, url, session, sem):
                 )
                 if content_type.partition("/")[0] == "image":
                     try:
-                        ext = valid_types["images"][content_type]
+                        ext = MediaType.IMAGE.types()[content_type]
                     except KeyError as e:
                         raise GenericError(
                             f"No valid extensions found. Content-Type: {content_type}"
@@ -573,7 +569,7 @@ async def _download_helper(path, url, session, sem):
 
                 elif content_type.partition("/")[0] == "audio":
                     try:
-                        ext = valid_types["songs"][content_type]
+                        ext = MediaType.SONG.types()[content_type]
                     except KeyError as e:
                         raise GenericError(
                             f"No valid extensions found. Content-Type: {content_type}"

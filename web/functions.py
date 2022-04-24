@@ -25,14 +25,10 @@ from fastapi import HTTPException, Request
 from fastapi.responses import FileResponse, StreamingResponse
 from sentry_sdk import capture_exception
 
-from bot.core import _black_and_white, get_files, get_sciname, valid_types
+from bot.core import _black_and_white, get_files, get_sciname
 from bot.data import GenericError, birdList, database, logger, screech_owls
-from bot.filters import Filter
+from bot.filters import Filter, MediaType
 from web.data import get_session_id
-
-content_type_lookup = {
-    ext: content for media in valid_types for content, ext in valid_types[media].items()
-}
 
 
 def send_file(
@@ -45,12 +41,14 @@ def send_file(
     return StreamingResponse(fp, **kwargs)
 
 
-async def send_bird(request: Request, bird: str, media_type: str, filters: Filter):
+async def send_bird(
+    request: Request, bird: str, media_type: MediaType, filters: Filter
+):
     if bird == "":
         logger.error("error - bird is blank")
         raise HTTPException(status_code=404, detail="Bird is blank")
 
-    if media_type not in ("images", "songs"):
+    if not isinstance(media_type, MediaType):
         logger.error(f"invalid media type {media_type}")
         raise HTTPException(status_code=422, detail="Invalid media type")
 
@@ -68,9 +66,9 @@ async def send_bird(request: Request, bird: str, media_type: str, filters: Filte
     except GenericError as e:
         logger.info(e)
         capture_exception(e)
-        raise HTTPException(status_code=503, detail=str(e))
+        raise HTTPException(status_code=503, detail=str(e)) from e
 
-    if media_type == "images":
+    if media_type is MediaType.IMAGE:
         if filters.bw:
             loop = asyncio.get_running_loop()
             file_stream = await loop.run_in_executor(
@@ -78,7 +76,7 @@ async def send_bird(request: Request, bird: str, media_type: str, filters: Filte
             )
         else:
             file_stream = filename
-    elif media_type == "songs":
+    elif media_type is MediaType.SONG:
         # remove spoilers in tag metadata
         audioFile = eyed3.load(filename)
         if audioFile is not None and audioFile.tag is not None:
@@ -90,12 +88,12 @@ async def send_bird(request: Request, bird: str, media_type: str, filters: Filte
 
 
 async def get_media(
-    request: Request, bird: str, media_type: str, filters: Filter
+    request: Request, bird: str, media_type: MediaType, filters: Filter
 ):  # images or songs
     if bird not in birdList + screech_owls:
         raise GenericError("Invalid Bird", code=990)
 
-    if media_type not in ("images", "songs"):
+    if not isinstance(media_type, MediaType):
         logger.error(f"invalid media type {media_type}")
         raise HTTPException(status_code=422, detail="Invalid media type")
 
@@ -109,7 +107,7 @@ async def get_media(
     database_key = f"web.session:{session_id}"
 
     media = await get_files(sciBird, media_type, filters)
-    logger.info(f"fetched {media_type}: {media}")
+    logger.info(f"fetched {media_type.name()}: {media}")
     prevJ = int(database.hget(database_key, "prevJ").decode("utf-8"))
     if media:
         j = (prevJ + 1) % len(media)
@@ -121,14 +119,16 @@ async def get_media(
             media_path = media[y]
             extension = media_path.split(".")[-1]
             logger.info("extension: " + str(extension))
-            if extension.lower() in valid_types[media_type].values():
+            if extension.lower() in media_type.types().values():
                 logger.info("found one!")
                 break
             if y == prevJ:
-                raise GenericError(f"No Valid {media_type.title()} Found", code=999)
+                raise GenericError(
+                    f"No Valid {media_type.name().title()} Found", code=999
+                )
 
         database.hset(database_key, "prevJ", str(j))
     else:
-        raise GenericError(f"No {media_type.title()} Found", code=100)
+        raise GenericError(f"No {media_type.name().title()} Found", code=100)
 
-    return media_path, extension, content_type_lookup[extension]
+    return media_path, extension, MediaType.content_type_lookup(extension)

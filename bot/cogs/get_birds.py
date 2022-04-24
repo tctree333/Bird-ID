@@ -24,7 +24,7 @@ import bot.voice as voice_functions
 from bot.core import send_bird
 from bot.data import GenericError, database, goatsuckers, logger, states, taxons
 from bot.data_functions import bird_setup, session_increment
-from bot.filters import Filter
+from bot.filters import Filter, MediaType
 from bot.functions import CustomCooldown, build_id_list, check_state_role
 
 BASE_MESSAGE = (
@@ -83,7 +83,7 @@ class Birds(commands.Cog):
     def error_handle(
         self,
         ctx,
-        media_type: str,
+        media_type: MediaType,
         filters: Filter,
         taxon_str,
         role_str,
@@ -136,21 +136,21 @@ class Birds(commands.Cog):
     async def send_bird_(
         self,
         ctx,
-        media_type: Optional[str],
+        media: Optional[str],
         filters: Filter,
         taxon_str: str = "",
         role_str: str = "",
         retries=0,
     ):
         media_type = (
-            "images"
-            if media_type in ("images", "image", "i", "p")
-            else ("songs" if media_type in ("songs", "song", "s", "a") else None)
+            MediaType.IMAGE
+            if media in ("images", "image", "i", "p")
+            else (MediaType.SONG if media in ("songs", "song", "s", "a") else None)
         )
         if not media_type:
             raise GenericError("Invalid media type", code=990)
 
-        if media_type == "songs" and filters.vc:
+        if media_type is MediaType.SONG and filters.vc:
             current_voice = database.get(f"voice.server:{ctx.guild.id}")
             if current_voice is not None and current_voice.decode("utf-8") != str(
                 ctx.channel.id
@@ -203,11 +203,11 @@ class Birds(commands.Cog):
                 roles.append("CUSTOM")
                 user_id = custom_role.split(":")[1]
                 birds = build_id_list(
-                    user_id=user_id, taxon=taxon, state=roles, media=media_type
+                    user_id=user_id, taxon=taxon, state=roles, media_type=media_type
                 )
             else:
                 birds = build_id_list(
-                    user_id=ctx.author.id, taxon=taxon, state=roles, media=media_type
+                    user_id=ctx.author.id, taxon=taxon, state=roles, media_type=media_type
                 )
 
             if not birds:
@@ -235,7 +235,7 @@ class Birds(commands.Cog):
                 on_error=self.error_handle(
                     ctx, media_type, filters, taxon_str, role_str, retries
                 ),
-                message=(SONG_MESSAGE if media_type == "songs" else BIRD_MESSAGE)
+                message=(SONG_MESSAGE if media_type is MediaType.SONG else BIRD_MESSAGE)
                 if not currently_in_race
                 else "*Here you go!*",
             )
@@ -249,7 +249,7 @@ class Birds(commands.Cog):
                 on_error=self.error_handle(
                     ctx, media_type, filters, taxon_str, role_str, retries
                 ),
-                message=(SONG_MESSAGE if media_type == "songs" else BIRD_MESSAGE)
+                message=(SONG_MESSAGE if media_type is MediaType.SONG else BIRD_MESSAGE)
                 if not currently_in_race
                 else "*Here you go!*",
             )

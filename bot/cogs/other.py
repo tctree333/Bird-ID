@@ -169,10 +169,10 @@ class Other(commands.Cog):
             return
 
         state_birdlist = sorted(
-            build_id_list(user_id=ctx.author.id, state=state, media="images")
+            build_id_list(user_id=ctx.author.id, state=state, media_type="images")
         )
         state_songlist = sorted(
-            build_id_list(user_id=ctx.author.id, state=state, media="songs")
+            build_id_list(user_id=ctx.author.id, state=state, media_type="songs")
         )
 
         birdLists = self.broken_join(state_birdlist)
@@ -224,12 +224,12 @@ class Other(commands.Cog):
 
         bird_list = sorted(
             build_id_list(
-                user_id=ctx.author.id, taxon=taxon, state=state, media="images"
+                user_id=ctx.author.id, taxon=taxon, state=state, media_type="images"
             )
         )
         song_bird_list = sorted(
             build_id_list(
-                user_id=ctx.author.id, taxon=taxon, state=state, media="songs"
+                user_id=ctx.author.id, taxon=taxon, state=state, media_type="songs"
             )
         )
         if not bird_list and not song_bird_list:
@@ -270,20 +270,28 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     async def wikipedia(self, ctx, *, arg):
         logger.info("command: wiki")
-        
+
         arg = arg.capitalize()
-        
+
         try:
             page = wikipedia.page(arg, auto_suggest=False)
-        except (wikipedia.exceptions.DisambiguationError,wikipedia.exceptions.PageError):
+        except (
+            wikipedia.exceptions.DisambiguationError,
+            wikipedia.exceptions.PageError,
+        ):
             try:
                 page = wikipedia.page(f"{arg} (bird)", auto_suggest=False)
-            except (wikipedia.exceptions.DisambiguationError,wikipedia.exceptions.PageError): 
+            except (
+                wikipedia.exceptions.DisambiguationError,
+                wikipedia.exceptions.PageError,
+            ):
                 # fall back to suggestion
                 try:
                     page = wikipedia.page(arg)
                 except wikipedia.exceptions.DisambiguationError:
-                    await ctx.send("Sorry, that page was not found. Try being more specific.")
+                    await ctx.send(
+                        "Sorry, that page was not found. Try being more specific."
+                    )
                     return
                 except wikipedia.exceptions.PageError:
                     await ctx.send("Sorry, that page was not found.")

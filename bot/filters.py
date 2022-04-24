@@ -14,16 +14,51 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import Union, Dict, Tuple
+from enum import Enum
+from typing import Any, Optional, Union, Dict, Tuple
 from collections.abc import Iterable
 
 # Macaulay Library URLs
 CATALOG_URL = "https://search.macaulaylibrary.org/api/v2/search?sort=rating_rank_desc"
 
 
+class MediaType(Enum):
+    """Enum for media types."""
+
+    IMAGE = "photo"
+    SONG = "audio"
+
+    def name(self):
+        if self is MediaType.IMAGE:
+            return "image"
+        if self is MediaType.SONG:
+            return "song"
+        return "INVALID"
+
+    def types(self):
+        valid_types = {
+            "images": {"image/png": "png", "image/jpeg": "jpg", "image/gif": "gif"},
+            "songs": {"audio/mpeg": "mp3", "audio/mpeg3": "mp3", "audio/wav": "wav"},
+        }
+
+        if self is MediaType.IMAGE:
+            return valid_types["images"]
+        if self is MediaType.SONG:
+            return valid_types["songs"]
+        return {}
+
+    @classmethod
+    def content_type_lookup(cls, content_type: str) -> Optional[str]:
+        for media in cls:
+            for content, ext in media.types().items():
+                if content_type == content:
+                    return ext
+        return None
+
+
 class Filter:
     _boolean_options = ("large", "bw", "vc")
-    _default_options = {}
+    _default_options: Dict[str, Any] = {}
 
     def __init__(
         self,
@@ -160,7 +195,7 @@ class Filter:
         return True
 
     def url(
-        self, taxon_code: str, media_type: str, count: int, cursor: str = ""
+        self, taxon_code: str, media_type: MediaType, count: int, cursor: str = ""
     ) -> str:
         """Generate the search url based on the filters.
 
@@ -178,13 +213,13 @@ class Filter:
         }
         url = [CATALOG_URL]
         url.append(
-            f"&taxonCode={taxon_code}&mediaType={media_type}&count={count}&initialCursorMark={cursor}"
+            f"&taxonCode={taxon_code}&mediaType={media_type.value}&count={count}&initialCursorMark={cursor}"
         )
 
         for item in self.__dict__.items():
             if (
-                (item[0] == "sounds" and media_type == "photo")
-                or (item[0] == "tags" and media_type == "audio")
+                (item[0] == "sounds" and media_type is MediaType.IMAGE)
+                or (item[0] == "tags" and media_type is MediaType.SONG)
                 or item[0] in self._boolean_options
             ):
                 # disable invalid filters on certain media types

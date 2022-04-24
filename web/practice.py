@@ -37,7 +37,7 @@ from bot.data_functions import (
     score_increment,
     streak_increment,
 )
-from bot.filters import Filter
+from bot.filters import Filter, MediaType
 from web.data import database, get_session_id, logger
 from web.functions import get_sciname, send_bird, send_file
 
@@ -59,12 +59,11 @@ async def get_bird(
 ):
     logger.info("endpoint: get bird")
     session_id = get_session_id(request)
-    media_type = media
 
     filters = Filter.parse(addon)
     if bool(bw):
         filters.bw = True
-    logger.info(f"args: media: {media_type}; filters: {filters};")
+    logger.info(f"args: media: {media}; filters: {filters};")
 
     logger.info(
         "bird: " + database.hget(f"web.session:{session_id}", "bird").decode("utf-8")
@@ -75,15 +74,19 @@ async def get_bird(
     #     logger.info("trial maxed")
     #     raise HTTPException(status_code=403, detail="Sign in to continue")
 
-    if media_type not in ("images", "songs"):
-        logger.error(f"invalid media type {media_type}")
+    if media == "images":
+        media_type = MediaType.IMAGE
+    elif media == "songs":
+        media_type = MediaType.SONG
+    else:
+        logger.error(f"invalid media type {media}")
         raise HTTPException(status_code=422, detail="Invalid media type")
 
     answered = int(database.hget(f"web.session:{session_id}", "answered"))
     logger.info(f"answered: {answered}")
     # check to see if previous bird was answered
     if answered:  # if yes, give a new bird
-        id_list = songBirds if media_type == "songs" else birdList
+        id_list = songBirds if media_type is MediaType.SONG else birdList
         currentBird = random.choice(id_list)
         user_id = int(database.hget(f"web.session:{session_id}", "user_id"))
         if user_id != 0:
