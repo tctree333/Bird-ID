@@ -30,9 +30,9 @@ class MediaType(Enum):
 
     def name(self):
         if self is MediaType.IMAGE:
-            return "image"
+            return "images"
         if self is MediaType.SONG:
-            return "song"
+            return "songs"
         return "INVALID"
 
     def types(self):

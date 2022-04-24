@@ -44,7 +44,7 @@ SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
 TAXON_CODE_URL = (
     "https://taxonomy.api.macaulaylibrary.org/v1/taxonomy?q={}&key=PUB5447877383"
 )
-ASSET_URL = "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/{id}/{size}/"
+ASSET_URL = "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/{id}/{size}"
 
 COUNT = 5  # fetch 5 media from macaulay at a time
 
@@ -524,11 +524,17 @@ async def _get_urls(
         else:
             cursor_mark = b""
         database.set(f"media.cursor:{database_key}", cursor_mark)
+
+        if media_type is MediaType.IMAGE:
+            if filters.large:
+                size = "1200"
+            else:
+                size = "640"
+        else:
+            size = "audio"
+
         urls = [
-            ASSET_URL.format(
-                id=data["assetId"], size="1200" if filters.large else "640"
-            )
-            for data in catalog_data
+            ASSET_URL.format(id=data["assetId"], size=size) for data in catalog_data
         ]
         if not urls:
             if retries >= 1:
