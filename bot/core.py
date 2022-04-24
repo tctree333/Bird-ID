@@ -51,19 +51,32 @@ COUNT = 5  # fetch 5 media from macaulay at a time
 MAX_FILESIZE = 6000000  # limit media to 6mb
 
 
-cookies = None
+class CookieManager:
+    def __init__(self):
+        self._cookies: aiohttp.CookieJar = None
+
+    @staticmethod
+    async def _get_cookies():
+        async with aiohttp.ClientSession(
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36"
+            }
+        ) as session:
+            await session.head("https://search.macaulaylibrary.org/login?path=/catalog")
+            return session.cookie_jar
+
+    async def __call__(self):
+        if self._cookies is None or database.get("cookies.expired:global") is None:
+            database.set("cookies.expired:global", "false")
+            database.expire("cookies.expired:global", 60 * 60 * 24 * 5)  # 5 days
+            self._cookies = await self._get_cookies()
+        return self._cookies
+
+    def clear(self):
+        self._cookies = None
 
 
-async def get_cookies():
-    global cookies
-    async with aiohttp.ClientSession(
-        headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36"
-        }
-    ) as session:
-        await session.head("https://search.macaulaylibrary.org/login?path=/catalog")
-        cookies = session.cookie_jar
-        return cookies
+cookies = CookieManager()
 
 
 @cache(pre=lambda x: string.capwords(x.strip().replace("-", " ")), local=False)
@@ -80,10 +93,8 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
     logger.info(f"getting sciname for {bird}")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            if cookies is None:
-                await get_cookies()
             session = await stack.enter_async_context(
-                aiohttp.ClientSession(cookie_jar=cookies)
+                aiohttp.ClientSession(cookie_jar=(await cookies()))
             )
         try:
             code = (await get_taxon(bird, session))[0]
@@ -135,10 +146,8 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
     logger.info(f"getting taxon code for {bird}")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            if cookies is None:
-                await get_cookies()
             session = await stack.enter_async_context(
-                aiohttp.ClientSession(cookie_jar=cookies)
+                aiohttp.ClientSession(cookie_jar=(await cookies()))
             )
         taxon_code_url = TAXON_CODE_URL.format(
             urllib.parse.quote(bird.replace("-", " ").replace("'s", ""))
@@ -202,10 +211,8 @@ async def valid_bird(bird: str, session=None) -> ValidatedBird:
     logger.info(f"checking if {bird} is valid")
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            if cookies is None:
-                await get_cookies()
             session = await stack.enter_async_context(
-                aiohttp.ClientSession(cookie_jar=cookies)
+                aiohttp.ClientSession(cookie_jar=(await cookies()))
             )
         try:
             name = (await get_taxon(bird_, session))[1]
@@ -441,10 +448,8 @@ async def download_media(
 
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
-            if cookies is None:
-                await get_cookies()
             session = await stack.enter_async_context(
-                aiohttp.ClientSession(cookie_jar=cookies)
+                aiohttp.ClientSession(cookie_jar=(await cookies()))
             )
         urls = await _get_urls(session, bird, media_type, filters)
         if not os.path.exists(directory):
@@ -489,8 +494,6 @@ async def _get_urls(
     `media_type` (MediaType) - either `p` for pictures, `a` for audio, or `v` for video\n
     `filters` (bot.filters Filter)
     """
-    global cookies
-
     logger.info(f"getting file urls for {bird}")
     taxon_code = (await get_taxon(bird, session))[0]
     database_key = f"{media_type.name()}/{bird}{filters.to_int()}"
@@ -499,7 +502,7 @@ async def _get_urls(
 
     async with session.get(catalog_url) as catalog_response:
         if catalog_response.status != 200:
-            cookies = None
+            cookies.clear()
             if retries >= 3:
                 logger.info("Retried more than 3 times. Aborting...")
                 raise GenericError(
@@ -521,7 +524,12 @@ async def _get_urls(
         else:
             cursor_mark = b""
         database.set(f"media.cursor:{database_key}", cursor_mark)
-        urls = [ASSET_URL.format(id=data["assetId"], size="1200" if filters.large else "640") for data in catalog_data]
+        urls = [
+            ASSET_URL.format(
+                id=data["assetId"], size="1200" if filters.large else "640"
+            )
+            for data in catalog_data
+        ]
         if not urls:
             if retries >= 1:
                 raise GenericError("No urls found.", code=100)

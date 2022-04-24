@@ -180,6 +180,10 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 #               }
 #          }
 
+# cookie expiration:
+#  cookies.expired:global : "false"
+#  set expiration to autoremove this key
+
 # state birds are picked from state/[state]/birdList or songBirds
 # either list can be in any taxon
 
