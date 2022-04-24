@@ -73,7 +73,6 @@ class Filter:
         bw: bool = False,
         vc: bool = False,
     ):
-        # TODO large images
         """Represents Macaulay Library media filters.
 
         Valid filters:
