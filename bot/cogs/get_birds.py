@@ -144,8 +144,8 @@ class Birds(commands.Cog):
     ):
         media_type = (
             MediaType.IMAGE
-            if media in ("images", "image", "i", "p")
-            else (MediaType.SONG if media in ("songs", "song", "s", "a") else None)
+            if media in ("images", "image", "i", "p", MediaType.IMAGE)
+            else (MediaType.SONG if media in ("songs", "song", "s", "a", MediaType.SONG) else None)
         )
         if not media_type:
             raise GenericError("Invalid media type", code=990)
@@ -445,7 +445,7 @@ class Birds(commands.Cog):
             await send_bird(
                 ctx,
                 currentBird,
-                "images",
+                MediaType.IMAGE,
                 Filter(),
                 on_error=self.error_skip(ctx),
                 message=GS_MESSAGE,
@@ -454,7 +454,7 @@ class Birds(commands.Cog):
             await send_bird(
                 ctx,
                 database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8"),
-                "images",
+                MediaType.IMAGE,
                 Filter(),
                 on_error=self.error_skip(ctx),
                 message=GS_MESSAGE,
