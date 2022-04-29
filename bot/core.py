@@ -118,7 +118,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
                 logger.info(
                     f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
                 )
-                await asyncio.sleep(1.5 ** retries)
+                await asyncio.sleep(1.5**retries)
                 sciname = await get_sciname(bird, session, retries)
                 return sciname
 
@@ -165,7 +165,7 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
                 logger.info(
                     f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
                 )
-                await asyncio.sleep(1.5 ** retries)
+                await asyncio.sleep(1.5**retries)
                 return await get_taxon(bird, session, retries)
 
             taxon_code_data = await taxon_code_response.json()
@@ -222,7 +222,7 @@ async def valid_bird(bird: str, session=None) -> ValidatedBird:
             raise e
         if bird_ not in birdListMaster:
             try:
-                urls = await _get_urls(session, bird_, "photo", Filter())
+                urls = await _get_urls(session, bird_, MediaType.IMAGE, Filter())
             except GenericError as e:
                 if e.code in (100, 201):
                     return ValidatedBird(bird, False, "One or less images found", name)
@@ -514,7 +514,7 @@ async def _get_urls(
             logger.info(
                 f"An HTTP error occurred; Retries: {retries}; Sleeping: {1.5**retries}"
             )
-            await asyncio.sleep(1.5 ** retries)
+            await asyncio.sleep(1.5**retries)
             urls = await _get_urls(session, bird, media_type, filters, retries)
             return urls
 

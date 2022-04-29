@@ -35,7 +35,7 @@ from bot.data import (
     states,
     taxons,
 )
-from bot.filters import Filter
+from bot.filters import Filter, MediaType
 from bot.functions import CustomCooldown, build_id_list
 
 # Discord max message length is 2000 characters, leave some room just in case
@@ -114,10 +114,10 @@ class Other(commands.Cog):
 
         an = "an" if bird.lower()[0] in ("a", "e", "i", "o", "u") else "a"
         await send_bird(
-            ctx, bird, "images", filters, message=f"Here's {an} *{bird.lower()}* image!"
+            ctx, bird, MediaType.IMAGE, filters, message=f"Here's {an} *{bird.lower()}* image!"
         )
         await send_bird(
-            ctx, bird, "songs", filters, message=f"Here's {an} *{bird.lower()}* song!"
+            ctx, bird, MediaType.SONG, filters, message=f"Here's {an} *{bird.lower()}* song!"
         )
         await delete.delete()
         return
