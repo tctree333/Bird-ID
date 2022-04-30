@@ -169,10 +169,10 @@ class Other(commands.Cog):
             return
 
         state_birdlist = sorted(
-            build_id_list(user_id=ctx.author.id, state=state, media_type="images")
+            build_id_list(user_id=ctx.author.id, state=state, media_type=MediaType.IMAGE)
         )
         state_songlist = sorted(
-            build_id_list(user_id=ctx.author.id, state=state, media_type="songs")
+            build_id_list(user_id=ctx.author.id, state=state, media_type=MediaType.SONG)
         )
 
         birdLists = self.broken_join(state_birdlist)
@@ -224,12 +224,12 @@ class Other(commands.Cog):
 
         bird_list = sorted(
             build_id_list(
-                user_id=ctx.author.id, taxon=taxon, state=state, media_type="images"
+                user_id=ctx.author.id, taxon=taxon, state=state, media_type=MediaType.IMAGE
             )
         )
         song_bird_list = sorted(
             build_id_list(
-                user_id=ctx.author.id, taxon=taxon, state=state, media_type="songs"
+                user_id=ctx.author.id, taxon=taxon, state=state, media_type=MediaType.SONG
             )
         )
         if not bird_list and not song_bird_list:

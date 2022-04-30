@@ -21,7 +21,7 @@ from fastapi import Request
 from fastapi.responses import HTMLResponse
 
 from bot.data import birdList
-from bot.filters import Filter
+from bot.filters import Filter, MediaType
 from web import practice, user
 from web.config import app
 from web.data import logger
@@ -52,11 +52,11 @@ async def bird_info():
 
 @app.get("/image/{bird}")
 async def bird_image(request: Request, bird: str):
-    info = await send_bird(request, bird, "images", Filter())
+    info = await send_bird(request, bird, MediaType.IMAGE, Filter())
     return send_file(info[0], media_type=info[2])
 
 
 @app.get("/song/{bird}")
 async def bird_song(request: Request, bird: str):
-    info = await send_bird(request, bird, "songs", Filter())
+    info = await send_bird(request, bird, MediaType.SONG, Filter())
     return send_file(info[0], media_type=info[2])

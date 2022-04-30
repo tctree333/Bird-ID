@@ -28,7 +28,7 @@ from sentry_sdk import capture_exception
 from bot.core import evict_media, send_bird
 from bot.data import GenericError, database, logger
 from bot.data_functions import channel_setup, user_setup
-from bot.filters import Filter
+from bot.filters import Filter, MediaType
 from bot.functions import (
     backup_all,
     drone_attack,
@@ -176,7 +176,7 @@ if __name__ == "__main__":
                 await send_bird(
                     ctx,
                     "Wild Turkey",
-                    "images",
+                    MediaType.IMAGE,
                     Filter(),
                     message="**It's Thanksgiving!**\nEnjoy this birb responsibly!.",
                 )
@@ -185,7 +185,7 @@ if __name__ == "__main__":
                 await send_bird(
                     ctx,
                     "Bald Eagle",
-                    "images",
+                    MediaType.IMAGE,
                     Filter(),
                     message="**It's Independence Day!**\nEnjoy this birb responsibly!",
                 )
