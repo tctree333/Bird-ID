@@ -52,13 +52,14 @@ class Other(commands.Cog):
         lines: list[str] = []
         block_length = 0
         for line in input_list:
-            if block_length + len(line) > max_size:
+            # add 2 to account for newlines
+            if block_length + len(line) + 2 > max_size:
                 page = "\n".join(lines)
                 pages.append(page)
                 lines.clear()
                 block_length = 0
             lines.append(line)
-            block_length += len(line)
+            block_length += (len(line) + 2)
 
         if lines:
             page = "\n".join(lines)
