@@ -495,6 +495,9 @@ async def get_all_users(bot):
     user_ids = map(int, database.zrangebyscore("users:global", "-inf", "+inf"))
     for user_id in user_ids:
         user = await fetch_get_user(user_id, bot=bot, member=False)
+        if user:
+            for guild in user.mutual_guilds:
+                database.sadd(f"users.server.id:{guild.id}", str(user.id))
     logger.info("User cache finished")
 
 

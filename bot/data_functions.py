@@ -40,7 +40,8 @@ async def channel_setup(ctx):
         logger.info("channel score added")
 
     if ctx.guild is not None:
-        database.sadd(f"channels:{ctx.guild.id}", str(ctx.channel.id))
+        channels = map(lambda x: str(x.id), ctx.guild.text_channels)
+        database.sadd(f"channels:{ctx.guild.id}", *channels)
 
 
 async def user_setup(ctx):
@@ -77,6 +78,13 @@ async def user_setup(ctx):
         logger.info("added streak")
 
     if guild is not None:
+        if database.exists(f"users.server:{ctx.guild.id}"):
+            users = map(
+                lambda x: x.decode("utf-8"),
+                database.zrange(f"users.server:{ctx.guild.id}", 0, -1),
+            )
+            database.sadd(f"users.server.id:{ctx.guild.id}", *users)
+            database.delete(f"users.server:{ctx.guild.id}")
         database.sadd(f"users.server.id:{ctx.guild.id}", str(ctx.author.id))
         logger.info("synced user to server")
 

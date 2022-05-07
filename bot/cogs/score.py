@@ -41,7 +41,7 @@ class Score(commands.Cog):
         for channel in channels:
             pipe.zscore("score:global", channel)
         scores = pipe.execute()
-        return int(sum(scores))
+        return int(sum(map(lambda x: x or 0, scores)))
 
     @staticmethod
     def _monthly_lb(category):
