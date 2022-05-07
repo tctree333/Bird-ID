@@ -77,11 +77,8 @@ async def user_setup(ctx):
         logger.info("added streak")
 
     if guild is not None:
-        global_score = database.zscore("users:global", str(ctx.author.id))
-        database.zadd(
-            f"users.server:{ctx.guild.id}", {str(ctx.author.id): global_score}
-        )
-        logger.info("synced scores")
+        database.sadd(f"users.server.id:{ctx.guild.id}", str(ctx.author.id))
+        logger.info("synced user to server")
 
         if not database.exists(f"custom.list:{ctx.author.id}"):
             role_ids = [role.id for role in ctx.author.roles]
@@ -247,12 +244,9 @@ def score_increment(ctx, amount: int):
     database.zincrby("score:global", amount, channel_id)
     database.zincrby("users:global", amount, user_id)
     database.zincrby(f"daily.score:{date}", amount, user_id)
-    if guild is not None:
-        logger.info("no dm")
-        database.zincrby(f"users.server:{ctx.guild.id}", amount, user_id)
-        if database.exists(f"race.data:{ctx.channel.id}"):
-            logger.info("race in session")
-            database.zincrby(f"race.scores:{ctx.channel.id}", amount, user_id)
+    if guild is not None and database.exists(f"race.data:{ctx.channel.id}"):
+        logger.info("race in session")
+        database.zincrby(f"race.scores:{ctx.channel.id}", amount, user_id)
     else:
         logger.info("dm context")
 

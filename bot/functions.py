@@ -494,7 +494,7 @@ async def get_all_users(bot):
     logger.info("Starting user cache")
     user_ids = map(int, database.zrangebyscore("users:global", "-inf", "+inf"))
     for user_id in user_ids:
-        await fetch_get_user(user_id, bot=bot, member=False)
+        user = await fetch_get_user(user_id, bot=bot, member=False)
     logger.info("User cache finished")
 
 

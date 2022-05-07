@@ -111,7 +111,7 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 
 # leaderboard formats:
 #    users:global : [user id, # of correct]
-#    users.server:guild_id : [user id, # of correct]
+#    users.server.id:guild_id : [user id ... ]
 
 # streaks format:
 #    streak:global : [user id, current streak]

@@ -34,7 +34,7 @@ class Score(commands.Cog):
     def _server_total(ctx):
         logger.info("fetching server totals")
         channels = map(
-            lambda x: x.decode("utf-8").split(":")[1],
+            lambda x: x.decode("utf-8"),
             database.smembers(f"channels:{ctx.guild.id}"),
         )
         pipe = database.pipeline()  # use a pipeline to get all the scores
@@ -75,14 +75,32 @@ class Score(commands.Cog):
         totals = totals.sort_values(ascending=False)
         return totals
 
-    async def user_lb(self, ctx, title, page, database_key=None, data=None):
+    @staticmethod
+    def _server_lb(guild_id):
+        logger.info("generating server leaderboard")
+        users = tuple(
+            map(
+                lambda x: x.decode("utf8"),
+                database.smembers(f"users.server.id:{guild_id}"),
+            )
+        )
+        pipe = database.pipeline()
+        for user in users:
+            pipe.zscore("users:global", user)
+        scores = map(int, pipe.execute())
+        score_series = pd.Series(scores, index=users, dtype="int64").sort_values(
+            ascending=False
+        )
+        return score_series
+
+    @staticmethod
+    async def user_lb(ctx, title, page, database_key=None, data=None):
         if database_key is None and data is None:
             raise GenericError("database_key and data are both NoneType", 990)
         if database_key is not None and data is not None:
             raise GenericError("database_key and data are both set", 990)
 
-        if page < 1:
-            page = 1
+        page = max(1, page)
 
         user_amount = (
             int(database.zcard(database_key))
@@ -357,7 +375,8 @@ class Score(commands.Cog):
 
         if scope in ("server", "s"):
             if ctx.guild is not None:
-                database_key = f"users.server:{ctx.guild.id}"
+                database_key = None
+                data = self._server_lb(ctx.guild.id)
                 scope = "server"
             else:
                 logger.info("dm context")
@@ -366,7 +385,7 @@ class Score(commands.Cog):
                 )
                 scope = "global"
                 database_key = "users:global"
-            data = None
+                data = None
         elif scope in ("month", "monthly", "m"):
             database_key = None
             scope = "Last 30 Days"
