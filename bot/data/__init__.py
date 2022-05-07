@@ -133,7 +133,7 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 
 # channel score format:
 #   score:global : [channel id, # of correct]
-#   channels:global : ["guild id:channel id", 0]
+#   channels:guild_id : [channel id ... ]
 
 # daily update format:
 #     daily.score:YYYY-MM-DD : [user id, # correct today]

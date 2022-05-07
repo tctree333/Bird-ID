@@ -40,7 +40,7 @@ async def channel_setup(ctx):
         logger.info("channel score added")
 
     if ctx.guild is not None:
-        database.zadd("channels:global", {f"{ctx.guild.id}:{ctx.channel.id}": 0})
+        database.sadd(f"channels:{ctx.guild.id}", str(ctx.channel.id))
 
 
 async def user_setup(ctx):

@@ -35,9 +35,7 @@ class Score(commands.Cog):
         logger.info("fetching server totals")
         channels = map(
             lambda x: x.decode("utf-8").split(":")[1],
-            database.zrangebylex(
-                "channels:global", f"[{ctx.guild.id}", f"({ctx.guild.id}\xff"
-            ),
+            database.smembers(f"channels:{ctx.guild.id}"),
         )
         pipe = database.pipeline()  # use a pipeline to get all the scores
         for channel in channels:
