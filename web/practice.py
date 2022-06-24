@@ -25,7 +25,7 @@ from bot.data import (
     alpha_codes,
     birdList,
     birdListMaster,
-    get_wiki_url,
+    format_wiki_url,
     sci_screech_owls,
     sciListMaster,
     screech_owls,
@@ -166,7 +166,7 @@ async def check_bird(request: Request, guess: str):
         else:
             database.hset(f"web.session:{session_id}", "tempScore", str(tempScore + 1))
 
-        url = get_wiki_url(currentBird)
+        url = format_wiki_url(currentBird)
         return {
             "guess": guess,
             "answer": currentBird,
@@ -184,7 +184,7 @@ async def check_bird(request: Request, guess: str):
         incorrect_increment(user_id, currentBird, 1)
         streak_increment(user_id, None)  # reset streak
 
-    url = get_wiki_url(currentBird)
+    url = format_wiki_url(currentBird)
     return {
         "guess": guess,
         "answer": currentBird,
@@ -209,7 +209,7 @@ async def skip_bird(request: Request):
         if user_id != 0:
             streak_increment(user_id, None)  # reset streak
         scibird = await get_sciname(currentBird)
-        url = get_wiki_url(currentBird)  # sends wiki page
+        url = format_wiki_url(currentBird)  # sends wiki page
     else:
         logger.info("bird is blank")
         raise HTTPException(status_code=404, detail="Bird is blank")

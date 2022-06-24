@@ -17,7 +17,7 @@
 from discord.ext import commands
 
 import bot.voice as voice_functions
-from bot.data import database, get_wiki_url, logger
+from bot.data import database, format_wiki_url, logger
 from bot.data_functions import streak_increment
 from bot.filters import Filter
 from bot.functions import CustomCooldown
@@ -37,7 +37,7 @@ class Skip(commands.Cog):
         database.hset(f"channel:{ctx.channel.id}", "bird", "")
         database.hset(f"channel:{ctx.channel.id}", "answered", "1")
         if currentBird != "":  # check if there is bird
-            url = get_wiki_url(ctx, currentBird)
+            url = format_wiki_url(ctx, currentBird)
             await ctx.send(f"Ok, skipping {currentBird.lower()}")
             await ctx.send(url)  # sends wiki page
 

@@ -281,7 +281,7 @@ def _wiki_urls() -> Dict[str, str]:
     return urls
 
 
-def get_wiki_url(ctx, bird: str = None) -> str:
+def format_wiki_url(ctx, bird: str = None) -> str:
     logger.info("fetching wiki url")
     if bird is None:
         bird = ctx
@@ -295,8 +295,13 @@ def get_wiki_url(ctx, bird: str = None) -> str:
     url = wikipedia_urls.get(bird, "")
     if not url:
         logger.info(f"{bird} not found in wikipedia url cache, falling back")
-        page = wikipedia.page(bird)
-        url = page.url
+        try:
+            url = get_wiki_url(bird)
+        except (
+            wikipedia.exceptions.DisambiguationError,
+            wikipedia.exceptions.PageError,
+        ):
+            return "Sorry, the Wikipedia page could not be found."
     else:
         logger.info("found in cache")
 
@@ -307,6 +312,28 @@ def get_wiki_url(ctx, bird: str = None) -> str:
         url = f"<{url}>"
 
     return url
+
+
+def get_wiki_url(arg):
+    arg = arg.capitalize()
+
+    try:
+        page = wikipedia.page(arg, auto_suggest=False)
+    except (
+        wikipedia.exceptions.DisambiguationError,
+        wikipedia.exceptions.PageError,
+    ):
+        try:
+            page = wikipedia.page(f"{arg} (bird)", auto_suggest=False)
+        except (
+            wikipedia.exceptions.DisambiguationError,
+            wikipedia.exceptions.PageError,
+        ):
+            # fall back to suggestion
+            # DisambiguationError and PageError need to be caught by caller
+            page = wikipedia.page(arg)
+
+    return page.url
 
 
 def _alpha_codes() -> Dict[str, str]:
