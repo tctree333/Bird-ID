@@ -26,7 +26,7 @@ from bot.data import (
     alpha_codes,
     birdListMaster,
     database,
-    get_wiki_url,
+    format_wiki_url,
     logger,
     sci_screech_owls,
     sciListMaster,
@@ -131,7 +131,7 @@ class Check(commands.Cog):
                 if not race_in_session
                 else f"**{ctx.author.mention}**, you are correct! The bird was **{currentBird}**."
             )
-            url = get_wiki_url(ctx, currentBird)
+            url = format_wiki_url(ctx, currentBird)
             await ctx.send(url)
             score_increment(ctx, 1)
             if int(database.zscore("users:global", str(ctx.author.id))) in achievement:
@@ -181,7 +181,7 @@ class Check(commands.Cog):
                 database.hset(f"channel:{ctx.channel.id}", "bird", "")
                 database.hset(f"channel:{ctx.channel.id}", "answered", "1")
                 await ctx.send("Sorry, the bird was actually **" + currentBird + "**.")
-                url = get_wiki_url(ctx, currentBird)
+                url = format_wiki_url(ctx, currentBird)
                 await ctx.send(url)
 
     async def race_autocheck(self, message: discord.Message):
