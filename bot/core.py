@@ -171,16 +171,22 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
             taxon_code_data = await taxon_code_response.json()
             try:
                 logger.info(f"raw data: {taxon_code_data}")
-                taxon_code = taxon_code_data[0]["code"]
-                item_name = taxon_code_data[0]["name"]
-                logger.info(f"first item: {taxon_code_data[0]}")
+
+                first_item = taxon_code_data[0]
+                taxon_code = first_item["code"]
+                item_name = first_item["name"]
+                logger.info(f"first item: {first_item}")
+
                 if len(taxon_code_data) > 1:
                     logger.info("entering check")
                     for item in taxon_code_data:
                         logger.info(f"checking: {item}")
-                        if spellcheck(
-                            item["name"].split(" - ")[0], bird, 4
-                        ) or spellcheck(item["name"].split(" - ")[1], bird, 4):
+                        common, sci_name = item["name"].split(" - ")
+                        if (  # spellcheck
+                            spellcheck(common, bird, 4) or spellcheck(sci_name, bird, 4)
+                        ) and (  # ensure that it's a species by checking for binomial name
+                            " " in sci_name
+                        ):
                             logger.info("ok")
                             taxon_code = item["code"]
                             item_name = item["name"]
@@ -322,9 +328,9 @@ async def send_bird(
 
     elif media_type is MediaType.SONG and not filters.vc:
         # remove spoilers in tag metadata
-        audioFile = eyed3.load(filename)
-        if audioFile is not None and audioFile.tag is not None:
-            audioFile.tag.remove(filename)
+        audio_file = eyed3.load(filename)
+        if audio_file is not None and audio_file.tag is not None:
+            audio_file.tag.remove(filename)
 
     if message is not None:
         await ctx.send(message)
