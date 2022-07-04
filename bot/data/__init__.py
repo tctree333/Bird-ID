@@ -147,6 +147,9 @@ if os.getenv("SCIOLY_ID_BOT_USE_SENTRY") != "false":
 # ignore format:
 #   ignore:global : [channel id, guild id]
 
+# noholiday format:
+#   noholiday:global : { guild id, ... }
+
 # leave confirm format:
 #   leave:guild_id : 0
 

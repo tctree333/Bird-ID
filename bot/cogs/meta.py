@@ -151,6 +151,25 @@ class Meta(commands.Cog):
             )
         )
 
+    # ignore command - ignores a given channel
+    @commands.command(
+        brief="- Disable holidays in a server",
+        help="- Disable holidays in a server. The 'manage guild' permission is needed to use this command.",
+        aliases=["holidays", "holiday"]
+    )
+    @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
+    @commands.guild_only()
+    @commands.has_guild_permissions(manage_guild=True)
+    async def noholiday(self, ctx):
+        logger.info("command: noholiday")
+
+        if not database.sismember("noholiday:global", str(ctx.guild.id)):
+            await ctx.send("**Holidays are now disabled in this server.**")
+            database.sadd("noholiday:global", str(ctx.guild.id))
+        else:
+            await ctx.send("**Holidays are now enabled in this server.**")
+            database.srem("noholiday:global", str(ctx.guild.id))
+
     # leave command - removes itself from guild
     @commands.command(
         brief="- Remove the bot from the guild",

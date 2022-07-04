@@ -163,12 +163,16 @@ if __name__ == "__main__":
         return True
 
     @bot.check
-    async def is_holiday(ctx):
+    async def is_holiday(ctx: commands.Context):
         """Sends a picture of a turkey on Thanksgiving.
 
         Can be extended to other holidays as well.
         """
         logger.info("global check: checking holiday")
+        if ctx.command.name == "noholiday":
+            return True
+        if ctx.guild and database.sismember("noholiday:global", str(ctx.guild.id)):
+            return True
         now = datetime.now(tz=timezone(-timedelta(hours=4))).date()
         us = holidays.US()
         if now in us:
