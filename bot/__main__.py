@@ -160,6 +160,23 @@ if __name__ == "__main__":
         await channel_setup(ctx)
         await user_setup(ctx)
 
+        if (
+            database.exists(
+                f"survey.user:{ctx.author.id}", f"survey.channel:{ctx.channel.id}"
+            )
+            == 0
+        ):
+            logger.info("sending survey info")
+
+            database.set(f"survey.user:{ctx.author.id}", "1")
+            database.expire(f"survey.user:{ctx.author.id}", 60 * 60 * 24 * 2)  # 2 days
+            database.set(f"survey.channel:{ctx.channel.id}", "1")
+            database.expire(f"survey.channel:{ctx.channel.id}", 60 * 10)  # 10 minutes
+
+            await ctx.send(
+                "**Help inform the future of BirdID by filling out this survey:** <https://forms.gle/w7z5ddocdkPpyfpg7>"
+            )
+
         return True
 
     @bot.check
