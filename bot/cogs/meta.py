@@ -151,11 +151,11 @@ class Meta(commands.Cog):
             )
         )
 
-    # ignore command - ignores a given channel
+    # noholiday command
     @commands.command(
         brief="- Disable holidays in a server",
         help="- Disable holidays in a server. The 'manage guild' permission is needed to use this command.",
-        aliases=["holidays", "holiday"]
+        aliases=["holidays", "holiday"],
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
