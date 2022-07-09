@@ -37,7 +37,7 @@ from sentry_sdk import capture_exception
 import bot.voice as voice_functions
 from bot.data import GenericError, birdListMaster, database, logger, screech_owls
 from bot.filters import Filter, MediaType
-from bot.functions import cache
+from bot.functions import cache, encrypt_chacha
 
 # Macaulay URL definitions
 SCINAME_URL = "https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&species={}"
@@ -288,6 +288,7 @@ async def send_bird(
 
     try:
         filename, extension = await get_media(ctx, bird, media_type, filters)
+        macaulay_asset_id = filename.split("/")[-1].split(".")[0]
     except GenericError as e:
         await delete.delete()
         if e.code == 100:
@@ -334,6 +335,13 @@ async def send_bird(
 
     if message is not None:
         await ctx.send(message)
+
+    if macaulay_asset_id:
+        await ctx.send(
+            "**Asset Code**: `"
+            + encrypt_chacha(int(macaulay_asset_id).to_bytes(8, "big").strip(b"\x00"))
+            + "`"
+        )
 
     if media_type is MediaType.SONG and filters.vc:
         await voice_functions.play(ctx, filename)
@@ -460,13 +468,10 @@ async def download_media(
         urls = await _get_urls(session, bird, media_type, filters)
         if not os.path.exists(directory):
             os.makedirs(directory)
-        paths = [f"{directory}{i}" for i in range(len(urls))]
+        urls = [(f"{directory}{asset_id}", url) for url, asset_id in urls]
         sem = asyncio.BoundedSemaphore(3)
         filenames = await asyncio.gather(
-            *(
-                _download_helper(path, url, session, sem)
-                for path, url in zip(paths, urls)
-            )
+            *(_download_helper(path, url, session, sem) for path, url in urls)
         )
         fails = filenames.count(None)
         if None in filenames:
@@ -540,7 +545,8 @@ async def _get_urls(
             size = "audio"
 
         urls = [
-            ASSET_URL.format(id=data["assetId"], size=size) for data in catalog_data
+            (ASSET_URL.format(id=data["assetId"], size=size), data["assetId"])
+            for data in catalog_data
         ]
         if not urls:
             if retries >= 1:

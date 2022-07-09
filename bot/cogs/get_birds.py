@@ -179,6 +179,7 @@ class Birds(commands.Cog):
         )
 
         currently_in_race = bool(database.exists(f"race.data:{ctx.channel.id}"))
+        new_user = database.zscore("users:global", str(ctx.author.id)) < 10
 
         answered = int(database.hget(f"channel:{ctx.channel.id}", "answered"))
         logger.info(f"answered: {answered}")
@@ -228,7 +229,7 @@ class Birds(commands.Cog):
                 logger.info(f"list less than 5 items")
                 await ctx.send(
                     "**Sorry, you must have at least 5 birds in the taxon/state combo."
-                    + f"**\n*Please try again with a different set of taxons/lists.*"
+                    + "**\n*Please try again with a different set of taxons/lists.*"
                 )
                 return
 
@@ -251,7 +252,7 @@ class Birds(commands.Cog):
                     ctx, media_type, filters, taxon_str, role_str, retries
                 ),
                 message=(SONG_MESSAGE if media_type is MediaType.SONG else BIRD_MESSAGE)
-                if not currently_in_race
+                if not currently_in_race and new_user
                 else "*Here you go!*",
             )
         else:  # if no, give the same bird
@@ -265,7 +266,7 @@ class Birds(commands.Cog):
                     ctx, media_type, filters, taxon_str, role_str, retries
                 ),
                 message=(SONG_MESSAGE if media_type is MediaType.SONG else BIRD_MESSAGE)
-                if not currently_in_race
+                if not currently_in_race and new_user
                 else "*Here you go!*",
             )
 

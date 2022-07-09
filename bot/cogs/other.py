@@ -21,11 +21,12 @@ import string
 import typing
 from difflib import get_close_matches
 
+import aiohttp
 import discord
 import wikipedia
 from discord.ext import commands
 
-from bot.core import get_sciname, get_taxon, send_bird
+from bot.core import better_spellcheck, get_sciname, get_taxon, send_bird
 from bot.data import (
     alpha_codes,
     birdListMaster,
@@ -37,7 +38,7 @@ from bot.data import (
     taxons,
 )
 from bot.filters import Filter, MediaType
-from bot.functions import CustomCooldown, build_id_list
+from bot.functions import CustomCooldown, build_id_list, cache, decrypt_chacha
 
 # Discord max message length is 2000 characters, leave some room just in case
 MAX_MESSAGE = 1900
@@ -60,7 +61,7 @@ class Other(commands.Cog):
                 lines.clear()
                 block_length = 0
             lines.append(line)
-            block_length += (len(line) + 2)
+            block_length += len(line) + 2
 
         if lines:
             page = "\n".join(lines)
@@ -116,13 +117,79 @@ class Other(commands.Cog):
 
         an = "an" if bird.lower()[0] in ("a", "e", "i", "o", "u") else "a"
         await send_bird(
-            ctx, bird, MediaType.IMAGE, filters, message=f"Here's {an} *{bird.lower()}* image!"
+            ctx,
+            bird,
+            MediaType.IMAGE,
+            filters,
+            message=f"Here's {an} *{bird.lower()}* image!",
         )
         await send_bird(
-            ctx, bird, MediaType.SONG, filters, message=f"Here's {an} *{bird.lower()}* song!"
+            ctx,
+            bird,
+            MediaType.SONG,
+            filters,
+            message=f"Here's {an} *{bird.lower()}* song!",
         )
         await delete.delete()
         return
+
+    @staticmethod
+    @cache()
+    async def bird_from_asset(asset_id: str):
+        url = f"https://www.macaulaylibrary.org/asset/{asset_id}/"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url + "embed") as resp:
+                content = await resp.text()
+                currentBird = (
+                    content.split("<title>")[1]
+                    .split("</title>")[0]
+                    .split(" - ")[1]
+                    .lower()
+                    .replace("-", " ")
+                    .strip()
+                )
+        logger.info(f"asset found for {asset_id}: {currentBird}")
+        return currentBird
+
+    # Asset command - gives original Macaulay Library asset from asset code
+    @commands.command(
+        help="- Gives the original Macaulay Library asset from an asset code",
+        aliases=["source", "original", "orig"],
+    )
+    @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
+    async def asset(self, ctx, *, arg):
+        logger.info("command: asset")
+
+        arg = arg.strip().split(" ")
+        code = arg[0]
+        guess = " ".join(arg[1:]).lower().replace("-", " ").strip()
+        if not guess:
+            await ctx.send("Please provide the bird name to get the original asset.")
+            return
+
+        try:
+            asset = str(int(decrypt_chacha(code).hex(), 16))
+            currentBird = await self.bird_from_asset(asset)
+        except:
+            await ctx.send("**Invalid asset code!**")
+            return
+
+        url = f"https://www.macaulaylibrary.org/asset/{asset}/"
+        alpha_code = alpha_codes.get(string.capwords(currentBird), "")
+        sciBird = (await get_sciname(currentBird)).lower().replace("-", " ")
+        correct = (
+            better_spellcheck(
+                guess, [currentBird, sciBird], birdListMaster + sciListMaster
+            )
+            or guess.upper() == alpha_code
+        )
+        if correct:
+            await ctx.send(f"**Here you go!** {url}")
+        else:
+            await ctx.send(
+                f"**Sorry, that's not the correct bird.**\n*Please try again.*"
+            )
 
     # Filter command - lists available Macaulay Library filters and aliases
     @commands.command(
@@ -171,7 +238,9 @@ class Other(commands.Cog):
             return
 
         state_birdlist = sorted(
-            build_id_list(user_id=ctx.author.id, state=state, media_type=MediaType.IMAGE)
+            build_id_list(
+                user_id=ctx.author.id, state=state, media_type=MediaType.IMAGE
+            )
         )
         state_songlist = sorted(
             build_id_list(user_id=ctx.author.id, state=state, media_type=MediaType.SONG)
@@ -226,12 +295,18 @@ class Other(commands.Cog):
 
         bird_list = sorted(
             build_id_list(
-                user_id=ctx.author.id, taxon=taxon, state=state, media_type=MediaType.IMAGE
+                user_id=ctx.author.id,
+                taxon=taxon,
+                state=state,
+                media_type=MediaType.IMAGE,
             )
         )
         song_bird_list = sorted(
             build_id_list(
-                user_id=ctx.author.id, taxon=taxon, state=state, media_type=MediaType.SONG
+                user_id=ctx.author.id,
+                taxon=taxon,
+                state=state,
+                media_type=MediaType.SONG,
             )
         )
         if not bird_list and not song_bird_list:

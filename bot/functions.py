@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
+import base64
 import concurrent.futures
 import difflib
 import errno
@@ -31,6 +32,7 @@ import chardet
 import discord
 import redis
 import wikipedia
+from Crypto.Cipher import ChaCha20
 from discord.ext import commands
 from sentry_sdk import capture_exception
 
@@ -523,6 +525,39 @@ async def auto_decode(data: bytes):
     if detected["encoding"] and detected["confidence"] > 0.4:
         return data.decode(detected["encoding"])
     return None
+
+
+def encrypt_chacha(plaintext: bytes) -> str:
+    """Encrypts a string using ChaCha20."""
+    hex_key = os.getenv("SOURCE_ENCRYPTION_KEY")
+    if not hex_key:
+        raise ValueError("No encryption key set")
+    key = int(hex_key, 16).to_bytes(32, "big")
+    cipher = ChaCha20.new(key=key)
+    ciphertext = (
+        base64.b64encode(cipher.encrypt(plaintext), altchars=b"-_").decode().strip("=")
+    )
+    nonce = base64.b64encode(cipher.nonce, altchars=b"-_").decode().strip("=")
+    return f"{ciphertext}.{nonce}"
+
+
+def decrypt_chacha(encrypted: str) -> bytes:
+    """Decrypts a string using ChaCha20."""
+    hex_key = os.getenv("SOURCE_ENCRYPTION_KEY")
+    if not hex_key:
+        raise ValueError("No encryption key set")
+    key = int(hex_key, 16).to_bytes(32, "big")
+
+    parsed = encrypted.split(".")
+    if len(parsed) != 2:
+        raise ValueError("Invalid ciphertext")
+
+    # apparently it's ok if you have extra padding
+    ciphertext = base64.b64decode(parsed[0] + "==", altchars=b"-_")
+    nonce = base64.b64decode(parsed[1] + "==", altchars=b"-_")
+
+    cipher = ChaCha20.new(key=key, nonce=nonce)
+    return cipher.decrypt(ciphertext)
 
 
 class CustomCooldown:
