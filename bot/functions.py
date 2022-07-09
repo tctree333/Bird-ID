@@ -648,8 +648,9 @@ async def handle_error(ctx, error):
             # channel is ignored
             return
         if error.code == 842:
-            await ctx.send("**Sorry, you cannot use this command.**")
-        elif error.code == 666:
+            # user is banned
+            return
+        if error.code == 666:
             logger.info("GenericError 666")
         elif error.code == 201:
             logger.info("HTTP Error")
