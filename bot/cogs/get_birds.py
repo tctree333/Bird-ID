@@ -145,7 +145,11 @@ class Birds(commands.Cog):
         media_type = (
             MediaType.IMAGE
             if media in ("images", "image", "i", "p", MediaType.IMAGE)
-            else (MediaType.SONG if media in ("songs", "song", "s", "a", MediaType.SONG) else None)
+            else (
+                MediaType.SONG
+                if media in ("songs", "song", "s", "a", MediaType.SONG)
+                else None
+            )
         )
         if not media_type:
             raise GenericError("Invalid media type", code=990)
@@ -207,13 +211,24 @@ class Birds(commands.Cog):
                 )
             else:
                 birds = build_id_list(
-                    user_id=ctx.author.id, taxon=taxon, state=roles, media_type=media_type
+                    user_id=ctx.author.id,
+                    taxon=taxon,
+                    state=roles,
+                    media_type=media_type,
                 )
 
             if not birds:
                 logger.info("no birds for taxon/state")
                 await ctx.send(
                     "**Sorry, no birds could be found for the taxon/state combo.**\n*Please try again*"
+                )
+                return
+
+            if len(birds) < 5:
+                logger.info(f"list less than 5 items")
+                await ctx.send(
+                    "**Sorry, you must have at least 5 birds in the taxon/state combo."
+                    + f"**\n*Please try again with a different set of taxons/lists.*"
                 )
                 return
 
