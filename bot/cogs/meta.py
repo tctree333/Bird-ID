@@ -94,7 +94,7 @@ class Meta(commands.Cog):
             value="To invite this bot to your own server, use the following invite links.\n"
             + "**Bird-ID:** https://discord.com/api/oauth2/authorize?client_id=601917808137338900&permissions=268486656&scope=bot\n\n"
             + "**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.\n"
-            + "<https://github.com/tctree333/Bird-ID/blob/master/PRIVACY.md>, <https://github.com/tctree333/Bird-ID/blob/master/TERMS.md>",
+            + "<https://sciolyid.org/privacy/, <https://sciolyid.org/terms/>",
             inline=False,
         )
         await ctx.send(embed=embed)
@@ -109,7 +109,7 @@ class Meta(commands.Cog):
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
     async def ignore(self, ctx, channels: commands.Greedy[discord.TextChannel] = None):
-        logger.info("command: invite")
+        logger.info("command: ignore")
 
         added = []
         removed = []
