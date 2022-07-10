@@ -136,10 +136,10 @@ class Other(commands.Cog):
     @staticmethod
     @cache()
     async def bird_from_asset(asset_id: str):
-        url = f"https://www.macaulaylibrary.org/asset/{asset_id}/"
+        url = f"https://www.macaulaylibrary.org/asset/{asset_id}/embed"
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(url + "embed") as resp:
+            async with session.get(url) as resp:
                 content = await resp.text()
                 currentBird = (
                     content.split("<title>")[1]
@@ -184,7 +184,7 @@ class Other(commands.Cog):
             )
             or guess.upper() == alpha_code
         )
-        if correct:
+        if correct or ((await self.bot.is_owner(ctx.author)) and guess == "please"):
             await ctx.send(f"**Here you go!** {url}")
         else:
             await ctx.send(
