@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import re
 from enum import Enum
 from typing import Any, Optional, Union, Dict, Tuple
 from collections.abc import Iterable
@@ -282,10 +283,7 @@ class Filter:
         if not use_numbers:
             lookup = {k: i for k, i in lookup.items() if not k.isdecimal()}
         args = args.lower().strip()
-        if "," in args:
-            inputs = map(lambda x: x.strip(), args.split(","))
-        else:
-            inputs = map(lambda x: x.strip(), args.split(" "))
+        inputs = map(lambda x: x.strip(), re.split(r"[,\s]+", args))
 
         for arg in inputs:
             key = lookup.get(arg)
