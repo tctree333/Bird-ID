@@ -29,60 +29,62 @@ class Voice(commands.Cog):
     def cog_unload(self):
         self.cleanup.cancel()
 
-    @commands.command(help="- Play a sound")
+    @commands.hybrid_command(help="- Play a sound")
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
-    async def play(self, ctx):
+    async def play(self, ctx: commands.Context):
         logger.info("command: play")
         await voice_functions.play(ctx, None)
 
-    @commands.command(help="- Pause playing")
+    @commands.hybrid_command(help="- Pause playing")
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
-    async def pause(self, ctx):
+    async def pause(self, ctx: commands.Context):
         logger.info("command: pause")
         await voice_functions.pause(ctx)
 
-    @commands.command(help="- Stop playing")
+    @commands.hybrid_command(help="- Stop playing")
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
-    async def stop(self, ctx):
+    async def stop(self, ctx: commands.Context):
         logger.info("command: stop")
         await voice_functions.stop(ctx)
 
-    @commands.command(help="- Skip forward 5 seconds", aliases=["fw", "forwards"])
+    @commands.hybrid_command(
+        help="- Skip forward 5 seconds", aliases=["fw", "forwards"]
+    )
     @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
-    async def forward(self, ctx, seconds: int = 5):
+    async def forward(self, ctx: commands.Context, seconds: int = 5):
         logger.info("command: forward")
         if seconds < 1:
             await ctx.send("Invalid number of seconds!")
             return
         await voice_functions.rel_seek(ctx, seconds)
 
-    @commands.command(
+    @commands.hybrid_command(
         help="- Skip back 5 seconds", aliases=["bk", "backward", "backwards"]
     )
     @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
-    async def back(self, ctx, seconds: int = 5):
+    async def back(self, ctx: commands.Context, seconds: int = 5):
         logger.info("command: back")
         if seconds < 1:
             await ctx.send("Invalid number of seconds!")
             return
         await voice_functions.rel_seek(ctx, seconds * -1)
 
-    @commands.command(help="- Replay", aliases=["rp", "re"])
+    @commands.hybrid_command(help="- Replay", aliases=["rp", "re"])
     @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
-    async def replay(self, ctx):
+    async def replay(self, ctx: commands.Context):
         logger.info("command: replay")
         await voice_functions.rel_seek(ctx, None)
 
-    @commands.command(help="- Disconnect from voice", aliases=["dc"])
+    @commands.hybrid_command(help="- Disconnect from voice", aliases=["dc"])
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
-    async def disconnect(self, ctx):
+    async def disconnect(self, ctx: commands.Context):
         logger.info("command: disconnect")
         current_voice = database.get(f"voice.server:{ctx.guild.id}")
         if current_voice is not None:
