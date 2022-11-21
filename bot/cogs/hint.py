@@ -37,5 +37,5 @@ class Hint(commands.Cog):
             await ctx.send("You need to ask for a bird first!")
 
 
-def setup(bot):
-    bot.add_cog(Hint(bot))
+async def setup(bot):
+    await bot.add_cog(Hint(bot))

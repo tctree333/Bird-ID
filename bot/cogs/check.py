@@ -18,6 +18,7 @@ import string
 from difflib import get_close_matches
 
 import discord
+import discord.ext.commands.view
 from discord.ext import commands
 
 import bot.voice as voice_functions
@@ -202,11 +203,12 @@ class Check(commands.Cog):
                 message=message,
                 bot=self.bot,
                 prefix="race-autocheck",
+                view=discord.ext.commands.view.StringView(""),
             )
             await self.check(ctx, arg=message.content)
 
 
-def setup(bot):
+async def setup(bot):
     cog = Check(bot)
     bot.add_message_handler(cog.race_autocheck)
-    bot.add_cog(cog)
+    await bot.add_cog(cog)

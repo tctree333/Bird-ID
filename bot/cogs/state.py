@@ -345,9 +345,7 @@ class States(commands.Cog):
 
     async def validate(self, ctx, parsed_birdlist):
         validated_birdlist = []
-        async with aiohttp.ClientSession(
-            cookie_jar=(await cookies())
-        ) as session:
+        async with aiohttp.ClientSession(cookie_jar=(await cookies())) as session:
             logger.info("starting validation")
             await ctx.send("**Validating bird list...**\n*This may take a while.*")
             invalid_output = []
@@ -414,5 +412,5 @@ class States(commands.Cog):
             await handle_error(ctx, error)
 
 
-def setup(bot):
-    bot.add_cog(States(bot))
+async def setup(bot):
+    await bot.add_cog(States(bot))

@@ -61,6 +61,40 @@ class CustomBot(commands.Bot):
     def add_message_handler(self, handler):
         self.on_message_handler.append(handler)
 
+    async def setup_hook(self):
+        # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
+        core_extensions = [
+            "bot.cogs.get_birds",
+            "bot.cogs.check",
+            "bot.cogs.skip",
+            "bot.cogs.hint",
+            "bot.cogs.score",
+            "bot.cogs.stats",
+            "bot.cogs.state",
+            "bot.cogs.sessions",
+            "bot.cogs.race",
+            "bot.cogs.voice",
+            "bot.cogs.meta",
+            "bot.cogs.other",
+        ]
+        extra_extensions = os.getenv("SCIOLY_ID_BOT_EXTRA_COGS", "").strip().split(",")
+
+        for extension in core_extensions + extra_extensions:
+            if extension.strip() == "":
+                continue
+            try:
+                await self.load_extension(extension)
+            except (
+                discord.errors.ClientException,
+                commands.errors.ExtensionNotFound,
+                commands.errors.ExtensionFailed,
+            ) as e:
+                if extension in core_extensions:
+                    logger.exception(f"Failed to load extension {extension}.", e)
+                    capture_exception(e)
+                    raise e
+                logger.error(f"Failed to load extension {extension}.", e)
+
 
 if __name__ == "__main__":
     # Initialize bot
@@ -69,6 +103,7 @@ if __name__ == "__main__":
     # intent.members = True
     intent.messages = True
     intent.voice_states = True
+    intent.message_content = True
 
     cache_flags: discord.MemberCacheFlags = discord.MemberCacheFlags.none()
     cache_flags.voice = True
@@ -98,39 +133,6 @@ if __name__ == "__main__":
         if os.getenv("SCIOLY_ID_BOT_ENABLE_BACKUPS") != "false":
             refresh_backup.start()
 
-    # Here we load our extensions(cogs) that are located in the cogs directory, each cog is a collection of commands
-    core_extensions = [
-        "bot.cogs.get_birds",
-        "bot.cogs.check",
-        "bot.cogs.skip",
-        "bot.cogs.hint",
-        "bot.cogs.score",
-        "bot.cogs.stats",
-        "bot.cogs.state",
-        "bot.cogs.sessions",
-        "bot.cogs.race",
-        "bot.cogs.voice",
-        "bot.cogs.meta",
-        "bot.cogs.other",
-    ]
-    extra_extensions = os.getenv("SCIOLY_ID_BOT_EXTRA_COGS", "").strip().split(",")
-
-    for extension in core_extensions + extra_extensions:
-        if extension.strip() == "":
-            continue
-        try:
-            bot.load_extension(extension)
-        except (
-            discord.errors.ClientException,
-            commands.errors.ExtensionNotFound,
-            commands.errors.ExtensionFailed,
-        ) as e:
-            if extension in core_extensions:
-                logger.exception(f"Failed to load extension {extension}.", e)
-                capture_exception(e)
-                raise e
-            logger.error(f"Failed to load extension {extension}.", e)
-
     if sys.platform == "win32":
         asyncio.set_event_loop(asyncio.ProactorEventLoop())
 
@@ -140,7 +142,7 @@ if __name__ == "__main__":
 
     @bot.check
     async def prechecks(ctx):
-        await ctx.trigger_typing()
+        await ctx.typing()
 
         logger.info("global check: checking permissions")
         await commands.bot_has_permissions(
