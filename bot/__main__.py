@@ -142,7 +142,8 @@ if __name__ == "__main__":
 
     @bot.check
     async def prechecks(ctx):
-        await ctx.typing()
+        if ctx.interaction is None:
+            await ctx.typing()
 
         logger.info("global check: checking permissions")
         await commands.bot_has_permissions(
@@ -151,8 +152,15 @@ if __name__ == "__main__":
 
         logger.info("global check: checking banned")
         if database.zscore("ignore:global", str(ctx.channel.id)) is not None:
+            if ctx.interaction is not None:
+                await ctx.send(
+                    "The owner of the server has disabled commands in this channel.",
+                    ephemeral=True,
+                )
             raise GenericError(code=192)
         if database.zscore("banned:global", str(ctx.author.id)) is not None:
+            if ctx.interaction is not None:
+                await ctx.send("You cannot use this command!", ephemeral=True)
             raise GenericError(code=842)
 
         logger.info("global check: logging command frequency")

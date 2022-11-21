@@ -284,7 +284,8 @@ async def send_bird(
 
     delete = await ctx.send("**Fetching.** This may take a while.")
     # trigger "typing" discord message
-    await ctx.typing()
+    if ctx.interaction is None:
+        await ctx.typing()
 
     try:
         filename, extension = await get_media(ctx, bird, media_type, filters)
