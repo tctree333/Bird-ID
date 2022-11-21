@@ -16,10 +16,12 @@
 
 import datetime
 from io import BytesIO, StringIO
+from typing import Literal
 
 import discord
 import numpy as np
 import pandas as pd
+from discord import app_commands
 from discord.ext import commands
 
 from bot.data import database, logger
@@ -79,13 +81,19 @@ class Stats(commands.Cog):
         return df
 
     # give frequency stats
-    @commands.command(
+    @commands.hybrid_command(
         help="- Gives info on command/bird frequencies",
         usage="[command|commands|c  bird|birds|b] [page]",
         aliases=["freq"],
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def frequency(self, ctx, scope="", page=1):
+    @app_commands.describe(scope="type of frequency", page="page number")
+    async def frequency(
+        self,
+        ctx: commands.Context,
+        scope: Literal["commands", "birds", "command", "c", "bird", "b"],
+        page: int = 1,
+    ):
         logger.info("command: frequency")
 
         if scope in ("command", "commands", "c"):
@@ -95,19 +103,26 @@ class Stats(commands.Cog):
             database_key = "frequency.bird:global"
             title = "Most Frequent Birds"
         else:
-            await ctx.send("**Invalid Scope!**\n*Valid Scopes:* `commands, birds`")
+            await ctx.send(
+                "**Invalid Scope!**\n*Valid Scopes:* `commands, birds`", ephemeral=True
+            )
             return
 
         await send_leaderboard(ctx, title, page, database_key)
 
     # give bot stats
-    @commands.command(
+    @commands.hybrid_command(
         help="- Gives statistics on different topics",
         usage="[topic]",
         aliases=["stat"],
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def stats(self, ctx, topic="help"):
+    @app_commands.describe(topic="stats on what?")
+    async def stats(
+        self,
+        ctx: commands.Context,
+        topic: Literal["scores", "usage", "web", "help", "score", "s", "u", "w"] = "help",
+    ):
         logger.info("command: stats")
 
         if topic in ("scores", "score", "s"):
@@ -121,9 +136,13 @@ class Stats(commands.Cog):
         else:
             valid_topics = ("help", "scores", "usage", "web")
             await ctx.send(
-                f"**`{topic}` is not a valid topic!**\nValid Topics: `{'`, `'.join(valid_topics)}`"
+                f"**`{topic}` is not a valid topic!**\nValid Topics: `{'`, `'.join(valid_topics)}`",
+                ephemeral=True,
             )
             return
+
+        if ctx.interaction is not None:
+            await ctx.typing()
 
         embed = discord.Embed(
             title="Bot Stats",
@@ -377,9 +396,9 @@ class Stats(commands.Cog):
         return
 
     # export data as csv
-    @commands.command(help="- Exports bot data as a csv")
+    @commands.hybrid_command(help="- Exports bot data as a csv")
     @commands.check(CustomCooldown(60.0, bucket=commands.BucketType.channel))
-    async def export(self, ctx):
+    async def export(self, ctx: commands.Context):
         logger.info("command: export")
 
         files = []
@@ -405,6 +424,9 @@ class Stats(commands.Cog):
                 data.to_csv(f, header=False)
                 with BytesIO(f.getvalue().encode("utf-8")) as b:
                     files.append(discord.File(b, filename))
+
+        if ctx.interaction is not None:
+            await ctx.typing()
 
         logger.info("exporting freq command")
         await _export_helper(

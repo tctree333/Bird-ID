@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import datetime
-import typing
+from typing import Literal, Optional, Union
 
 import discord
 import pandas as pd
+from discord import app_commands
 from discord.ext import commands
 from discord.utils import escape_markdown as esc
 
@@ -31,7 +32,7 @@ class Score(commands.Cog):
         self.bot = bot
 
     @staticmethod
-    def _server_total(ctx):
+    def _server_total(ctx: commands.Context):
         logger.info("fetching server totals")
         channels = map(
             lambda x: x.decode("utf-8"),
@@ -193,13 +194,18 @@ class Score(commands.Cog):
         await ctx.send(embed=embed)
 
     # returns total number of correct answers so far
-    @commands.command(
+    @commands.hybrid_command(
         brief="- Total correct answers in a channel or server",
         help="- Total correct answers in a channel or server. Defaults to channel.",
         usage="[server|s]",
     )
     @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.channel))
-    async def score(self, ctx, scope=""):
+    @app_commands.describe(scope="server or channel")
+    async def score(
+        self,
+        ctx: commands.Context,
+        scope: Literal["server", "channel", "s", "c"] = "channel",
+    ):
         logger.info("command: score")
 
         if scope in ("server", "s"):
@@ -216,18 +222,19 @@ class Score(commands.Cog):
             )
 
     # sends correct answers by a user
-    @commands.command(
+    @commands.hybrid_command(
         brief="- How many correct answers given by a user",
         help="- Gives the amount of correct answers by a user.\n"
         + "Mention someone to get their score, don't mention anyone to get your score.",
         aliases=["us"],
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
+    @app_commands.describe(user="The user to check scores for")
     async def userscore(
         self,
-        ctx,
+        ctx: commands.Context,
         *,
-        user: typing.Optional[typing.Union[discord.Member, discord.User, str]] = None,
+        user: Optional[Union[discord.Member, discord.User]] = None,
     ):
         logger.info("command: userscore")
 
@@ -256,13 +263,14 @@ class Score(commands.Cog):
         await ctx.send(embed=embed)
 
     # gives streak of a user
-    @commands.group(
+    @commands.hybrid_group(
         help="- Gives your current/max streak",
         usage="[user]",
         aliases=["streaks", "stk"],
+        fallback="self",
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
-    async def streak(self, ctx):
+    async def streak(self, ctx: commands.Context):
         if ctx.invoked_subcommand is not None:
             return
         logger.info("command: streak")
@@ -312,7 +320,13 @@ class Score(commands.Cog):
         aliases=["lb", "top"],
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
-    async def streak_leaderboard(self, ctx, scope="", page=1):
+    @app_commands.describe(scope="current or max streaks", page="The page to view")
+    async def streak_leaderboard(
+        self,
+        ctx: commands.Context,
+        scope: Literal["current", "max", "now", "c", "m"] = "current",
+        page: int = 1,
+    ):
         logger.info("command: leaderboard")
 
         try:
@@ -339,19 +353,32 @@ class Score(commands.Cog):
             database_key = "streak:global"
             scope = "current"
 
+        if ctx.interaction is not None:
+            await ctx.typing()
+
         await self.user_lb(
             ctx, f"Streak Leaderboard ({scope})", page, database_key, None
         )
 
     # leaderboard - returns top 1-10 users
-    @commands.command(
+    @commands.hybrid_command(
         brief="- Top scores",
         help="- Top scores, either global, server, or monthly.",
         usage="[global|g  server|s  month|monthly|m] [page]",
         aliases=["lb"],
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
-    async def leaderboard(self, ctx, scope="", page=1):
+    @app_commands.describe(
+        scope="global, server, or monthly scores", page="The page to view"
+    )
+    async def leaderboard(
+        self,
+        ctx: commands.Context,
+        scope: Literal[
+            "global", "server", "monthly", "month", "m", "g", "s"
+        ] = "global",
+        page: int = 1,
+    ):
         logger.info("command: leaderboard")
 
         try:
@@ -372,6 +399,9 @@ class Score(commands.Cog):
                 f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, month`"
             )
             return
+
+        if ctx.interaction is not None:
+            await ctx.typing()
 
         if scope in ("server", "s"):
             if ctx.guild is not None:
@@ -398,14 +428,24 @@ class Score(commands.Cog):
         await self.user_lb(ctx, f"Leaderboard ({scope})", page, database_key, data)
 
     # missed - returns top 1-10 missed birds
-    @commands.command(
+    @commands.hybrid_command(
         brief="- Top incorrect birds",
         help="- Top incorrect birds, either global, server, personal, or monthly.",
         usage="[global|g  server|s  me|m  month|monthly|mo] [page]",
         aliases=["m"],
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
-    async def missed(self, ctx, scope="", page=1):
+    @app_commands.describe(
+        scope="global, server, personal, or monthly", page="The page to view"
+    )
+    async def missed(
+        self,
+        ctx: commands.Context,
+        scope: Literal[
+            "global", "server", "me", "monthly", "month", "mo", "g", "s", "m"
+        ] = "global",
+        page: int = 1,
+    ):
         logger.info("command: missed")
 
         try:
@@ -436,6 +476,9 @@ class Score(commands.Cog):
                 f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me, month`"
             )
             return
+
+        if ctx.interaction is not None:
+            await ctx.typing()
 
         if scope in ("server", "s"):
             data = None
