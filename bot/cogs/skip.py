@@ -28,9 +28,9 @@ class Skip(commands.Cog):
         self.bot = bot
 
     # Skip command - no args
-    @commands.command(help="- Skip the current bird to get a new one", aliases=["sk"])
+    @commands.hybrid_command(help="- Skip the current bird to get a new one", aliases=["sk"])
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def skip(self, ctx):
+    async def skip(self, ctx: commands.Context):
         logger.info("command: skip")
 
         currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")

@@ -25,9 +25,9 @@ class Hint(commands.Cog):
         self.bot = bot
 
     # give hint
-    @commands.command(help="- Gives first letter of current bird", aliases=["h"])
+    @commands.hybrid_command(help="- Gives first letter of current bird", aliases=["h"])
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    async def hint(self, ctx):
+    async def hint(self, ctx: commands.Context):
         logger.info("command: hint")
 
         currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
