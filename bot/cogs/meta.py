@@ -35,7 +35,7 @@ class Meta(commands.Cog):
         aliases=["bot_info", "support"],
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def botinfo(self, ctx):
+    async def botinfo(self, ctx: commands.Context):
         logger.info("command: botinfo")
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
@@ -76,7 +76,7 @@ class Meta(commands.Cog):
         help="- Pings the bot and displays latency",
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    async def ping(self, ctx):
+    async def ping(self, ctx: commands.Context):
         logger.info("command: ping")
         lat = round(self.bot.latency * 1000)
         logger.info(f"latency: {lat}")
@@ -85,7 +85,7 @@ class Meta(commands.Cog):
     # invite command - sends invite link
     @commands.hybrid_command(help="- Get the invite link for this bot")
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def invite(self, ctx):
+    async def invite(self, ctx: commands.Context):
         logger.info("command: invite")
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
@@ -110,7 +110,11 @@ class Meta(commands.Cog):
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
     @app_commands.default_permissions(manage_guild=True)
-    async def ignore(self, ctx, channels: commands.Greedy[discord.TextChannel] = None):
+    async def ignore(
+        self,
+        ctx: commands.Context,
+        channels: commands.Greedy[discord.TextChannel] = None,
+    ):
         logger.info("command: ignore")
 
         added = []
@@ -163,7 +167,7 @@ class Meta(commands.Cog):
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
     @app_commands.default_permissions(manage_guild=True)
-    async def noholiday(self, ctx):
+    async def noholiday(self, ctx: commands.Context):
         logger.info("command: noholiday")
 
         if not database.sismember("noholiday:global", str(ctx.guild.id)):
@@ -183,7 +187,9 @@ class Meta(commands.Cog):
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
     @app_commands.default_permissions(manage_guild=True)
-    async def leave(self, ctx, confirm: typing.Optional[bool] = False):
+    async def leave(
+        self, ctx: commands.Context, confirm: typing.Optional[bool] = False
+    ):
         logger.info("command: leave")
 
         if database.exists(f"leave:{ctx.guild.id}"):
@@ -212,7 +218,7 @@ class Meta(commands.Cog):
     @commands.is_owner()
     async def ban(
         self,
-        ctx,
+        ctx: commands.Context,
         *,
         user: typing.Optional[typing.Union[discord.Member, discord.User]] = None,
     ):
@@ -230,7 +236,7 @@ class Meta(commands.Cog):
     @commands.is_owner()
     async def unban(
         self,
-        ctx,
+        ctx: commands.Context,
         *,
         user: typing.Optional[typing.Union[discord.Member, discord.User]] = None,
     ):
@@ -248,7 +254,7 @@ class Meta(commands.Cog):
     @commands.is_owner()
     async def correct(
         self,
-        ctx,
+        ctx: commands.Context,
         *,
         user: typing.Optional[typing.Union[discord.Member, discord.User]] = None,
     ):
@@ -268,7 +274,7 @@ class Meta(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.is_owner()
-    async def sync(self, ctx):
+    async def sync(self, ctx: commands.Context):
         logger.info("command: sync")
         sync = await self.bot.tree.sync()
         await ctx.send(f"Synced {len(sync)} commands")

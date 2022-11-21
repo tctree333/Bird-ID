@@ -101,7 +101,7 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     @app_commands.rename(arg="bird_and_filters")
     @app_commands.describe(arg="The bird name must come before any options.")
-    async def info(self, ctx, *, arg):
+    async def info(self, ctx: commands.Context, *, arg):
         logger.info("command: info")
         arg = arg.lower().strip()
 
@@ -194,7 +194,7 @@ class Other(commands.Cog):
         code="The asset code to search for.",
         bird="The bird name that corresponds to the asset.",
     )
-    async def asset(self, ctx, code: str, *, bird: str):
+    async def asset(self, ctx: commands.Context, code: str, *, bird: str):
         logger.info("command: asset")
 
         guess = bird.strip().lower().replace("-", " ").strip()
@@ -234,7 +234,7 @@ class Other(commands.Cog):
         help="- Lists available Macaulay Library filters.", aliases=["filter"]
     )
     @commands.check(CustomCooldown(8.0, bucket=commands.BucketType.user))
-    async def filters(self, ctx):
+    async def filters(self, ctx: commands.Context):
         logger.info("command: filters")
         filters = Filter.aliases()
         embed = discord.Embed(
@@ -265,7 +265,7 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     @app_commands.describe(state="The specific bird list.")
     @app_commands.autocomplete(state=state_autocomplete)
-    async def list_of_birds(self, ctx, state: str = "NATS"):
+    async def list_of_birds(self, ctx: commands.Context, state: str = "NATS"):
         logger.info("command: list")
 
         state = state.upper()
@@ -323,7 +323,7 @@ class Other(commands.Cog):
     @app_commands.autocomplete(taxon=taxon_autocomplete, state=state_autocomplete)
     async def bird_taxons(
         self,
-        ctx,
+        ctx: commands.Context,
         taxon: str,
         state: str = "NATS",
     ):
@@ -406,7 +406,7 @@ class Other(commands.Cog):
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     @app_commands.rename(arg="query")
     @app_commands.describe(arg="A Wikipedia query")
-    async def wikipedia(self, ctx, *, arg):
+    async def wikipedia(self, ctx: commands.Context, *, arg):
         logger.info("command: wiki")
         try:
             url = get_wiki_url(arg)
@@ -425,14 +425,14 @@ class Other(commands.Cog):
     @commands.check(
         CustomCooldown(180.0, disable=True, bucket=commands.BucketType.user)
     )
-    async def meme(self, ctx):
+    async def meme(self, ctx: commands.Context):
         logger.info("command: meme")
         await ctx.send(random.choice(memeList))
 
     # Send command - for testing purposes only
     @commands.command(help="- send command", hidden=True, aliases=["sendas"])
     @commands.is_owner()
-    async def send_as_bot(self, ctx, *, args):
+    async def send_as_bot(self, ctx: commands.Context, *, args):
         logger.info("command: send")
         logger.info(f"args: {args}")
         channel_id = int(args.split(" ")[0])
@@ -444,7 +444,7 @@ class Other(commands.Cog):
     # # Test command - for testing purposes only
     # @commands.command(help="- test command", hidden=True)
     # @commands.is_owner()
-    # async def cache(self, ctx):
+    # async def cache(self, ctx: commands.Context):
     #     logger.info("command: cache stats")
     #     items = []
     #     with contextlib.suppress(FileNotFoundError):
@@ -461,7 +461,7 @@ class Other(commands.Cog):
     # # Test command - for testing purposes only
     # @commands.command(help="- test command", hidden=True)
     # @commands.is_owner()
-    # async def error(self, ctx):
+    # async def error(self, ctx: commands.Context):
     #     logger.info("command: error")
     #     await ctx.send(1 / 0)
 
