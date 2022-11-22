@@ -18,13 +18,14 @@ import random
 import string
 from typing import Optional
 
+from discord import app_commands
 from discord.ext import commands
 
 import bot.voice as voice_functions
 from bot.core import send_bird
 from bot.data import GenericError, database, goatsuckers, logger, states, taxons
 from bot.data_functions import bird_setup, session_increment
-from bot.filters import Filter, MediaType
+from bot.filters import Filter, MediaType, arg_autocomplete
 from bot.functions import CustomCooldown, build_id_list, check_state_role
 
 BASE_MESSAGE = (
@@ -226,7 +227,7 @@ class Birds(commands.Cog):
                 return
 
             if len(birds) < 5:
-                logger.info(f"list less than 5 items")
+                logger.info("list less than 5 items")
                 await ctx.send(
                     "**Sorry, you must have at least 5 birds in the taxon/state combo."
                     + "**\n*Please try again with a different set of taxons/lists.*"
@@ -400,13 +401,18 @@ class Birds(commands.Cog):
 
     # Bird command - no args
     # help text
-    @commands.command(
+    @commands.hybrid_command(
         help="- Sends a random bird image for you to ID",
         aliases=["b"],
         usage="[filters] [order/family] [state]",
     )
     # 5 second cooldown
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
+    @app_commands.rename(args_str="options")
+    @app_commands.describe(
+        args_str="Macaulay Library filters, bird lists, or taxons. Muliple options can be used at once (even if it doesn't autocomplete)"
+    )
+    @app_commands.autocomplete(args_str=arg_autocomplete)
     async def bird(self, ctx, *, args_str: str = ""):
         logger.info("command: bird")
 
@@ -419,12 +425,17 @@ class Birds(commands.Cog):
         await self.send_bird_(ctx, media, filters, taxon, state)
 
     # picks a random bird call to send
-    @commands.command(
+    @commands.hybrid_command(
         help="- Sends a random bird song for you to ID",
         aliases=["s"],
         usage="[filters] [order/family] [state]",
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
+    @app_commands.rename(args_str="options")
+    @app_commands.describe(
+        args_str="Macaulay Library filters, bird lists, or taxons. Muliple options can be used at once (even if it doesn't autocomplete)"
+    )
+    @app_commands.autocomplete(args_str=arg_autocomplete)
     async def song(self, ctx, *, args_str: str = ""):
         logger.info("command: song")
 
@@ -438,7 +449,7 @@ class Birds(commands.Cog):
 
     # goatsucker command - no args
     # just for fun, no real purpose
-    @commands.command(help="- Sends a random goatsucker to ID", aliases=["gs"])
+    @commands.hybrid_command(help="- Sends a random goatsucker to ID", aliases=["gs"])
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
     async def goatsucker(self, ctx):
         logger.info("command: goatsucker")
