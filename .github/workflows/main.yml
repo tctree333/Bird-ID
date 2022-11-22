@@ -22,7 +22,7 @@ jobs:
     #         --health-timeout 3s
     #         --health-retries 5
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # - name: Python Tests
       #   uses: tctree333/SciOlyID-Actions/python-tests@master
@@ -33,12 +33,18 @@ jobs:
       #     CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
 
       - name: Sentry Deploys
-        uses: tctree333/SciOlyID-Actions/sentry@master
-        with:
-          sentry auth: ${{ secrets.SENTRY_TOKEN }}
-          sentry org: 'sciolyid'
-          sentry project 1: bird-id-discord
-          sentry project 2: bird-id-api
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_INTEGRATION_TOKEN }}
+          SENTRY_ORG: sciolyid
+          SENTRY_PROJECT: bird-id-discord
+
+      - name: Sentry Deploys
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_INTEGRATION_TOKEN }}
+          SENTRY_ORG: sciolyid
+          SENTRY_PROJECT: bird-id-api
 
       - name: Deploy to Dokku
         uses: tctree333/SciOlyID-Actions/deploy-dokku@master
