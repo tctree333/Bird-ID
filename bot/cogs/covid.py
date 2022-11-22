@@ -232,5 +232,5 @@ class COVID(commands.Cog):
         await ctx.send("Ok, done!")
 
 
-def setup(bot):
-    bot.add_cog(COVID(bot))
+async def setup(bot):
+    await bot.add_cog(COVID(bot))

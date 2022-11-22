@@ -18,12 +18,13 @@ import datetime
 import time
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.utils import escape_markdown as esc
 
 import bot.voice as voice_functions
 from bot.data import database, logger, states, taxons
-from bot.filters import Filter
+from bot.filters import Filter, arg_autocomplete
 from bot.functions import CustomCooldown, fetch_get_user
 
 
@@ -31,7 +32,7 @@ class Race(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def _get_options(self, ctx):
+    async def _get_options(self, ctx: commands.Context):
         filter_int, state, media, limit, taxon, strict, alpha = database.hmget(
             f"race.data:{ctx.channel.id}",
             ["filter", "state", "media", "limit", "taxon", "strict", "alpha"],
@@ -48,7 +49,7 @@ class Race(commands.Cog):
         )
         return options
 
-    async def _send_stats(self, ctx, preamble):
+    async def _send_stats(self, ctx: commands.Context, preamble):
         placings = 5
         database_key = f"race.scores:{ctx.channel.id}"
         if database.zcard(database_key) == 0:
@@ -111,7 +112,7 @@ class Race(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    async def stop_race_(self, ctx):
+    async def stop_race_(self, ctx: commands.Context):
         if Filter.from_int(
             int(database.hget(f"race.data:{ctx.channel.id}", "filter"))
         ).vc:
@@ -149,7 +150,7 @@ class Race(commands.Cog):
         database.hset(f"channel:{ctx.channel.id}", "bird", "")
         database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
-    @commands.group(
+    @commands.hybrid_group(
         brief="- Base race command",
         help="- Base race command\n"
         + "Races allow you to compete with others to see who can ID a bird first. "
@@ -159,7 +160,7 @@ class Race(commands.Cog):
         + "Races end when a player is the first to correctly ID a set amount of birds. (default 10)",
     )
     @commands.guild_only()
-    async def race(self, ctx):
+    async def race(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
             await ctx.send(
                 "**Invalid subcommand passed.**\n*Valid Subcommands:* `start, view, stop`"
@@ -175,7 +176,12 @@ class Race(commands.Cog):
         usage="[state] [filters] [taxon] [amount to win (default 10)]",
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    async def start(self, ctx, *, args_str: str = ""):
+    @app_commands.rename(args_str="options")
+    @app_commands.describe(
+        args_str="Macaulay Library filters, bird lists, or taxons. Muliple options can be used at once (even if it doesn't autocomplete)"
+    )
+    @app_commands.autocomplete(args_str=arg_autocomplete)
+    async def start(self, ctx: commands.Context, *, args_str: str = ""):
         logger.info("command: start race")
 
         if not str(ctx.channel.name).startswith("racing"):
@@ -325,7 +331,7 @@ class Race(commands.Cog):
         help="- Views race.\nRaces allow you to compete with your friends to ID a certain bird first.",
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    async def view(self, ctx):
+    async def view(self, ctx: commands.Context):
         logger.info("command: view race")
 
         if database.exists(f"race.data:{ctx.channel.id}"):
@@ -337,7 +343,7 @@ class Race(commands.Cog):
 
     @race.command(help="- Stops race", aliases=["stp", "end"])
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    async def stop(self, ctx):
+    async def stop(self, ctx: commands.Context):
         logger.info("command: stop race")
 
         if database.exists(f"race.data:{ctx.channel.id}"):
@@ -348,5 +354,5 @@ class Race(commands.Cog):
             )
 
 
-def setup(bot):
-    bot.add_cog(Race(bot))
+async def setup(bot):
+    await bot.add_cog(Race(bot))

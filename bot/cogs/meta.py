@@ -17,6 +17,7 @@
 import typing
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.utils import escape_markdown as esc
 
@@ -29,12 +30,12 @@ class Meta(commands.Cog):
         self.bot = bot
 
     # bot info command - gives info on bot
-    @commands.command(
+    @commands.hybrid_command(
         help="- Gives info on bot, support server invite, stats",
         aliases=["bot_info", "support"],
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def botinfo(self, ctx):
+    async def botinfo(self, ctx: commands.Context):
         logger.info("command: botinfo")
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
@@ -71,20 +72,20 @@ class Meta(commands.Cog):
         await ctx.send("https://discord.gg/2HbshwGjnm")
 
     # ping command - gives bot latency
-    @commands.command(
+    @commands.hybrid_command(
         help="- Pings the bot and displays latency",
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    async def ping(self, ctx):
+    async def ping(self, ctx: commands.Context):
         logger.info("command: ping")
         lat = round(self.bot.latency * 1000)
         logger.info(f"latency: {lat}")
         await ctx.send(f"**Pong!** The WebSocket latency is `{lat}` ms.")
 
     # invite command - sends invite link
-    @commands.command(help="- Get the invite link for this bot")
+    @commands.hybrid_command(help="- Get the invite link for this bot")
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def invite(self, ctx):
+    async def invite(self, ctx: commands.Context):
         logger.info("command: invite")
 
         embed = discord.Embed(type="rich", colour=discord.Color.blurple())
@@ -94,21 +95,26 @@ class Meta(commands.Cog):
             value="To invite this bot to your own server, use the following invite links.\n"
             + "**Bird-ID:** https://discord.com/api/oauth2/authorize?client_id=601917808137338900&permissions=268486656&scope=bot\n\n"
             + "**By adding this bot to a server, you are agreeing to our `Privacy Policy` and `Terms of Service`**.\n"
-            + "<https://sciolyid.org/privacy/, <https://sciolyid.org/terms/>",
+            + "<https://sciolyid.org/privacy/>, <https://sciolyid.org/terms/>",
             inline=False,
         )
         await ctx.send(embed=embed)
         await ctx.send("https://discord.gg/2HbshwGjnm")
 
     # ignore command - ignores a given channel
-    @commands.command(
+    @commands.hybrid_command(
         brief="- Ignore all commands in a channel",
         help="- Ignore all commands in a channel. The 'manage guild' permission is needed to use this command.",
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
-    async def ignore(self, ctx, channels: commands.Greedy[discord.TextChannel] = None):
+    @app_commands.default_permissions(manage_guild=True)
+    async def ignore(
+        self,
+        ctx: commands.Context,
+        channels: commands.Greedy[discord.TextChannel] = None,
+    ):
         logger.info("command: ignore")
 
         added = []
@@ -152,7 +158,7 @@ class Meta(commands.Cog):
         )
 
     # noholiday command
-    @commands.command(
+    @commands.hybrid_command(
         brief="- Disable holidays in a server",
         help="- Disable holidays in a server. The 'manage guild' permission is needed to use this command.",
         aliases=["holidays", "holiday"],
@@ -160,7 +166,8 @@ class Meta(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
-    async def noholiday(self, ctx):
+    @app_commands.default_permissions(manage_guild=True)
+    async def noholiday(self, ctx: commands.Context):
         logger.info("command: noholiday")
 
         if not database.sismember("noholiday:global", str(ctx.guild.id)):
@@ -171,7 +178,7 @@ class Meta(commands.Cog):
             database.srem("noholiday:global", str(ctx.guild.id))
 
     # leave command - removes itself from guild
-    @commands.command(
+    @commands.hybrid_command(
         brief="- Remove the bot from the guild",
         help="- Remove the bot from the guild. The 'manage guild' permission is needed to use this command.",
         aliases=["kick"],
@@ -179,7 +186,10 @@ class Meta(commands.Cog):
     @commands.check(CustomCooldown(2.0, bucket=commands.BucketType.channel))
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
-    async def leave(self, ctx, confirm: typing.Optional[bool] = False):
+    @app_commands.default_permissions(manage_guild=True)
+    async def leave(
+        self, ctx: commands.Context, confirm: typing.Optional[bool] = False
+    ):
         logger.info("command: leave")
 
         if database.exists(f"leave:{ctx.guild.id}"):
@@ -208,7 +218,7 @@ class Meta(commands.Cog):
     @commands.is_owner()
     async def ban(
         self,
-        ctx,
+        ctx: commands.Context,
         *,
         user: typing.Optional[typing.Union[discord.Member, discord.User]] = None,
     ):
@@ -226,7 +236,7 @@ class Meta(commands.Cog):
     @commands.is_owner()
     async def unban(
         self,
-        ctx,
+        ctx: commands.Context,
         *,
         user: typing.Optional[typing.Union[discord.Member, discord.User]] = None,
     ):
@@ -244,7 +254,7 @@ class Meta(commands.Cog):
     @commands.is_owner()
     async def correct(
         self,
-        ctx,
+        ctx: commands.Context,
         *,
         user: typing.Optional[typing.Union[discord.Member, discord.User]] = None,
     ):
@@ -262,6 +272,13 @@ class Meta(commands.Cog):
             items_per_page=25,
         )
 
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def sync(self, ctx: commands.Context):
+        logger.info("command: sync")
+        sync = await self.bot.tree.sync()
+        await ctx.send(f"Synced {len(sync)} commands")
 
-def setup(bot):
-    bot.add_cog(Meta(bot))
+
+async def setup(bot):
+    await bot.add_cog(Meta(bot))

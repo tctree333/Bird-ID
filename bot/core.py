@@ -282,15 +282,17 @@ async def send_bird(
         logger.info("choosing specific Screech Owl")
         bird = random.choice(screech_owls)
 
-    delete = await ctx.send("**Fetching.** This may take a while.")
     # trigger "typing" discord message
-    await ctx.trigger_typing()
+    if ctx.interaction is None:
+        delete = await ctx.send("**Fetching.** This may take a while.")
+        await ctx.typing()
 
     try:
         filename, extension = await get_media(ctx, bird, media_type, filters)
         macaulay_asset_id = filename.split("/")[-1].split(".")[0]
     except GenericError as e:
-        await delete.delete()
+        if ctx.interaction is None:
+            await delete.delete()
         if e.code == 100:
             await ctx.send(
                 f"**This combination of filters has no valid {media_type.name()} for the current bird.**"
@@ -316,8 +318,11 @@ async def send_bird(
         return
 
     if os.stat(filename).st_size > MAX_FILESIZE:  # another filesize check (4mb)
-        await delete.delete()
-        await ctx.send("**Oops! File too large :(**\n*Please try again.*")
+        if ctx.interaction is None:
+            await delete.delete()
+        await ctx.send(
+            "**Oops! File too large :(**\n*Please try again.*", ephemeral=True
+        )
         return
 
     if media_type is MediaType.IMAGE:
@@ -333,23 +338,27 @@ async def send_bird(
         if audio_file is not None and audio_file.tag is not None:
             audio_file.tag.remove(filename)
 
+    output_message = ""
     if message is not None:
-        await ctx.send(message)
+        output_message += message
 
     if macaulay_asset_id:
-        await ctx.send(
-            "**Asset Code**: `"
+        output_message += (
+            "\n**Asset Code**: `"
             + encrypt_chacha(int(macaulay_asset_id).to_bytes(8, "big").strip(b"\x00"))
             + "`"
         )
 
     if media_type is MediaType.SONG and filters.vc:
+        await ctx.send(output_message)
         await voice_functions.play(ctx, filename)
     else:
         # change filename to avoid spoilers
         file_obj = discord.File(filename, filename=f"bird.{extension}")
-        await ctx.send(file=file_obj)
-    await delete.delete()
+        await ctx.send(output_message, file=file_obj)
+
+    if ctx.interaction is None:
+        await delete.delete()
 
 
 async def get_media(ctx, bird: str, media_type: MediaType, filters: Filter):
