@@ -141,7 +141,7 @@ if __name__ == "__main__":
     ######
 
     @bot.check
-    async def prechecks(ctx: discord.Context):
+    async def prechecks(ctx: commands.Context):
         if ctx.interaction is None:
             await ctx.typing()
 
