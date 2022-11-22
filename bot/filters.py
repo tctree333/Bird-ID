@@ -16,8 +16,13 @@
 
 import re
 from enum import Enum
-from typing import Any, Optional, Union, Dict, Tuple
+from typing import Any, Optional, Union, Dict, Tuple, List
 from collections.abc import Iterable
+
+import discord
+from discord import app_commands
+
+from bot.data import states, taxons
 
 # Macaulay Library URLs
 CATALOG_URL = "https://search.macaulaylibrary.org/api/v2/search?sort=rating_rank_desc"
@@ -247,7 +252,7 @@ class Filter:
     @classmethod
     def from_int(cls, number: int):
         """Convert an int to a filter object."""
-        if number >= 2 ** 48 or number < 0:
+        if number >= 2**48 or number < 0:
             raise ValueError("Input number out of bounds.")
         me = cls()
 
@@ -270,7 +275,7 @@ class Filter:
         """Combine/toggle filters by xor-ing the integer representations."""
         if isinstance(other, self.__class__):
             other = other.to_int()
-        if other >= 2 ** 48 or other < 0:
+        if other >= 2**48 or other < 0:
             raise ValueError("Input number out of bounds.")
         return self.from_int(other ^ self.to_int())
 
@@ -474,3 +479,52 @@ class Filter:
             title[0]: {name[0]: alias for name, alias in subdict.items()}
             for title, subdict in aliases.items()
         }
+
+
+async def filter_autocomplete(
+    _: discord.Interaction, current: str
+) -> List[app_commands.Choice[str]]:
+    alias_lookup = Filter.aliases(lookup=True)
+    names = Filter.aliases(display_lookup=True)
+    choices = {}
+    for alias, (title, name) in alias_lookup.items():
+        if current.lower() in alias.lower():
+            choices[names[title][0]] = app_commands.Choice(
+                name=f"{names[title][0]}: {names[title][1][name]}",
+                value=name,
+            )
+    return list(choices.values())[:25]
+
+
+async def state_autocomplete(
+    _: discord.Interaction,
+    current: str,
+) -> list[app_commands.Choice[str]]:
+    return [
+        app_commands.Choice(name=state, value=state)
+        for state in states
+        if current.lower() in state.lower()
+    ][:25]
+
+
+async def taxon_autocomplete(
+    _: discord.Interaction,
+    current: str,
+) -> list[app_commands.Choice[str]]:
+    return [
+        app_commands.Choice(name=taxon, value=taxon)
+        for taxon in taxons
+        if current.lower() in taxon.lower()
+    ][:25]
+
+
+async def arg_autocomplete(
+    _: discord.Interaction,
+    current: str,
+) -> list[app_commands.Choice[str]]:
+    return (
+        []
+        + await state_autocomplete(_, current)
+        + await taxon_autocomplete(_, current)
+        + await filter_autocomplete(_, current)
+    )[:25]

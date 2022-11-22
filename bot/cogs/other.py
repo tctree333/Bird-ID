@@ -37,33 +37,11 @@ from bot.data import (
     states,
     taxons,
 )
-from bot.filters import Filter, MediaType
+from bot.filters import Filter, MediaType, state_autocomplete, taxon_autocomplete
 from bot.functions import CustomCooldown, build_id_list, cache, decrypt_chacha
 
 # Discord max message length is 2000 characters, leave some room just in case
 MAX_MESSAGE = 1900
-
-
-async def state_autocomplete(
-    _: discord.Interaction,
-    current: str,
-) -> list[app_commands.Choice[str]]:
-    return [
-        app_commands.Choice(name=state, value=state)
-        for state in states
-        if current.lower() in state.lower()
-    ][:25]
-
-
-async def taxon_autocomplete(
-    _: discord.Interaction,
-    current: str,
-) -> list[app_commands.Choice[str]]:
-    return [
-        app_commands.Choice(name=taxon, value=taxon)
-        for taxon in taxons
-        if current.lower() in taxon.lower()
-    ][:25]
 
 
 class Other(commands.Cog):
