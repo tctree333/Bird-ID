@@ -141,7 +141,7 @@ if __name__ == "__main__":
     ######
 
     @bot.check
-    async def prechecks(ctx):
+    async def prechecks(ctx: discord.Context):
         if ctx.interaction is None:
             await ctx.typing()
 
@@ -212,7 +212,7 @@ if __name__ == "__main__":
     # GLOBAL ERROR CHECKING
     ######
     @bot.event
-    async def on_command_error(ctx, error):
+    async def on_command_error(ctx: commands.Context, error):
         """Handles errors for all commands without local error handlers."""
         logger.info("Error: " + str(error))
 

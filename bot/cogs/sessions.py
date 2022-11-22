@@ -31,7 +31,7 @@ class Sessions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def _get_options(self, ctx):
+    async def _get_options(self, ctx: commands.Context):
         filter_int, state, taxon, wiki, strict = database.hmget(
             f"session.data:{ctx.author.id}",
             ["filter", "state", "taxon", "wiki", "strict"],
@@ -48,7 +48,7 @@ class Sessions(commands.Cog):
         )
         return options
 
-    async def _get_stats(self, ctx):
+    async def _get_stats(self, ctx: commands.Context):
         start, correct, incorrect, total = map(
             int,
             database.hmget(
@@ -73,7 +73,7 @@ class Sessions(commands.Cog):
         )
         return stats
 
-    async def _send_stats(self, ctx, preamble):
+    async def _send_stats(self, ctx: commands.Context, preamble):
         database_key = f"session.incorrect:{ctx.author.id}"
 
         embed = discord.Embed(
@@ -112,7 +112,7 @@ class Sessions(commands.Cog):
         + "state specific bird lists, specific bird taxons, or bird age/sex. ",
         aliases=["ses", "sesh"],
     )
-    async def session(self, ctx):
+    async def session(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
             await ctx.send(
                 "**Invalid subcommand passed.**\n*Valid Subcommands:* `start, view, stop`"
@@ -134,7 +134,7 @@ class Sessions(commands.Cog):
         args_str="Macaulay Library filters, bird lists, or taxons. Muliple options can be used at once (even if it doesn't autocomplete)"
     )
     @app_commands.autocomplete(args_str=arg_autocomplete)
-    async def start(self, ctx, *, args_str: str = ""):
+    async def start(self, ctx: commands.Context, *, args_str: str = ""):
         logger.info("command: start session")
 
         if database.exists(f"session.data:{ctx.author.id}"):
@@ -216,7 +216,7 @@ class Sessions(commands.Cog):
         args_str="Macaulay Library filters, bird lists, or taxons. Muliple options can be used at once (even if it doesn't autocomplete)"
     )
     @app_commands.autocomplete(args_str=arg_autocomplete)
-    async def edit(self, ctx, *, args_str: str = ""):
+    async def edit(self, ctx: commands.Context, *, args_str: str = ""):
         logger.info("command: view session")
 
         if not database.exists(f"session.data:{ctx.author.id}"):
@@ -295,7 +295,7 @@ class Sessions(commands.Cog):
     # stops session
     @session.command(help="- Stops session", aliases=["stp", "end"])
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
-    async def stop(self, ctx):
+    async def stop(self, ctx: commands.Context):
         logger.info("command: stop session")
 
         if database.exists(f"session.data:{ctx.author.id}"):

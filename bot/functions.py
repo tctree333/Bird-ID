@@ -667,6 +667,12 @@ async def handle_error(ctx, error):
             ephemeral=True,
         )
 
+    elif isinstance(error, commands.BadLiteralArgument):
+        await ctx.send(
+            f"The argument passed was invalid.\n**Valid Arguments:** `{'`, `'.join(error.literals)}`.",
+            ephemeral=True,
+        )
+
     elif isinstance(error, commands.BotMissingPermissions):
         await ctx.send(
             "**The bot does not have enough permissions to fully function.**\n"

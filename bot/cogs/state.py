@@ -65,7 +65,7 @@ class States(commands.Cog):
     @app_commands.describe(args="the bird list")
     @app_commands.rename(args="list")
     @app_commands.autocomplete(args=state_autocomplete)
-    async def state(self, ctx, *, args: str):
+    async def state(self, ctx: commands.Context, *, args: str):
         logger.info("command: state set")
 
         raw_roles = ctx.author.roles
@@ -161,8 +161,10 @@ class States(commands.Cog):
     @commands.dm_only()
     async def custom(
         self,
-        ctx,
-        command: Literal["replace", "delete", "confirm", "validate", "view", "set"] = "set",
+        ctx: commands.Context,
+        command: Literal[
+            "replace", "delete", "confirm", "validate", "view", "set"
+        ] = "set",
         attachment: Optional[discord.Attachment] = None,
     ):
         logger.info("command: custom list set")

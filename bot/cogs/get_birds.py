@@ -413,7 +413,7 @@ class Birds(commands.Cog):
         args_str="Macaulay Library filters, bird lists, or taxons. Muliple options can be used at once (even if it doesn't autocomplete)"
     )
     @app_commands.autocomplete(args_str=arg_autocomplete)
-    async def bird(self, ctx, *, args_str: str = ""):
+    async def bird(self, ctx: commands.Context, *, args_str: str = ""):
         logger.info("command: bird")
 
         filters, taxon, state = await self.parse(ctx, args_str)
@@ -436,7 +436,7 @@ class Birds(commands.Cog):
         args_str="Macaulay Library filters, bird lists, or taxons. Muliple options can be used at once (even if it doesn't autocomplete)"
     )
     @app_commands.autocomplete(args_str=arg_autocomplete)
-    async def song(self, ctx, *, args_str: str = ""):
+    async def song(self, ctx: commands.Context, *, args_str: str = ""):
         logger.info("command: song")
 
         filters, taxon, state = await self.parse(ctx, args_str)
@@ -451,7 +451,7 @@ class Birds(commands.Cog):
     # just for fun, no real purpose
     @commands.hybrid_command(help="- Sends a random goatsucker to ID", aliases=["gs"])
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.channel))
-    async def goatsucker(self, ctx):
+    async def goatsucker(self, ctx: commands.Context):
         logger.info("command: goatsucker")
 
         if database.exists(f"race.data:{ctx.channel.id}"):

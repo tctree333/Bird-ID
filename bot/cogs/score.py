@@ -249,7 +249,9 @@ class Score(commands.Cog):
                 score = int(score)
                 user = f"<@{usera}>"
             else:
-                await ctx.send("This user does not exist on our records!")
+                await ctx.send(
+                    "This user does not exist on our records!", ephemeral=True
+                )
                 return
         else:
             user = f"<@{ctx.author.id}>"
@@ -293,7 +295,9 @@ class Score(commands.Cog):
                 max_streak = int(max_streak)
                 user = f"<@{usera}>"
             else:
-                await ctx.send("This user does not exist on our records!")
+                await ctx.send(
+                    "This user does not exist on our records!", ephemeral=True
+                )
                 return
         else:
             user = f"<@{ctx.author.id}>"
@@ -343,7 +347,10 @@ class Score(commands.Cog):
 
         if not scope in ("current", "now", "c", "max", "m"):
             logger.info("invalid scope")
-            await ctx.send(f"**{scope} is not a valid scope!**\n*Valid Scopes:* `max`")
+            await ctx.send(
+                f"**{scope} is not a valid scope!**\n*Valid Scopes:* `max`",
+                ephemeral=True,
+            )
             return
 
         if scope in ("max", "m"):
@@ -396,7 +403,8 @@ class Score(commands.Cog):
         if not scope in ("global", "server", "month", "monthly", "m", "g", "s"):
             logger.info("invalid scope")
             await ctx.send(
-                f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, month`"
+                f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, month`",
+                ephemeral=True,
             )
             return
 
@@ -473,7 +481,8 @@ class Score(commands.Cog):
         ):
             logger.info("invalid scope")
             await ctx.send(
-                f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me, month`"
+                f"**{scope} is not a valid scope!**\n*Valid Scopes:* `global, server, me, month`",
+                ephemeral=True,
             )
             return
 

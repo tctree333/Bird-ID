@@ -59,7 +59,7 @@ class Check(commands.Cog):
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
     @app_commands.rename(arg="guess")
     @app_commands.describe(arg="your answer")
-    async def check(self, ctx, *, arg: str):
+    async def check(self, ctx: commands.Context, *, arg: str):
         logger.info("command: check")
 
         currentBird = database.hget(f"channel:{ctx.channel.id}", "bird").decode("utf-8")
