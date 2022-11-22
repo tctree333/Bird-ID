@@ -18,12 +18,13 @@ import datetime
 import time
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.utils import escape_markdown as esc
 
 import bot.voice as voice_functions
 from bot.data import database, logger, states, taxons
-from bot.filters import Filter
+from bot.filters import Filter, arg_autocomplete
 from bot.functions import CustomCooldown, fetch_get_user
 
 
@@ -149,7 +150,7 @@ class Race(commands.Cog):
         database.hset(f"channel:{ctx.channel.id}", "bird", "")
         database.hset(f"channel:{ctx.channel.id}", "answered", "1")
 
-    @commands.group(
+    @commands.hybrid_group(
         brief="- Base race command",
         help="- Base race command\n"
         + "Races allow you to compete with others to see who can ID a bird first. "
@@ -175,6 +176,11 @@ class Race(commands.Cog):
         usage="[state] [filters] [taxon] [amount to win (default 10)]",
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
+    @app_commands.rename(args_str="options")
+    @app_commands.describe(
+        args_str="Macaulay Library filters, bird lists, or taxons. Muliple options can be used at once (even if it doesn't autocomplete)"
+    )
+    @app_commands.autocomplete(args_str=arg_autocomplete)
     async def start(self, ctx, *, args_str: str = ""):
         logger.info("command: start race")
 

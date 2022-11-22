@@ -19,10 +19,11 @@ import textwrap
 import time
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 from bot.data import database, logger, states, taxons
-from bot.filters import Filter
+from bot.filters import Filter, arg_autocomplete
 from bot.functions import CustomCooldown, check_state_role
 
 
@@ -102,7 +103,7 @@ class Sessions(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.group(
+    @commands.hybrid_group(
         brief="- Base session command",
         help="- Base session command\n"
         + "Sessions will record your activity for an amount of time and "
@@ -128,6 +129,11 @@ class Sessions(commands.Cog):
         usage="[state] [taxons] [filters]",
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
+    @app_commands.rename(args_str="options")
+    @app_commands.describe(
+        args_str="Macaulay Library filters, bird lists, or taxons. Muliple options can be used at once (even if it doesn't autocomplete)"
+    )
+    @app_commands.autocomplete(args_str=arg_autocomplete)
     async def start(self, ctx, *, args_str: str = ""):
         logger.info("command: start session")
 
@@ -205,6 +211,11 @@ class Sessions(commands.Cog):
         usage="[state] [taxons] [filters]",
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.user))
+    @app_commands.rename(args_str="options")
+    @app_commands.describe(
+        args_str="Macaulay Library filters, bird lists, or taxons. Muliple options can be used at once (even if it doesn't autocomplete)"
+    )
+    @app_commands.autocomplete(args_str=arg_autocomplete)
     async def edit(self, ctx, *, args_str: str = ""):
         logger.info("command: view session")
 

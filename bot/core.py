@@ -291,7 +291,8 @@ async def send_bird(
         filename, extension = await get_media(ctx, bird, media_type, filters)
         macaulay_asset_id = filename.split("/")[-1].split(".")[0]
     except GenericError as e:
-        await delete.delete()
+        if ctx.interaction is None:
+            await delete.delete()
         if e.code == 100:
             await ctx.send(
                 f"**This combination of filters has no valid {media_type.name()} for the current bird.**"
@@ -317,7 +318,8 @@ async def send_bird(
         return
 
     if os.stat(filename).st_size > MAX_FILESIZE:  # another filesize check (4mb)
-        await delete.delete()
+        if ctx.interaction is None:
+            await delete.delete()
         await ctx.send(
             "**Oops! File too large :(**\n*Please try again.*", ephemeral=True
         )
