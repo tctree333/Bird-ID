@@ -18,14 +18,17 @@ import asyncio
 import re
 import string
 import time
+from typing import Literal, Optional
 
 import aiohttp
 import discord
+from discord import app_commands
 from discord.ext import commands
 from sentry_sdk import capture_message
 
 from bot.core import valid_bird, cookies
 from bot.data import database, logger, states
+from bot.filters import state_autocomplete
 from bot.functions import CustomCooldown, auto_decode, handle_error
 
 
@@ -53,11 +56,16 @@ class States(commands.Cog):
             await ctx.send(page)
 
     # set state role
-    @commands.command(help="- Sets your state", name="set", aliases=["state"])
+    @commands.hybrid_command(
+        help="- Sets a specific bird list as a role", name="set", aliases=["state"]
+    )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     @commands.guild_only()
     @commands.bot_has_permissions(manage_roles=True)
-    async def state(self, ctx, *, args):
+    @app_commands.describe(args="the bird list")
+    @app_commands.rename(args="list")
+    @app_commands.autocomplete(args=state_autocomplete)
+    async def state(self, ctx, *, args: str):
         logger.info("command: state set")
 
         raw_roles = ctx.author.roles
@@ -70,7 +78,8 @@ class States(commands.Cog):
             or database.exists(f"custom.confirm:{ctx.author.id}")
         ):
             await ctx.send(
-                "Sorry, you don't have a custom list! Use `b!custom` to set your custom list."
+                "Sorry, you don't have a custom list! Use `b!custom` to set your custom list.",
+                ephemeral=True,
             )
             return
 
@@ -139,7 +148,7 @@ class States(commands.Cog):
         )
 
     # set custom bird list
-    @commands.command(
+    @commands.hybrid_command(
         brief="- Sets your custom bird list",
         help="- Sets your custom bird list. "
         + "This command only works in DMs. Lists have a max size of 200 birds. "
@@ -150,15 +159,19 @@ class States(commands.Cog):
     )
     @commands.check(CustomCooldown(5.0, bucket=commands.BucketType.user))
     @commands.dm_only()
-    async def custom(self, ctx, *, args=""):
+    async def custom(
+        self,
+        ctx,
+        command: Literal["replace", "delete", "confirm", "validate", "view", "set"] = "set",
+        attachment: Optional[discord.Attachment] = None,
+    ):
         logger.info("command: custom list set")
 
-        args = args.lower().strip().split(" ")
-        logger.info(f"parsed args: {args}")
+        logger.info(f"argument: {command}")
 
         if (
-            "replace" not in args
-            and ctx.message.attachments
+            "replace" not in command
+            and attachment
             and database.exists(f"custom.list:{ctx.author.id}")
         ):
             await ctx.send(
@@ -168,7 +181,7 @@ class States(commands.Cog):
             )
             return
 
-        if "delete" in args and database.exists(f"custom.list:{ctx.author.id}"):
+        if "delete" in command and database.exists(f"custom.list:{ctx.author.id}"):
             if (
                 database.exists(f"custom.confirm:{ctx.author.id}")
                 and database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8")
@@ -188,7 +201,7 @@ class States(commands.Cog):
             return
 
         if (
-            "confirm" in args
+            "confirm" in command
             and database.exists(f"custom.confirm:{ctx.author.id}")
             and database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8")
             == "confirm"
@@ -205,7 +218,7 @@ class States(commands.Cog):
             return
 
         if (
-            "validate" in args
+            "validate" in command
             and database.exists(f"custom.confirm:{ctx.author.id}")
             and database.get(f"custom.confirm:{ctx.author.id}").decode("utf-8")
             == "valid"
@@ -230,7 +243,7 @@ class States(commands.Cog):
             )
             return
 
-        if "view" in args:
+        if "view" in command:
             if not database.exists(f"custom.list:{ctx.author.id}"):
                 await ctx.send(
                     "You don't have a custom list. To add a custom list, "
@@ -249,7 +262,7 @@ class States(commands.Cog):
             await self.broken_send(ctx, birdlist, between="```\n")
             return
 
-        if not database.exists(f"custom.list:{ctx.author.id}") or "replace" in args:
+        if not database.exists(f"custom.list:{ctx.author.id}") or "replace" in command:
             # user inputted bird list, now validating
             start = time.perf_counter()
             if database.exists(f"custom.cooldown:{ctx.author.id}"):
@@ -258,13 +271,13 @@ class States(commands.Cog):
                 )
                 return
             logger.info("reading received bird list")
-            if not ctx.message.attachments:
+            if not attachment:
                 logger.info("no file detected")
                 await ctx.send(
                     "Sorry, no file was detected. Upload your txt file and put `b!custom` in the **Add a Comment** section."
                 )
                 return
-            decoded = await auto_decode(await ctx.message.attachments[0].read())
+            decoded = await auto_decode(await attachment.read())
             if not decoded:
                 logger.info("invalid character encoding")
                 await ctx.send(
