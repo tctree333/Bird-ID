@@ -48,6 +48,7 @@ Ash-throated Flycatcher,ATFL
 Ashy Storm-Petrel,ASSP
 Asian Brown Flycatcher,ABFL
 Asian Rosy-Finch,ASRF
+Asian Stonechat,ASST
 Atlantic Puffin,ATPU
 Audubon's Oriole,AUOR
 Audubon's Shearwater,AUSH
@@ -74,6 +75,7 @@ Barnacle Goose,BARG
 Barolo Shearwater,BASH
 Barred Owl,BADO
 Barrow's Goldeneye,BAGO
+Bat Falcon,BAFA
 Bay-breasted Warbler,BBWA
 Belcher's Gull,BEGU
 Bell's Sparrow,BESP
@@ -143,6 +145,7 @@ Blue Bunting,BLBU
 Blue Grosbeak,BLGR
 Blue Jay,BLJA
 Blue Mockingbird,BLMO
+Blue-and-white Swallow,BAWS
 Blue-footed Booby,BFBO
 Blue-gray Gnatcatcher,BGGN
 Blue-gray Noddy,BGNO
@@ -236,6 +239,7 @@ Chestnut-backed Chickadee,CBCH
 Chestnut-bellied Sandgrouse,CBSA
 Chestnut-collared Longspur,CCLO
 Chestnut-sided Warbler,CSWA
+Chihuahuan Meadowlark,CHME
 Chihuahuan Raven,CHRA
 Chimney Swift,CHSW
 Chinese Egret,CHEG
@@ -268,6 +272,7 @@ Common Goldeneye,COGO
 Common Grackle,COGR
 Common Greenshank,COMG
 Common Ground Dove,CGDO
+Common Gull,COGU
 Common House-Martin,COHM
 Common Loon,COLO
 Common Merganser,COME
@@ -291,7 +296,7 @@ Common Snipe,COSN
 Common Swift,COSW
 Common Tern,COTE
 Common Waxbill,COMW
-Common Wood-Pigeon,COWP
+Common Wood Pigeon,CWPI
 Common Yellowthroat,COYE
 Connecticut Warbler,CONW
 Cook's Petrel,COPE
@@ -504,6 +509,7 @@ Hermit Warbler,HEWA
 Herring Gull,HERG
 Himalayan Snowcock,HISN
 Hoary Redpoll,HORE
+Hooded Crane,HOCR
 Hooded Merganser,HOME
 Hooded Oriole,HOOR
 Hooded Warbler,HOWA
@@ -520,6 +526,7 @@ Hwamei,HWAM
 Iceland Gull,ICGU
 Iiwi,IIWI
 Inca Dove,INDO
+Inca Tern,INTE
 Indian Peafowl,INPE
 Indigo Bunting,INBU
 Intermediate Egret,INEG
@@ -595,6 +602,7 @@ Lesser Whitethroat,LEWH
 Lesser Yellowlegs,LEYE
 Lewis's Woodpecker,LEWO
 Light-mantled Albatross,LMAL
+Lilac-crowned Parrot,LCPA
 Limpkin,LIMP
 Lincoln's Sparrow,LISP
 Little Blue Heron,LBHE
@@ -641,16 +649,16 @@ Maui Parrotbill,MAPA
 Maui-nui Akialoa,MNAK
 McKay's Bunting,MKBU
 Merlin,MERL
-Mew Gull,MEGU
 Mexican Chickadee,MECH
 Mexican Duck,MEDU
 Mexican Jay,MEJA
 Mexican Violetear,MEVI
 Mexican Whip-poor-will,MWPW
-Middendorff's Grasshopper-Warbler,MIGW
+Middendorff's Grasshopper Warbler,MGRW
 Millerbird,MILL
 Mississippi Kite,MIKI
 Mistle Thrush,MITH
+Mitred Parakeet,MIPA
 Monk Parakeet,MOPA
 Montezuma Quail,MONQ
 Morelet's Seedeater,MOSE
@@ -670,6 +678,7 @@ Mute Swan,MUSW
 Nanday Parakeet,NAPA
 Narcissus Flycatcher,NAFL
 Nashville Warbler,NAWA
+Naumann's Thrush,NATH
 Nazca Booby,NABO
 Nelson's Sparrow,NESP
 Neotropic Cormorant,NECO
@@ -682,6 +691,7 @@ Northern Cardinal,NOCA
 Northern Flicker,NOFL
 Northern Fulmar,NOFU
 Northern Gannet,NOGA
+Northern Giant-Petrel,NOGP
 Northern Goshawk,NOGO
 Northern Harrier,NOHA
 Northern Hawk Owl,NHOW
@@ -733,7 +743,7 @@ Painted Bunting,PABU
 Painted Redstart,PARE
 Palila,PALI
 Pallas's Bunting,PALB
-Pallas's Grasshopper-Warbler,PAGW
+Pallas's Grasshopper Warbler,PGWA
 Pallas's Gull,PAGU
 Pallas's Leaf Warbler,PLEW
 Pallas's Rosefinch,PARO
@@ -807,6 +817,7 @@ Red-headed Woodpecker,RHWO
 Red-legged Honeycreeper,RLHO
 Red-legged Kittiwake,RLKI
 Red-legged Thrush,RLTH
+Red-masked Parakeet,RMPA
 Red-naped Sapsucker,RNSA
 Red-necked Grebe,RNGR
 Red-necked Phalarope,RNPH
@@ -861,6 +872,7 @@ Rufous-capped Warbler,RCWA
 Rufous-crowned Sparrow,RCSP
 Rufous-necked Wood-Rail,RNWR
 Rufous-tailed Robin,RTRO
+Rufous-tailed Rock-Thrush,RTRT
 Rufous-winged Sparrow,RWSP
 Rustic Bunting,RUBU
 Rusty Blackbird,RUBL
@@ -893,6 +905,7 @@ Sharp-tailed Grouse,STGR
 Sharp-tailed Sandpiper,SPTS
 Shiny Cowbird,SHCO
 Short-billed Dowitcher,SBDO
+Short-billed Gull,SBIG
 Short-eared Owl,SEOW
 Short-tailed Albatross,STAL
 Short-tailed Hawk,STHA
@@ -902,8 +915,9 @@ Siberian Blue Robin,SBRO
 Siberian Rubythroat,SIRU
 Sinaloa Wren,SIWR
 Slate-throated Redstart,STRE
-Slaty-backed Gull,SBGU
+Slaty-backed Gull,SBAG
 Slender-billed Curlew,SBCU
+Small-billed Elaenia,SBEL
 Smew,SMEW
 Smith's Longspur,SMLO
 Smooth-billed Ani,SBAN
@@ -942,7 +956,6 @@ Steller's Eider,STEI
 Steller's Jay,STJA
 Steller's Sea-Eagle,STSE
 Stilt Sandpiper,STSA
-Stonechat,STON
 Streak-backed Oriole,SBAO
 Streaked Shearwater,STRS
 Stygian Owl,STOW
@@ -967,7 +980,7 @@ Temminck's Stint,TEST
 Tennessee Warbler,TEWA
 Terek Sandpiper,TESA
 Thick-billed Kingbird,TBKI
-Thick-billed Longspur,MCLO
+Thick-billed Longspur,TBLO
 Thick-billed Murre,TBMU
 Thick-billed Parrot,TBPA
 Thick-billed Vireo,TBVI

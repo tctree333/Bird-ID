@@ -48,6 +48,7 @@ Ash-throated Flycatcher
 Ashy Storm-Petrel
 Asian Brown Flycatcher
 Asian Rosy-Finch
+Asian Stonechat
 Atlantic Puffin
 Audubon's Oriole
 Audubon's Shearwater
@@ -74,6 +75,7 @@ Barnacle Goose
 Barolo Shearwater
 Barred Owl
 Barrow's Goldeneye
+Bat Falcon
 Bay-breasted Warbler
 Belcher's Gull
 Bell's Sparrow
@@ -143,6 +145,7 @@ Blue Bunting
 Blue Grosbeak
 Blue Jay
 Blue Mockingbird
+Blue-and-white Swallow
 Blue-footed Booby
 Blue-gray Gnatcatcher
 Blue-gray Noddy
@@ -236,6 +239,7 @@ Chestnut-backed Chickadee
 Chestnut-bellied Sandgrouse
 Chestnut-collared Longspur
 Chestnut-sided Warbler
+Chihuahuan Meadowlark
 Chihuahuan Raven
 Chimney Swift
 Chinese Egret
@@ -268,6 +272,7 @@ Common Goldeneye
 Common Grackle
 Common Greenshank
 Common Ground Dove
+Common Gull
 Common House-Martin
 Common Loon
 Common Merganser
@@ -291,7 +296,7 @@ Common Snipe
 Common Swift
 Common Tern
 Common Waxbill
-Common Wood-Pigeon
+Common Wood Pigeon
 Common Yellowthroat
 Connecticut Warbler
 Cook's Petrel
@@ -504,6 +509,7 @@ Hermit Warbler
 Herring Gull
 Himalayan Snowcock
 Hoary Redpoll
+Hooded Crane
 Hooded Merganser
 Hooded Oriole
 Hooded Warbler
@@ -520,6 +526,7 @@ Hwamei
 Iceland Gull
 Iiwi
 Inca Dove
+Inca Tern
 Indian Peafowl
 Indigo Bunting
 Intermediate Egret
@@ -595,6 +602,7 @@ Lesser Whitethroat
 Lesser Yellowlegs
 Lewis's Woodpecker
 Light-mantled Albatross
+Lilac-crowned Parrot
 Limpkin
 Lincoln's Sparrow
 Little Blue Heron
@@ -641,16 +649,16 @@ Maui Parrotbill
 Maui-nui Akialoa
 McKay's Bunting
 Merlin
-Mew Gull
 Mexican Chickadee
 Mexican Duck
 Mexican Jay
 Mexican Violetear
 Mexican Whip-poor-will
-Middendorff's Grasshopper-Warbler
+Middendorff's Grasshopper Warbler
 Millerbird
 Mississippi Kite
 Mistle Thrush
+Mitred Parakeet
 Monk Parakeet
 Montezuma Quail
 Morelet's Seedeater
@@ -670,6 +678,7 @@ Mute Swan
 Nanday Parakeet
 Narcissus Flycatcher
 Nashville Warbler
+Naumann's Thrush
 Nazca Booby
 Nelson's Sparrow
 Neotropic Cormorant
@@ -682,6 +691,7 @@ Northern Cardinal
 Northern Flicker
 Northern Fulmar
 Northern Gannet
+Northern Giant-Petrel
 Northern Goshawk
 Northern Harrier
 Northern Hawk Owl
@@ -733,7 +743,7 @@ Painted Bunting
 Painted Redstart
 Palila
 Pallas's Bunting
-Pallas's Grasshopper-Warbler
+Pallas's Grasshopper Warbler
 Pallas's Gull
 Pallas's Leaf Warbler
 Pallas's Rosefinch
@@ -807,6 +817,7 @@ Red-headed Woodpecker
 Red-legged Honeycreeper
 Red-legged Kittiwake
 Red-legged Thrush
+Red-masked Parakeet
 Red-naped Sapsucker
 Red-necked Grebe
 Red-necked Phalarope
@@ -861,6 +872,7 @@ Rufous-capped Warbler
 Rufous-crowned Sparrow
 Rufous-necked Wood-Rail
 Rufous-tailed Robin
+Rufous-tailed Rock-Thrush
 Rufous-winged Sparrow
 Rustic Bunting
 Rusty Blackbird
@@ -893,6 +905,7 @@ Sharp-tailed Grouse
 Sharp-tailed Sandpiper
 Shiny Cowbird
 Short-billed Dowitcher
+Short-billed Gull
 Short-eared Owl
 Short-tailed Albatross
 Short-tailed Hawk
@@ -904,6 +917,7 @@ Sinaloa Wren
 Slate-throated Redstart
 Slaty-backed Gull
 Slender-billed Curlew
+Small-billed Elaenia
 Smew
 Smith's Longspur
 Smooth-billed Ani
@@ -942,7 +956,6 @@ Steller's Eider
 Steller's Jay
 Steller's Sea-Eagle
 Stilt Sandpiper
-Stonechat
 Streak-backed Oriole
 Streaked Shearwater
 Stygian Owl
