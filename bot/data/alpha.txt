@@ -393,7 +393,6 @@ Flesh-footed Shearwater,FFSH
 Florida Scrub-Jay,FLSJ
 Fork-tailed Flycatcher,FTFL
 Fork-tailed Storm-Petrel,FTSP
-Fork-tailed Swift,FTSW
 Forster's Tern,FOTE
 Fox Sparrow,FOSP
 Franklin's Gull,FRGU
@@ -787,7 +786,6 @@ Purple Finch,PUFI
 Purple Gallinule,PUGA
 Purple Martin,PUMA
 Purple Sandpiper,PUSA
-Purple Swamphen,PUSW
 Pygmy Nuthatch,PYNU
 Pyrrhuloxia,PYRR
 Razorbill,RAZO

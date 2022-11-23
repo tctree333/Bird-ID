@@ -393,7 +393,7 @@ Flesh-footed Shearwater
 Florida Scrub-Jay
 Fork-tailed Flycatcher
 Fork-tailed Storm-Petrel
-Fork-tailed Swift
+Pacific Swift
 Forster's Tern
 Fox Sparrow
 Franklin's Gull
@@ -787,7 +787,7 @@ Purple Finch
 Purple Gallinule
 Purple Martin
 Purple Sandpiper
-Purple Swamphen
+Gray-headed Swamphen
 Pygmy Nuthatch
 Pyrrhuloxia
 Razorbill
