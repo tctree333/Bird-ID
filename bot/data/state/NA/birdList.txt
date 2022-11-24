@@ -37,7 +37,7 @@ Anhinga
 Anianiau
 Anna's Hummingbird
 Antillean Nighthawk
-Antillean Palm-Swift
+Antillean Palm Swift
 Apapane
 Aplomado Falcon
 Arctic Loon
@@ -48,7 +48,6 @@ Ash-throated Flycatcher
 Ashy Storm-Petrel
 Asian Brown Flycatcher
 Asian Rosy-Finch
-Siberian Stonechat
 Atlantic Puffin
 Audubon's Oriole
 Audubon's Shearwater
@@ -243,6 +242,7 @@ Chihuahuan Meadowlark
 Chihuahuan Raven
 Chimney Swift
 Chinese Egret
+Chinese Hwamei
 Chinese Pond-Heron
 Chinese Sparrowhawk
 Chipping Sparrow
@@ -276,7 +276,6 @@ Common Gull
 Common House-Martin
 Common Loon
 Common Merganser
-Common Moorhen
 Common Murre
 Common Myna
 Common Nighthawk
@@ -296,7 +295,7 @@ Common Snipe
 Common Swift
 Common Tern
 Common Waxbill
-Common Wood Pigeon
+Common Wood-Pigeon
 Common Yellowthroat
 Connecticut Warbler
 Cook's Petrel
@@ -351,7 +350,7 @@ Elegant Tern
 Elegant Trogon
 Elf Owl
 Emperor Goose
-Erckel's Francolin
+Erckel's Spurfowl
 Eskimo Curlew
 Eurasian Blackbird
 Eurasian Bullfinch
@@ -393,7 +392,6 @@ Flesh-footed Shearwater
 Florida Scrub-Jay
 Fork-tailed Flycatcher
 Fork-tailed Storm-Petrel
-Pacific Swift
 Forster's Tern
 Fox Sparrow
 Franklin's Gull
@@ -435,6 +433,7 @@ Gray-crowned Rosy-Finch
 Gray-crowned Yellowthroat
 Gray-faced Petrel
 Gray-headed Chickadee
+Gray-headed Swamphen
 Gray-hooded Gull
 Gray-streaked Flycatcher
 Gray-tailed Tattler
@@ -522,7 +521,6 @@ House Sparrow
 House Wren
 Hudsonian Godwit
 Hutton's Vireo
-Hwamei
 Iceland Gull
 Iiwi
 Inca Dove
@@ -536,7 +534,7 @@ Ivory Gull
 Ivory-billed Woodpecker
 Jabiru
 Jack Snipe
-Japanese Bush-Warbler
+Japanese Bush Warbler
 Java Sparrow
 Jouanin's Petrel
 Juan Fernandez Petrel
@@ -578,6 +576,8 @@ Laysan Finch
 Laysan Honeycreeper
 Laysan Rail
 Lazuli Bunting
+LeConte's Sparrow
+LeConte's Thrasher
 Leach's Storm-Petrel
 Least Auklet
 Least Bittern
@@ -586,8 +586,6 @@ Least Grebe
 Least Sandpiper
 Least Storm-Petrel
 Least Tern
-LeConte's Sparrow
-LeConte's Thrasher
 Lesser Akialoa
 Lesser Black-backed Gull
 Lesser Frigatebird
@@ -736,6 +734,7 @@ Ou
 Ovenbird
 Pacific Golden-Plover
 Pacific Loon
+Pacific Swift
 Pacific Wren
 Pacific-slope Flycatcher
 Paint-billed Crake
@@ -787,7 +786,6 @@ Purple Finch
 Purple Gallinule
 Purple Martin
 Purple Sandpiper
-Gray-headed Swamphen
 Pygmy Nuthatch
 Pyrrhuloxia
 Razorbill
@@ -913,6 +911,7 @@ Short-tailed Shearwater
 Siberian Accentor
 Siberian Blue Robin
 Siberian Rubythroat
+Siberian Stonechat
 Sinaloa Wren
 Slate-throated Redstart
 Slaty-backed Gull

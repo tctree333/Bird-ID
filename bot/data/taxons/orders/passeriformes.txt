@@ -1,90 +1,509 @@
-Northern Mockingbird
-Yellow Rumped Warbler
-Cedar Waxwing
-Evening Grosbeak
-Canyon Wren
-Black Throated Green Warbler
-Magnolia Warbler
-Western Kingbird
-Curve Billed Thrasher
-Blue JaySnow Bunting
-Scissor Tailed Flycatcher
-VerdinLark Sparrow
-Olive Sided Flycatcher
-Great Crested Flycatcher
-Wood Thrush
-Purple Finch
-Harris's Sparrow
-Black Capped Chickadee
-Black And White Warbler
-Baltimore Oriole
-Phainopepla
-Eastern Bluebird
-Blue Gray Gnatcatcher
-Yellow Warbler
-Gray Catbird
-Painted Bunting
-Spotted Towhee
-Purple Martin
-Chipping Sparrow
-Red Crossbill
-Loggerhead Shrike
-Horned Lark
-Dark Eyed Junco
-Common Raven
-Red Breasted Nuthatch
-Common Yellowthroat
-Red Eyed Vireo
-Bobolink
-House Finch
-Eastern Phoebe
-Golden Crowned Kinglet
-Common Grackle
-Song Sparrow
-Red Winged Blackbird
-American Robin
-White Crowned Sparrow
-Swainson's Thrush
-Brown Thrasher
-Mountain Chickadee
-Rose Breasted Grosbeak
-Warbling Vireo
-White Breasted Nuthatch
-Yellow Breasted Chat
-Pine Siskin
-Indigo Bunting
-Eastern Kingbird
-Carolina Chickadee
-Black Phoebe
-Carolina Wren
-American Dipper
-Western Meadowlark
+Abert's Towhee
+Acadian Flycatcher
+African Silverbill
+Akekee
+Akiapolaau
+Akikiki
+Akohekohe
+Alder Flycatcher
+Altamira Oriole
+Amaui
 American Crow
-Northern Cardinal
-Brown Creeper
-Kentucky Warbler
-Yellow Headed Blackbird
-Bell's Vireo
-Clark's Nutcracker
-American Redstart
-Lapland Longspur
-Townsend's Warbler
-Vermilion Flycatcher
-Barn Swallow
-Ruby Crowned Kinglet
-Marsh Wren
-Scarlet Tanager
-Louisiana Waterthrush
-Black Billed Magpie
-Steller's Jay
-Ovenbird
-Black Chinned Sparrow
-Cliff Swallow
-Tufted Titmouse
-Cactus Wren
-European Starling
-Brown Headed Cowbird
-House Sparrow
-Lark Bunting
+American Dipper
 American Goldfinch
+American Pipit
+American Redstart
+American Robin
+American Tree Sparrow
+Anianiau
+Apapane
+Arctic Warbler
+Ash-throated Flycatcher
+Asian Brown Flycatcher
+Asian Rosy-Finch
+Audubon's Oriole
+Aztec Thrush
+Bachman's Sparrow
+Bachman's Warbler
+Bahama Mockingbird
+Bahama Swallow
+Baird's Sparrow
+Baltimore Oriole
+Bananaquit
+Bank Swallow
+Barn Swallow
+Bay-breasted Warbler
+Bell's Sparrow
+Bell's Vireo
+Bendire's Thrasher
+Bewick's Wren
+Bicknell's Thrush
+Bishop's Oo
+Black Mamo
+Black Phoebe
+Black Rosy-Finch
+Black-and-white Warbler
+Black-backed Oriole
+Black-billed Magpie
+Black-capped Chickadee
+Black-capped Gnatcatcher
+Black-capped Vireo
+Black-chinned Sparrow
+Black-crested Titmouse
+Black-faced Grassquit
+Black-headed Grosbeak
+Black-headed Nightingale-Thrush
+Black-tailed Gnatcatcher
+Black-throated Blue Warbler
+Black-throated Gray Warbler
+Black-throated Green Warbler
+Black-throated Sparrow
+Black-vented Oriole
+Black-whiskered Vireo
+Blackburnian Warbler
+Blackpoll Warbler
+Blue Bunting
+Blue Grosbeak
+Blue Jay
+Blue Mockingbird
+Blue-and-white Swallow
+Blue-gray Gnatcatcher
+Blue-headed Vireo
+Blue-winged Warbler
+Bluethroat
+Blyth's Reed Warbler
+Boat-tailed Grackle
+Bobolink
+Bohemian Waxwing
+Boreal Chickadee
+Botteri's Sparrow
+Brambling
+Brewer's Blackbird
+Brewer's Sparrow
+Bridled Titmouse
+Bronzed Cowbird
+Brown Creeper
+Brown Jay
+Brown Shrike
+Brown Thrasher
+Brown-backed Solitaire
+Brown-capped Rosy-Finch
+Brown-chested Martin
+Brown-crested Flycatcher
+Brown-headed Cowbird
+Brown-headed Nuthatch
+Buff-breasted Flycatcher
+Bullock's Oriole
+Bushtit
+Cactus Wren
 California Gnatcatcher
+California Scrub-Jay
+California Thrasher
+California Towhee
+Canada Jay
+Canada Warbler
+Canyon Towhee
+Canyon Wren
+Cape May Warbler
+Carolina Chickadee
+Carolina Wren
+Cassia Crossbill
+Cassin's Finch
+Cassin's Kingbird
+Cassin's Sparrow
+Cassin's Vireo
+Cave Swallow
+Cedar Waxwing
+Cerulean Warbler
+Chestnut Munia
+Chestnut-backed Chickadee
+Chestnut-collared Longspur
+Chestnut-sided Warbler
+Chihuahuan Meadowlark
+Chihuahuan Raven
+Chinese Hwamei
+Chipping Sparrow
+Citrine Wagtail
+Clark's Nutcracker
+Clay-colored Sparrow
+Clay-colored Thrush
+Cliff Swallow
+Colima Warbler
+Common Chaffinch
+Common Chiffchaff
+Common Grackle
+Common House-Martin
+Common Myna
+Common Raven
+Common Redpoll
+Common Redstart
+Common Rosefinch
+Common Waxbill
+Common Yellowthroat
+Connecticut Warbler
+Cordilleran Flycatcher
+Couch's Kingbird
+Crescent-chested Warbler
+Crimson-collared Grosbeak
+Crissal Thrasher
+Crowned Slaty Flycatcher
+Cuban Martin
+Cuban Pewee
+Cuban Vireo
+Curve-billed Thrasher
+Dark-eyed Junco
+Dark-sided Flycatcher
+Dickcissel
+Dusky Flycatcher
+Dusky Thrush
+Dusky Warbler
+Dusky-capped Flycatcher
+Eastern Bluebird
+Eastern Kingbird
+Eastern Meadowlark
+Eastern Phoebe
+Eastern Towhee
+Eastern Wood-Pewee
+Eastern Yellow Wagtail
+Eurasian Blackbird
+Eurasian Bullfinch
+Eurasian Jackdaw
+Eurasian Siskin
+Eurasian Skylark
+Eurasian Tree Sparrow
+European Robin
+European Starling
+Evening Grosbeak
+Eyebrowed Thrush
+Fan-tailed Warbler
+Field Sparrow
+Fieldfare
+Fish Crow
+Five-striped Sparrow
+Flame-colored Tanager
+Florida Scrub-Jay
+Fork-tailed Flycatcher
+Fox Sparrow
+Golden-cheeked Warbler
+Golden-crowned Kinglet
+Golden-crowned Sparrow
+Golden-crowned Warbler
+Golden-winged Warbler
+Grace's Warbler
+Grasshopper Sparrow
+Gray Bunting
+Gray Catbird
+Gray Flycatcher
+Gray Kingbird
+Gray Silky-flycatcher
+Gray Vireo
+Gray Wagtail
+Gray-breasted Martin
+Gray-cheeked Thrush
+Gray-collared Becard
+Gray-crowned Rosy-Finch
+Gray-crowned Yellowthroat
+Gray-headed Chickadee
+Gray-streaked Flycatcher
+Great Crested Flycatcher
+Great Kiskadee
+Great-tailed Grackle
+Greater Amakihi
+Greater Koa-Finch
+Greater Necklaced Laughingthrush
+Greater Pewee
+Green Jay
+Green-tailed Towhee
+Greenish Elaenia
+Hammond's Flycatcher
+Harris's Sparrow
+Hawaii Akepa
+Hawaii Amakihi
+Hawaii Creeper
+Hawaii Elepaio
+Hawaii Mamo
+Hawaii Oo
+Hawaiian Crow
+Hawfinch
+Henslow's Sparrow
+Hepatic Tanager
+Hermit Thrush
+Hermit Warbler
+Hoary Redpoll
+Hooded Oriole
+Hooded Warbler
+Horned Lark
+House Finch
+House Sparrow
+House Wren
+Hutton's Vireo
+Iiwi
+Indigo Bunting
+Island Canary
+Island Scrub-Jay
+Japanese Bush Warbler
+Java Sparrow
+Juniper Titmouse
+Kakawahie
+Kamao
+Kamchatka Leaf Warbler
+Kauai Akialoa
+Kauai Amakihi
+Kauai Elepaio
+Kauai Nukupuu
+Kauai Oo
+Kentucky Warbler
+Kioea
+Kirtland's Warbler
+Kona Grosbeak
+La Sagra's Flycatcher
+Lanai Hookbill
+Lanceolated Warbler
+Lapland Longspur
+Lark Bunting
+Lark Sparrow
+Lawrence's Goldfinch
+Laysan Finch
+Laysan Honeycreeper
+Lazuli Bunting
+LeConte's Sparrow
+LeConte's Thrasher
+Least Flycatcher
+Lesser Akialoa
+Lesser Goldfinch
+Lesser Koa-Finch
+Lesser Whitethroat
+Lincoln's Sparrow
+Little Bunting
+Loggerhead Kingbird
+Loggerhead Shrike
+Long-billed Thrasher
+Louisiana Waterthrush
+Lucy's Warbler
+MacGillivray's Warbler
+Magnolia Warbler
+Mangrove Swallow
+Marsh Wren
+Masked Tityra
+Maui Akepa
+Maui Alauahio
+Maui Nukupuu
+Maui Parrotbill
+Maui-nui Akialoa
+McKay's Bunting
+Mexican Chickadee
+Mexican Jay
+Middendorff's Grasshopper Warbler
+Millerbird
+Mistle Thrush
+Morelet's Seedeater
+Mountain Bluebird
+Mountain Chickadee
+Mourning Warbler
+Mugimaki Flycatcher
+Narcissus Flycatcher
+Nashville Warbler
+Naumann's Thrush
+Nelson's Sparrow
+Nihoa Finch
+Northern Beardless-Tyrannulet
+Northern Cardinal
+Northern Mockingbird
+Northern Parula
+Northern Rough-winged Swallow
+Northern Shrike
+Northern Waterthrush
+Northern Wheatear
+Nutting's Flycatcher
+Oahu Akepa
+Oahu Akialoa
+Oahu Alauahio
+Oahu Amakihi
+Oahu Elepaio
+Oahu Nukupuu
+Oahu Oo
+Oak Titmouse
+Olive Sparrow
+Olive Warbler
+Olive-backed Pipit
+Olive-sided Flycatcher
+Olomao
+Omao
+Orange-billed Nightingale-Thrush
+Orange-crowned Warbler
+Orchard Oriole
+Oriental Greenfinch
+Ou
+Ovenbird
+Pacific Wren
+Pacific-slope Flycatcher
+Painted Bunting
+Painted Redstart
+Palila
+Pallas's Bunting
+Pallas's Grasshopper Warbler
+Pallas's Leaf Warbler
+Pallas's Rosefinch
+Palm Warbler
+Pechora Pipit
+Phainopepla
+Philadelphia Vireo
+Pied Wheatear
+Pine Bunting
+Pine Flycatcher
+Pine Grosbeak
+Pine Siskin
+Pine Warbler
+Pinyon Jay
+Piratic Flycatcher
+Plumbeous Vireo
+Poo-uli
+Prairie Warbler
+Prothonotary Warbler
+Puaiohi
+Purple Finch
+Purple Martin
+Pygmy Nuthatch
+Pyrrhuloxia
+Red Avadavat
+Red Crossbill
+Red-backed Shrike
+Red-billed Leiothrix
+Red-breasted Nuthatch
+Red-crested Cardinal
+Red-eyed Vireo
+Red-faced Warbler
+Red-flanked Bluetail
+Red-legged Honeycreeper
+Red-legged Thrush
+Red-throated Pipit
+Red-vented Bulbul
+Red-whiskered Bulbul
+Red-winged Blackbird
+Redwing
+Reed Bunting
+River Warbler
+Rock Wren
+Rose-breasted Grosbeak
+Rose-throated Becard
+Ruby-crowned Kinglet
+Rufous-backed Robin
+Rufous-capped Warbler
+Rufous-crowned Sparrow
+Rufous-tailed Robin
+Rufous-tailed Rock-Thrush
+Rufous-winged Sparrow
+Rustic Bunting
+Rusty Blackbird
+Saffron Finch
+Sage Thrasher
+Sagebrush Sparrow
+Saltmarsh Sparrow
+Savannah Sparrow
+Say's Phoebe
+Scaly-breasted Munia
+Scarlet Tanager
+Scissor-tailed Flycatcher
+Scott's Oriole
+Seaside Sparrow
+Sedge Warbler
+Sedge Wren
+Shiny Cowbird
+Siberian Accentor
+Siberian Blue Robin
+Siberian Rubythroat
+Siberian Stonechat
+Sinaloa Wren
+Slate-throated Redstart
+Small-billed Elaenia
+Smith's Longspur
+Snow Bunting
+Social Flycatcher
+Song Sparrow
+Song Thrush
+Southern Martin
+Spot-breasted Oriole
+Spotted Flycatcher
+Spotted Towhee
+Sprague's Pipit
+Steller's Jay
+Streak-backed Oriole
+Sulphur-bellied Flycatcher
+Summer Tanager
+Swainson's Thrush
+Swainson's Warbler
+Swamp Sparrow
+Taiga Flycatcher
+Tamaulipas Crow
+Tawny-shouldered Blackbird
+Tennessee Warbler
+Thick-billed Kingbird
+Thick-billed Longspur
+Thick-billed Vireo
+Thick-billed Warbler
+Townsend's Solitaire
+Townsend's Warbler
+Tree Pipit
+Tree Swallow
+Tricolored Blackbird
+Tricolored Munia
+Tropical Kingbird
+Tropical Parula
+Tufted Flycatcher
+Tufted Titmouse
+Ula-ai-hawane
+Varied Bunting
+Varied Thrush
+Variegated Flycatcher
+Veery
+Verdin
+Vermilion Flycatcher
+Vesper Sparrow
+Violet-green Swallow
+Virginia's Warbler
+Warbling Vireo
+Warbling White-eye
+Western Bluebird
+Western Kingbird
+Western Meadowlark
+Western Spindalis
+Western Tanager
+Western Wood-Pewee
+White Wagtail
+White-breasted Nuthatch
+White-crested Elaenia
+White-crowned Sparrow
+White-eyed Vireo
+White-rumped Shama
+White-throated Sparrow
+White-throated Thrush
+White-winged Crossbill
+Willow Flycatcher
+Willow Warbler
+Wilson's Warbler
+Winter Wren
+Wood Thrush
+Wood Warbler
+Woodhouse's Scrub-Jay
+Worm-eating Warbler
+Worthen's Sparrow
+Wrentit
+Yellow Grosbeak
+Yellow Warbler
+Yellow-bellied Flycatcher
+Yellow-billed Cardinal
+Yellow-billed Magpie
+Yellow-breasted Bunting
+Yellow-breasted Chat
+Yellow-browed Bunting
+Yellow-browed Warbler
+Yellow-eyed Junco
+Yellow-faced Grassquit
+Yellow-fronted Canary
+Yellow-green Vireo
+Yellow-headed Blackbird
+Yellow-rumped Warbler
+Yellow-throated Bunting
+Yellow-throated Vireo
+Yellow-throated Warbler
+Yucatan Vireo

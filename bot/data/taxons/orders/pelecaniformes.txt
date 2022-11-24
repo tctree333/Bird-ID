@@ -1,7 +1,27 @@
 American Bittern
-Black Crowned Night Heron
-Great Blue Heron
 American White Pelican
-Roseate Spoonbill
-Snowy Egret
+Bare-throated Tiger-Heron
+Black-crowned Night-Heron
+Brown Pelican
+Cattle Egret
+Chinese Egret
+Chinese Pond-Heron
+Glossy Ibis
+Gray Heron
+Great Blue Heron
+Great Egret
 Green Heron
+Intermediate Egret
+Least Bittern
+Little Blue Heron
+Little Egret
+Reddish Egret
+Roseate Spoonbill
+Scarlet Ibis
+Snowy Egret
+Tricolored Heron
+Western Reef-Heron
+White Ibis
+White-faced Ibis
+Yellow Bittern
+Yellow-crowned Night-Heron

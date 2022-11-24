@@ -10,7 +10,7 @@ Alder Flycatcher,ALFL
 Aleutian Tern,ALTE
 Allen's Hummingbird,ALHU
 Altamira Oriole,ALOR
-Amaui,AMAU
+Amaui,OLOM
 Amazon Kingfisher,AMKI
 American Avocet,AMAV
 American Bittern,AMBI
@@ -19,60 +19,60 @@ American Coot,AMCO
 American Crow,AMCR
 American Dipper,AMDI
 American Flamingo,AMFL
-American Golden-Plover,AMGP
+American Golden-Plover,AGPL
 American Goldfinch,AMGO
 American Kestrel,AMKE
 American Oystercatcher,AMOY
-American Pipit,AMPI
+American Pipit,BBPI
 American Redstart,AMRE
-American Robin,AMRO
-American Three-toed Woodpecker,ATTW
+American Robin,ALRO
+American Three-toed Woodpecker,TTWO
 American Tree Sparrow,ATSP
 American White Pelican,AWPE
 American Wigeon,AMWI
 American Woodcock,AMWO
-Amethyst-throated Mountain-gem,ATMG
+Amethyst-throated Mountain-gem,ATHU
 Ancient Murrelet,ANMU
 Anhinga,ANHI
 Anianiau,ANIA
 Anna's Hummingbird,ANHU
 Antillean Nighthawk,ANNI
-Antillean Palm-Swift,ANPS
+Antillean Palm Swift,APSW
 Apapane,APAP
 Aplomado Falcon,APFA
-Arctic Loon,ARLO
+Arctic Loon,BTDI
 Arctic Tern,ARTE
 Arctic Warbler,ARWA
 Arizona Woodpecker,ARWO
 Ash-throated Flycatcher,ATFL
-Ashy Storm-Petrel,ASSP
+Ashy Storm-Petrel,ASPE
 Asian Brown Flycatcher,ABFL
-Asian Rosy-Finch,ASRF
+Asian Rosy-Finch,ARFI
 Atlantic Puffin,ATPU
 Audubon's Oriole,AUOR
 Audubon's Shearwater,AUSH
 Aztec Thrush,AZTH
-Bachman's Sparrow,BACS
+Bachman's Sparrow,BASP
 Bachman's Warbler,BAWA
 Bahama Mockingbird,BAMO
-Bahama Swallow,BAHS
-Bahama Woodstar,BAWO
+Bahama Swallow,BASW
+Bahama Woodstar,BAHU
 Baikal Teal,BATE
 Baird's Sandpiper,BASA
-Baird's Sparrow,BAIS
+Baird's Sparrow,BASP
 Bald Eagle,BAEA
 Baltimore Oriole,BAOR
 Bananaquit,BANA
-Band-rumped Storm-Petrel,BSTP
-Band-tailed Pigeon,BTPI
-Bank Swallow,BANS
+Band-rumped Storm-Petrel,MASP
+Band-tailed Pigeon,NBTP
+Bank Swallow,SAMA
 Bar-tailed Godwit,BTGO
 Bare-throated Tiger-Heron,BTTH
-Barn Owl,BANO
-Barn Swallow,BARS
-Barnacle Goose,BARG
-Barolo Shearwater,BASH
-Barred Owl,BADO
+Barn Owl,CBOW
+Barn Swallow,BASW
+Barnacle Goose,BAGO
+Barolo Shearwater,AUSH
+Barred Owl,BAOW
 Barrow's Goldeneye,BAGO
 Bat Falcon,BAFA
 Bay-breasted Warbler,BBWA
@@ -88,29 +88,29 @@ Bicknell's Thrush,BITH
 Bishop's Oo,BIOO
 Black Francolin,BLFR
 Black Guillemot,BLGU
-Black Kite,BLAK
+Black Kite,BBKI
 Black Mamo,BLMA
 Black Noddy,BLNO
 Black Oystercatcher,BLOY
 Black Phoebe,BLPH
 Black Rail,BLRA
-Black Rosy-Finch,BLRF
+Black Rosy-Finch,BRFI
 Black Scoter,BLSC
 Black Skimmer,BLSK
-Black Storm-Petrel,BLSP
-Black Swift,BLSW
+Black Storm-Petrel,BSPE
+Black Swift,ABSW
 Black Tern,BLTE
 Black Turnstone,BLTU
-Black Vulture,BLVU
+Black Vulture,ABVU
 Black-and-white Warbler,BAWW
 Black-backed Oriole,BBOR
 Black-backed Woodpecker,BBWO
-Black-bellied Plover,BBPL
+Black-bellied Plover,GRPL
 Black-bellied Storm-Petrel,BBSP
 Black-bellied Whistling-Duck,BBWD
 Black-billed Cuckoo,BBCU
-Black-billed Magpie,BBMA
-Black-browed Albatross,BBAL
+Black-billed Magpie,AMMA
+Black-browed Albatross,BBMO
 Black-capped Chickadee,BCCH
 Black-capped Gnatcatcher,BCGN
 Black-capped Petrel,BCPE
@@ -125,21 +125,21 @@ Black-headed Grosbeak,BHGR
 Black-headed Gull,BHGU
 Black-headed Nightingale-Thrush,BHNT
 Black-legged Kittiwake,BLKI
-Black-necked Stilt,BNST
+Black-necked Stilt,BWST
 Black-tailed Gnatcatcher,BTGN
-Black-tailed Godwit,BLTG
+Black-tailed Godwit,BTGO
 Black-tailed Gull,BTGU
 Black-throated Blue Warbler,BTBW
-Black-throated Gray Warbler,BTYW
-Black-throated Green Warbler,BTNW
+Black-throated Gray Warbler,BTGW
+Black-throated Green Warbler,BTGW
 Black-throated Sparrow,BTSP
 Black-vented Oriole,BVOR
 Black-vented Shearwater,BVSH
 Black-whiskered Vireo,BWVI
 Black-winged Petrel,BWPE
-Black-winged Stilt,BWST
-Blackburnian Warbler,BLBW
-Blackpoll Warbler,BLPW
+Black-winged Stilt,EBWS
+Blackburnian Warbler,BLWA
+Blackpoll Warbler,BLWA
 Blue Bunting,BLBU
 Blue Grosbeak,BLGR
 Blue Jay,BLJA
@@ -147,40 +147,40 @@ Blue Mockingbird,BLMO
 Blue-and-white Swallow,BAWS
 Blue-footed Booby,BFBO
 Blue-gray Gnatcatcher,BGGN
-Blue-gray Noddy,BGNO
+Blue-gray Noddy,BLNO
 Blue-headed Vireo,BHVI
-Blue-throated Mountain-gem,BTMG
+Blue-throated Mountain-gem,BTHU
 Blue-winged Teal,BWTE
 Blue-winged Warbler,BWWA
 Bluethroat,BLUE
-Blyth's Reed Warbler,BREW
+Blyth's Reed Warbler,BLRW
 Boat-tailed Grackle,BTGR
 Bobolink,BOBO
 Bohemian Waxwing,BOWA
 Bonaparte's Gull,BOGU
 Bonin Petrel,BOPE
 Boreal Chickadee,BOCH
-Boreal Owl,BOOW
+Boreal Owl,TEOW
 Botteri's Sparrow,BOSP
 Brambling,BRAM
-Brandt's Cormorant,BRAC
-Brant,BRAN
+Brandt's Cormorant,BRCO
+Brant,BRGO
 Brewer's Blackbird,BRBL
 Brewer's Sparrow,BRSP
 Bridled Tern,BRTE
 Bridled Titmouse,BRTI
 Bristle-thighed Curlew,BTCU
-Broad-billed Hummingbird,BBIH
-Broad-billed Sandpiper,BBIS
+Broad-billed Hummingbird,BBMC
+Broad-billed Sandpiper,BBSA
 Broad-tailed Hummingbird,BTHU
 Broad-winged Hawk,BWHA
-Bronzed Cowbird,BROC
+Bronzed Cowbird,BRCO
 Brown Booby,BRBO
-Brown Creeper,BRCR
+Brown Creeper,AMTR
 Brown Jay,BRJA
-Brown Noddy,BRNO
+Brown Noddy,CONO
 Brown Pelican,BRPE
-Brown Shrike,BROS
+Brown Shrike,BRSH
 Brown Thrasher,BRTH
 Brown-backed Solitaire,BBSO
 Brown-capped Rosy-Finch,BCRF
@@ -188,66 +188,67 @@ Brown-chested Martin,BCMA
 Brown-crested Flycatcher,BCFL
 Brown-headed Cowbird,BHCO
 Brown-headed Nuthatch,BHNU
-Bryan's Shearwater,BRYS
-Buff-bellied Hummingbird,BBEH
+Bryan's Shearwater,BRSH
+Buff-bellied Hummingbird,BBHU
 Buff-breasted Flycatcher,BBFL
 Buff-breasted Sandpiper,BBSA
 Buff-collared Nightjar,BCNI
 Bufflehead,BUFF
-Buller's Shearwater,BULS
+Buller's Shearwater,BUSH
 Bullock's Oriole,BUOR
 Bulwer's Petrel,BUPE
 Bumblebee Hummingbird,BUHU
 Burrowing Owl,BUOW
-Bushtit,BUSH
-Cackling Goose,CACG
-Cactus Wren,CACW
+Bushtit,AMBU
+Cackling Goose,CAGO
+Cactus Wren,CAWR
 California Condor,CACO
 California Gnatcatcher,CAGN
 California Gull,CAGU
 California Quail,CAQU
-California Scrub-Jay,CASJ
+California Scrub-Jay,CSJA
 California Thrasher,CATH
-California Towhee,CALT
+California Towhee,CATO
 Calliope Hummingbird,CAHU
-Canada Goose,CANG
-Canada Jay,CAJA
+Canada Goose,CAGO
+Canada Jay,GRJA
 Canada Warbler,CAWA
 Canvasback,CANV
-Canyon Towhee,CANT
-Canyon Wren,CANW
+Canyon Towhee,CATO
+Canyon Wren,CAWR
 Cape May Warbler,CMWA
 Cape Verde Shearwater,CVSH
 Carolina Chickadee,CACH
 Carolina Parakeet,CAPA
-Carolina Wren,CARW
+Carolina Wren,CBWR
 Caspian Tern,CATE
-Cassia Crossbill,CACR
+Cassia Crossbill,RECR
 Cassin's Auklet,CAAU
 Cassin's Finch,CAFI
 Cassin's Kingbird,CAKI
 Cassin's Sparrow,CASP
 Cassin's Vireo,CAVI
-Cattle Egret,CAEG
+Cattle Egret,WCEG
 Cave Swallow,CASW
-Cedar Waxwing,CEDW
-Cerulean Warbler,CERW
-Chatham Albatross,CHAL
+Cedar Waxwing,CEWA
+Cerulean Warbler,CEWA
+Chatham Albatross,CHMO
 Chestnut Munia,CHMU
 Chestnut-backed Chickadee,CBCH
 Chestnut-bellied Sandgrouse,CBSA
 Chestnut-collared Longspur,CCLO
 Chestnut-sided Warbler,CSWA
-Chihuahuan Meadowlark,CHME
+Chihuahuan Meadowlark,EAME
 Chihuahuan Raven,CHRA
 Chimney Swift,CHSW
 Chinese Egret,CHEG
-Chinese Pond-Heron,CHPH
-Chinese Sparrowhawk,CHIS
+Chinese Hwamei,CHHW
+Chinese Pond-Heron,CPHE
+Chinese Sparrowhawk,CHSP
 Chipping Sparrow,CHSP
 Christmas Shearwater,CHSH
-Chuck-will's-widow,CWWI
-Chukar,CHUK
+Chuck-will's-widow,CHWW
+Chukar,CHPA
 Cinnamon Hummingbird,CIHU
 Cinnamon Teal,CITE
 Citrine Wagtail,CIWA
@@ -256,53 +257,52 @@ Clark's Grebe,CLGR
 Clark's Nutcracker,CLNU
 Clay-colored Sparrow,CCSP
 Clay-colored Thrush,CCTH
-Cliff Swallow,CLSW
-Colima Warbler,COLW
-Collared Forest-Falcon,COFF
+Cliff Swallow,ACSW
+Colima Warbler,COWA
+Collared Forest-Falcon,CFFA
 Collared Plover,COPL
-Common Black Hawk,COBH
-Common Chaffinch,CCHA
-Common Chiffchaff,CCHI
-Common Crane,CCRA
+Common Black Hawk,CBHA
+Common Chaffinch,CHAF
+Common Chiffchaff,COCH
+Common Crane,COCR
 Common Cuckoo,COCU
 Common Eider,COEI
-Common Gallinule,COGA
+Common Gallinule,AMMO
 Common Goldeneye,COGO
 Common Grackle,COGR
-Common Greenshank,COMG
-Common Ground Dove,CGDO
-Common Gull,COGU
-Common House-Martin,COHM
-Common Loon,COLO
-Common Merganser,COME
-Common Moorhen,COMO
-Common Murre,COMU
+Common Greenshank,COGR
+Common Ground Dove,COGD
+Common Gull,MEGU
+Common House-Martin,NHMA
+Common Loon,GNDI
+Common Merganser,GOOS
+Common Murre,COGU
 Common Myna,COMY
 Common Nighthawk,CONI
-Common Pauraque,COPA
-Common Pochard,COMP
+Common Pauraque,PAUR
+Common Pochard,COPO
 Common Poorwill,COPO
-Common Raven,CORA
-Common Redpoll,CORE
-Common Redshank,CREH
-Common Redstart,CRET
-Common Ringed Plover,CRPL
+Common Raven,NORA
+Common Redpoll,REDP
+Common Redshank,CORE
+Common Redstart,CORE
+Common Ringed Plover,RIPL
 Common Rosefinch,CORO
 Common Sandpiper,COSA
 Common Scoter,COSC
-Common Shelduck,COMS
+Common Shelduck,COSH
 Common Snipe,COSN
 Common Swift,COSW
 Common Tern,COTE
-Common Waxbill,COMW
-Common Wood Pigeon,CWPI
+Common Waxbill,COWA
+Common Wood-Pigeon,COWP
 Common Yellowthroat,COYE
-Connecticut Warbler,CONW
+Connecticut Warbler,COWA
 Cook's Petrel,COPE
 Cooper's Hawk,COHA
 Cordilleran Flycatcher,COFL
-Corn Crake,CORC
-Cory's Shearwater,CORS
+Corn Crake,COCR
+Cory's Shearwater,COSH
 Costa's Hummingbird,COHU
 Couch's Kingbird,COKI
 Crane Hawk,CRHA
@@ -325,63 +325,63 @@ Dickcissel,DICK
 Double-crested Cormorant,DCCO
 Double-striped Thick-knee,DSTK
 Double-toothed Kite,DTKI
-Dovekie,DOVE
+Dovekie,LIAU
 Downy Woodpecker,DOWO
 Dunlin,DUNL
-Dusky Flycatcher,DUFL
+Dusky Flycatcher,ADFL
 Dusky Grouse,DUGR
 Dusky Thrush,DUTH
 Dusky Warbler,DUWA
 Dusky-capped Flycatcher,DCFL
-Eared Grebe,EAGR
+Eared Grebe,BNGR
 Eared Quetzal,EAQU
 Eastern Bluebird,EABL
 Eastern Kingbird,EAKI
 Eastern Meadowlark,EAME
 Eastern Phoebe,EAPH
-Eastern Screech-Owl,EASO
-Eastern Spot-billed Duck,ESBD
+Eastern Screech-Owl,ESOW
+Eastern Spot-billed Duck,CSBD
 Eastern Towhee,EATO
 Eastern Whip-poor-will,EWPW
-Eastern Wood-Pewee,EAWP
+Eastern Wood-Pewee,EWPE
 Eastern Yellow Wagtail,EYWA
 Egyptian Goose,EGGO
 Elegant Tern,ELTE
-Elegant Trogon,ELTR
+Elegant Trogon,ETTR
 Elf Owl,ELOW
 Emperor Goose,EMGO
-Erckel's Francolin,ERFR
+Erckel's Spurfowl,ERSP
 Eskimo Curlew,ESCU
-Eurasian Blackbird,EUBB
+Eurasian Blackbird,COBL
 Eurasian Bullfinch,EUBU
-Eurasian Collared-Dove,EUCD
-Eurasian Coot,EUCO
+Eurasian Collared-Dove,CODO
+Eurasian Coot,COCO
 Eurasian Curlew,EUCU
 Eurasian Dotterel,EUDO
-Eurasian Hobby,EHOB
-Eurasian Hoopoe,EHOO
-Eurasian Jackdaw,EUJA
-Eurasian Kestrel,EUKE
+Eurasian Hobby,EUHO
+Eurasian Hoopoe,COHO
+Eurasian Jackdaw,WEJA
+Eurasian Kestrel,COKE
 Eurasian Oystercatcher,EUOY
 Eurasian Siskin,EUSI
-Eurasian Skylark,EUSK
+Eurasian Skylark,SKYL
 Eurasian Tree Sparrow,ETSP
 Eurasian Wigeon,EUWI
 Eurasian Woodcock,EUWO
 Eurasian Wryneck,EUWR
-European Golden-Plover,EUGP
+European Golden-Plover,EGPL
 European Robin,EURO
-European Starling,EUST
-European Storm-Petrel,EUSP
-European Turtle-Dove,EUTD
+European Starling,COST
+European Storm-Petrel,ESPE
+European Turtle-Dove,ETDO
 Evening Grosbeak,EVGR
 Eyebrowed Thrush,EYTH
 Falcated Duck,FADU
-Fan-tailed Warbler,FTWA
-Far Eastern Curlew,FECU
-Fea's Petrel,FEPE
+Fan-tailed Warbler,MFTW
+Far Eastern Curlew,EACU
+Fea's Petrel,CVPE
 Ferruginous Hawk,FEHA
-Ferruginous Pygmy-Owl,FEPO
+Ferruginous Pygmy-Owl,FPOW
 Field Sparrow,FISP
 Fieldfare,FIEL
 Fish Crow,FICR
@@ -389,13 +389,13 @@ Five-striped Sparrow,FSSP
 Flame-colored Tanager,FCTA
 Flammulated Owl,FLOW
 Flesh-footed Shearwater,FFSH
-Florida Scrub-Jay,FLSJ
+Florida Scrub-Jay,FSJA
 Fork-tailed Flycatcher,FTFL
 Fork-tailed Storm-Petrel,FTSP
 Forster's Tern,FOTE
-Fox Sparrow,FOSP
+Fox Sparrow,FSSP
 Franklin's Gull,FRGU
-Fulvous Whistling-Duck,FUWD
+Fulvous Whistling-Duck,FWDU
 Gadwall,GADW
 Gambel's Quail,GAQU
 Garganey,GARG
@@ -408,31 +408,32 @@ Golden Eagle,GOEA
 Golden-cheeked Warbler,GCWA
 Golden-crowned Kinglet,GCKI
 Golden-crowned Sparrow,GCSP
-Golden-crowned Warbler,GCRW
+Golden-crowned Warbler,GCWS
 Golden-fronted Woodpecker,GFWO
 Golden-winged Warbler,GWWA
 Grace's Warbler,GRWA
 Grasshopper Sparrow,GRSP
 Gray Bunting,GRBU
 Gray Catbird,GRCA
-Gray Flycatcher,GRFL
-Gray Francolin,GRAF
+Gray Flycatcher,AGFL
+Gray Francolin,GRFR
 Gray Hawk,GRHA
-Gray Heron,GRAH
-Gray Kingbird,GRAK
+Gray Heron,GRHE
+Gray Kingbird,GRKI
 Gray Nightjar,GRNI
-Gray Partridge,GRAP
-Gray Silky-flycatcher,GRSF
+Gray Partridge,GRPA
+Gray Silky-flycatcher,GSFL
 Gray Vireo,GRVI
-Gray Wagtail,GRAW
-Gray-backed Tern,GBAT
-Gray-breasted Martin,GYBM
+Gray Wagtail,GRWA
+Gray-backed Tern,SPTE
+Gray-breasted Martin,GBMA
 Gray-cheeked Thrush,GCTH
-Gray-collared Becard,GCBE
+Gray-collared Becard,EGCB
 Gray-crowned Rosy-Finch,GCRF
 Gray-crowned Yellowthroat,GCYE
 Gray-faced Petrel,GFPE
-Gray-headed Chickadee,GHCH
+Gray-headed Chickadee,SITI
+Gray-headed Swamphen,PUSW
 Gray-hooded Gull,GHGU
 Gray-streaked Flycatcher,GSFL
 Gray-tailed Tattler,GTTA
@@ -440,101 +441,100 @@ Graylag Goose,GRGO
 Great Auk,GRAU
 Great Black Hawk,GBHA
 Great Black-backed Gull,GBBG
-Great Blue Heron,GBHE
-Great Cormorant,GRCO
+Great Blue Heron,GBWH
+Great Cormorant,BLSH
 Great Crested Flycatcher,GCFL
-Great Crested Tern,GCTE
-Great Egret,GREG
-Great Frigatebird,GREF
+Great Crested Tern,SWTE
+Great Egret,WHHE
+Great Frigatebird,GRFR
 Great Gray Owl,GGOW
 Great Horned Owl,GHOW
-Great Kiskadee,GKIS
+Great Kiskadee,GRKI
 Great Knot,GRKN
 Great Shearwater,GRSH
 Great Skua,GRSK
 Great Spotted Woodpecker,GSWO
 Great-tailed Grackle,GTGR
 Greater Amakihi,GRAM
-Greater Koa-Finch,GRKF
+Greater Koa-Finch,GKFI
 Greater Necklaced Laughingthrush,GNLA
 Greater Pewee,GRPE
-Greater Prairie-Chicken,GRPC
+Greater Prairie-Chicken,GPCH
 Greater Roadrunner,GRRO
-Greater Sage-Grouse,GRSG
-Greater Sand-Plover,GSAP
+Greater Sage-Grouse,GSGR
+Greater Sand-Plover,GRSA
 Greater Scaup,GRSC
 Greater White-fronted Goose,GWFG
 Greater Yellowlegs,GRYE
-Green Heron,GRHE
+Green Heron,GBHE
 Green Jay,GRJA
-Green Kingfisher,GKIN
-Green Parakeet,GREP
+Green Kingfisher,GRKI
+Green Parakeet,GRPA
 Green Sandpiper,GRSA
-Green-breasted Mango,GNBM
+Green-breasted Mango,GBTM
 Green-tailed Towhee,GTTO
-Green-winged Teal,GWTE
+Green-winged Teal,EUTE
 Greenish Elaenia,GREL
 Groove-billed Ani,GBAN
 Guadalupe Murrelet,GUMU
-Gull-billed Tern,GBTE
-Gunnison Sage-Grouse,GUSG
-Gyrfalcon,GYRF
+Gull-billed Tern,ABTE
+Gunnison Sage-Grouse,GUGR
+Gyrfalcon,GYFA
 Hairy Woodpecker,HAWO
 Hammond's Flycatcher,HAFL
 Harlequin Duck,HADU
-Harris's Hawk,HASH
+Harris's Hawk,HAHA
 Harris's Sparrow,HASP
 Hawaii Akepa,HAAK
 Hawaii Amakihi,HAAM
-Hawaii Creeper,HCRE
+Hawaii Creeper,HACR
 Hawaii Elepaio,HAEL
 Hawaii Mamo,HAMA
 Hawaii Oo,HAOO
 Hawaiian Coot,HACO
-Hawaiian Crow,HCRO
-Hawaiian Duck,HAWD
-Hawaiian Goose,HAGO
-Hawaiian Hawk,HAWH
+Hawaiian Crow,HACR
+Hawaiian Duck,HADU
+Hawaiian Goose,NENE
+Hawaiian Hawk,HAHA
 Hawaiian Petrel,HAPE
 Hawaiian Rail,HARA
 Hawfinch,HAWF
-Heermann's Gull,HEEG
+Heermann's Gull,HEGU
 Henslow's Sparrow,HESP
-Hepatic Tanager,HETA
+Hepatic Tanager,RETA
 Herald Petrel,HEPE
 Hermit Thrush,HETH
 Hermit Warbler,HEWA
-Herring Gull,HERG
+Herring Gull,AHHG
 Himalayan Snowcock,HISN
-Hoary Redpoll,HORE
+Hoary Redpoll,REDP
 Hooded Crane,HOCR
 Hooded Merganser,HOME
 Hooded Oriole,HOOR
 Hooded Warbler,HOWA
 Hook-billed Kite,HBKI
-Horned Grebe,HOGR
-Horned Lark,HOLA
+Horned Grebe,SLGR
+Horned Lark,SHLA
 Horned Puffin,HOPU
 House Finch,HOFI
 House Sparrow,HOSP
 House Wren,HOWR
 Hudsonian Godwit,HUGO
 Hutton's Vireo,HUVI
-Hwamei,HWAM
 Iceland Gull,ICGU
 Iiwi,IIWI
 Inca Dove,INDO
 Inca Tern,INTE
 Indian Peafowl,INPE
 Indigo Bunting,INBU
-Intermediate Egret,INEG
-Island Canary,ISCA
-Island Scrub-Jay,ISSJ
+Intermediate Egret,IBEG
+Island Canary,ATCA
+Island Scrub-Jay,WSJA
 Ivory Gull,IVGU
 Ivory-billed Woodpecker,IBWO
 Jabiru,JABI
 Jack Snipe,JASN
-Japanese Bush-Warbler,JABW
+Japanese Bush Warbler,JBWA
 Java Sparrow,JASP
 Jouanin's Petrel,JOPE
 Juan Fernandez Petrel,JFPE
@@ -542,13 +542,13 @@ Juniper Titmouse,JUTI
 Kakawahie,KAKA
 Kalij Pheasant,KAPH
 Kamao,KAMA
-Kamchatka Leaf Warbler,KLWA
+Kamchatka Leaf Warbler,KALW
 Kauai Akialoa,KAAK
 Kauai Amakihi,KAAM
 Kauai Elepaio,KAEL
 Kauai Nukupuu,KANU
 Kauai Oo,KAOO
-Kelp Gull,KEGU
+Kelp Gull,SBBG
 Kentucky Warbler,KEWA
 Kermadec Petrel,KEPE
 Key West Quail-Dove,KWQD
@@ -560,53 +560,53 @@ Kirtland's Warbler,KIWA
 Kittlitz's Murrelet,KIMU
 Kona Grosbeak,KOGR
 La Sagra's Flycatcher,LSFL
-Labrador Duck,LABD
+Labrador Duck,LADU
 Ladder-backed Woodpecker,LBWO
-Lanai Hookbill,LANH
-Lanceolated Warbler,LANW
-Lapland Longspur,LALO
+Lanai Hookbill,LAHO
+Lanceolated Warbler,LAWA
+Lapland Longspur,LABU
 Large-billed Tern,LBTE
-Lark Bunting,LARB
+Lark Bunting,LABU
 Lark Sparrow,LASP
 Laughing Gull,LAGU
 Lawrence's Goldfinch,LAGO
 Laysan Albatross,LAAL
-Laysan Duck,LAYD
+Laysan Duck,LADU
 Laysan Finch,LAFI
-Laysan Honeycreeper,LAYH
+Laysan Honeycreeper,LAHO
 Laysan Rail,LARA
-Lazuli Bunting,LAZB
-Leach's Storm-Petrel,LESP
+Lazuli Bunting,LABU
+LeConte's Sparrow,LESP
+LeConte's Thrasher,LETH
+Leach's Storm-Petrel,LSPE
 Least Auklet,LEAU
 Least Bittern,LEBI
 Least Flycatcher,LEFL
 Least Grebe,LEGR
 Least Sandpiper,LESA
-Least Storm-Petrel,LSTP
+Least Storm-Petrel,LESP
 Least Tern,LETE
-LeConte's Sparrow,LCSP
-LeConte's Thrasher,LCTH
-Lesser Akialoa,LEAK
+Lesser Akialoa,HAAK
 Lesser Black-backed Gull,LBBG
 Lesser Frigatebird,LEFR
 Lesser Goldfinch,LEGO
-Lesser Koa-Finch,LEKF
+Lesser Koa-Finch,LKFI
 Lesser Nighthawk,LENI
-Lesser Prairie-Chicken,LEPC
-Lesser Sand-Plover,LSAP
+Lesser Prairie-Chicken,LPCH
+Lesser Sand-Plover,LSPL
 Lesser Scaup,LESC
 Lesser White-fronted Goose,LWFG
 Lesser Whitethroat,LEWH
 Lesser Yellowlegs,LEYE
 Lewis's Woodpecker,LEWO
-Light-mantled Albatross,LMAL
-Lilac-crowned Parrot,LCPA
+Light-mantled Albatross,LMSA
+Lilac-crowned Parrot,LCAM
 Limpkin,LIMP
 Lincoln's Sparrow,LISP
 Little Blue Heron,LBHE
 Little Bunting,LIBU
-Little Curlew,LICU
-Little Egret,LIEG
+Little Curlew,LIWH
+Little Egret,LEWR
 Little Gull,LIGU
 Little Ringed Plover,LRPL
 Little Stint,LIST
@@ -617,20 +617,20 @@ Long-billed Curlew,LBCU
 Long-billed Dowitcher,LBDO
 Long-billed Murrelet,LBMU
 Long-billed Thrasher,LBTH
-Long-eared Owl,LEOW
+Long-eared Owl,NLEO
 Long-legged Buzzard,LLBU
 Long-tailed Duck,LTDU
-Long-tailed Jaeger,LTJA
+Long-tailed Jaeger,LTSK
 Long-toed Stint,LTST
 Louisiana Waterthrush,LOWA
-Lucifer Hummingbird,LUHU
+Lucifer Hummingbird,LUSH
 Lucy's Warbler,LUWA
-MacGillivray's Warbler,MGWA
+MacGillivray's Warbler,MAWA
 Magnificent Frigatebird,MAFR
 Magnolia Warbler,MAWA
 Mallard,MALL
 Mangrove Cuckoo,MACU
-Mangrove Swallow,MANS
+Mangrove Swallow,MASW
 Manx Shearwater,MASH
 Marbled Godwit,MAGO
 Marbled Murrelet,MAMU
@@ -644,29 +644,29 @@ Maui Akepa,MAAK
 Maui Alauahio,MAAL
 Maui Nukupuu,MANU
 Maui Parrotbill,MAPA
-Maui-nui Akialoa,MNAK
-McKay's Bunting,MKBU
+Maui-nui Akialoa,LAAK
+McKay's Bunting,MCBU
 Merlin,MERL
 Mexican Chickadee,MECH
-Mexican Duck,MEDU
+Mexican Duck,MODU
 Mexican Jay,MEJA
-Mexican Violetear,MEVI
+Mexican Violetear,GVEA
 Mexican Whip-poor-will,MWPW
-Middendorff's Grasshopper Warbler,MGRW
+Middendorff's Grasshopper Warbler,MGWA
 Millerbird,MILL
 Mississippi Kite,MIKI
 Mistle Thrush,MITH
 Mitred Parakeet,MIPA
 Monk Parakeet,MOPA
-Montezuma Quail,MONQ
-Morelet's Seedeater,MOSE
+Montezuma Quail,MBQU
+Morelet's Seedeater,WCSE
 Mottled Duck,MODU
 Mottled Owl,MOOW
 Mottled Petrel,MOPE
 Mountain Bluebird,MOBL
 Mountain Chickadee,MOCH
 Mountain Plover,MOPL
-Mountain Quail,MOUQ
+Mountain Quail,MOQU
 Mourning Dove,MODO
 Mourning Warbler,MOWA
 Mugimaki Flycatcher,MUFL
@@ -682,33 +682,33 @@ Nelson's Sparrow,NESP
 Neotropic Cormorant,NECO
 Newell's Shearwater,NESH
 Nihoa Finch,NIFI
-Northern Beardless-Tyrannulet,NOBT
+Northern Beardless-Tyrannulet,NBTY
 Northern Bobwhite,NOBO
-Northern Boobook,NOBB
+Northern Boobook,NOBO
 Northern Cardinal,NOCA
-Northern Flicker,NOFL
+Northern Flicker,YSSF
 Northern Fulmar,NOFU
 Northern Gannet,NOGA
-Northern Giant-Petrel,NOGP
+Northern Giant-Petrel,NGPE
 Northern Goshawk,NOGO
 Northern Harrier,NOHA
-Northern Hawk Owl,NHOW
+Northern Hawk Owl,NOHO
 Northern Jacana,NOJA
 Northern Lapwing,NOLA
 Northern Mockingbird,NOMO
 Northern Parula,NOPA
 Northern Pintail,NOPI
-Northern Pygmy-Owl,NOPO
+Northern Pygmy-Owl,NPOW
 Northern Rough-winged Swallow,NRWS
 Northern Saw-whet Owl,NSWO
-Northern Shoveler,NSHO
-Northern Shrike,NSHR
+Northern Shoveler,NOSH
+Northern Shrike,NOSH
 Northern Waterthrush,NOWA
-Northern Wheatear,NOWH
+Northern Wheatear,NTWH
 Nuttall's Woodpecker,NUWO
 Nutting's Flycatcher,NUFL
-Oahu Akepa,OAKE
-Oahu Akialoa,OAKI
+Oahu Akepa,OAAK
+Oahu Akialoa,OAAK
 Oahu Alauahio,OAAL
 Oahu Amakihi,OAAM
 Oahu Elepaio,OAEL
@@ -725,30 +725,31 @@ Orange-billed Nightingale-Thrush,OBNT
 Orange-crowned Warbler,OCWA
 Orchard Oriole,OROR
 Oriental Cuckoo,ORCU
-Oriental Greenfinch,ORGR
+Oriental Greenfinch,GCGR
 Oriental Pratincole,ORPR
-Oriental Scops-Owl,ORSO
-Oriental Turtle-Dove,ORTD
-Osprey,OSPR
+Oriental Scops-Owl,OSOW
+Oriental Turtle-Dove,OTDO
+Osprey,WEOS
 Ou,OU
 Ovenbird,OVEN
-Pacific Golden-Plover,PAGP
-Pacific Loon,PALO
+Pacific Golden-Plover,PGPL
+Pacific Loon,PADI
+Pacific Swift,PASW
 Pacific Wren,PAWR
 Pacific-slope Flycatcher,PSFL
 Paint-billed Crake,PBCR
 Painted Bunting,PABU
-Painted Redstart,PARE
+Painted Redstart,PAWH
 Palila,PALI
-Pallas's Bunting,PALB
-Pallas's Grasshopper Warbler,PGWA
+Pallas's Bunting,PRBU
+Pallas's Grasshopper Warbler,PAGW
 Pallas's Gull,PAGU
-Pallas's Leaf Warbler,PLEW
+Pallas's Leaf Warbler,PALW
 Pallas's Rosefinch,PARO
 Palm Warbler,PAWA
 Parakeet Auklet,PAAU
-Parasitic Jaeger,PAJA
-Parkinson's Petrel,PAPE
+Parasitic Jaeger,ARJA
+Parkinson's Petrel,BLPE
 Passenger Pigeon,PAPI
 Pechora Pipit,PEPI
 Pectoral Sandpiper,PESA
@@ -760,9 +761,9 @@ Pied Wheatear,PIWH
 Pied-billed Grebe,PBGR
 Pigeon Guillemot,PIGU
 Pileated Woodpecker,PIWO
-Pin-tailed Snipe,PTSN
+Pin-tailed Snipe,PISN
 Pine Bunting,PIBU
-Pine Flycatcher,PINF
+Pine Flycatcher,PIFL
 Pine Grosbeak,PIGR
 Pine Siskin,PISI
 Pine Warbler,PIWA
@@ -770,29 +771,29 @@ Pink-footed Goose,PFGO
 Pink-footed Shearwater,PFSH
 Pinyon Jay,PIJA
 Piping Plover,PIPL
-Piratic Flycatcher,PIRF
+Piratic Flycatcher,PIFL
 Plain Chachalaca,PLCH
 Plain-capped Starthroat,PCST
 Plumbeous Vireo,PLVI
-Pomarine Jaeger,POJA
+Pomarine Jaeger,POSK
 Poo-uli,POUL
 Prairie Falcon,PRFA
-Prairie Warbler,PRAW
-Prothonotary Warbler,PROW
+Prairie Warbler,PRWA
+Prothonotary Warbler,PRWA
 Providence Petrel,PRPE
 Puaiohi,PUAI
 Purple Finch,PUFI
-Purple Gallinule,PUGA
+Purple Gallinule,APGA
 Purple Martin,PUMA
 Purple Sandpiper,PUSA
 Pygmy Nuthatch,PYNU
 Pyrrhuloxia,PYRR
 Razorbill,RAZO
 Red Avadavat,REAV
-Red Crossbill,RECR
+Red Crossbill,COCR
 Red Junglefowl,REJU
 Red Knot,REKN
-Red Phalarope,REPH
+Red Phalarope,GRPH
 Red-backed Shrike,RBSH
 Red-bellied Woodpecker,RBWO
 Red-billed Leiothrix,RBLE
@@ -803,17 +804,17 @@ Red-breasted Nuthatch,RBNU
 Red-breasted Sapsucker,RBSA
 Red-cockaded Woodpecker,RCWO
 Red-crested Cardinal,RCCA
-Red-crowned Parrot,RCPA
+Red-crowned Parrot,RCAM
 Red-eyed Vireo,REVI
 Red-faced Cormorant,RFCO
 Red-faced Warbler,RFWA
-Red-flanked Bluetail,RFBL
+Red-flanked Bluetail,OFBR
 Red-footed Booby,RFBO
 Red-footed Falcon,RFFA
 Red-headed Woodpecker,RHWO
 Red-legged Honeycreeper,RLHO
 Red-legged Kittiwake,RLKI
-Red-legged Thrush,RLTH
+Red-legged Thrush,NRLT
 Red-masked Parakeet,RMPA
 Red-naped Sapsucker,RNSA
 Red-necked Grebe,RNGR
@@ -822,7 +823,7 @@ Red-necked Stint,RNST
 Red-shouldered Hawk,RSHA
 Red-tailed Hawk,RTHA
 Red-tailed Tropicbird,RTTR
-Red-throated Loon,RTLO
+Red-throated Loon,RTDI
 Red-throated Pipit,RTPI
 Red-vented Bulbul,RVBU
 Red-whiskered Bulbul,RWBU
@@ -830,59 +831,59 @@ Red-winged Blackbird,RWBL
 Reddish Egret,REEG
 Redhead,REDH
 Redwing,REDW
-Reed Bunting,REBU
+Reed Bunting,CRBU
 Rhinoceros Auklet,RHAU
 Ridgway's Rail,RIRA
 Ring-billed Gull,RBGU
 Ring-necked Duck,RNDU
-Ring-necked Pheasant,RNEP
+Ring-necked Pheasant,RNPH
 Ringed Kingfisher,RIKI
-Ringed Storm-Petrel,RISP
+Ringed Storm-Petrel,RSPE
 River Warbler,RIWA
-Rivoli's Hummingbird,RIHU
+Rivoli's Hummingbird,MAHU
 Roadside Hawk,ROHA
 Rock Pigeon,ROPI
 Rock Ptarmigan,ROPT
 Rock Sandpiper,ROSA
-Rock Wren,ROWR
+Rock Wren,ARWR
 Rose-breasted Grosbeak,RBGR
-Rose-ringed Parakeet,RRPA
+Rose-ringed Parakeet,RNPA
 Rose-throated Becard,RTBE
 Roseate Spoonbill,ROSP
-Roseate Tern,ROST
+Roseate Tern,ROTE
 Ross's Goose,ROGO
 Ross's Gull,ROGU
 Rosy-faced Lovebird,RFLO
-Rough-legged Hawk,RLHA
-Royal Tern,ROYT
+Rough-legged Hawk,RLBU
+Royal Tern,ROTE
 Ruby-crowned Kinglet,RCKI
 Ruby-throated Hummingbird,RTHU
 Ruddy Duck,RUDU
-Ruddy Ground Dove,RGDO
-Ruddy Quail-Dove,RUQD
+Ruddy Ground Dove,RUGD
+Ruddy Quail-Dove,RQDO
 Ruddy Turnstone,RUTU
 Ruff,RUFF
 Ruffed Grouse,RUGR
 Rufous Hummingbird,RUHU
-Rufous-backed Robin,RBRO
+Rufous-backed Robin,RBTH
 Rufous-capped Warbler,RCWA
 Rufous-crowned Sparrow,RCSP
 Rufous-necked Wood-Rail,RNWR
 Rufous-tailed Robin,RTRO
-Rufous-tailed Rock-Thrush,RTRT
+Rufous-tailed Rock-Thrush,CRTH
 Rufous-winged Sparrow,RWSP
 Rustic Bunting,RUBU
 Rusty Blackbird,RUBL
 Sabine's Gull,SAGU
 Saffron Finch,SAFI
 Sage Thrasher,SATH
-Sagebrush Sparrow,SABS
-Saltmarsh Sparrow,SALS
-Salvin's Albatross,SAAL
+Sagebrush Sparrow,SASP
+Saltmarsh Sparrow,SASP
+Salvin's Albatross,SAMO
 Sanderling,SAND
 Sandhill Crane,SACR
 Sandwich Tern,SATE
-Savannah Sparrow,SAVS
+Savannah Sparrow,SASP
 Say's Phoebe,SAPH
 Scaled Quail,SCQU
 Scaly-breasted Munia,SBMU
@@ -897,22 +898,23 @@ Sedge Warbler,SEWA
 Sedge Wren,SEWR
 Semipalmated Plover,SEPL
 Semipalmated Sandpiper,SESA
-Sharp-shinned Hawk,SSHA
+Sharp-shinned Hawk,SSBB
 Sharp-tailed Grouse,STGR
-Sharp-tailed Sandpiper,SPTS
+Sharp-tailed Sandpiper,STSA
 Shiny Cowbird,SHCO
 Short-billed Dowitcher,SBDO
-Short-billed Gull,SBIG
+Short-billed Gull,MEGU
 Short-eared Owl,SEOW
 Short-tailed Albatross,STAL
 Short-tailed Hawk,STHA
-Short-tailed Shearwater,STTS
+Short-tailed Shearwater,STSH
 Siberian Accentor,SIAC
 Siberian Blue Robin,SBRO
 Siberian Rubythroat,SIRU
+Siberian Stonechat,COST
 Sinaloa Wren,SIWR
-Slate-throated Redstart,STRE
-Slaty-backed Gull,SBAG
+Slate-throated Redstart,STWH
+Slaty-backed Gull,SBGU
 Slender-billed Curlew,SBCU
 Small-billed Elaenia,SBEL
 Smew,SMEW
@@ -938,7 +940,7 @@ Southern Martin,SOMA
 Spectacled Eider,SPEI
 Spoon-billed Sandpiper,SBSA
 Spot-breasted Oriole,SBOR
-Spotted Dove,SPDO
+Spotted Dove,ESDO
 Spotted Flycatcher,SPFL
 Spotted Owl,SPOW
 Spotted Rail,SPRA
@@ -948,13 +950,13 @@ Spotted Towhee,SPTO
 Sprague's Pipit,SPPI
 Spruce Grouse,SPGR
 Stejneger's Petrel,STPE
-Stejneger's Scoter,STSC
+Stejneger's Scoter,SISC
 Steller's Eider,STEI
 Steller's Jay,STJA
-Steller's Sea-Eagle,STSE
+Steller's Sea-Eagle,SSEA
 Stilt Sandpiper,STSA
-Streak-backed Oriole,SBAO
-Streaked Shearwater,STRS
+Streak-backed Oriole,SBOR
+Streaked Shearwater,STSH
 Stygian Owl,STOW
 Sulphur-bellied Flycatcher,SBFL
 Summer Tanager,SUTA
@@ -962,47 +964,47 @@ Sungrebe,SUNG
 Surf Scoter,SUSC
 Surfbird,SURF
 Swainson's Hawk,SWHA
-Swainson's Thrush,SWTH
+Swainson's Thrush,RBTH
 Swainson's Warbler,SWWA
 Swallow-tailed Gull,STGU
 Swallow-tailed Kite,STKI
 Swamp Sparrow,SWSP
-Swinhoe's Storm-Petrel,SSTP
+Swinhoe's Storm-Petrel,SWSP
 Tahiti Petrel,TAPE
-Taiga Bean-Goose,TABG
-Taiga Flycatcher,TAFL
+Taiga Bean-Goose,BEGO
+Taiga Flycatcher,RTFL
 Tamaulipas Crow,TACR
 Tawny-shouldered Blackbird,TSBL
 Temminck's Stint,TEST
 Tennessee Warbler,TEWA
 Terek Sandpiper,TESA
 Thick-billed Kingbird,TBKI
-Thick-billed Longspur,TBLO
-Thick-billed Murre,TBMU
+Thick-billed Longspur,MCLO
+Thick-billed Murre,BRGU
 Thick-billed Parrot,TBPA
 Thick-billed Vireo,TBVI
 Thick-billed Warbler,TBWA
 Townsend's Solitaire,TOSO
-Townsend's Storm-Petrel,TOSP
+Townsend's Storm-Petrel,TSPE
 Townsend's Warbler,TOWA
 Tree Pipit,TRPI
-Tree Swallow,TRES
+Tree Swallow,TRSW
 Tricolored Blackbird,TRBL
 Tricolored Heron,TRHE
 Tricolored Munia,TRMU
 Trindade Petrel,TRPE
-Tristram's Storm-Petrel,TRSP
+Tristram's Storm-Petrel,TSPE
 Tropical Kingbird,TRKI
 Tropical Parula,TRPA
-Trumpeter Swan,TRUS
+Trumpeter Swan,TRSW
 Tufted Duck,TUDU
-Tufted Flycatcher,TUFL
+Tufted Flycatcher,NTFL
 Tufted Puffin,TUPU
 Tufted Titmouse,TUTI
-Tundra Bean-Goose,TUBG
-Tundra Swan,TUSW
+Tundra Bean-Goose,BEGO
+Tundra Swan,BESW
 Turkey Vulture,TUVU
-Ula-ai-hawane,UAIH
+Ula-ai-hawane,ULAH
 Upland Sandpiper,UPSA
 Varied Bunting,VABU
 Varied Thrush,VATH
@@ -1010,16 +1012,16 @@ Variegated Flycatcher,VAFL
 Vaux's Swift,VASW
 Veery,VEER
 Verdin,VERD
-Vermilion Flycatcher,VEFL
+Vermilion Flycatcher,VFSP
 Vesper Sparrow,VESP
 Violet-crowned Hummingbird,VCHU
 Violet-green Swallow,VGSW
 Virginia Rail,VIRA
 Virginia's Warbler,VIWA
-Wandering Albatross,WAAL
+Wandering Albatross,WASP
 Wandering Tattler,WATA
 Warbling Vireo,WAVI
-Warbling White-eye,WAWE
+Warbling White-eye,WWEY
 Wedge-rumped Storm-Petrel,WRSP
 Wedge-tailed Shearwater,WTSH
 Western Bluebird,WEBL
@@ -1027,22 +1029,22 @@ Western Grebe,WEGR
 Western Gull,WEGU
 Western Kingbird,WEKI
 Western Meadowlark,WEME
-Western Reef-Heron,WERH
+Western Reef-Heron,WRHE
 Western Sandpiper,WESA
-Western Screech-Owl,WESO
+Western Screech-Owl,WSOW
 Western Spindalis,WESP
 Western Tanager,WETA
-Western Wood-Pewee,WEWP
-Whimbrel,WHIM
+Western Wood-Pewee,WWPE
+Whimbrel,EUWH
 Whiskered Auklet,WHAU
-Whiskered Screech-Owl,WHSO
-Whiskered Tern,WHST
-White Ibis,WHIB
-White Tern,WHTT
-White Wagtail,WHWA
+Whiskered Screech-Owl,WSOW
+Whiskered Tern,WHTE
+White Ibis,AWIB
+White Tern,CWTE
+White Wagtail,PWWA
 White-breasted Nuthatch,WBNU
-White-capped Albatross,WCAL
-White-cheeked Pintail,WCHP
+White-capped Albatross,SCAL
+White-cheeked Pintail,WCPI
 White-chinned Petrel,WCPE
 White-collared Swift,WCSW
 White-crested Elaenia,WCEL
@@ -1055,8 +1057,8 @@ White-faced Storm-Petrel,WFSP
 White-headed Woodpecker,WHWO
 White-necked Petrel,WNPE
 White-rumped Sandpiper,WRSA
-White-rumped Shama,WRSH
-White-tailed Eagle,WTEA
+White-rumped Shama,WRCS
+White-tailed Eagle,WTSE
 White-tailed Hawk,WTHA
 White-tailed Kite,WTKI
 White-tailed Ptarmigan,WTPT
@@ -1064,33 +1066,33 @@ White-tailed Tropicbird,WTTR
 White-throated Needletail,WTNE
 White-throated Sparrow,WTSP
 White-throated Swift,WTSW
-White-throated Thrush,WTTH
+White-throated Thrush,WTNT
 White-tipped Dove,WTDO
-White-winged Crossbill,WWCR
+White-winged Crossbill,TBCR
 White-winged Dove,WWDO
 White-winged Parakeet,WWPA
 White-winged Scoter,WWSC
-White-winged Tern,WWTE
-Whooper Swan,WHOS
+White-winged Tern,WWBT
+Whooper Swan,WHSW
 Whooping Crane,WHCR
 Wild Turkey,WITU
 Willet,WILL
 Williamson's Sapsucker,WISA
 Willow Flycatcher,WIFL
-Willow Ptarmigan,WIPT
-Willow Warbler,WILW
+Willow Ptarmigan,WIGR
+Willow Warbler,WIWA
 Wilson's Phalarope,WIPH
 Wilson's Plover,WIPL
 Wilson's Snipe,WISN
-Wilson's Storm-Petrel,WISP
+Wilson's Storm-Petrel,WSPE
 Wilson's Warbler,WIWA
-Winter Wren,WIWR
-Wood Duck,WODU
+Winter Wren,AWWR
+Wood Duck,CWDU
 Wood Sandpiper,WOSA
 Wood Stork,WOST
 Wood Thrush,WOTH
 Wood Warbler,WOWA
-Woodhouse's Scrub-Jay,WOSJ
+Woodhouse's Scrub-Jay,WSJA
 Worm-eating Warbler,WEWA
 Worthen's Sparrow,WOSP
 Wrentit,WREN
@@ -1098,16 +1100,16 @@ Xantus's Hummingbird,XAHU
 Yellow Bittern,YEBI
 Yellow Grosbeak,YEGR
 Yellow Rail,YERA
-Yellow Warbler,YEWA
+Yellow Warbler,AYWA
 Yellow-bellied Flycatcher,YBFL
 Yellow-bellied Sapsucker,YBSA
 Yellow-billed Cardinal,YBCA
 Yellow-billed Cuckoo,YBCU
-Yellow-billed Loon,YBLO
+Yellow-billed Loon,WBDI
 Yellow-billed Magpie,YBMA
-Yellow-breasted Bunting,YBSB
+Yellow-breasted Bunting,YBBU
 Yellow-breasted Chat,YBCH
-Yellow-browed Bunting,YBWB
+Yellow-browed Bunting,YBBU
 Yellow-browed Warbler,YBWA
 Yellow-chevroned Parakeet,YCPA
 Yellow-crowned Night-Heron,YCNH
@@ -1118,13 +1120,13 @@ Yellow-fronted Canary,YFCA
 Yellow-green Vireo,YGVI
 Yellow-headed Blackbird,YHBL
 Yellow-legged Gull,YLGU
-Yellow-nosed Albatross,YNAL
-Yellow-rumped Warbler,YRWA
+Yellow-nosed Albatross,AYNA
+Yellow-rumped Warbler,MYWA
 Yellow-throated Bunting,YTBU
 Yellow-throated Vireo,YTVI
 Yellow-throated Warbler,YTWA
 Yucatan Vireo,YUVI
-Zebra Dove,ZEBD
-Zenaida Dove,ZEND
+Zebra Dove,ZEDO
+Zenaida Dove,ZEDO
 Zino's Petrel,ZIPE
 Zone-tailed Hawk,ZTHA

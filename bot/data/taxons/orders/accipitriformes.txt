@@ -1,7 +1,34 @@
+Bald Eagle
+Black Kite
+Broad-winged Hawk
+Chinese Sparrowhawk
+Common Black Hawk
+Cooper's Hawk
+Crane Hawk
+Double-toothed Kite
+Ferruginous Hawk
+Golden Eagle
+Gray Hawk
+Great Black Hawk
+Harris's Hawk
+Hawaiian Hawk
+Hook-billed Kite
+Long-legged Buzzard
+Mississippi Kite
+Northern Goshawk
 Northern Harrier
 Osprey
-Cooper's Hawk
-Red Tailed Hawk
-Golden Eagle
-Bald Eagle
+Red-shouldered Hawk
+Red-tailed Hawk
+Roadside Hawk
+Rough-legged Hawk
+Sharp-shinned Hawk
+Short-tailed Hawk
+Snail Kite
+Steller's Sea-Eagle
 Swainson's Hawk
+Swallow-tailed Kite
+White-tailed Eagle
+White-tailed Hawk
+White-tailed Kite
+Zone-tailed Hawk

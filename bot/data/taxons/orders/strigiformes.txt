@@ -1,9 +1,24 @@
-Great Gray Owl
-Northern Saw Whet Owl
-Long Eared Owl
-Burrowing Owl
-Screech Owl
-Snowy Owl
-Barred Owl
-Great Horned Owl
 Barn Owl
+Barred Owl
+Boreal Owl
+Burrowing Owl
+Eastern Screech-Owl
+Elf Owl
+Ferruginous Pygmy-Owl
+Flammulated Owl
+Great Gray Owl
+Great Horned Owl
+Long-eared Owl
+Mottled Owl
+Northern Boobook
+Northern Hawk Owl
+Northern Pygmy-Owl
+Northern Saw-whet Owl
+Oriental Scops-Owl
+Screech Owl
+Short-eared Owl
+Snowy Owl
+Spotted Owl
+Stygian Owl
+Western Screech-Owl
+Whiskered Screech-Owl

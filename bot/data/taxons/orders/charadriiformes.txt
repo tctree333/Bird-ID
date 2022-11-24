@@ -1,29 +1,177 @@
-Pomarine Jaeger
-Black Skimmer
-Great Black Backed Gull
-California Gull
-"Wilsons Phalarope"
-Ruddy Turnstone
-American Oystercatcher
-Black Tern
-Heermann's Gull
-Black Necked Stilt
-Dunlin
-Black Guillemot
-Ring Billed Gull
-Marbled Murrelet
-Wilson's Snipe
-Spotted Sandpiper
+Aleutian Tern
 American Avocet
-Upland Sandpiper
-Snowy Plover
-Herring Gull
-Caspian Tern
-Tufted Puffin
-Laughing Gull
-Common Murre
-Killdeer
-Northern Jacana
-Least Tern
+American Golden-Plover
+American Oystercatcher
 American Woodcock
-American Golden Plover
+Ancient Murrelet
+Arctic Tern
+Atlantic Puffin
+Baird's Sandpiper
+Bar-tailed Godwit
+Belcher's Gull
+Black Guillemot
+Black Noddy
+Black Oystercatcher
+Black Skimmer
+Black Tern
+Black Turnstone
+Black-bellied Plover
+Black-headed Gull
+Black-legged Kittiwake
+Black-necked Stilt
+Black-tailed Godwit
+Black-tailed Gull
+Black-winged Stilt
+Blue-gray Noddy
+Bonaparte's Gull
+Bridled Tern
+Bristle-thighed Curlew
+Broad-billed Sandpiper
+Brown Noddy
+Buff-breasted Sandpiper
+California Gull
+Caspian Tern
+Cassin's Auklet
+Collared Plover
+Common Greenshank
+Common Gull
+Common Murre
+Common Redshank
+Common Ringed Plover
+Common Sandpiper
+Common Snipe
+Common Tern
+Craveri's Murrelet
+Crested Auklet
+Curlew Sandpiper
+Double-striped Thick-knee
+Dovekie
+Dunlin
+Elegant Tern
+Eskimo Curlew
+Eurasian Curlew
+Eurasian Dotterel
+Eurasian Oystercatcher
+Eurasian Woodcock
+European Golden-Plover
+Far Eastern Curlew
+Forster's Tern
+Franklin's Gull
+Glaucous Gull
+Glaucous-winged Gull
+Gray-backed Tern
+Gray-hooded Gull
+Gray-tailed Tattler
+Great Auk
+Great Black-backed Gull
+Great Crested Tern
+Great Knot
+Great Skua
+Greater Sand-Plover
+Greater Yellowlegs
+Green Sandpiper
+Guadalupe Murrelet
+Gull-billed Tern
+Heermann's Gull
+Herring Gull
+Horned Puffin
+Hudsonian Godwit
+Iceland Gull
+Inca Tern
+Ivory Gull
+Jack Snipe
+Kelp Gull
+Killdeer
+Kittlitz's Murrelet
+Large-billed Tern
+Laughing Gull
+Least Auklet
+Least Sandpiper
+Least Tern
+Lesser Black-backed Gull
+Lesser Sand-Plover
+Lesser Yellowlegs
+Little Curlew
+Little Gull
+Little Ringed Plover
+Little Stint
+Little Tern
+Long-billed Curlew
+Long-billed Dowitcher
+Long-billed Murrelet
+Long-tailed Jaeger
+Long-toed Stint
+Marbled Godwit
+Marbled Murrelet
+Marsh Sandpiper
+Mountain Plover
+Northern Jacana
+Northern Lapwing
+Oriental Pratincole
+Pacific Golden-Plover
+Pallas's Gull
+Parakeet Auklet
+Parasitic Jaeger
+Pectoral Sandpiper
+Pigeon Guillemot
+Pin-tailed Snipe
+Piping Plover
+Pomarine Jaeger
+Purple Sandpiper
+Razorbill
+Red Knot
+Red Phalarope
+Red-legged Kittiwake
+Red-necked Phalarope
+Red-necked Stint
+Rhinoceros Auklet
+Ring-billed Gull
+Rock Sandpiper
+Roseate Tern
+Ross's Gull
+Royal Tern
+Ruddy Turnstone
+Ruff
+Sabine's Gull
+Sanderling
+Sandwich Tern
+Scripps's Murrelet
+Semipalmated Plover
+Semipalmated Sandpiper
+Sharp-tailed Sandpiper
+Short-billed Dowitcher
+Short-billed Gull
+Slaty-backed Gull
+Slender-billed Curlew
+Snowy Plover
+Solitary Sandpiper
+Solitary Snipe
+Sooty Tern
+South Polar Skua
+Spoon-billed Sandpiper
+Spotted Redshank
+Spotted Sandpiper
+Stilt Sandpiper
+Surfbird
+Swallow-tailed Gull
+Temminck's Stint
+Terek Sandpiper
+Thick-billed Murre
+Tufted Puffin
+Upland Sandpiper
+Wandering Tattler
+Western Gull
+Western Sandpiper
+Whimbrel
+Whiskered Auklet
+Whiskered Tern
+White Tern
+White-rumped Sandpiper
+White-winged Tern
+Willet
+Wilson's Phalarope
+Wilson's Plover
+Wilson's Snipe
+Wood Sandpiper
+Yellow-footed Gull
+Yellow-legged Gull

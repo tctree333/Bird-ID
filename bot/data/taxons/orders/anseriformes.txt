@@ -1,16 +1,71 @@
-Cinnamon Teal
-Wood Duck
-Northern Shoveler
-Trumpeter Swan
-Black Bellied Whistling Duck
-Surf Scoter
-Mallard
-Green Winged Teal
+American Black Duck
+American Wigeon
+Baikal Teal
+Barnacle Goose
+Barrow's Goldeneye
+Black Scoter
+Black-bellied Whistling-Duck
+Blue-winged Teal
+Brant
 Bufflehead
-Hooded Merganser
+Cackling Goose
 Canada Goose
-Common Eider
-Long Tailed Duck
 Canvasback
+Cinnamon Teal
+Common Eider
+Common Goldeneye
 Common Merganser
+Common Pochard
+Common Scoter
+Common Shelduck
+Eastern Spot-billed Duck
+Egyptian Goose
+Emperor Goose
+Eurasian Wigeon
+Falcated Duck
+Fulvous Whistling-Duck
+Gadwall
+Garganey
+Graylag Goose
+Greater Scaup
+Greater White-fronted Goose
+Green-winged Teal
+Harlequin Duck
+Hawaiian Duck
+Hawaiian Goose
+Hooded Merganser
+King Eider
+Labrador Duck
+Laysan Duck
+Lesser Scaup
+Lesser White-fronted Goose
+Long-tailed Duck
+Mallard
+Masked Duck
+Mexican Duck
+Mottled Duck
+Muscovy Duck
+Mute Swan
+Northern Pintail
+Northern Shoveler
+Pink-footed Goose
+Red-breasted Merganser
+Redhead
+Ring-necked Duck
+Ross's Goose
+Ruddy Duck
+Smew
 Snow Goose
+Spectacled Eider
+Stejneger's Scoter
+Steller's Eider
+Surf Scoter
+Taiga Bean-Goose
+Trumpeter Swan
+Tufted Duck
+Tundra Bean-Goose
+Tundra Swan
+White-cheeked Pintail
+White-winged Scoter
+Whooper Swan
+Wood Duck
