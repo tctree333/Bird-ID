@@ -48,7 +48,6 @@ Ash-throated Flycatcher,ATFL
 Ashy Storm-Petrel,ASSP
 Asian Brown Flycatcher,ABFL
 Asian Rosy-Finch,ASRF
-Asian Stonechat,ASST
 Atlantic Puffin,ATPU
 Audubon's Oriole,AUOR
 Audubon's Shearwater,AUSH
