@@ -870,7 +870,7 @@ Rufous-capped Warbler,RCWA
 Rufous-crowned Sparrow,RCSP
 Rufous-necked Wood-Rail,RNWR
 Rufous-tailed Robin,RTRO
-Rufous-tailed Rock-Thrush,CRTH
+Rufous-tailed Rock-Thrush,RTRT
 Rufous-winged Sparrow,RWSP
 Rustic Bunting,RUBU
 Rusty Blackbird,RUBL
@@ -892,7 +892,6 @@ Scarlet Ibis,SCIB
 Scarlet Tanager,SCTA
 Scissor-tailed Flycatcher,STFL
 Scott's Oriole,SCOR
-Screech Owl,
 Scripps's Murrelet,SCMU
 Seaside Sparrow,SESP
 Sedge Warbler,SEWA
