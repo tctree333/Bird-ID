@@ -7,7 +7,7 @@ holidays==0.28
 gunicorn==20.1.0
 python-dotenv==1.0.0
 hiredis==2.2.3
-sentry-sdk==1.27.0
+sentry-sdk==1.26.0
 pandas==2.0.3
 blinker==1.6.2
 Authlib==0.15.5
