@@ -181,7 +181,10 @@ if __name__ == "__main__":
         logger.info("global check: checking holiday")
         if ctx.command.name == "noholiday":
             return True
-        if ctx.guild and database.sismember("noholiday:global", str(ctx.guild.id)):
+        if database.sismember(
+            "noholiday:global",
+            str(ctx.channel.id if ctx.guild is None else ctx.guild.id),
+        ):
             return True
         now = datetime.now(tz=timezone(-timedelta(hours=4))).date()
         us = holidays.US()

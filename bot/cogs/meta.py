@@ -159,23 +159,30 @@ class Meta(commands.Cog):
 
     # noholiday command
     @commands.hybrid_command(
-        brief="- Disable holidays in a server",
-        help="- Disable holidays in a server. The 'manage guild' permission is needed to use this command.",
+        brief="- Disable holidays in a server or DM",
+        help="- Disable holidays in a server or DM. The 'manage guild' permission is needed to use this command.",
         aliases=["holidays", "holiday"],
     )
     @commands.check(CustomCooldown(3.0, bucket=commands.BucketType.channel))
-    @commands.guild_only()
-    @commands.has_guild_permissions(manage_guild=True)
+    @commands.check_any(
+        commands.has_guild_permissions(manage_guild=True), commands.dm_only()
+    )
     @app_commands.default_permissions(manage_guild=True)
     async def noholiday(self, ctx: commands.Context):
         logger.info("command: noholiday")
 
-        if not database.sismember("noholiday:global", str(ctx.guild.id)):
-            await ctx.send("**Holidays are now disabled in this server.**")
-            database.sadd("noholiday:global", str(ctx.guild.id))
+        channel_or_guild = ctx.channel.id if ctx.guild is None else ctx.guild.id
+
+        if not database.sismember("noholiday:global", str(channel_or_guild)):
+            await ctx.send(
+                f"**Holidays are now disabled in this {'DM' if ctx.guild is None else 'server'}.**"
+            )
+            database.sadd("noholiday:global", str(channel_or_guild))
         else:
-            await ctx.send("**Holidays are now enabled in this server.**")
-            database.srem("noholiday:global", str(ctx.guild.id))
+            await ctx.send(
+                f"**Holidays are now enabled in this {'DM' if ctx.guild is None else 'server'}.**"
+            )
+            database.srem("noholiday:global", str(channel_or_guild))
 
     # leave command - removes itself from guild
     @commands.hybrid_command(
