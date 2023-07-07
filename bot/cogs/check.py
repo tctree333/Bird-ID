@@ -191,16 +191,53 @@ class Check(commands.Cog):
     async def race_autocheck(self, message: discord.Message):
         if not database.exists(f"race.data:{message.channel.id}"):
             return
+
+        currentBird = database.hget(f"channel:{message.channel.id}", "bird").decode(
+            "utf-8"
+        )
+        if currentBird == "":  # no bird
+            return
+
+        find_custom_role = {
+            i if i.startswith("CUSTOM:") else ""
+            for i in database.hget(f"race.data:{message.channel.id}", "state")
+            .decode("utf-8")
+            .split(" ")
+        }
+        find_custom_role.discard("")
+        user_id = (
+            find_custom_role.pop().split(":")[1] if len(find_custom_role) == 1 else None
+        )
+        custom_list = []
         if (
-            len(message.content.strip()) == 4
-            and message.content.strip().upper() in alpha_codes.values()
-            and database.hget(f"race.data:{message.channel.id}", "alpha")
-        ) or len(
-            get_close_matches(
-                string.capwords(message.content.strip().replace("-", " ")),
-                birdListMaster + sciListMaster,
+            user_id
+            and database.exists(f"custom.list:{user_id}")
+            and not database.exists(f"custom.confirm:{user_id}")
+        ):
+            custom_list = [
+                bird.decode("utf-8")
+                for bird in database.smembers(f"custom.list:{user_id}")
+            ]
+
+        if (
+            (
+                len(message.content.strip()) == 4
+                and message.content.strip().upper() in alpha_codes.values()
+                and database.hget(f"race.data:{message.channel.id}", "alpha")
             )
-        ) != 0:
+            or len(
+                get_close_matches(
+                    string.capwords(message.content.strip().replace("-", " ")),
+                    birdListMaster + sciListMaster + custom_list,
+                )
+            )
+            != 0
+            or better_spellcheck(
+                message.content,
+                [(await get_sciname(currentBird)).lower().replace("-", " ")],
+                birdListMaster + sciListMaster + custom_list,
+            )
+        ):
             logger.info("race autocheck found: checking")
             ctx = commands.Context(
                 message=message,

@@ -226,10 +226,10 @@ class Birds(commands.Cog):
                 )
                 return
 
-            if len(birds) < 5:
-                logger.info("list less than 5 items")
+            if len(birds) < 2:
+                logger.info("list less than 2 items")
                 await ctx.send(
-                    "**Sorry, you must have at least 5 birds in the taxon/state combo."
+                    "**Sorry, you must have at least 2 birds in the taxon/state combo."
                     + "**\n*Please try again with a different set of taxons/lists.*"
                 )
                 return
