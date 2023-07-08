@@ -48,21 +48,24 @@ class Stats(commands.Cog):
         for key in database_keys:
             pipe.zrevrangebyscore(key, "+inf", "-inf", withscores=True)
         result = pipe.execute()
-        index = {v[0].decode("utf-8") for r in result for v in r}.union(
-            set(index if index else {})
+        index = tuple(
+            {v[0].decode("utf-8") for r in result for v in r}.union(
+                set(index if index else ())
+            )
         )
-        df = pd.DataFrame(index=index)
-        for title, item in zip(titles, result):
-            df.insert(
-                len(df.columns),
-                title,
-                pd.Series(
-                    {
+        df = pd.DataFrame(
+            index=tuple(index),
+            data={
+                title: pd.Series(
+                    data={
                         e[0]: e[1]
                         for e in map(lambda x: (x[0].decode("utf-8"), int(x[1])), item)
-                    }
-                ),
-            )
+                    },
+                    index=None,
+                )
+                for title, item in zip(titles, result)
+            },
+        )
         df = df.fillna(value=0).astype(int)
         return df
 
@@ -121,7 +124,9 @@ class Stats(commands.Cog):
     async def stats(
         self,
         ctx: commands.Context,
-        topic: Literal["scores", "usage", "web", "help", "score", "s", "u", "w"] = "help",
+        topic: Literal[
+            "scores", "usage", "web", "help", "score", "s", "u", "w"
+        ] = "help",
     ):
         logger.info("command: stats")
 
@@ -219,9 +224,9 @@ class Stats(commands.Cog):
             month = self.generate_dataframe(keys, titles)
             total = month.loc[:, 31]
             month = month.loc[:, 30:1]  # remove totals column
-            month = month.loc[(month != 0).any(1)]  # remove users with all 0s
+            month = month.loc[(month != 0).any(axis=1)]  # remove users with all 0s
             week = month.loc[:, 7:1]  # generate week from month
-            week = week.loc[(week != 0).any(1)]
+            week = week.loc[(week != 0).any(axis=1)]
             today = week.loc[:, 1]  # generate today from week
             today = today.loc[today != 0]
 
@@ -285,7 +290,7 @@ class Stats(commands.Cog):
             web_score_month = self.generate_dataframe(web_score, titles)
             web_score_week = web_score_month.loc[:, 7:1]  # generate week from month
             web_score_week = web_score_week.loc[
-                (web_score_week != 0).any(1)
+                (web_score_week != 0).any(axis=1)
             ]  # remove users with no correct answers
             web_score_today = web_score_week.loc[:, 1]  # generate today from week
             web_score_today = web_score_today.loc[
