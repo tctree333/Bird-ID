@@ -40,6 +40,7 @@ from bot.data_functions import (
     score_increment,
     session_increment,
     streak_increment,
+    user_setup,
 )
 from bot.filters import Filter
 from bot.functions import CustomCooldown
@@ -245,6 +246,7 @@ class Check(commands.Cog):
                 prefix="race-autocheck",
                 view=discord.ext.commands.view.StringView(""),
             )
+            await user_setup(ctx)
             await self.check(ctx, arg=message.content)
 
 
