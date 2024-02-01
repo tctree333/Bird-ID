@@ -17,5 +17,5 @@ itsdangerous==2.1.2
 uvicorn[standard]==0.22.0
 httpx==0.24.1
 aiofiles==23.1.0
-pycryptodome==3.18.0
+pycryptodome==3.19.1
 chardet==5.1.0
