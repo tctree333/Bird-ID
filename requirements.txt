@@ -19,3 +19,4 @@ httpx==0.24.1
 aiofiles==23.1.0
 pycryptodome==3.18.0
 chardet==5.1.0
+anyio>=4.4.0 # not directly required, pinned by Snyk to avoid a vulnerability
