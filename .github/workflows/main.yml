@@ -22,7 +22,7 @@ jobs:
     #         --health-timeout 3s
     #         --health-retries 5
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       # - name: Python Tests
       #   uses: tctree333/SciOlyID-Actions/python-tests@master
@@ -33,14 +33,14 @@ jobs:
       #     CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
 
       - name: Sentry Deploys
-        uses: getsentry/action-release@v1
+        uses: getsentry/action-release@v3
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_INTEGRATION_TOKEN }}
           SENTRY_ORG: sciolyid
           SENTRY_PROJECT: bird-id-discord
 
       - name: Sentry Deploys
-        uses: getsentry/action-release@v1
+        uses: getsentry/action-release@v3
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_INTEGRATION_TOKEN }}
           SENTRY_ORG: sciolyid
