@@ -30,6 +30,9 @@ from dotenv import find_dotenv, load_dotenv
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
+wikipedia.set_user_agent("SciOlyIDBot (https://sciolyid.org/; hello@sciolyid.org)")
+wikipedia.set_rate_limiting(True)
+
 load_dotenv(find_dotenv(), verbose=True)
 
 
@@ -218,6 +221,7 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 discordLogger.addHandler(file_handler)
 discordLogger.addHandler(stream_handler)
+
 
 # log uncaught exceptions
 def handle_exception(exc_type, exc_value, exc_traceback):
