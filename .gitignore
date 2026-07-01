@@ -7,7 +7,6 @@
 # Python
 __pycache__/
 .pytest_cache/
-.python-version
 .mypy_cache/
 venv/
 
