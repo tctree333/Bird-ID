@@ -50,6 +50,9 @@ COUNT = 5  # fetch 5 media from macaulay at a time
 
 MAX_FILESIZE = 6000000  # limit media to 6mb
 
+HEADERS = {
+    "User-Agent": "SciOlyID (https://sciolyid.org/; hello@sciolyid.org)"
+}
 
 class CookieManager:
     def __init__(self):
@@ -58,9 +61,7 @@ class CookieManager:
     @staticmethod
     async def _get_cookies():
         async with aiohttp.ClientSession(
-            headers={
-                "User-Agent": "SciOlyID (https://sciolyid.org/; hello@sciolyid.org)"
-            }
+            headers=HEADERS
         ) as session:
             await session.head("https://search.macaulaylibrary.org/login?path=/catalog")
             return session.cookie_jar
@@ -94,7 +95,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
             session = await stack.enter_async_context(
-                aiohttp.ClientSession(cookie_jar=(await cookies()))
+                aiohttp.ClientSession(headers=HEADERS, cookie_jar=(await cookies()))
             )
         try:
             code = (await get_taxon(bird, session))[0]
@@ -147,7 +148,7 @@ async def get_taxon(bird: str, session=None, retries=0) -> tuple[str, str]:
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
             session = await stack.enter_async_context(
-                aiohttp.ClientSession(cookie_jar=(await cookies()))
+                aiohttp.ClientSession(headers=HEADERS, cookie_jar=(await cookies()))
             )
         taxon_code_url = TAXON_CODE_URL.format(
             urllib.parse.quote(bird.replace("-", " ").replace("'s", ""))
@@ -222,7 +223,7 @@ async def valid_bird(bird: str, session=None) -> ValidatedBird:
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
             session = await stack.enter_async_context(
-                aiohttp.ClientSession(cookie_jar=(await cookies()))
+                aiohttp.ClientSession(headers=HEADERS, cookie_jar=(await cookies()))
             )
         try:
             name = (await get_taxon(bird_, session))[1]
@@ -476,7 +477,7 @@ async def download_media(
     async with contextlib.AsyncExitStack() as stack:
         if session is None:
             session = await stack.enter_async_context(
-                aiohttp.ClientSession(cookie_jar=(await cookies()))
+                aiohttp.ClientSession(headers=HEADERS, cookie_jar=(await cookies()))
             )
         urls = await _get_urls(session, bird, media_type, filters)
         if not os.path.exists(directory):

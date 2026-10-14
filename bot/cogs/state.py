@@ -26,7 +26,7 @@ from discord import app_commands
 from discord.ext import commands
 from sentry_sdk import capture_message
 
-from bot.core import valid_bird, cookies
+from bot.core import HEADERS, valid_bird, cookies
 from bot.data import database, logger, states
 from bot.filters import state_autocomplete
 from bot.functions import CustomCooldown, auto_decode, handle_error
@@ -360,7 +360,7 @@ class States(commands.Cog):
 
     async def validate(self, ctx, parsed_birdlist):
         validated_birdlist = []
-        async with aiohttp.ClientSession(cookie_jar=(await cookies())) as session:
+        async with aiohttp.ClientSession(headers=HEADERS, cookie_jar=(await cookies())) as session:
             logger.info("starting validation")
             await ctx.send("**Validating bird list...**\n*This may take a while.*")
             invalid_output = []

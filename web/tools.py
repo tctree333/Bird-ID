@@ -20,7 +20,7 @@ from io import BytesIO
 import aiohttp
 from fastapi import APIRouter, HTTPException
 
-from bot.core import _black_and_white
+from bot.core import HEADERS, _black_and_white
 from web.data import logger
 from web.functions import send_file
 
@@ -46,7 +46,7 @@ async def convert_bw(url: str):
 
 
 async def _bw_helper(url):
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(headers=HEADERS) as session:
         async with session.get(url) as response:
             if response.status != 200:
                 logger.info("invalid response")

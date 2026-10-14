@@ -26,7 +26,7 @@ import wikipedia
 from discord import app_commands
 from discord.ext import commands
 
-from bot.core import better_spellcheck, get_sciname, send_bird
+from bot.core import HEADERS, better_spellcheck, get_sciname, send_bird
 from bot.data import (
     alpha_codes,
     birdListMaster,
@@ -148,7 +148,7 @@ class Other(commands.Cog):
     async def bird_from_asset(asset_id: str):
         url = f"https://www.macaulaylibrary.org/asset/{asset_id}/embed"
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(headers=HEADERS) as session:
             async with session.get(url) as resp:
                 content = await resp.text()
                 currentBird = (
