@@ -25,7 +25,6 @@ import itertools
 import os
 import pickle
 import random
-from typing import List, Union
 
 import aiohttp
 import chardet
@@ -59,7 +58,7 @@ def cache(pre=None, local=True):
 
     This (optionally) caches items into a Redis database
     (bot.data.database). It does not have a max_size but sets
-    key expiration to 90 days. Items are pickled before storing
+    key expiration to 180 days. Items are pickled before storing
     into the database.
 
     Cache keys are based on a sha1 hash. Currently, only strings
@@ -85,8 +84,8 @@ def cache(pre=None, local=True):
                 return
             pickled = pickle.dumps(value, protocol=4)
             database.set(
-                f"cache.{func.__name__}:{key}", pickled, ex=7776000
-            )  # 60*60*24*90
+                f"cache.{func.__name__}:{key}", pickled, ex=15552000
+            )  # 60*60*24*180
 
         def _cache_get(key, default=None):
             if local:
@@ -210,8 +209,7 @@ async def send_leaderboard(
     if database_key is not None and data is not None:
         raise GenericError("database_key and data are both set", 990)
 
-    if page < 1:
-        page = 1
+    page = max(page, 1)
 
     entry_count = (
         int(database.zcard(database_key)) if database_key is not None else data.count()
@@ -240,7 +238,7 @@ async def send_leaderboard(
     embed.set_author(name="Bird ID - An Ornithology Bot")
     leaderboard = "".join(
         (
-            f"{i+1+page}. **{stats[0]}** - {int(stats[1])}\n"
+            f"{i + 1 + page}. **{stats[0]}** - {int(stats[1])}\n"
             for i, stats in enumerate(leaderboard_list)
         )
     )
@@ -251,8 +249,8 @@ async def send_leaderboard(
 
 def build_id_list(
     user_id: str = None,
-    taxon: Union[list, str] = None,
-    state: Union[list, str] = None,
+    taxon: list | str = None,
+    state: list | str = None,
     media_type: MediaType = MediaType.IMAGE,
 ) -> list:
     """Generates an ID list based on given arguments
@@ -268,7 +266,7 @@ def build_id_list(
     if isinstance(state, str):
         state = state.split(" ")
 
-    state_roles: List[str] = state if isinstance(state, list) else []
+    state_roles: list[str] = state if isinstance(state, list) else []
     if media_type is MediaType.SONG:
         state_list = "songBirds"
         default = songBirds
@@ -318,7 +316,7 @@ def build_id_list(
 
 
 async def drone_attack(ctx):
-    logger.info(f"holiday check: invoked command: {str(ctx.command)}")
+    logger.info(f"holiday check: invoked command: {ctx.command!s}")
 
     def video_embed():
         if random.randint(0, 1) == 1:
@@ -374,7 +372,7 @@ async def drone_attack(ctx):
 
     if str(ctx.command) in ("bird", "song", "goatsucker"):
         images = os.listdir("bot/media/images/drone")
-        path = f"bot/media/images/drone/{images[random.randint(0,len(images)-1)]}"
+        path = f"bot/media/images/drone/{images[random.randint(0, len(images) - 1)]}"
         BASE_MESSAGE = (
             "*Here you go!* \n**Use `b!{new_cmd}` again to get a new {media} of the same bird, "
             + "or `b!{skip_cmd}` to get a new bird. Use `b!{check_cmd} guess` to check your answer. "

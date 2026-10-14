@@ -225,7 +225,7 @@ if __name__ == "__main__":
 
         await handle_error(ctx, error)
 
-    @tasks.loop(minutes=10.0)
+    @tasks.loop(minutes=30.0)
     async def refresh_cache():
         """Task to delete a random selection of cached birds to ensure freshness."""
         logger.info("TASK: Refreshing some cache items")

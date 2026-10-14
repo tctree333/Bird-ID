@@ -25,8 +25,8 @@ import random
 import shutil
 import string
 import urllib
+from collections.abc import Iterable
 from io import BytesIO
-from typing import Iterable, Tuple
 
 import aiohttp
 import discord
@@ -132,7 +132,7 @@ async def get_sciname(bird: str, session=None, retries=0) -> str:
 
 
 @cache(pre=lambda x: string.capwords(x.strip().replace("-", " ")), local=False)
-async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
+async def get_taxon(bird: str, session=None, retries=0) -> tuple[str, str]:
     """Returns the taxonomic code of a bird.
 
     Taxonomic codes are used by the Cornell Lab of Ornithology to identify species of birds.
@@ -182,10 +182,14 @@ async def get_taxon(bird: str, session=None, retries=0) -> Tuple[str, str]:
                     for item in taxon_code_data:
                         logger.info(f"checking: {item}")
                         common, sci_name = item["name"].split(" - ")
-                        if (  # spellcheck
-                            spellcheck(common, bird, 4) or spellcheck(sci_name, bird, 4)
-                        ) and (  # ensure that it's a species by checking for binomial name
-                            " " in sci_name
+                        if (
+                            (  # spellcheck
+                                spellcheck(common, bird, 4)
+                                or spellcheck(sci_name, bird, 4)
+                            )
+                            and (  # ensure that it's a species by checking for binomial name
+                                " " in sci_name
+                            )
                         ):
                             logger.info("ok")
                             taxon_code = item["code"]
@@ -389,7 +393,7 @@ async def get_media(ctx, bird: str, media_type: MediaType, filters: Filter):
         logger.info("prevJ: " + str(prevJ))
         logger.info("j: " + str(j))
 
-        for x in range(0, len(media)):  # check file type and size
+        for x in range(len(media)):  # check file type and size
             y = (x + j) % len(media)
             path = media[y]
             extension = path.split(".")[-1]
@@ -617,9 +621,7 @@ async def _download_helper(path, url, session, sem):
                 with open(filename, "wb") as out_file:
                     block_size = 1024 * 8
                     while True:
-                        block = await response.content.read(
-                            block_size
-                        )  # pylint: disable=no-member
+                        block = await response.content.read(block_size)  # pylint: disable=no-member
                         if not block:
                             break
                         out_file.write(block)
@@ -658,20 +660,20 @@ def evict_media():
     """Deletes media for items that have exceeded a certain frequency.
 
     This prevents media from becoming stale. If the item frequency has
-    been incremented more than 2*COUNT times, this function will delete
+    been incremented more than 8*COUNT times, this function will delete
     the top 3 items.
     """
     logger.info("Updating cached images")
 
-    for item in map(
-        lambda x: x.decode(),
-        database.zrevrangebyscore(
+    for item in (
+        x.decode()
+        for x in database.zrevrangebyscore(
             "frequency.media:global",
             "+inf",
-            min=2 * COUNT,
+            min=8 * COUNT,
             start=0,
             num=3,
-        ),
+        )
     ):
         database.zadd("frequency.media:global", {item: 0})
         shutil.rmtree(f"bot_files/cache/{item}/")
