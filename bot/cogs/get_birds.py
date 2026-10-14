@@ -16,7 +16,6 @@
 
 import random
 import string
-from typing import Optional
 
 from discord import app_commands
 from discord.ext import commands
@@ -102,10 +101,9 @@ class Birds(commands.Cog):
 
             if retries >= 2:  # only retry twice
                 await ctx.send("**Too many retries.**\n*Please try again.*")
-                await self._send_next_race_media(ctx)
                 return
 
-            if isinstance(error, GenericError) and error.code == 100:
+            if isinstance(error, GenericError) and error.code in (100, 201):
                 retries += 1
                 await ctx.send("**Retrying...**")
                 await self.send_bird_(
@@ -113,7 +111,6 @@ class Birds(commands.Cog):
                 )
             else:
                 await ctx.send("*Please try again.*")
-                await self._send_next_race_media(ctx)
 
         return inner
 
@@ -137,7 +134,7 @@ class Birds(commands.Cog):
     async def send_bird_(
         self,
         ctx,
-        media: Optional[str],
+        media: str | None,
         filters: Filter,
         taxon_str: str = "",
         role_str: str = "",
