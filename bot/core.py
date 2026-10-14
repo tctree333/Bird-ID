@@ -59,7 +59,7 @@ class CookieManager:
     async def _get_cookies():
         async with aiohttp.ClientSession(
             headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36"
+                "User-Agent": "SciOlyID (https://sciolyid.org/; hello@sciolyid.org)"
             }
         ) as session:
             await session.head("https://search.macaulaylibrary.org/login?path=/catalog")
